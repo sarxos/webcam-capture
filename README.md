@@ -1,6 +1,9 @@
 ## Java Webcam Capture POC
 
-Proof of concept of how to use your PC webcam from java.
+Use your PC webcam directly from Java. Now you can use your webcam to take 
+pictures anytime or stream video anywhere you want.
+
+[![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 
 ### Requirements
 

@@ -7,7 +7,7 @@
 	<version>0.0.1</version>
 
 	<name>Java Webcam Capture POC</name>
-	<description>Proof of concept of how to handle webcam video stream from Java</description>
+	<description>Use your webcam directly from Java</description>
 
 	<organization>
 		<name>Bartosz Firyn (SarXos)</name>
