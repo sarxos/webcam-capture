@@ -1,4 +1,4 @@
-package com.sarxos.poc.webcam;
+package com.sarxos.webcam;
 
 import java.util.EventObject;
 

@@ -2,9 +2,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.sarxos.poc</groupId>
+	<groupId>com.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.0.1</version>
+	<version>0.1</version>
 
 	<name>Java Webcam Capture POC</name>
 	<description>Use your webcam directly from Java</description>

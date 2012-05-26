@@ -1,4 +1,4 @@
-package com.sarxos.poc.webcam;
+package com.sarxos.webcam;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -7,6 +7,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
+import com.sarxos.webcam.Webcam;
+import com.sarxos.webcam.WebcamEvent;
+import com.sarxos.webcam.WebcamListener;
+import com.sarxos.webcam.WebcamPanel;
 
 
 /**

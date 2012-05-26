@@ -1,9 +1,11 @@
-package com.sarxos.poc.webcam;
+package com.sarxos.webcam;
 
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import com.sarxos.webcam.Webcam;
 
 
 /**
