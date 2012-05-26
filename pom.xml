@@ -9,6 +9,27 @@
 	<name>Java Webcam Capture POC</name>
 	<description>Proof of concept of how to handle webcam video stream from Java</description>
 
+	<organization>
+		<name>Bartosz Firyn (SarXos)</name>
+		<url>https://github.com/sarxos</url>
+	</organization>
+
+	<scm>
+		<url>https://github.com/sarxos/webcam-capture</url>
+	</scm>
+
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/sarxos/webcam-capture/issues</url>
+	</issueManagement>
+
+	<distributionManagement>
+		<repository>
+			<id>sarxos-ftp-repo</id>
+			<url>ftp://ftp.sarxos.pl/maven2</url>
+		</repository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>javax.media</groupId>
@@ -16,5 +37,15 @@
 			<version>2.1.1e</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-beta-7</version>
+			</extension>
+		</extensions>
+	</build>
 
 </project>

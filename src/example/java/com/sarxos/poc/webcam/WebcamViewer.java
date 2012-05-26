@@ -36,7 +36,6 @@ public class WebcamViewer extends JFrame implements Runnable, WebcamListener, Wi
 		setContentPane(wait);
 
 		pack();
-		setResizable(false);
 		setVisible(true);
 
 		SwingUtilities.invokeLater(new Runnable() {
