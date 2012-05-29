@@ -36,7 +36,14 @@ import javax.media.util.BufferToImage;
  */
 public class Webcam {
 
+	/**
+	 * Control to control format.
+	 */
 	private final static String FORMAT_CTRL = "javax.media.control.FormatControl";
+
+	/**
+	 * Control to grab frames.
+	 */
 	private final static String GRABBING_CTRL = "javax.media.control.FrameGrabbingControl";
 
 	/**
@@ -94,10 +101,24 @@ public class Webcam {
 		}
 	}
 
+	/**
+	 * Webcam listeners.
+	 */
 	private List<WebcamListener> listeners = new ArrayList<WebcamListener>();
 
+	/**
+	 * Is webcam open.
+	 */
 	private volatile boolean open = false;
+
+	/**
+	 * Is player available.
+	 */
 	private volatile boolean available = false;
+
+	/**
+	 * Is player started.
+	 */
 	private volatile boolean started = false;
 
 	private CaptureDeviceInfo device = null;
@@ -161,9 +182,9 @@ public class Webcam {
 		WebcamEvent we = new WebcamEvent(this);
 
 		synchronized (listeners) {
-			Iterator<WebcamListener> wli = listeners.iterator();
-			while (wli.hasNext()) {
-				WebcamListener l = wli.next();
+			Iterator<WebcamListener> li = listeners.iterator();
+			while (li.hasNext()) {
+				WebcamListener l = li.next();
 				try {
 					l.webcamOpen(we);
 				} catch (Exception e) {
@@ -218,6 +239,9 @@ public class Webcam {
 		return control;
 	}
 
+	/**
+	 * @return Webcam view size (picture size) in pixels.
+	 */
 	public Dimension getViewSize() {
 		if (!isOpen()) {
 			throw new RuntimeException("Webcam has to be open to get video size");
@@ -327,6 +351,17 @@ public class Webcam {
 	}
 
 	/**
+	 * @return Default (first) webcam.
+	 */
+	public static Webcam getDefault() {
+		List<Webcam> webcams = getWebcams();
+		if (webcams.isEmpty()) {
+			return null;
+		}
+		return webcams.get(0);
+	}
+
+	/**
 	 * Get webcam name (actually device name).
 	 * 
 	 * @return Name
@@ -340,16 +375,23 @@ public class Webcam {
 		return "webcam:" + getName();
 	}
 
+	/**
+	 * Add webcam listener.
+	 * 
+	 * @param l a listener to add
+	 */
 	public void addWebcamListener(WebcamListener l) {
 		synchronized (listeners) {
 			listeners.add(l);
 		}
 	}
 
+	/**
+	 * @return All webcam listeners
+	 */
 	public WebcamListener[] getWebcamListeners() {
 		synchronized (listeners) {
 			return listeners.toArray(new WebcamListener[listeners.size()]);
 		}
 	}
-
 }

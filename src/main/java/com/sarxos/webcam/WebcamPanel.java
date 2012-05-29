@@ -6,6 +6,12 @@ import java.awt.Image;
 import javax.swing.JPanel;
 
 
+/**
+ * Simply implementation of JPanel allowing users to render pictures taken with
+ * webcam.
+ * 
+ * @author Bartosz Firyn (SarXos)
+ */
 public class WebcamPanel extends JPanel implements WebcamListener {
 
 	private static final long serialVersionUID = 5792962512394656227L;
