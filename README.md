@@ -5,9 +5,36 @@ pictures anytime or stream video anywhere you want.
 
 [![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 
+### I Want To Use It
+
+Of course, you can! If you would like to use _webcam-capture_ library in your project, you can either:
+1. Download it from [here (version 0.2)](http://www.sarxos.pl/repo/maven2/com/sarxos/webcam-capture/0.2/webcam-capture-0.2-dist.zip) and include JAR in your classpath (don't forget to add dependencies JARs from _libs_ directory too).  
+2. Clone git repo and add source to your project
+3. Clone git repo and build it on your local machine (required [Maven](http://maven.apache.org/)) and then use build artifacts
+4. Add [Maven](http://maven.apache.org/) dependency to your project:
+
+```xml
+<dependency>
+	<groupId>com.sarxos</groupId>
+	<artifactId>webcam-capture</artifactId>
+	<version>0.2</version>
+</dependency>
+```
+
+For option 4 you have to also add @<repository>@ to your pom (at least till it is unavailable from central):
+
+```xml
+<repositories>
+	<repository>
+		<id>sarxos-repo</id>
+		<url>http://www.sarxos.pl/repo/maven2</url>
+	</repository>
+</repositories>
+```
+
 ### Requirements
 
-1. Java 7 (JRE or JDK) installed
+1. Java 6 (JRE or JDK) or higher installed
 2. Java Media Framework (JMF) 2.1.1 or higher installed
 3. Webcam connected, installed and configured
 
@@ -20,7 +47,10 @@ JMF _recognise_ your webcam you have to:
 1. Open Start / Programs / Java Media Framework 2.1.1e
 2. Start JMF Registry
 3. Switch to _Capture Devices_ tab
-4. Your webcam should be there - available on this small list. I have no idea what to do if it is not available on the list... In such situation you can try to press _Detect Capture Devices_ button, but if this won't help, you will have to google for some help.   
+4. Your webcam should be there - available on this small list. I have no idea what 
+   to do if it is not available on the list... In such situation you can try to press 
+   _Detect Capture Devices_ button, but if this won't help, you will have to google 
+   for some help.   
 
 ### How To Use It
 
