@@ -22,7 +22,7 @@ Of course, you can! If you would like to use _webcam-capture_ library in your pr
 </dependency>
 ```
 
-For option 4 you have to also add @<repository>@ to your pom (at least till it is unavailable from central):
+For option 4 you have to also add ```<repository>``` to your pom (at least till it is unavailable from central):
 
 ```xml
 <repositories>
@@ -132,7 +132,7 @@ public class DetectMotionExample implements WebcamMotionListener {
 ```
 
 Logging (Logback via SLF4J) is already there, so you can enable it simply by adding 
-@logback.xml@ configuration file somewhere in your filesystem and calling:
+```logback.xml``` configuration file somewhere in your filesystem and calling:
 
 ```java
 ConfigurationUpdater.observe("path/to/logback.xml");
