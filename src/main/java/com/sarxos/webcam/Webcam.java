@@ -28,6 +28,9 @@ import javax.media.control.FrameGrabbingControl;
 import javax.media.format.VideoFormat;
 import javax.media.util.BufferToImage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Webcam class.
@@ -35,6 +38,8 @@ import javax.media.util.BufferToImage;
  * @author Bartosz Firyn (bfiryn)
  */
 public class Webcam {
+
+	private static final Logger LOG = LoggerFactory.getLogger(Webcam.class);
 
 	/**
 	 * Control to control format.
@@ -147,8 +152,11 @@ public class Webcam {
 	public synchronized void open() {
 
 		if (isOpen()) {
+			LOG.debug("Opening webcam - already open!");
 			return;
 		}
+
+		LOG.debug("Opening webcam");
 
 		locator = device.getLocator();
 		format = getVideoFormat(device);
@@ -200,8 +208,11 @@ public class Webcam {
 	public synchronized void close() {
 
 		if (!started && !available && !open) {
+			LOG.debug("Cannot close webcam");
 			return;
 		}
+
+		LOG.debug("Closing webcam");
 
 		open = false;
 
@@ -321,10 +332,11 @@ public class Webcam {
 		int type = BufferedImage.TYPE_INT_RGB;
 
 		BufferedImage buffered = new BufferedImage(width, height, type);
-		Graphics2D g2 = buffered.createGraphics();
 
+		Graphics2D g2 = buffered.createGraphics();
 		g2.drawImage(image, null, null);
 		g2.dispose();
+		buffered.flush();
 
 		return buffered;
 

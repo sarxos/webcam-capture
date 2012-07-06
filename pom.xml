@@ -36,6 +36,16 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.jhlabs</groupId>
+			<artifactId>filters</artifactId>
+			<version>2.0.235</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sarxos</groupId>
+			<artifactId>log-utils</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
 			<groupId>javax.media</groupId>
 			<artifactId>jmf</artifactId>
 			<version>2.1.1e</version>

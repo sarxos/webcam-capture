@@ -8,11 +8,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import com.sarxos.webcam.Webcam;
-import com.sarxos.webcam.WebcamEvent;
-import com.sarxos.webcam.WebcamListener;
-import com.sarxos.webcam.WebcamPanel;
-
 
 /**
  * Proof of concept of how to handle webcam video stream from Java
@@ -47,7 +42,12 @@ public class WebcamViewer extends JFrame implements Runnable, WebcamListener, Wi
 
 			@Override
 			public void run() {
-				webcam = Webcam.getWebcams().get(0);
+
+				webcam = Webcam.getDefault();
+				if (webcam == null) {
+					System.out.println("No webcams found...");
+					System.exit(1);
+				}
 
 				view = new WebcamPanel(webcam);
 

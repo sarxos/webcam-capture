@@ -1,7 +1,7 @@
 package com.sarxos.webcam;
 
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
@@ -28,8 +28,11 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		@Override
 		public void run() {
 			super.run();
+
 			while (webcam.isOpen()) {
+
 				image = webcam.getImage();
+
 				try {
 					if (paused) {
 						synchronized (this) {
@@ -46,7 +49,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	}
 
 	private Webcam webcam = null;
-	private Image image = null;
+	private BufferedImage image = null;
 	private Repainter repainter = null;
 
 	public WebcamPanel(Webcam webcam) {
