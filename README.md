@@ -9,7 +9,7 @@ pictures anytime or stream video anywhere you want.
 
 Of course, you can! If you would like to use _webcam-capture_ library in your project, you can either:
 
-1. Download it from [here (version 0.2)](http://www.sarxos.pl/repo/maven2/com/sarxos/webcam-capture/0.2/webcam-capture-0.2-dist.zip) and include JAR in your classpath (don't forget to add dependencies JARs from _libs_ directory too).  
+1. Download complete ZIP from [here](http://www.sarxos.pl/repo/maven2/com/sarxos/webcam-capture/0.2/webcam-capture-0.2-dist.zip) and include JAR in your classpath. This ZIP file contains sources, examples, all required dependencies and compiled library JAR.  
 2. Clone git repo and add source to your project
 3. Clone git repo and build it on your local machine (required [Maven](http://maven.apache.org/)) and then use build artifacts
 4. Add [Maven](http://maven.apache.org/) dependency to your project:
@@ -129,6 +129,13 @@ public class DetectMotionExample implements WebcamMotionListener {
 		System.in.read(); // keeps your program open
 	}
 }
+```
+
+Logging (Logback via SLF4J) is already there, so you can enable it simply by adding 
+@logback.xml@ configuration file somewhere in your filesystem and calling:
+
+```java
+ConfigurationUpdater.observe("path/to/logback.xml");
 ```
 
 There are more examples available in ```src/example```, don't forget to check!
