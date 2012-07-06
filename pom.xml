@@ -4,7 +4,7 @@
 
 	<groupId>com.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.1</version>
+	<version>0.2</version>
 
 	<name>Java Webcam Capture POC</name>
 	<description>Use your webcam directly from Java</description>
@@ -156,6 +156,8 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<!-- 
 			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>downloads-maven-plugin</artifactId>
@@ -176,6 +178,8 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
+			
 		</plugins>
 	
 		<extensions>
