@@ -8,6 +8,7 @@ pictures anytime or stream video anywhere you want.
 ### I Want To Use It
 
 Of course, you can! If you would like to use _webcam-capture_ library in your project, you can either:
+
 1. Download it from [here (version 0.2)](http://www.sarxos.pl/repo/maven2/com/sarxos/webcam-capture/0.2/webcam-capture-0.2-dist.zip) and include JAR in your classpath (don't forget to add dependencies JARs from _libs_ directory too).  
 2. Clone git repo and add source to your project
 3. Clone git repo and build it on your local machine (required [Maven](http://maven.apache.org/)) and then use build artifacts
