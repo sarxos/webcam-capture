@@ -20,9 +20,25 @@ import com.jhlabs.image.PixelUtils;
  * 
  * @author Bartosz Firyn (SarXos)
  */
-public class WebcamMotionDetector implements ThreadFactory {
+public class WebcamMotionDetector {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamMotionDetector.class);
+
+	/**
+	 * Create new threads for detector internals.
+	 * 
+	 * @author Bartosz Firyn (SarXos)
+	 */
+	private class DetectorThreadFactory implements ThreadFactory {
+
+		@Override
+		public Thread newThread(Runnable runnable) {
+			Thread t = new Thread(runnable, "motion-detector-" + (number++));
+			t.setDaemon(true);
+			return t;
+		}
+
+	}
 
 	/**
 	 * Run motion detector.
@@ -124,9 +140,14 @@ public class WebcamMotionDetector implements ThreadFactory {
 	private int number = 0;
 
 	/**
+	 * Thread factory.
+	 */
+	private ThreadFactory threadFactory = new DetectorThreadFactory();
+
+	/**
 	 * Executor.
 	 */
-	private ExecutorService executor = Executors.newCachedThreadPool(this);
+	private ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
 
 	/**
 	 * Create motion detector. Will open webcam if it is closed.
@@ -302,12 +323,5 @@ public class WebcamMotionDetector implements ThreadFactory {
 
 	public int getMotionStrength() {
 		return strength;
-	}
-
-	@Override
-	public Thread newThread(Runnable runnable) {
-		Thread t = new Thread(runnable, "motion-detector-" + (number++));
-		t.setDaemon(true);
-		return t;
 	}
 }
