@@ -1,4 +1,4 @@
-package com.sarxos.webcam;
+package com.github.sarxos.webcam;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;

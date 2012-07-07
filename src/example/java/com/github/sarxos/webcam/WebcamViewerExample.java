@@ -1,4 +1,4 @@
-package com.sarxos.webcam;
+package com.github.sarxos.webcam;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -8,13 +8,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamEvent;
+import com.github.sarxos.webcam.WebcamListener;
+import com.github.sarxos.webcam.WebcamPanel;
+
 
 /**
  * Proof of concept of how to handle webcam video stream from Java
  * 
  * @author Bartosz Firyn (SarXos)
  */
-public class WebcamViewer extends JFrame implements Runnable, WebcamListener, WindowListener {
+public class WebcamViewerExample extends JFrame implements Runnable, WebcamListener, WindowListener {
 
 	private static final long serialVersionUID = -2831291292491395695L;
 
@@ -51,14 +56,14 @@ public class WebcamViewer extends JFrame implements Runnable, WebcamListener, Wi
 
 				view = new WebcamPanel(webcam);
 
-				webcam.addWebcamListener(WebcamViewer.this);
+				webcam.addWebcamListener(WebcamViewerExample.this);
 				webcam.open();
 			}
 		});
 	}
 
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new WebcamViewer());
+		SwingUtilities.invokeLater(new WebcamViewerExample());
 	}
 
 	@Override

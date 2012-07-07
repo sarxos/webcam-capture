@@ -1,4 +1,7 @@
-package com.sarxos.webcam;
+package com.github.sarxos.webcam;
+
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamMotionDetector;
 
 
 

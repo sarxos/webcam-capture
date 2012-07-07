@@ -15,28 +15,30 @@ Of course, you can! If you would like to use _webcam-capture_ library in your pr
 4. Add [Maven](http://maven.apache.org/) dependency to your project:
 
 ```xml
-<dependency>
-	<groupId>com.sarxos</groupId>
-	<artifactId>webcam-capture</artifactId>
-	<version>0.2</version>
-</dependency>
+<dependencies>
+	<dependency>
+		<groupId>com.sarxos</groupId>
+		<artifactId>webcam-capture</artifactId>
+		<version>0.2</version>
+	</dependency>
+</dependencies>
 ```
 
 For option 4 you have to also add ```<repository>``` to your pom (at least till it is unavailable from central):
 
 ```xml
 <repositories>
-	<repository>
-		<id>sarxos-repo</id>
-		<url>http://www.sarxos.pl/repo/maven2</url>
-	</repository>
+    <repository>
+        <id>sarxos-repo</id>
+        <url>http://www.sarxos.pl/repo/maven2</url>
+    </repository>
 </repositories>
 ```
 
 ### Requirements
 
 1. Java 6 (JRE or JDK) or higher installed
-2. Java Media Framework (JMF) 2.1.1 or higher installed
+2. Java Media Framework (JMF) 2.1.1e or higher installed
 3. Webcam connected, installed and configured
 
 ### How It Works
@@ -55,41 +57,26 @@ JMF _recognise_ your webcam you have to:
 
 ### How To Use It
 
-To get image - the simplest way:
+To get image and save it to disk:
 
 ```java
-// if you have only one webcam installed on your PC (e.g. laptop camera)
-Webcam webcam = Webcam.getDefault();
+Webcam webcam = Webcam.getWebcams().getDefault();
 webcam.open();
-
-Image image = webcam.getImage();
-
+ImageIO.write(webcam.getImage(), "JPG", new File("my-webcam-picture.jpg")); // it will be created in project directory
 webcam.close();
 ```
 
+If you have more then one webcam connected to your computer:
+
 ```java
-// if you have many webcam installed on your PC (e.g. three web cameras connected to USB)
-Webcam webcam1 = Webcam.getWebcams().get(0);
-Webcam webcam2 = Webcam.getWebcams().get(1);
-Webcam webcam3 = Webcam.getWebcams().get(2);
-webcam1.open();
-webcam2.open();
-webcam3.open();
-
-Image image1 = webcam1.getImage(); // share me on facebook
-Image image2 = webcam2.getImage(); // send me to friend
-Image image3 = webcam3.getImage(); // and this one... yeah, put me on the wall
-
-webcam1.close();
-webcam2.close();
-webcam3.close();
+Webcam laptop = Webcam.getWebcams().get(0); // first one will be usually build-in one
+Webcam kitchen = Webcam.getWebcams().get(1);
 ```
 
-To display view from webcam in JPanel:
+To display images from webcam in JPanel:
 
 ```java
-JPanel panel = new WebcamPanel(webcam);
-// use panel somehow (as content pane, as subcomponents, etc)
+JPanel panel = new WebcamPanel(webcam); // use panel somehow (as content pane, as subcomponents, etc)
 ```
 
 To detect motion with your webcam - loop solution:
@@ -135,7 +122,7 @@ Logging (Logback via SLF4J) is already there, so you can enable it simply by add
 ```logback.xml``` configuration file somewhere in your filesystem and calling:
 
 ```java
-ConfigurationUpdater.observe("path/to/logback.xml");
+WebcamLogConfigurator.configure("path/to/logback.xml");
 ```
 
 There are more examples available in ```src/example```, don't forget to check!
