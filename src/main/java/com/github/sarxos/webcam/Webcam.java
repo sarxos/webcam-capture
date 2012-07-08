@@ -136,6 +136,7 @@ public class Webcam {
 
 	private PlayerStarter starter = null;
 	private Semaphore semaphore = new Semaphore(0, true);
+	private Dimension viewSize = null;
 
 	/**
 	 * Webcam class.
@@ -144,6 +145,14 @@ public class Webcam {
 	 */
 	public Webcam(CaptureDeviceInfo device) {
 		this.device = device;
+	}
+
+	private VideoFormat createFormat(Dimension size) {
+		if (size == null) {
+			return getLargestVideoFormat();
+		} else {
+			return getSizedVideoFormat(size);
+		}
 	}
 
 	/**
@@ -159,7 +168,7 @@ public class Webcam {
 		LOG.debug("Opening webcam");
 
 		locator = device.getLocator();
-		format = getVideoFormat(device);
+		format = createFormat(viewSize);
 		converter = new BufferToImage(format);
 
 		try {
@@ -254,10 +263,83 @@ public class Webcam {
 	 * @return Webcam view size (picture size) in pixels.
 	 */
 	public Dimension getViewSize() {
-		if (!isOpen()) {
-			throw new RuntimeException("Webcam has to be open to get video size");
+		if (viewSize == null) {
+			return getLargestVideoFormat().getSize();
 		}
-		return format.getSize();
+		return viewSize;
+	}
+
+	public Dimension[] getViewSizes() {
+
+		List<Dimension> dimensions = new ArrayList<Dimension>();
+
+		Format[] formats = device.getFormats();
+		for (Format format : formats) {
+			if ("RGB".equalsIgnoreCase(format.getEncoding())) {
+				VideoFormat rgb = (VideoFormat) format;
+				dimensions.add(rgb.getSize());
+			}
+		}
+		return dimensions.toArray(new Dimension[dimensions.size()]);
+	}
+
+	public void setViewSize(Dimension size) {
+
+		// check if dimension is valid one
+		boolean ok = false;
+		Dimension[] sizes = getViewSizes();
+		for (Dimension d : sizes) {
+			if (d.width == size.width && d.height == size.height) {
+				ok = true;
+				break;
+			}
+		}
+
+		if (!ok) {
+			StringBuilder sb = new StringBuilder("Incorrect dimension [");
+			sb.append(size.width).append("x").append(size.height).append("] ");
+			sb.append("possible ones are ");
+			for (Dimension d : sizes) {
+				sb.append("[").append(d.width).append("x").append(d.height).append("] ");
+			}
+			throw new IllegalArgumentException(sb.toString());
+		}
+
+		viewSize = size;
+	}
+
+	public static void main(String[] args) {
+		for (Dimension d : Webcam.getDefault().getViewSizes()) {
+			System.out.println(d);
+		}
+	}
+
+	/**
+	 * Get video format for size.
+	 * 
+	 * @param device device to get format from
+	 * @param size specific size to search
+	 * @return VideoFormat
+	 */
+	private VideoFormat getSizedVideoFormat(Dimension size) {
+
+		Format[] formats = device.getFormats();
+		VideoFormat format = null;
+
+		for (Format f : formats) {
+
+			if (!"RGB".equalsIgnoreCase(f.getEncoding()) || !(f instanceof VideoFormat)) {
+				continue;
+			}
+
+			Dimension d = ((VideoFormat) f).getSize();
+			if (d.width == size.width && d.height == size.height) {
+				format = (VideoFormat) f;
+				break;
+			}
+		}
+
+		return format;
 	}
 
 	/**
@@ -267,7 +349,7 @@ public class Webcam {
 	 * @param device device to get video format for
 	 * @return Suitable video format
 	 */
-	protected VideoFormat getVideoFormat(CaptureDeviceInfo device) {
+	private VideoFormat getLargestVideoFormat() {
 
 		Format[] formats = device.getFormats();
 		VideoFormat format = null;
