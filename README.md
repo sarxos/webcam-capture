@@ -1,43 +1,37 @@
 # Java Webcam Capture
 
-Use your PC webcam directly from Java. Now you can use your webcam to take 
-pictures anytime or stream video anywhere you want.
+Allows you to use your PC webcam directly from Java.
 
 [![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 
 ## I Want To Use It
 
-Of course, you can! If you would like to use _webcam-capture_ library in your project, you can either:
+Download complete ZIP from [here](http://www.sarxos.pl/repo/maven2/com/sarxos/webcam-capture/0.2/webcam-capture-0.2-dist.zip) 
+and include ```webcam-capture-[version].jar``` in your's project classpath. This ZIP file contains sources, examples, all 
+required dependencies and compiled library JAR.  
 
-1. Download complete ZIP from [here](http://www.sarxos.pl/repo/maven2/com/sarxos/webcam-capture/0.2/webcam-capture-0.2-dist.zip) and include JAR in your classpath. This ZIP file contains sources, examples, all required dependencies and compiled library JAR.  
-2. Clone git repo and add source to your project
-3. Clone git repo and build it on your local machine (required [Maven](http://maven.apache.org/)) and then use build artifacts
-4. Add [Maven](http://maven.apache.org/) dependency to your project:
+If you are a [Maven](http://maven.apache.org/) user you can also add this dependency to your project:
 
 ```xml
-<dependencies>
-	<dependency>
-		<groupId>com.sarxos</groupId>
-		<artifactId>webcam-capture</artifactId>
-		<version>0.2</version>
-	</dependency>
-</dependencies>
+<dependency>
+	<groupId>com.sarxos</groupId>
+	<artifactId>webcam-capture</artifactId>
+	<version>0.2</version>
+</dependency>
 ```
 
 For option 4 you have to also add ```<repository>``` to your pom (at least till it is unavailable from central):
 
 ```xml
-<repositories>
-    <repository>
-        <id>sarxos-repo</id>
-        <url>http://www.sarxos.pl/repo/maven2</url>
-    </repository>
-</repositories>
+<repository>
+	<id>sarxos-repo</id>
+	<url>http://www.sarxos.pl/repo/maven2</url>
+</repository>
 ```
 
 ## Requirements
 
-1. Java 6 (JRE or JDK) or higher installed
+1. Java 5 (JRE or JDK) or higher installed
 2. Webcam connected, installed and configured
 
 ## How To Make It Working
@@ -55,11 +49,12 @@ Before you choose one of them let me briefly describe the differences:
 
 ### LTI-CIVIL
 
-LTI-CIVIL is a Java library for capturing images from a video source such as a USB camera. It provides a 
-simple API and does not depend on or use JMF. Easy to use, LGPL-licensed, which means it can be 
+This is a Java library for capturing images from a video devices source such as a USB camera. It provides a 
+simple API and does not depend on or use JMF. It's easy to use, LGPL-licensed, which means it can be 
 redistributed along with your binaries (remember to include original license in your software).
 
-To use it as data source you have to download LTI-CIVIL binaries and add those files into your project:
+To use it as webcam data source you have to download LTI-CIVIL binaries and add those files
+into your project:
 
 ```
 civil.dll
