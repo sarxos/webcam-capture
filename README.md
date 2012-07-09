@@ -1,11 +1,11 @@
-## Java Webcam Capture POC
+# Java Webcam Capture
 
 Use your PC webcam directly from Java. Now you can use your webcam to take 
 pictures anytime or stream video anywhere you want.
 
 [![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 
-### I Want To Use It
+## I Want To Use It
 
 Of course, you can! If you would like to use _webcam-capture_ library in your project, you can either:
 
@@ -35,27 +35,96 @@ For option 4 you have to also add ```<repository>``` to your pom (at least till 
 </repositories>
 ```
 
-### Requirements
+## Requirements
 
 1. Java 6 (JRE or JDK) or higher installed
-2. Java Media Framework (JMF) 2.1.1e or higher installed
-3. Webcam connected, installed and configured
+2. Webcam connected, installed and configured
 
-### How It Works
+## How To Make It Working
 
-This program utilizes JMF capabilities to read video streams from the webcam, so 
-if JMF is not able to find device, program will end with exception. To check if
-JMF _recognise_ your webcam you have to:
+This library utilizes several webcam/video frameworks allowing it to gain access 
+to web cameras available in the system. As for now it's working correctly with 
+those data sources:
 
-1. Open Start / Programs / Java Media Framework 2.1.1e
-2. Start JMF Registry
-3. Switch to _Capture Devices_ tab
-4. Your webcam should be there - available on this small list. I have no idea what 
-   to do if it is not available on the list... In such situation you can try to press 
-   _Detect Capture Devices_ button, but if this won't help, you will have to google 
-   for some help.   
+1. LTI-CIVIL - [download](http://lti-civil.org/download.php)
+2. JMF (it cannot be used together with FMJ) - [download](http://www.oracle.com/technetwork/java/javase/download-142937.html)
+3. FMJ (it cannot be used together with JMF) - [download](http://fmj-sf.net/downloads.php)
 
-### How To Use It
+JMF and FMJ are replacements - so for both the same ```JMFdataSource``` data source should be used. 
+Before you choose one of them let me briefly describe the differences:
+
+### LTI-CIVIL
+
+LTI-CIVIL is a Java library for capturing images from a video source such as a USB camera. It provides a 
+simple API and does not depend on or use JMF. Easy to use, LGPL-licensed, which means it can be 
+redistributed along with your binaries (remember to include original license in your software).
+
+To use it as data source you have to download LTI-CIVIL binaries and add those files into your project:
+
+```
+civil.dll
+lti-civil-no_s_w_t.jar
+```
+
+Please note that civil.dll has to be stored in your project root directory. If you want to put it 
+somewhere else you will have to change ```java.library.path``` setting passed as the argument 
+to JVM executable.
+
+Add below's code line somewhere in your ```main()``` method. Remember that data source has to be
+registered before you start using webcam.
+
+```java
+Webcam.setDataSource(new CivilDataSource());
+```
+
+### JMF (Java Media Framework)
+
+Supported by Oracle (previously Sun), it is really old, first version is from 1998 and 2.0 
+has been released somewhere between 1999 - 2000. It has not been updated for years. It's very 
+fast and reliable, however it cannot be redistributed, so if you would like to create pack
+where you would like to include all required binaries, you unfortunately cannot do that with JMF. 
+
+[Download JMF](http://www.oracle.com/technetwork/java/javase/download-142937.html) and  install
+it on your computer. Add JMF JARs to the classpath (if not yet there), and set new data source: 
+
+```java
+Webcam.setDataSource(new JMFDataSource());
+```
+
+### FMJ (aka Freedom for Media in Java)
+
+FMJ is an open-source project with the goal of providing an alternative to Java Media Framework 
+(JMF), while remaining API-compatible with JMF. It aims to produce a single API/Framework which 
+can be used to capture, playback, process, and stream media across multiple platforms. It's compatible
+with JMF, but to make it working you have to be really patient - there are many binary dependencies
+which are not so trivial t resolve (e.g. avformat-51 from ffmpeg is required).
+
+To run _webcam-capture_ with FMJ you will have to [download it](http://fmj-sf.net/downloads.php) and
+configure (what is not so trivial).
+
+As FMJ API is compatible with JMF you will have to use the same data source:
+
+```java
+Webcam.setDataSource(new JMFDataSource());
+```
+
+### QTJ (QuickTime for Java)
+
+Not yet supported...
+
+### TWAIN
+
+Not yet supported...
+
+### DSJ (DirectShow for Java)
+
+Not yet supported...
+
+### JavaCV (Java binding for Open Computer Vision aka OpenCV)
+
+Not yet supported...
+
+## How To Use It
 
 To get image and save it to disk:
 
