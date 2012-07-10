@@ -1,14 +1,10 @@
-package com.github.sarxos.ds.jmf;
+package com.github.sarxos.webcam.ds.jmf;
 
-import java.awt.Dimension;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.imageio.ImageIO;
 import javax.media.CaptureDeviceInfo;
 import javax.media.CaptureDeviceManager;
 import javax.media.Format;
@@ -38,17 +34,5 @@ public class JMFDataSource implements WebcamDataSource {
 		}
 
 		return devices;
-	}
-
-	public static void main(String[] args) throws IOException {
-
-		WebcamDevice device = new JMFDataSource().getDevices().get(0);
-		device.setSize(new Dimension(176, 144));
-		device.open();
-
-		for (int i = 0; i < 10; i++) {
-			ImageIO.write(device.getImage(), "JPG", new File(i + ".jpg"));
-		}
-
 	}
 }

@@ -1,4 +1,4 @@
-package com.github.sarxos.ds.jmf;
+package com.github.sarxos.webcam.ds.jmf;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;

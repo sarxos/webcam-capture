@@ -38,6 +38,10 @@ public class Webcam {
 	 */
 	public synchronized void open() {
 
+		if (device.getSize() == null) {
+			device.setSize(device.getSizes()[0]);
+		}
+
 		device.open();
 		open = true;
 

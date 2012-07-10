@@ -72,6 +72,31 @@ registered before you start using webcam.
 Webcam.setDataSource(new CivilDataSource());
 ```
 
+### OpenIMAJ
+
+OpenIMAJ is a collection of libraries for multimedia analysis written in the Java 
+programming language.
+
+To use it as a data source you can add this dependency in your pom:
+
+```xml
+<dependency>
+	<groupId>com.sarxos.webcam</groupId>
+	<artifactId>webcam-capture-openimaj-ds</artifactId>
+	<version>0.3</version>
+</dependency>
+```
+
+*NOTE!* I found that video capturing (via webcam) is not yet stable in OpenIMAJ, so
+I would not recommend it for production systems right now. However whole library seems
+to be growing and we can find it to be very usable piece of code in the near future.
+
+To make ```Webcam``` using this data source:
+
+```java
+Webcam.setDataSource(new OpenImajDataSource());
+```
+
 ### JMF (Java Media Framework)
 
 Supported by Oracle (previously Sun), it is really old, first version is from 1998 and 2.0 

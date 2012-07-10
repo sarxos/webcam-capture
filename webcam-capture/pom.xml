@@ -4,7 +4,7 @@
 
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3</version>
+	<version>0.3-SNAPSHOT</version>
 
 	<description>Use your webcam directly from Java</description>
 
@@ -22,7 +22,9 @@
 	</licenses>
 
 	<scm>
-		<url>https://github.com/sarxos/webcam-capture</url>
+		<connection>scm:git:git@github.com:sarxos/webcam-capture.git</connection>
+		<developerConnection>scm:git:git@github.com:sarxos/webcam-capture.git</developerConnection>
+		<url>git@github.com:sarxos/webcam-capture.git</url>
 	</scm>
 
 	<issueManagement>

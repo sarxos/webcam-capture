@@ -1,5 +1,6 @@
 package com.github.sarxos.webcam.ds.civil;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,5 +64,13 @@ public class CivilDataSource implements WebcamDataSource {
 		}
 
 		return devices;
+	}
+
+	public static void main(String[] args) {
+		WebcamDevice device = new CivilDataSource().getDevices().get(0);
+		for (Dimension d : device.getSizes()) {
+			System.out.println(d);
+		}
+
 	}
 }

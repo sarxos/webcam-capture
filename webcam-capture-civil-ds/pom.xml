@@ -4,7 +4,7 @@
 
 	<groupId>com.github.sarxos.webcam-capture</groupId>
 	<artifactId>webcam-capture-civil-ds</artifactId>
-	<version>0.3</version>
+	<version>0.3-SNAPSHOT</version>
 
 	<name>Webcam Capture - LTI CIVIL Data Source</name>
 	<description>This is LTI Civil implementation of webcam data source. It allows you to capture webcam media without JMF installed.</description>
@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
 			<artifactId>webcam-capture</artifactId>
-			<version>0.3</version>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.lti-civil</groupId>
