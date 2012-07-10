@@ -1,3 +1,9 @@
 .settings
 target
+webcam-capture-civil-ds/.settings
+webcam-capture-civil-ds/target
+webcam-capture-jmf-ds/.settings
+webcam-capture-jmf-ds/target
+webcam-capture/.settings
+webcam-capture/target
 

@@ -6,8 +6,8 @@ Allows you to use your PC webcam directly from Java.
 
 ## I Want To Use It
 
-Download complete ZIP from [here](http://www.sarxos.pl/repo/maven2/com/sarxos/webcam-capture/0.2/webcam-capture-0.2-dist.zip) 
-and include ```webcam-capture-[version].jar``` in your's project classpath. This ZIP file contains sources, examples, all 
+[Download complete ZIP](http://www.sarxos.pl/repo/maven2/com/sarxos/webcam-capture/0.2/webcam-capture-0.2-dist.zip) 
+and include ```webcam-capture-[version].jar``` in your project's classpath. This ZIP file contains sources, examples, all 
 required dependencies and compiled library JAR.  
 
 If you are a [Maven](http://maven.apache.org/) user you can also add this dependency to your project:
@@ -16,7 +16,7 @@ If you are a [Maven](http://maven.apache.org/) user you can also add this depend
 <dependency>
 	<groupId>com.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.2</version>
+	<version>0.2.1</version>
 </dependency>
 ```
 
@@ -25,7 +25,7 @@ For option 4 you have to also add ```<repository>``` to your pom (at least till 
 ```xml
 <repository>
 	<id>sarxos-repo</id>
-	<url>http://www.sarxos.pl/repo/maven2</url>
+	<url>http://repo.sarxos.pl/maven2</url>
 </repository>
 ```
 
@@ -115,7 +115,11 @@ Not yet supported...
 
 Not yet supported...
 
-### JavaCV (Java binding for Open Computer Vision aka OpenCV)
+### JavaCV (Java binding for OpenCV)
+
+Not yet supported...
+
+### OpenIMAJ
 
 Not yet supported...
 
