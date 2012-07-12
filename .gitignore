@@ -1,11 +1,11 @@
 .settings
 target
-webcam-capture-civil-ds/.settings
-webcam-capture-civil-ds/target
-webcam-capture-jmf-ds/.settings
-webcam-capture-jmf-ds/target
+webcam-capture-driver-civil/.settings
+webcam-capture-driver-civil/target
+webcam-capture-driver-jmf/.settings
+webcam-capture-driver-jmf/target
 webcam-capture/.settings
 webcam-capture/target
-webcam-capture-openimaj-ds/.settings
-webcam-capture-openimaj-ds/target
+webcam-capture-driver-openimaj/.settings
+webcam-capture-driver-openimaj/target
 

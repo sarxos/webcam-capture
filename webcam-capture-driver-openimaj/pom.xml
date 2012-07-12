@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.sarxos</groupId>
+		<artifactId>webcam-capture-parent</artifactId>
+		<version>0.3.1</version>
+	</parent>
+
+	<artifactId>webcam-capture-driver-openimaj</artifactId>
+	<name>Webcam Capture - OpenIMAJ Data Source</name>
+	<description>Webcam Capture data source using OpenIMAJ libraries</description>
+		
+	<repositories>
+		<repository>
+			<id>OpenIMAJ maven repository</id>
+			<url>http://maven.openimaj.org/</url>
+		</repository>
+		<repository>
+			<id>Octopussy thirdparty maven repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/thirdparty/</url>
+		</repository>
+		<repository>
+			<id>OpenIMAJ Snapshots maven repository</id>
+			<url>http://octopussy.ecs.soton.ac.uk/m2/snapshots/</url>
+		</repository>
+	</repositories>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.github.sarxos</groupId> 
+			<artifactId>webcam-capture</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>core-video-capture</artifactId>
+			<version>1.0.5</version>
+		</dependency>
+	</dependencies>
+	
+</project>

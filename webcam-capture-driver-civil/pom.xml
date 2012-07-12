@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.sarxos</groupId>
+		<artifactId>webcam-capture-parent</artifactId>
+		<version>0.3.1</version>
+	</parent>
+
+	<artifactId>webcam-capture-driver-civil</artifactId>
+	<name>Webcam Capture - LTI CIVIL Data Source</name>
+	<description>This is LTI Civil implementation of webcam data source. It allows you to capture webcam media without JMF installed.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.github.sarxos</groupId>
+			<artifactId>webcam-capture</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.lti-civil</groupId>
+			<artifactId>lti-civil-no-swt</artifactId>
+			<version>20070920-1721</version>
+		</dependency>
+	</dependencies>
+	
+</project>

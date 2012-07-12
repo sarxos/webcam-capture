@@ -5,6 +5,9 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Webcam class.
@@ -13,7 +16,31 @@ import java.util.List;
  */
 public class Webcam {
 
-	private static WebcamDataSource dataSource = null;
+	private static final Logger LOG = LoggerFactory.getLogger(Webcam.class);
+
+	private static class ShutdownHook extends Thread {
+
+		private Webcam webcam = null;
+
+		public ShutdownHook(Webcam webcam) {
+			this.webcam = webcam;
+		}
+
+		@Override
+		public void run() {
+			LOG.info("Automatic webcam resource deallocation");
+			super.run();
+			webcam.close0();
+		}
+	}
+
+	private static final String[] DRIVERS = new String[] {
+		"civil",
+		"jmf",
+		"openimaj",
+	};
+
+	private static WebcamDriver driver = null;
 	private static List<Webcam> webcams = null;
 
 	/**
@@ -21,6 +48,7 @@ public class Webcam {
 	 */
 	private List<WebcamListener> listeners = new ArrayList<WebcamListener>();
 
+	private ShutdownHook hook = null;
 	private WebcamDevice device = null;
 	private boolean open = false;
 
@@ -38,12 +66,24 @@ public class Webcam {
 	 */
 	public synchronized void open() {
 
+		if (open) {
+			return;
+		}
+
+		if (LOG.isInfoEnabled()) {
+			LOG.info("Opening webcam " + getName());
+		}
+
 		if (device.getSize() == null) {
 			device.setSize(device.getSizes()[0]);
 		}
 
 		device.open();
 		open = true;
+
+		hook = new ShutdownHook(this);
+
+		Runtime.getRuntime().addShutdownHook(hook);
 
 		WebcamEvent we = new WebcamEvent(this);
 		for (WebcamListener l : listeners) {
@@ -59,6 +99,27 @@ public class Webcam {
 	 * Close webcam.
 	 */
 	public synchronized void close() {
+
+		if (!open) {
+			return;
+		}
+
+		Runtime.getRuntime().removeShutdownHook(hook);
+		close0();
+	}
+
+	/**
+	 * Close webcam.
+	 */
+	private void close0() {
+
+		if (!open) {
+			return;
+		}
+
+		if (LOG.isInfoEnabled()) {
+			LOG.info("Cosing webcam " + getName());
+		}
 
 		device.close();
 		open = false;
@@ -89,6 +150,12 @@ public class Webcam {
 		return device.getSize();
 	}
 
+	/**
+	 * Return list of supported view sizes. It can differ between vary webcam
+	 * data sources.
+	 * 
+	 * @return
+	 */
 	public Dimension[] getViewSizes() {
 		return device.getSizes();
 	}
@@ -115,6 +182,10 @@ public class Webcam {
 			throw new IllegalArgumentException(sb.toString());
 		}
 
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Setting new view size " + size);
+		}
+
 		device.setSize(size);
 	}
 
@@ -124,6 +195,9 @@ public class Webcam {
 	 * @return Captured image
 	 */
 	public synchronized BufferedImage getImage() {
+		if (!open) {
+			open();
+		}
 		return device.getImage();
 	}
 
@@ -134,9 +208,22 @@ public class Webcam {
 	 */
 	public static List<Webcam> getWebcams() {
 		if (webcams == null) {
+
 			webcams = new ArrayList<Webcam>();
-			for (WebcamDevice device : dataSource.getDevices()) {
-				webcams.add(new Webcam(device));
+
+			if (driver == null) {
+				driver = WebcamDriverUtils.findDriver(DRIVERS);
+			}
+
+			for (WebcamDevice device : driver.getDevices()) {
+				Webcam webcam = new Webcam(device);
+				webcams.add(webcam);
+			}
+
+			if (LOG.isInfoEnabled()) {
+				for (Webcam webcam : webcams) {
+					LOG.info("Webcam found " + webcam.getName());
+				}
 			}
 		}
 		return webcams;
@@ -154,7 +241,9 @@ public class Webcam {
 	}
 
 	/**
-	 * Get webcam name (actually device name).
+	 * Get webcam name (device name). The name of device depends on the value
+	 * returned by the underlying data source, so in some cases it can be
+	 * human-readable value and sometimes it can be some strange number.
 	 * 
 	 * @return Name
 	 */
@@ -190,8 +279,8 @@ public class Webcam {
 	/**
 	 * @return Data source currently used by webcam
 	 */
-	public static WebcamDataSource getDataSource() {
-		return dataSource;
+	public static WebcamDriver getDriver() {
+		return driver;
 	}
 
 	/**
@@ -199,7 +288,8 @@ public class Webcam {
 	 * 
 	 * @param ds new data source to use (e.g. Civil, JFM, FMJ, QTJ, etc)
 	 */
-	public static void setDataSource(WebcamDataSource ds) {
-		Webcam.dataSource = ds;
+	public static void setDriver(WebcamDriver ds) {
+		Webcam.driver = ds;
 	}
+
 }

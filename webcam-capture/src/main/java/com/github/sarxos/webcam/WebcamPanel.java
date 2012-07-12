@@ -58,10 +58,12 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 		this.repainter = new Repainter();
 
-		if (webcam.isOpen()) {
-			setPreferredSize(webcam.getViewSize());
-			repainter.start();
+		if (!webcam.isOpen()) {
+			webcam.open();
 		}
+
+		setPreferredSize(webcam.getViewSize());
+		repainter.start();
 	}
 
 	@Override

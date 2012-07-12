@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>com.github.sarxos</groupId>
+		<artifactId>webcam-capture-parent</artifactId>
+		<version>0.3.1</version>
+	</parent>
+
+	<artifactId>webcam-capture-driver-jmf</artifactId>
+	<name>Webcam Capture - JMF Data Source</name>
+	<description>This is JMF implementation of webcam data source. It allows you to capture webcam media with JMF or FMJ installed.</description>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.github.sarxos</groupId>
+			<artifactId>webcam-capture</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.media</groupId>
+			<artifactId>jmf</artifactId>
+			<version>2.1.1e</version>
+		</dependency>
+	</dependencies>
+
+</project>

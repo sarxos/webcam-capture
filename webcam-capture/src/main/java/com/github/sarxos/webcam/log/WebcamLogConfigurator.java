@@ -31,7 +31,7 @@ public class WebcamLogConfigurator {
 	 * 
 	 * @param is input stream to logback configuration xml
 	 */
-	public void configure(InputStream is) {
+	public static void configure(InputStream is) {
 
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 		JoranConfigurator configurator = new JoranConfigurator();
@@ -51,7 +51,7 @@ public class WebcamLogConfigurator {
 	 * 
 	 * @param file logback configuration file
 	 */
-	public void configure(File file) {
+	public static void configure(File file) {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
@@ -76,7 +76,7 @@ public class WebcamLogConfigurator {
 	 * 
 	 * @param file logback configuration file path
 	 */
-	public void configure(String file) {
+	public static void configure(String file) {
 		configure(new File(file));
 	}
 }

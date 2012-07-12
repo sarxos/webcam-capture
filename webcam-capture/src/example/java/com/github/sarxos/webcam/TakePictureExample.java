@@ -1,5 +1,6 @@
 package com.github.sarxos.webcam;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -13,9 +14,7 @@ public class TakePictureExample {
 
 	public static void main(String[] args) throws IOException {
 		Webcam webcam = Webcam.getDefault();
-		webcam.open();
-		ImageIO.write(webcam.getImage(), "PNG", new File("test.png"));
-		webcam.close();
+		BufferedImage image = webcam.getImage();
+		ImageIO.write(image, "PNG", new File("test.png"));
 	}
-
 }
