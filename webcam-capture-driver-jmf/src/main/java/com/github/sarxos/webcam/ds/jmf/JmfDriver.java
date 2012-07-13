@@ -29,7 +29,7 @@ public class JmfDriver implements WebcamDriver {
 
 			while (di.hasNext()) {
 				CaptureDeviceInfo cdi = (CaptureDeviceInfo) di.next();
-				devices.add(new JmfDeviceA(cdi));
+				devices.add(new JmfDevice(cdi));
 			}
 		}
 
