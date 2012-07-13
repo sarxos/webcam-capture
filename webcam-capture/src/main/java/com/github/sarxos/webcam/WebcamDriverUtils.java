@@ -38,35 +38,23 @@ public class WebcamDriverUtils {
 
 		for (String name : drivers) {
 
-			String pkgname = "com.github.sarxos.webcam.ds." + name;
+			Class<?> clazz = null;
 
-			WebcamDriver driver = null;
-			Class<?>[] classes = WebcamDriverUtils.getClasses(pkgname, true);
-
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Searching for classes in " + pkgname + ", found " + classes.length);
-			}
-
-			if (classes.length == 0) {
+			try {
+				clazz = Class.forName("com.github.sarxos.webcam.ds." + name);
+			} catch (ClassNotFoundException e) {
 				continue;
-			}
-
-			for (Class<?> clazz : classes) {
-				if (WebcamDriver.class.isAssignableFrom(clazz)) {
-					try {
-						driver = (WebcamDriver) clazz.newInstance();
-					} catch (InstantiationException e) {
-						throw new RuntimeException(e);
-					} catch (IllegalAccessException e) {
-						throw new RuntimeException(e);
-					}
-					break;
-				}
 			}
 
 			LOG.info("Webcam driver has been found: " + name);
 
-			return driver;
+			try {
+				return (WebcamDriver) clazz.newInstance();
+			} catch (InstantiationException e) {
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		LOG.error("Webcam driver has not been found! Please add one to the classpath!");

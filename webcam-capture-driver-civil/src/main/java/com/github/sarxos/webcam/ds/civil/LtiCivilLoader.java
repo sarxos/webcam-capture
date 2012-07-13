@@ -16,6 +16,30 @@ public class LtiCivilLoader {
 	private static final Logger LOG = LoggerFactory.getLogger(LtiCivilLoader.class);
 
 	/**
+	 * Will be called until JVM shutdown.
+	 * 
+	 * @author Bartosz Firyn (SarXos)
+	 */
+	private static class Deleter extends Thread {
+
+		private File file = null;
+
+		public Deleter(File file) {
+			super();
+			this.file = file;
+		}
+
+		@Override
+		public void run() {
+			super.run();
+			boolean removed = file.delete();
+			if (!removed) {
+				file.deleteOnExit();
+			}
+		}
+	}
+
+	/**
 	 * Copy bytes from a large (over 2GB) InputStream to an OutputStream.
 	 * 
 	 * @param input the InputStream to read from
@@ -65,6 +89,8 @@ public class LtiCivilLoader {
 			if (!created) {
 				throw new RuntimeException("It was not possible to create file " + file);
 			}
+
+			Runtime.getRuntime().addShutdownHook(new Deleter(file));
 		}
 
 		String libbin = "/META-INF/lib/";
