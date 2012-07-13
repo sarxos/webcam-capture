@@ -15,7 +15,7 @@
 	<repositories>
 		<repository>
 			<id>sarxos-repo</id>
-			<url>http://repo.sarxos/pl/maven2</url>
+			<url>http://repo.sarxos.pl/maven2</url>
 		</repository>
 	</repositories>
 
