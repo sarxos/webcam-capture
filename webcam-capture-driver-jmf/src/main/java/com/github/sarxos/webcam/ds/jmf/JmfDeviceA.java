@@ -38,9 +38,9 @@ import com.github.sarxos.webcam.WebcamDevice;
  * 
  * @author Bartosz Firyn (SarXos)
  */
-public class JmfDevice implements WebcamDevice {
+public class JmfDeviceA implements WebcamDevice {
 
-	private static final Logger LOG = LoggerFactory.getLogger(JmfDevice.class);
+	private static final Logger LOG = LoggerFactory.getLogger(JmfDeviceA.class);
 
 	/**
 	 * Control to control format.
@@ -138,7 +138,7 @@ public class JmfDevice implements WebcamDevice {
 
 	private Dimension viewSize = null;
 
-	public JmfDevice(CaptureDeviceInfo cdi) {
+	public JmfDeviceA(CaptureDeviceInfo cdi) {
 		this.cdi = cdi;
 	}
 
