@@ -14,6 +14,10 @@
 		
 	<repositories>
 		<repository>
+			<id>sarxos-repo</id>
+			<url>http://repo.sarxos/pl/maven2</url>
+		</repository>
+		<repository>
 			<id>OpenIMAJ maven repository</id>
 			<url>http://maven.openimaj.org/</url>
 		</repository>
