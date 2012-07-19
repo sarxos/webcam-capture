@@ -3,9 +3,11 @@ package com.github.sarxos.webcam.ds.openimaj;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openimaj.video.capture.Device;
+import org.openimaj.video.capture.VideoCapture;
+
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
-import com.github.sarxos.webcam.ds.buildin.natives.Device;
 
 
 /**

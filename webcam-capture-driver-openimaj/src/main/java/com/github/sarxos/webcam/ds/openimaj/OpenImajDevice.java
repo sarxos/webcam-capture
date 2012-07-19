@@ -4,11 +4,12 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
 import org.openimaj.image.ImageUtilities;
+import org.openimaj.video.capture.Device;
+import org.openimaj.video.capture.VideoCapture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
-import com.github.sarxos.webcam.ds.buildin.natives.Device;
 
 
 public class OpenImajDevice implements WebcamDevice {
