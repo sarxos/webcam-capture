@@ -4,12 +4,11 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.video.capture.Device;
-import org.openimaj.video.capture.VideoCapture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.ds.buildin.natives.Device;
 
 
 public class OpenImajDevice implements WebcamDevice {
@@ -20,7 +19,7 @@ public class OpenImajDevice implements WebcamDevice {
 	 * Artificial view sizes. I'm really not sure if will fit into other webcams
 	 * but hope that OpenIMAJ can handle this.
 	 */
-	private final static Dimension[] dimensions = new Dimension[] {
+	private final static Dimension[] DIMENSIONS = new Dimension[] {
 		new Dimension(176, 144),
 		new Dimension(320, 240),
 		new Dimension(352, 288),
@@ -45,7 +44,7 @@ public class OpenImajDevice implements WebcamDevice {
 
 	@Override
 	public Dimension[] getSizes() {
-		return dimensions;
+		return DIMENSIONS;
 	}
 
 	@Override

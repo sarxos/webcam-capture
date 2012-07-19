@@ -18,6 +18,11 @@
 			<artifactId>filters</artifactId>
 			<version>2.0.235</version>
 		</dependency>
+		<dependency>
+			<groupId>com.nativelibs4java</groupId>
+			<artifactId>bridj</artifactId>
+			<version>0.6.1</version>
+		</dependency>
 	</dependencies>
 
 </project>

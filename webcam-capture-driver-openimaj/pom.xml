@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-video-capture</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.6-x</version>
 		</dependency>
 	</dependencies>
 	

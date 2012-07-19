@@ -1,22 +1,24 @@
 package com.github.sarxos.webcam.ds.openimaj;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
-import org.openimaj.video.capture.Device;
-import org.openimaj.video.capture.VideoCapture;
-
-import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamDriver;
+import com.github.sarxos.webcam.ds.buildin.natives.Device;
 
 
+/**
+ * This is webcam driver for OpenIMAJ library.
+ * 
+ * @author Bartosz Firyn (SarXos)
+ */
 public class OpenImajDriver implements WebcamDriver {
 
-	List<WebcamDevice> webcamDevices = null;
+	/**
+	 * Cached webcams list.
+	 */
+	private static List<WebcamDevice> webcamDevices = null;
 
 	@Override
 	public List<WebcamDevice> getDevices() {
@@ -32,15 +34,4 @@ public class OpenImajDriver implements WebcamDriver {
 		return webcamDevices;
 	}
 
-	public static void main(String[] args) throws IOException, InterruptedException {
-		WebcamDevice d = new OpenImajDriver().getDevices().get(0);
-		d.setSize(d.getSizes()[0]);
-		d.open();
-		for (int i = 0; i < 5; i++) {
-			ImageIO.write(d.getImage(), "JPG", new File(System.currentTimeMillis() + ".jpg"));
-			Thread.sleep(1000);
-		}
-
-		d.close();
-	}
 }

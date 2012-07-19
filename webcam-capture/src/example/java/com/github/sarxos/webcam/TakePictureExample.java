@@ -8,13 +8,14 @@ import javax.imageio.ImageIO;
 
 
 /**
+ * Example of how to take single picture.
+ * 
  * @author Bartosz Firyn (SarXos)
  */
 public class TakePictureExample {
 
 	public static void main(String[] args) throws IOException {
-		Webcam webcam = Webcam.getDefault();
-		BufferedImage image = webcam.getImage();
+		BufferedImage image = Webcam.getDefault().getImage();
 		ImageIO.write(image, "PNG", new File("test.png"));
 	}
 }

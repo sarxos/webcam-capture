@@ -35,9 +35,10 @@ public class Webcam {
 	}
 
 	private static final String[] DRIVERS = new String[] {
+		"buildin.DefaultDriver",
+		"openimaj.OpenImajDriver",
 		"civil.LtiCivilDriver",
 		"jmf.JmfDriver",
-		"openimaj.OpenImajDriver",
 	};
 
 	private static WebcamDriver driver = null;
