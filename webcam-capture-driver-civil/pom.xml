@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>com.github.sarxos</groupId>
 		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.1</version>
+		<version>0.3.2</version>
 	</parent>
 
 	<artifactId>webcam-capture-driver-civil</artifactId>
-	<name>Webcam Capture - LTI CIVIL Data Source</name>
-	<description>This is LTI Civil implementation of webcam data source. It allows you to capture webcam media without JMF installed.</description>
+	<name>Webcam Capture - LTI CIVIL Driver</name>
+	<description>This is LTI Civil implementation of webcam video driver. It allows you to capture webcam images using LTI-CIVIL library.</description>
 
 	<repositories>
 		<repository>

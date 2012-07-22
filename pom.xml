@@ -6,7 +6,7 @@
 
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-parent</artifactId>
-	<version>0.3.1</version>
+	<version>0.3.2</version>
 	<packaging>pom</packaging>
 
 	<name>Webcam Capture - Root POM</name>

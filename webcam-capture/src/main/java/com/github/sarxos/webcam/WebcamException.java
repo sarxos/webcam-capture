@@ -8,4 +8,12 @@ public class WebcamException extends RuntimeException {
 		super(message);
 	}
 
+	public WebcamException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public WebcamException(Throwable cause) {
+		super(cause);
+	}
+
 }

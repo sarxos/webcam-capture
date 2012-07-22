@@ -26,12 +26,12 @@ public class WebcamDriverUtils {
 	 * @return Driver if found or throw exception
 	 * @throw WebcamException
 	 */
-	protected static WebcamDriver findDriver(String[] drivers) {
+	protected static WebcamDriver findDriver(List<String> drivers) {
 
 		if (LOG.isInfoEnabled()) {
 			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < drivers.length; i++) {
-				sb.append(drivers[i]).append(i < drivers.length - 1 ? ", " : "");
+			for (int i = 0; i < drivers.size(); i++) {
+				sb.append(drivers.get(i)).append(i < drivers.size() - 1 ? ", " : "");
 			}
 			LOG.info("Searching for one of the webcam drivers [" + sb.toString() + "]");
 		}
@@ -41,7 +41,7 @@ public class WebcamDriverUtils {
 			Class<?> clazz = null;
 
 			try {
-				clazz = Class.forName("com.github.sarxos.webcam.ds." + name);
+				clazz = Class.forName(name);
 			} catch (ClassNotFoundException e) {
 				continue;
 			}

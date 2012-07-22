@@ -3,6 +3,7 @@ package com.github.sarxos.webcam;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -17,6 +18,13 @@ import org.slf4j.LoggerFactory;
 public class Webcam {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Webcam.class);
+
+	private static final List<String> DRIVERS_LIST = new ArrayList<String>(Arrays.asList(new String[] {
+		"com.github.sarxos.webcam.ds.openimaj.OpenImajDriver",
+		"com.github.sarxos.webcam.ds.civil.LtiCivilDriver",
+		"com.github.sarxos.webcam.ds.jmf.JmfDriver",
+		"com.github.sarxos.webcam.ds.buildin.DefaultDriver",
+	}));
 
 	private static class ShutdownHook extends Thread {
 
@@ -33,13 +41,6 @@ public class Webcam {
 			webcam.close0();
 		}
 	}
-
-	private static final String[] DRIVERS = new String[] {
-		"buildin.DefaultDriver",
-		"openimaj.OpenImajDriver",
-		"civil.LtiCivilDriver",
-		"jmf.JmfDriver",
-	};
 
 	private static WebcamDriver driver = null;
 	private static List<Webcam> webcams = null;
@@ -213,7 +214,7 @@ public class Webcam {
 			webcams = new ArrayList<Webcam>();
 
 			if (driver == null) {
-				driver = WebcamDriverUtils.findDriver(DRIVERS);
+				driver = WebcamDriverUtils.findDriver(DRIVERS_LIST);
 			}
 
 			for (WebcamDevice device : driver.getDevices()) {
@@ -285,12 +286,48 @@ public class Webcam {
 	}
 
 	/**
-	 * Set new data source to be used by webcam.
+	 * Set new video driver to be used by webcam.
 	 * 
-	 * @param ds new data source to use (e.g. Civil, JFM, FMJ, QTJ, etc)
+	 * @param driver new video driver to use (e.g. Civil, JFM, FMJ, QTJ, etc)
 	 */
-	public static void setDriver(WebcamDriver ds) {
-		Webcam.driver = ds;
+	public static void setDriver(WebcamDriver driver) {
+		Webcam.driver = driver;
 	}
 
+	/**
+	 * Set new video driver class to be used by webcam. Class given in the
+	 * argument shall extend {@link WebcamDriver} interface and should have
+	 * public default constructor, so instance can be created by reflection.
+	 * 
+	 * @param driver new video driver class to use
+	 */
+	public static void setDriver(Class<? extends WebcamDriver> driverClass) {
+		WebcamDriver driver = null;
+		try {
+			driver = driverClass.newInstance();
+		} catch (InstantiationException e) {
+			throw new WebcamException(e);
+		} catch (IllegalAccessException e) {
+			throw new WebcamException(e);
+		}
+		Webcam.driver = driver;
+	}
+
+	/**
+	 * Register new webcam video driver.
+	 * 
+	 * @param clazz webcam video driver class
+	 */
+	public static void registerDriver(Class<? extends WebcamDriver> clazz) {
+		registerDriver(clazz.getCanonicalName());
+	}
+
+	/**
+	 * Register new webcam video driver.
+	 * 
+	 * @param clazzName webcam video driver class name
+	 */
+	public static void registerDriver(String clazzName) {
+		DRIVERS_LIST.add(clazzName);
+	}
 }

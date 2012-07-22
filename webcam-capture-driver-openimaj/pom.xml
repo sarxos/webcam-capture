@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>com.github.sarxos</groupId>
 		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.1</version>
+		<version>0.3.2</version>
 	</parent>
 
 	<artifactId>webcam-capture-driver-openimaj</artifactId>
 	<name>Webcam Capture - OpenIMAJ Data Source</name>
-	<description>Webcam Capture data source using OpenIMAJ libraries</description>
+	<description>Webcam Capture driver allowing you to capture images using OpenIMAJ library.</description>
 		
 	<repositories>
 		<repository>
