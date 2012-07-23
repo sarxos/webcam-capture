@@ -9,6 +9,8 @@
 	</parent>
 
 	<artifactId>webcam-capture</artifactId>
+	<version>${parent.version}-SNAPSHOT</version>
+	
 	<name>Webcam Capture</name>
 	<description>Use your webcam directly from Java</description>
 
