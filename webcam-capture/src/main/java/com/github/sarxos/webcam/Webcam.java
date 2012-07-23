@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -228,7 +229,8 @@ public class Webcam {
 				}
 			}
 		}
-		return webcams;
+
+		return Collections.unmodifiableList(webcams);
 	}
 
 	/**

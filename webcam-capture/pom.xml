@@ -29,7 +29,7 @@
 		<license>
 			<name>MIT License</name>
 			<url>http://www.opensource.org/licenses/mit-license.html</url>
-			<distribution>repo</distribution>
+			<distribution>repo,manual</distribution>
 		</license>
 	</licenses>
 
@@ -47,15 +47,29 @@
 	</scm>
 
 	<issueManagement>
-		<system>GitHub</system>
+		<system>GitHub Issues Manager</system>
 		<url>https://github.com/sarxos/webcam-capture/issues</url>
 	</issueManagement>
+
+	<ciManagement>
+		<system>Travis CI</system>
+		<url>http://travis-ci.org/#!/sarxos/webcam-capture</url>
+	</ciManagement>
 
 	<developers>
 		<developer>
 			<id>sarxos</id>
 			<name>Bartosz Firyn</name>
 			<email>bartoszfiryn@gmail.com</email>
+			<roles>
+				<role>Project Manager</role>
+				<role>Architect</role>
+				<role>Developer</role>
+			</roles>
+			<url>http://me.sarxos.pl/</url>
+			<organization>Bartosz Firyn (SarXos)</organization>
+			<organizationUrl>https://github.com/sarxos</organizationUrl>
+			<timezone>+1</timezone>
 		</developer>
 	</developers>
 
@@ -79,6 +93,12 @@
 		    <groupId>ch.qos.logback</groupId>
 		    <artifactId>logback-classic</artifactId>
 		    <version>0.9.18</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -286,16 +306,40 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<linkJavadoc>true</linkJavadoc>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>taglist-maven-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-					<tags>
-						<tag>TODO</tag>
-						<tag>@todo</tag>
-						<tag>FIXME</tag>
-						<tag>XXX</tag>
-					</tags>
+					<tagListOptions>
+						<tagClasses>
+							<tagClass>
+								<displayName>Todos</displayName>
+								<tags>
+									<tag>
+										<matchString>TODO</matchString>
+										<matchType>exact</matchType>
+									</tag>
+									<tag>
+										<matchString>FIXME</matchString>
+										<matchType>exact</matchType>
+									</tag>
+									<tag>
+										<matchString>XXX</matchString>
+										<matchType>exact</matchType>
+									</tag>
+								</tags>
+							</tagClass>
+						</tagClasses>
+					</tagListOptions>				
 					<aggregate>true</aggregate>
 				</configuration>
 			</plugin>
@@ -319,15 +363,6 @@
 				<inherited>false</inherited>
 				<configuration>
 					<includes>com.github.sarxos.webcam</includes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.1</version>
-				<configuration>
-					<linkJavadoc>true</linkJavadoc>
-					<aggregate>true</aggregate>
 				</configuration>
 			</plugin>
 			<plugin>

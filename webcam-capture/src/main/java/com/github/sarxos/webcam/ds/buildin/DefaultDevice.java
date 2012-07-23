@@ -93,8 +93,11 @@ public class DefaultDevice implements WebcamDevice {
 
 		DataBufferByte buffer = new DataBufferByte(data, bytes.length, OFFSET);
 		WritableRaster raster = Raster.createWritableRaster(sampleModel, buffer, null);
+		BufferedImage bi = new BufferedImage(colorModel, raster, false, null);
 
-		return new BufferedImage(colorModel, raster, false, null);
+		bi.flush();
+
+		return bi;
 	}
 
 	@Override
