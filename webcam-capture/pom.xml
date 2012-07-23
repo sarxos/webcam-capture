@@ -10,7 +10,7 @@
 
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3.3-SNAPSHOT</version>
+	<version>0.3.3</version>
 	<packaging>jar</packaging>
 	
 	<name>Webcam Capture</name>
