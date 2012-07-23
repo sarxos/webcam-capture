@@ -51,6 +51,13 @@
 		<url>https://github.com/sarxos/webcam-capture/issues</url>
 	</issueManagement>
 
+	<developers>
+		<developer>
+			<id>sarxos</id>
+			<name>Bartosz Firyn</name>
+			<email>bartoszfiryn@gmail.com</email>
+		</developer>
+	</developers>
 
 	<dependencies>
 		<dependency>
