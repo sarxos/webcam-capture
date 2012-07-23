@@ -28,15 +28,11 @@ public class WebcamDriverUtils {
 	 */
 	protected static WebcamDriver findDriver(List<String> drivers) {
 
-		if (LOG.isInfoEnabled()) {
-			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < drivers.size(); i++) {
-				sb.append(drivers.get(i)).append(i < drivers.size() - 1 ? ", " : "");
-			}
-			LOG.info("Searching for one of the webcam drivers [" + sb.toString() + "]");
-		}
-
 		for (String name : drivers) {
+
+			if (LOG.isInfoEnabled()) {
+				LOG.info("Searching driver: " + name);
+			}
 
 			Class<?> clazz = null;
 

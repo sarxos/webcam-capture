@@ -10,6 +10,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.sarxos.webcam.ds.buildin.DefaultDriver;
+
 
 /**
  * Webcam class.
@@ -24,7 +26,6 @@ public class Webcam {
 		"com.github.sarxos.webcam.ds.openimaj.OpenImajDriver",
 		"com.github.sarxos.webcam.ds.civil.LtiCivilDriver",
 		"com.github.sarxos.webcam.ds.jmf.JmfDriver",
-		"com.github.sarxos.webcam.ds.buildin.DefaultDriver",
 	}));
 
 	private static class ShutdownHook extends Thread {
@@ -121,7 +122,7 @@ public class Webcam {
 		}
 
 		if (LOG.isInfoEnabled()) {
-			LOG.info("Cosing webcam " + getName());
+			LOG.info("Closing webcam " + getName());
 		}
 
 		device.close();
@@ -216,6 +217,9 @@ public class Webcam {
 
 			if (driver == null) {
 				driver = WebcamDriverUtils.findDriver(DRIVERS_LIST);
+			}
+			if (driver == null) {
+				driver = new DefaultDriver();
 			}
 
 			for (WebcamDevice device : driver.getDevices()) {
@@ -331,5 +335,9 @@ public class Webcam {
 	 */
 	public static void registerDriver(String clazzName) {
 		DRIVERS_LIST.add(clazzName);
+	}
+
+	protected WebcamDevice getDevice() {
+		return device;
 	}
 }
