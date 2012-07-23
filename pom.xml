@@ -32,6 +32,12 @@
 		</repository>
 	</distributionManagement>
 
+	<scm>
+		<connection>scm:git:git@github.com:sarxos/webcam-capture.git</connection>
+		<developerConnection>scm:git:git@github.com:sarxos/webcam-capture.git</developerConnection>
+		<url>git@github.com:sarxos/webcam-capture.git</url>
+	</scm>
+
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/sarxos/webcam-capture/issues</url>
