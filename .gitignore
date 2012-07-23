@@ -1,11 +1,8 @@
 .settings
 target
-webcam-capture-driver-civil/.settings
-webcam-capture-driver-civil/target
-webcam-capture-driver-jmf/.settings
-webcam-capture-driver-jmf/target
-webcam-capture/.settings
-webcam-capture/target
-webcam-capture-driver-openimaj/.settings
-webcam-capture-driver-openimaj/target
-
+*/.settings
+*/target
+release.properties
+pom.xml.releaseBackup
+*/pom.xml.releaseBackup
+*/release.properties

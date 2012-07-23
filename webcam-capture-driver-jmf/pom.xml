@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>com.github.sarxos</groupId>
 		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.2-SNAPSHOT</version>
+		<version>0.3.2</version>
 	</parent>
 
 	<artifactId>webcam-capture-driver-jmf</artifactId>
 	<name>Webcam Capture - JMF Driver</name>
-	<description>This is JMF implementation of webcam data source. It allows you to capture webcam media with JMF or FMJ installed.</description>
+	<description>This is JMF implementation of webcam driver. It allows you to capture webcam media with JMF or FMJ installed.</description>
 	
 	<repositories>
 		<repository>
