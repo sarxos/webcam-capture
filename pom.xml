@@ -12,37 +12,6 @@
 	<name>Webcam Capture - Root POM</name>
 	<description>This is Webcam Capture root POM</description>
 
-	<organization>
-		<name>Bartosz Firyn (SarXos)</name>
-		<url>https://github.com/sarxos</url>
-	</organization>
-
-	<licenses>
-		<license>
-			<name>MIT License</name>
-			<url>http://www.opensource.org/licenses/mit-license.html</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<distributionManagement>
-		<repository>
-			<id>sarxos-ftp-repo</id>
-			<url>ftp://ftp.sarxos.pl/maven2</url>
-		</repository>
-	</distributionManagement>
-
-	<scm>
-		<connection>scm:git:git@github.com:sarxos/webcam-capture.git</connection>
-		<developerConnection>scm:git:git@github.com:sarxos/webcam-capture.git</developerConnection>
-		<url>git@github.com:sarxos/webcam-capture.git</url>
-	</scm>
-
-	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/sarxos/webcam-capture/issues</url>
-	</issueManagement>
-
 	<modules>
 		<module>webcam-capture</module>
 		<module>webcam-capture-driver-civil</module>
