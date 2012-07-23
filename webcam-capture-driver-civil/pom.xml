@@ -21,11 +21,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.github.sarxos</groupId>
-			<artifactId>webcam-capture</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.lti-civil</groupId>
 			<artifactId>lti-civil-no-swt</artifactId>
 			<version>20070920-1721</version>

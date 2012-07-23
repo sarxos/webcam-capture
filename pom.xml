@@ -25,6 +25,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.github.sarxos</groupId> 
+			<artifactId>webcam-capture</artifactId>
+			<version>${version}-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.4</version>
