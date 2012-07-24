@@ -323,13 +323,7 @@
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Bundle-DocURL>${project.url}</Bundle-DocURL>
 						<Bundle-Activator>com.github.sarxos.webcam.WebcamActivator</Bundle-Activator>
-						<Export-Package>
-							com.github.sarxos.webcam,
-							com.github.sarxos.webcam.log
-						</Export-Package>
-						<Private-Package>
-							com.github.sarxos.webcam.ds.*,
-						</Private-Package>
+						<Export-Package>com.github.sarxos.*</Export-Package>
 					</instructions>
 				</configuration>
 			</plugin>

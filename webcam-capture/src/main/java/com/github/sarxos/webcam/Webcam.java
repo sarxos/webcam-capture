@@ -237,6 +237,10 @@ public class Webcam {
 		return Collections.unmodifiableList(webcams);
 	}
 
+	protected static void clearWebcams() {
+		webcams = null;
+	}
+
 	/**
 	 * @return Default webcam (first from the list)
 	 */

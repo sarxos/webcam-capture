@@ -22,6 +22,7 @@ public class WebcamTest {
 	public void test_registerDriver() {
 
 		Webcam.registerDriver(DummyDriver.class);
+		Webcam.clearWebcams();
 		Webcam.getWebcams();
 		WebcamDriver driver = Webcam.getDriver();
 
