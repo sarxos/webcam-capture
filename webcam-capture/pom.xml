@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -11,10 +12,12 @@
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
 	<version>0.3.4-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>bundle</packaging>
 	
 	<name>Webcam Capture</name>
-	<description>Use your webcam directly from Java</description>
+	<description>This library allows you to use your webcams directly from Java and it's compatible with most operating systems</description>
+	<inceptionYear>2012</inceptionYear>
+	<url>http://webcam-capture.sarxos.pl</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,7 +31,7 @@
 	<licenses>
 		<license>
 			<name>MIT License</name>
-			<url>http://www.opensource.org/licenses/mit-license.html</url>
+			<url>http://webcam-capture.sarxos.pl/LICENSE.txt</url>
 			<distribution>repo,manual</distribution>
 		</license>
 	</licenses>
@@ -45,7 +48,7 @@
 		<developerConnection>scm:git:git@github.com:sarxos/webcam-capture.git</developerConnection>
 		<url>git@github.com:sarxos/webcam-capture.git</url>
 	</scm>
-
+	
 	<issueManagement>
 		<system>GitHub Issues Manager</system>
 		<url>https://github.com/sarxos/webcam-capture/issues</url>
@@ -99,6 +102,12 @@
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>1.4.0</version>
+			<type>bundle</type>
 		</dependency>
 	</dependencies>
 
@@ -282,6 +291,54 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>1.0</version>
+					<executions>
+						<execution>
+							<id>enforce-maven-version</id>
+							<goals>
+								<goal>enforce</goal>
+							</goals>
+							<configuration>
+								<rules>
+									<requireMavenVersion>
+										<version>[3.0,)</version>
+										<message>you-must-run-maven-3.0-or-above</message>
+									</requireMavenVersion>
+								</rules>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Name>${project.name}</Bundle-Name>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Bundle-DocURL>${project.url}</Bundle-DocURL>
+						<Bundle-Activator>com.github.sarxos.webcam.WebcamActivator</Bundle-Activator>
+						<Export-Package>
+							com.github.sarxos.webcam,
+							com.github.sarxos.webcam.log
+						</Export-Package>
+						<Private-Package>
+							com.github.sarxos.webcam.ds.*,
+						</Private-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+	        	<artifactId>maven-site-plugin</artifactId>
+	        	<version>3.0</version>
+	        </plugin>
 		</plugins>
 		
 		<extensions>
@@ -303,6 +360,17 @@
 				<configuration>
 					<show>public</show>
 					<keywords>cam,webcam,camera,spycam,capture</keywords>
+					<links>
+						<show>public</show>
+						<link>http://java.sun.com/javase/1.6.0/docs/api</link>
+					</links>
+					<linksource>true</linksource>
+					<detectLinks>true</detectLinks>
+					<windowtitle>${project.name} ${project.version} API - ${maven.build.timestamp}</windowtitle>
+					<doctitle>${project.name} ${project.version} API - ${maven.build.timestamp}</doctitle>
+					<header><![CDATA[<a href="${project.organization.url}" target="_blank">${project.organization.name}</a>]]></header>
+					<footer><![CDATA[<a href="${project.organization.url}" target="_blank">${project.organization.name}</a>]]></footer>
+					<bottom><![CDATA[Copyright © {inceptionYear}-{currentYear} <a href="${project.organization.url}" target="_blank">${project.organization.name}</a>. All Rights Reserved.]]></bottom>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -322,7 +390,7 @@
 					<tagListOptions>
 						<tagClasses>
 							<tagClass>
-								<displayName>Todos</displayName>
+								<displayName>Things to be done</displayName>
 								<tags>
 									<tag>
 										<matchString>TODO</matchString>
@@ -346,12 +414,26 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.1.2</version>
+				<version>2.4</version>
 				<reportSets>
 					<reportSet>
 						<reports>
-							<report>index</report>
+							<report>cim</report>
 							<report>dependencies</report>
+							<report>dependency-convergence</report>
+							<report>dependency-management</report>
+							<report>distribution-management</report>
+							<report>help</report>
+							<report>index</report>
+							<report>issue-tracking</report>
+							<report>license</report>
+							<report>mailing-list</report>
+							<report>modules</report>
+							<report>plugin-management</report>
+							<report>plugins</report>
+							<report>project-team</report>
+							<report>scm</report>
+							<report>summary</report>
 						</reports>
 					</reportSet>
 				</reportSets>
@@ -360,9 +442,9 @@
 				<groupId>com.googlecode.maven-overview-plugin</groupId>
 				<artifactId>maven-overview-plugin</artifactId>
 				<version>1.6</version>
-				<inherited>false</inherited>
 				<configuration>
-					<includes>com.github.sarxos.webcam</includes>
+                    <width>800</width>
+                    <height>800</height>
 				</configuration>
 			</plugin>
 			<plugin>
