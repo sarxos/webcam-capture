@@ -323,6 +323,10 @@ public class Webcam {
 		Webcam.driver = driver;
 	}
 
+	protected static void clearDriver() {
+		driver = null;
+	}
+
 	/**
 	 * Register new webcam video driver.
 	 * 

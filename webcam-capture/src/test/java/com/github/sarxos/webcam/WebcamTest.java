@@ -6,6 +6,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.sarxos.webcam.ds.test.DummyDriver;
@@ -18,29 +19,9 @@ import com.github.sarxos.webcam.ds.test.DummyDriver3;
  */
 public class WebcamTest {
 
-	@Test
-	public void test_registerDriver() {
-
+	@BeforeClass
+	public static void setUp() {
 		Webcam.registerDriver(DummyDriver.class);
-		Webcam.clearWebcams();
-		Webcam.getWebcams();
-		WebcamDriver driver = Webcam.getDriver();
-
-		Assert.assertSame(DummyDriver.class, driver.getClass());
-	}
-
-	@Test
-	public void test_setDriver() throws InstantiationException {
-
-		Webcam.setDriver(DummyDriver2.class);
-		WebcamDriver driver2 = Webcam.getDriver();
-
-		Assert.assertSame(DummyDriver2.class, driver2.getClass());
-
-		WebcamDriver driver3 = new DummyDriver3();
-		Webcam.setDriver(driver3);
-
-		Assert.assertSame(driver3, Webcam.getDriver());
 	}
 
 	@Test
@@ -128,4 +109,29 @@ public class WebcamTest {
 		Assert.assertSame(sizes[0], webcam.getViewSize());
 	}
 
+	@Test
+	public void test_setDriver() throws InstantiationException {
+
+		Webcam.setDriver(DummyDriver2.class);
+		WebcamDriver driver2 = Webcam.getDriver();
+
+		Assert.assertSame(DummyDriver2.class, driver2.getClass());
+
+		WebcamDriver driver3 = new DummyDriver3();
+		Webcam.setDriver(driver3);
+
+		Assert.assertSame(driver3, Webcam.getDriver());
+	}
+
+	@Test
+	public void test_registerDriver() {
+
+		Webcam.registerDriver(DummyDriver.class);
+		Webcam.clearDriver();
+		Webcam.clearWebcams();
+		Webcam.getWebcams();
+		WebcamDriver driver = Webcam.getDriver();
+
+		Assert.assertSame(DummyDriver.class, driver.getClass());
+	}
 }
