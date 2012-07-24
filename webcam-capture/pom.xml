@@ -107,7 +107,6 @@
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.osgi.core</artifactId>
 			<version>1.4.0</version>
-			<type>bundle</type>
 		</dependency>
 	</dependencies>
 
