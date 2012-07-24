@@ -8,6 +8,34 @@ Complete documentation, API, examples, tutorials and many more can be found here
 
 [![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 
+## How To Use
+
+_Webcam Capture_ is available in Maven Central, so you can either add Maven (or Ivy or Grandle)
+dependency to your project or access page above and download complete ZIP package, and then add 
+all JARs into your project's classpath.
+
+### Maven
+
+```xml
+<dependency>
+	<groupId>com.github.sarxos</groupId>
+	<artifactId>webcam-capture</artifactId>
+	<version>0.3.3</version>
+</dependency>
+```
+
+### Ivy
+
+```xml
+<dependency org="com.github.sarxos" name="webcam-capture" rev="0.3.3" />
+```
+
+### Grandle
+
+```
+group: 'com.github.sarxos', name: 'webcam-capture', version: '0.3.3'
+```
+
 ## License
 
 Copyright (C) 2012 Bartosz Firyn
