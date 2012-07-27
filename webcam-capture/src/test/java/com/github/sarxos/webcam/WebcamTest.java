@@ -6,7 +6,8 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.github.sarxos.webcam.ds.test.DummyDriver;
@@ -19,9 +20,15 @@ import com.github.sarxos.webcam.ds.test.DummyDriver3;
  */
 public class WebcamTest {
 
-	@BeforeClass
-	public static void setUp() {
+	@Before
+	public void prepare() {
 		Webcam.registerDriver(DummyDriver.class);
+	}
+
+	@After
+	public void cleanup() {
+		Webcam.clearDriver();
+		Webcam.clearWebcams();
 	}
 
 	@Test
@@ -47,16 +54,13 @@ public class WebcamTest {
 
 	@Test
 	public void test_open() {
-
 		Webcam webcam = Webcam.getDefault();
 		webcam.open();
 
 		Assert.assertTrue(webcam.isOpen());
-
 		webcam.open();
 
 		Assert.assertTrue(webcam.isOpen());
-
 		webcam = Webcam.getWebcams().get(1);
 		webcam.getImage();
 
@@ -70,13 +74,9 @@ public class WebcamTest {
 		webcam.open();
 
 		Assert.assertTrue(webcam.isOpen());
-
 		webcam.close();
-
 		Assert.assertFalse(webcam.isOpen());
-
 		webcam.close();
-
 		Assert.assertFalse(webcam.isOpen());
 	}
 
@@ -126,9 +126,10 @@ public class WebcamTest {
 	@Test
 	public void test_registerDriver() {
 
-		Webcam.registerDriver(DummyDriver.class);
 		Webcam.clearDriver();
 		Webcam.clearWebcams();
+
+		Webcam.registerDriver(DummyDriver.class);
 		Webcam.getWebcams();
 		WebcamDriver driver = Webcam.getDriver();
 

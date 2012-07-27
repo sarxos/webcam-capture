@@ -22,8 +22,6 @@ public class DummyDriver3 implements WebcamDriver {
 	public DummyDriver3() throws InstantiationException {
 		if (instance == null) {
 			instance = this;
-		} else {
-			throw new InstantiationException("Cannot be constructed twice");
 		}
 	}
 

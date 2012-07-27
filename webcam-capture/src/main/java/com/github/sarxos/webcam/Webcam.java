@@ -22,11 +22,13 @@ public class Webcam {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Webcam.class);
 
-	private static final List<String> DRIVERS_LIST = new ArrayList<String>(Arrays.asList(new String[] {
+	private static final String[] DRIVERS_DEFAULT = new String[] {
 		"com.github.sarxos.webcam.ds.openimaj.OpenImajDriver",
 		"com.github.sarxos.webcam.ds.civil.LtiCivilDriver",
 		"com.github.sarxos.webcam.ds.jmf.JmfDriver",
-	}));
+	};
+
+	private static final List<String> DRIVERS_LIST = new ArrayList<String>(Arrays.asList(DRIVERS_DEFAULT));
 
 	private static class ShutdownHook extends Thread {
 
@@ -324,7 +326,10 @@ public class Webcam {
 	}
 
 	protected static void clearDriver() {
+		DRIVERS_LIST.clear();
+		DRIVERS_LIST.addAll(Arrays.asList(DRIVERS_DEFAULT));
 		driver = null;
+		webcams = null;
 	}
 
 	/**

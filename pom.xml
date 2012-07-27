@@ -9,7 +9,7 @@
 	<version>0.3.4</version>
 	<packaging>pom</packaging>
 
-	<name>Webcam Capture - Root POM</name>
+	<name>Webcam Capture - Drivers Root POM</name>
 	<description>This is Webcam Capture root POM</description>
 
 	<modules>
@@ -17,6 +17,8 @@
 		<module>webcam-capture-driver-civil</module>
 		<module>webcam-capture-driver-jmf</module>
 		<module>webcam-capture-driver-openimaj</module>
+		<module>webcam-capture-driver-vlcj</module>
+		<module>webcam-capture-driver-javacv</module>
 	</modules>
 
 	<properties>
