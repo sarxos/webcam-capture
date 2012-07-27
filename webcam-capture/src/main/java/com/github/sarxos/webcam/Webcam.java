@@ -61,7 +61,7 @@ public class Webcam {
 	 * 
 	 * @param device - device to be used as webcam
 	 */
-	public Webcam(WebcamDevice device) {
+	protected Webcam(WebcamDevice device) {
 		this.device = device;
 	}
 

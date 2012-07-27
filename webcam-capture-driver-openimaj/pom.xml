@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>webcam-capture-driver-openimaj</artifactId>
-	<name>Webcam Capture - OpenIMAJ Data Source</name>
+	<name>Webcam Capture - OpenIMAJ Driver</name>
 	<description>Webcam Capture driver allowing you to capture images using OpenIMAJ library.</description>
 		
 	<repositories>
