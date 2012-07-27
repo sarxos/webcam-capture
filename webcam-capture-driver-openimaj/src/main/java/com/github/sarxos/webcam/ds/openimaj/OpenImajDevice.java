@@ -82,18 +82,18 @@ public class OpenImajDevice implements WebcamDevice {
 		capture = new VideoCapture(size.width, size.height, device);
 		open = true;
 
-		// what the hell is that something below? that's ugly w/a for blue
+		// what the hell is that something below? that's ugly w/a for black
 		// images at the very capture beginning, if you have some other idea of
 		// how to remove them, please share or fix
 
 		int i = 0;
 		do {
-			// capture.getNextFrame();
-			// try {
-			// Thread.sleep(1000);
-			// } catch (InterruptedException e) {
-			// }
-		} while (i++ < 5);
+			capture.getNextFrame();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+		} while (i++ < 3);
 
 		LOG.info("OpenIMAJ webcam device has been initialized");
 	}

@@ -17,7 +17,7 @@ import com.github.sarxos.webcam.WebcamException;
 /**
  * NOT STABLE, EXPERIMENTAL STUFF!!!
  * 
- * @author bfiryn
+ * @author Bartosz Firyn (SarXos)
  */
 public class VlcjDevice implements WebcamDevice {
 
@@ -30,7 +30,10 @@ public class VlcjDevice implements WebcamDevice {
 		new Dimension(320, 240),
 	};
 
+	// list of VLC args by Andrew Davison
+	// (http://fivedots.coe.psu.ac.th/~ad/jg/nui025/snapsWithoutJMF.pdf)
 	private final static String[] VLC_ARGS = {
+
 		// ... have no idea what is this ...
 		"--intf",
 
@@ -82,11 +85,9 @@ public class VlcjDevice implements WebcamDevice {
 		if (os.indexOf("win") >= 0) {
 			return "dshow://";
 		} else if (os.indexOf("mac") >= 0) {
-			throw new RuntimeException("Not implemented");
+			return "qtcapture://";
 		} else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0) {
 			return "v4l2://";
-		} else if (os.indexOf("sunos") >= 0) {
-			throw new RuntimeException("Not implemented");
 		} else {
 			throw new RuntimeException("Not implemented");
 		}
@@ -114,11 +115,9 @@ public class VlcjDevice implements WebcamDevice {
 
 	@Override
 	public BufferedImage getImage() {
-
 		if (!open) {
 			throw new WebcamException("Cannot get image, player is not open");
 		}
-
 		return player.getSnapshot();
 	}
 
@@ -129,7 +128,7 @@ public class VlcjDevice implements WebcamDevice {
 			return;
 		}
 
-		LOG.info("Opening");
+		LOG.info("Opening webcam device");
 
 		factory = new MediaPlayerFactory(VLC_ARGS);
 		player = factory.newHeadlessMediaPlayer();
@@ -152,7 +151,7 @@ public class VlcjDevice implements WebcamDevice {
 			BufferedImage im = player.getSnapshot(size.width, size.height);
 			if (im != null && im.getWidth() > 0) {
 				open = true;
-				LOG.info("Device has been open: " + getName());
+				LOG.info("Webcam device is now open: " + getName());
 				return;
 			}
 

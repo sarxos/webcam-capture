@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>com.github.sarxos</groupId>
+		<artifactId>webcam-capture-parent</artifactId>
+		<version>0.3.4</version>
+	</parent>
+
+	<artifactId>webcam-capture-driver-javacv</artifactId>
+	<name>Webcam Capture - JavaCV Driver</name>
+	<description>Webcam Capture driver using JavaCV - Java binding for OpenCV framework</description>
+
+	<repositories>
+		<repository>
+			<id>javacv</id>
+			<url>http://maven2.javacv.googlecode.com/git</url>
+		</repository>
+	</repositories>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.github.sarxos</groupId>
+			<artifactId>webcam-capture</artifactId>
+			<version>0.3.4-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.javacv</groupId>
+			<artifactId>javacv</artifactId>
+			<version>0.2</version>
+		</dependency>
+	</dependencies>
+
+</project>

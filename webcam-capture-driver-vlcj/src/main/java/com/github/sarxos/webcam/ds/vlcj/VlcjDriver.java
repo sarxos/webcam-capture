@@ -18,7 +18,20 @@ import com.sun.jna.Native;
 /**
  * NOT STABLE, EXPERIMENTAL STUFF!!!
  * 
- * @author bfiryn
+ * Vlcj service discovery works only on Linux, so there is no way (at least for
+ * now) to list capture devices on Windows.
+ * 
+ * For Windows dsj library could be used (http://www.humatic.de/htools/dsj.htm)
+ * listing DirectShow filters for all capture devices in system.
+ * 
+ * There is service discovery for Linux, but in any case this one could be used
+ * (http://code.google.com/p/v4l4j/) to access the Video4Linux devices.
+ * 
+ * MAC OS X can reuse Rococoa (http://code.google.com/p/rococoa/), a Java
+ * binding to the Mac Objective-C object system, could read device details via
+ * the Mac's QTKit library.
+ * 
+ * @author Bartosz Firyn (SarXos)
  */
 public class VlcjDriver implements WebcamDriver {
 
