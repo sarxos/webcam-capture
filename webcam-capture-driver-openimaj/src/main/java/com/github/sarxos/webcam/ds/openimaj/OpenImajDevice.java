@@ -111,5 +111,4 @@ public class OpenImajDevice implements WebcamDevice {
 
 		LOG.info("OpenIMAJ webcam device has been closed");
 	}
-
 }

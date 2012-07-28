@@ -10,7 +10,7 @@
 	</parent>
 	
 	<artifactId>webcam-capture-driver-vlcj</artifactId>
-	<name>Webcam Capture - VLCJ Driver</name>
+	<name>Webcam Capture - VLCj Driver</name>
 	<description>Webcam Capture driver using vlcj framework to grab  frames from camera</description>
 
 	<repositories>

@@ -12,10 +12,18 @@
 	<name>Webcam Capture - JavaCV Driver</name>
 	<description>Webcam Capture driver using JavaCV - Java binding for OpenCV framework</description>
 
+	<properties>
+		<javacv.version>0.2</javacv.version>
+	</properties>
+
 	<repositories>
 		<repository>
 			<id>javacv</id>
 			<url>http://maven2.javacv.googlecode.com/git</url>
+		</repository>
+		<repository>
+			<id>kevoree</id>
+			<url>http://maven.kevoree.org/release</url>
 		</repository>
 	</repositories>
 	
@@ -28,7 +36,49 @@
 		<dependency>
 			<groupId>com.googlecode.javacv</groupId>
 			<artifactId>javacv</artifactId>
-			<version>0.2</version>
+			<version>${javacv.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.javacv</groupId>
+			<artifactId>javacv</artifactId>
+			<classifier>windows-x86</classifier>
+			<version>${javacv.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.javacv</groupId>
+			<artifactId>javacv</artifactId>
+			<classifier>windows-x86_64</classifier>
+			<version>${javacv.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.javacv</groupId>
+			<artifactId>javacv</artifactId>
+			<classifier>linux-arm</classifier>
+			<version>${javacv.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.javacv</groupId>
+			<artifactId>javacv</artifactId>
+			<classifier>linux-x86</classifier>
+			<version>${javacv.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.javacv</groupId>
+			<artifactId>javacv</artifactId>
+			<classifier>linux-x86_64</classifier>
+			<version>${javacv.version}</version>
+		</dependency>		
+		<dependency>
+			<groupId>com.googlecode.javacv</groupId>
+			<artifactId>javacv</artifactId>
+			<classifier>macosx-x86_64</classifier>
+			<version>${javacv.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.javacv</groupId>
+			<artifactId>javacv</artifactId>
+			<classifier>android-arm</classifier>
+			<version>${javacv.version}</version>
 		</dependency>
 	</dependencies>
 
