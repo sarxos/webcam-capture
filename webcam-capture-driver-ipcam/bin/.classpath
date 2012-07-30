@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="src/main/java/|src/main/resources/|src/test/java/|src/test/resources/|src/main/|src/|src/main/java/|target/classes/|target/" kind="src" path=""/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
