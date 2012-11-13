@@ -18,11 +18,16 @@ Support for few IP cameras is build in and the list includes:
 
 ## Code Examples
 
+Few real live examples of how to use Webcam Capture together with IP camera driver.
+Please note that some URLs can be out-of-date when you test this code, however you
+can find some usable IP camera demos googling _"ip camera demo"_ or accessing 
+[this page](http://www.axis.com/solutions/video/gallery.htm).  
+
+### Example 1
+
 Example of  how to display image from B7210 bullet IP camera by [Zavio](http://www.zavio.com/product.php?id=45)
 in ```JPanel``` inside ```JFrame``` window ([QVGA](http://en.wikipedia.org/wiki/Graphics_display_resolution#QVGA_.28320.C3.97240.29) 
 image size is used).
-
-### Example 1
 
 ```java
 IpCamDevice ipcam = new B7210("B7210", "114.32.216.24");
