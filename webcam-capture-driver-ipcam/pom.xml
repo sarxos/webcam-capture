@@ -10,7 +10,7 @@
 	
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-ipcam</artifactId>
-	<version>0.3.4</version>
+	<version>0.3.5-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	
 	<name>Webcam Capture - IP Camera Driver</name>
@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
 			<artifactId>webcam-capture</artifactId>
-			<version>0.3.4</version>
+			<version>0.3.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
