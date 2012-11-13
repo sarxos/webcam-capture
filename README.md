@@ -6,15 +6,31 @@ Complete documentation, API, examples, tutorials and many more can be found here
 
 [http://webcam-capture.sarxos.pl/](http://webcam-capture.sarxos.pl/)
 
+
 [![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 
 ## How To Use
 
+### Basic Example
+
+This is the basic example of how _Webcam Capture_ can be used to get image from PC webcam. Code
+below will capture image from your PC webcam and save it in ```test.png``` file in current
+directory.
+
+```java
+Webcam webcam = Webcam.getDefault();
+BufferedImage image = webcam.getImage();
+ImageIO.write(image, "PNG", new File("test.png"));
+```
+
+For examples of **how to use Webcam Capture with IP cameras** please follow to the [appropriate
+subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam).
+
+### Maven
+
 _Webcam Capture_ is available in Maven Central, so you can either add Maven (or Ivy or Grandle)
 dependency to your project or access page above and download complete ZIP package, and then add 
 all JARs into your project's classpath.
-
-### Maven
 
 ```xml
 <dependency>
@@ -24,17 +40,13 @@ all JARs into your project's classpath.
 </dependency>
 ```
 
-### Ivy
+### Required JARs
 
-```xml
-<dependency org="com.github.sarxos" name="webcam-capture" rev="0.3.3" />
-```
+If you are not using Maven nor any other dependency manager, you can simply download ZIP file
+containing all required JARs. ZIP for version 0.3.1 is available for download 
+**[here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.1/webcam-capture-0.3.1-dist.zip)**.
 
-### Grandle
-
-```
-group: 'com.github.sarxos', name: 'webcam-capture', version: '0.3.3'
-```
+## News
 
 ## License
 
