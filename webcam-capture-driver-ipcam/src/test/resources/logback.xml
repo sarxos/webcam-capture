@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+	<appender name="ConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] %c - %m%n</pattern>
+		</encoder>
+	</appender>
+
+    <logger name="org.apache.http.wire" level="INFO" />
+    <logger name="org.apache.http.headers" level="DEBUG" />
+	<logger name="com.github.sarxos.webcam.ds.ipcam" level="debug" />
+
+
+	<root>
+		<level value="info" />
+		<appender-ref ref="ConsoleAppender" />
+	</root>
+
+</configuration>

@@ -1,19 +1,15 @@
 package com.github.sarxos.webcam.ds.ipcam;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.WebcamException;
+import com.github.sarxos.webcam.ds.ipcam.http.IpCamMode;
 
 
 /**
@@ -30,28 +26,22 @@ public class IpCamDriver implements WebcamDriver {
 		return Collections.unmodifiableList(DEVICES);
 	}
 
-	public void registerDevice(IpCamDevice device) {
+	public void register(IpCamDevice device) {
+		for (WebcamDevice d : DEVICES) {
+			String name = device.getName();
+			if (d.getName().equals(name)) {
+				throw new WebcamException(String.format("Name '%s' is already in use", name));
+			}
+		}
 		DEVICES.add(device);
 	}
 
-	public void registerURL(String name, URL url) {
-		DEVICES.add(new IpCamDevice(name, url));
-	}
-
-	public void registerURL(String name, String url) {
+	public void registerURL(String name, String url, IpCamMode mode) {
 		try {
-			DEVICES.add(new IpCamDevice(name, new URL(url)));
+			DEVICES.add(new IpCamDevice(name, new URL(url), mode));
 		} catch (MalformedURLException e) {
-			throw new WebcamException("Incorrect URL", e);
+			throw new WebcamException(String.format("Incorrect URL '%s'", url), e);
 		}
-	}
-
-	public static void main(String[] args) throws IOException {
-		IpCamDriver driver = new IpCamDriver();
-		driver.registerURL("Test", "http://www.dasding.de/ext/webcam/webcam770.php?cam=1");
-		WebcamDevice device = driver.getDevices().get(0);
-		BufferedImage image = device.getImage();
-		ImageIO.write(image, "jpg", new File("ninonap.jpg"));
 	}
 
 }

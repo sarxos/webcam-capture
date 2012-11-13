@@ -87,15 +87,15 @@
 			<artifactId>bridj</artifactId>
 			<version>0.6.1</version>
 		</dependency>
-		<dependency>
+<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
+			<version>1.7.2</version>
 		</dependency>
 		<dependency>
-		    <groupId>ch.qos.logback</groupId>
-		    <artifactId>logback-classic</artifactId>
-		    <version>0.9.18</version>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -290,27 +290,27 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>1.0</version>
-					<executions>
-						<execution>
-							<id>enforce-maven-version</id>
-							<goals>
-								<goal>enforce</goal>
-							</goals>
-							<configuration>
-								<rules>
-									<requireMavenVersion>
-										<version>[3.0,)</version>
-										<message>you-must-run-maven-3.0-or-above</message>
-									</requireMavenVersion>
-								</rules>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>enforce-maven-version</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>[3.0,)</version>
+									<message>you-must-run-maven-3.0-or-above</message>
+								</requireMavenVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>

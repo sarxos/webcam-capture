@@ -1,25 +1,13 @@
 package com.github.sarxos.webcam.ds.ipcam.http;
 
-/**
- * HTTP authentication type.
- * 
- * @author Bartosz Firyn (SarXos)
- */
-public enum IpCamAuth {
+import org.apache.http.auth.UsernamePasswordCredentials;
 
-	/**
-	 * No authentication.
-	 */
-	NONE,
 
-	/**
-	 * Basic auth.
-	 */
-	BASIC,
+public class IpCamAuth extends UsernamePasswordCredentials {
 
-	/**
-	 * WSSE auth.
-	 */
-	WSSE,
+	private static final long serialVersionUID = 807247154917333425L;
 
+	public IpCamAuth(String user, String password) {
+		super(user, password);
+	}
 }
