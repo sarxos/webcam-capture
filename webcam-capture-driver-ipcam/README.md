@@ -22,6 +22,8 @@ Example of  how to display image from B7210 bullet IP camera by [Zavio](http://w
 in ```JPanel``` inside ```JFrame``` window ([QVGA](http://en.wikipedia.org/wiki/Graphics_display_resolution#QVGA_.28320.C3.97240.29) 
 image size is used).
 
+### Example 1
+
 ```java
 IpCamDevice ipcam = new B7210("B7210", "114.32.216.24");
 ipcam.setAuth(new IpCamAuth("demo", "demo"));
@@ -35,14 +37,18 @@ Webcam.setDriver(driver);
 WebcamPanel panel = new WebcamPanel(Webcam.getDefault());
 panel.setFPS(0.5); // 1 frame per 2 seconds
 
-JFrame f = new JFrame();
+JFrame f = new JFrame("Night Tree Somewhere");
 f.add(panel);
 f.pack();
 f.setVisible(true);
 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 ```
 
-Example of how to handle image from *any* IP camera supporting JPEG compression:
+![Night Tree Somewhere](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-driver-ipcam/src/etc/resources/night-tree.png "Night Tree Somewhere")
+
+### Example 2
+
+Example of how to handle image from **any** IP camera supporting JPEG compression:
 
 ```java
 String address = "http://www.dasding.de/ext/webcam/webcam770.php?cam=1";
@@ -63,7 +69,11 @@ f.setVisible(true);
 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 ```
 
-Example of how to handle image from *any* IP camera supporting MJPEG compression. 
+![Dasding Studio Live IP Camera](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-driver-ipcam/src/etc/resources/dasding-live.png "Dasding Studio Live IP Camera")
+
+### Example 3
+
+Example of how to handle image from **any** IP camera supporting MJPEG compression. 
 Here we are handling stream from the beach of Lignano (Italy) from an AXIS 213 
 PTZ Network Camera.
 
@@ -85,6 +95,14 @@ f.pack();
 f.setVisible(true);
 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 ```
+
+![Lignano Beach](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-driver-ipcam/src/etc/resources/lignano-beach.png "Lignano Beach")
+
+### Need More Examples ???
+
+Using Webcam Capture you can save images in files, display in Swing components, upload to
+3rd-party servers, etc. Actually, having ```BufferedImage``` in your hand you can do with
+it whatever you want. Please don't hesitate to contact me if you will need more examples.
 
 ## License
 
