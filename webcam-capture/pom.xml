@@ -11,7 +11,7 @@
 
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3.4</version>
+	<version>0.3.5-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	
 	<name>Webcam Capture</name>
