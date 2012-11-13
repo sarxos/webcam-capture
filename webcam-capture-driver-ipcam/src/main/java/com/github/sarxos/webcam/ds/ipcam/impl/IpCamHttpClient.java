@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.ipcam.http;
+package com.github.sarxos.webcam.ds.ipcam.impl;
 
 import org.apache.http.HttpHost;
 import org.apache.http.conn.params.ConnRoutePNames;

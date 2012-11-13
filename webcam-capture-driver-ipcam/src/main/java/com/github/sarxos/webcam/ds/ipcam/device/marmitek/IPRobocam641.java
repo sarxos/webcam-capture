@@ -5,7 +5,7 @@ import java.net.URL;
 
 import com.github.sarxos.webcam.WebcamException;
 import com.github.sarxos.webcam.ds.ipcam.IpCamDevice;
-import com.github.sarxos.webcam.ds.ipcam.http.IpCamMode;
+import com.github.sarxos.webcam.ds.ipcam.IpCamMode;
 
 
 public class IPRobocam641 extends IpCamDevice {

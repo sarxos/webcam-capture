@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.ipcam.http;
+package com.github.sarxos.webcam.ds.ipcam;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 

@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.ipcam;
+package com.github.sarxos.webcam.ds.ipcam.impl;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;

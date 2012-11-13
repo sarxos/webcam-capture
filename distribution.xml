@@ -24,6 +24,7 @@
 			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>${artifactId}-${version}.jar</include>
+				<include>CHANGELOG*</include>
 			</includes>
 		</fileSet>
 		<fileSet>

@@ -9,7 +9,6 @@ import java.util.List;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.WebcamException;
-import com.github.sarxos.webcam.ds.ipcam.http.IpCamMode;
 
 
 /**

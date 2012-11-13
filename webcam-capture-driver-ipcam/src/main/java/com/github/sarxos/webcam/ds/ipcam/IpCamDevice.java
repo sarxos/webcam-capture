@@ -27,9 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
-import com.github.sarxos.webcam.ds.ipcam.http.IpCamAuth;
-import com.github.sarxos.webcam.ds.ipcam.http.IpCamHttpClient;
-import com.github.sarxos.webcam.ds.ipcam.http.IpCamMode;
+import com.github.sarxos.webcam.ds.ipcam.impl.IpCamHttpClient;
+import com.github.sarxos.webcam.ds.ipcam.impl.IpCamMJPEGStream;
 
 
 /**
