@@ -22,27 +22,39 @@ public class WebcamDriverUtils {
 	 * Find webcam driver. Scan packages to search drivers specified in the
 	 * argument.
 	 * 
-	 * @param drivers array of driver names to search for
+	 * @param names array of driver names to search for
 	 * @return Driver if found or throw exception
 	 * @throw WebcamException
 	 */
-	protected static WebcamDriver findDriver(List<String> drivers) {
+	protected static WebcamDriver findDriver(List<String> names, List<Class<?>> classes) {
 
-		for (String name : drivers) {
+		for (String name : names) {
 
-			if (LOG.isInfoEnabled()) {
-				LOG.info("Searching driver: " + name);
-			}
+			LOG.info("Searching driver {}", name);
 
 			Class<?> clazz = null;
 
-			try {
-				clazz = Class.forName(name);
-			} catch (ClassNotFoundException e) {
+			for (Class<?> c : classes) {
+				if (c.getCanonicalName().equals(name)) {
+					clazz = c;
+					break;
+				}
+			}
+
+			if (clazz == null) {
+				try {
+					clazz = Class.forName(name);
+				} catch (ClassNotFoundException e) {
+					// fall thru
+				}
+			}
+
+			if (clazz == null) {
+				LOG.debug("Driver {} not found", name);
 				continue;
 			}
 
-			LOG.info("Webcam driver has been found: " + name);
+			LOG.info("Webcam driver {} has been found", name);
 
 			try {
 				return (WebcamDriver) clazz.newInstance();

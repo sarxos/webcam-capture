@@ -26,7 +26,10 @@ Support for few IP cameras is build in and the list includes:
 </parent>
 ```
 
-## Code Examples
+If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.5/webcam-capture-driver-ipcam-0.3.5-dist.zip)**
+you can download ZIP containing all required 3rd-party JARs.
+
+## Examples
 
 Few real live examples of how to use Webcam Capture together with IP camera driver.
 Please note that some URLs can be out-of-date when you test this code, however you
@@ -128,6 +131,4 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
 

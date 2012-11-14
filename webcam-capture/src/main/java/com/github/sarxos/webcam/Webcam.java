@@ -10,7 +10,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.sarxos.webcam.ds.buildin.DefaultDriver;
+import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
 
 
 /**
@@ -31,6 +31,7 @@ public class Webcam {
 	//@formatter:on
 
 	private static final List<String> DRIVERS_LIST = new ArrayList<String>(Arrays.asList(DRIVERS_DEFAULT));
+	private static final List<Class<?>> DRIVERS_CLASS_LIST = new ArrayList<Class<?>>();
 
 	private static class ShutdownHook extends Thread {
 
@@ -220,11 +221,11 @@ public class Webcam {
 			webcams = new ArrayList<Webcam>();
 
 			if (driver == null) {
-				driver = WebcamDriverUtils.findDriver(DRIVERS_LIST);
+				driver = WebcamDriverUtils.findDriver(DRIVERS_LIST, DRIVERS_CLASS_LIST);
 			}
 			if (driver == null) {
 				LOG.info("Webcam driver has not been found, default one will be used!");
-				driver = new DefaultDriver();
+				driver = new WebcamDefaultDriver();
 			}
 
 			for (WebcamDevice device : driver.getDevices()) {
@@ -306,6 +307,7 @@ public class Webcam {
 	 * @param driver new video driver to use (e.g. Civil, JFM, FMJ, QTJ, etc)
 	 */
 	public static void setDriver(WebcamDriver driver) {
+		resetDriver();
 		Webcam.driver = driver;
 	}
 
@@ -317,7 +319,9 @@ public class Webcam {
 	 * @param driver new video driver class to use
 	 */
 	public static void setDriver(Class<? extends WebcamDriver> driverClass) {
-		WebcamDriver driver = null;
+
+		resetDriver();
+
 		try {
 			driver = driverClass.newInstance();
 		} catch (InstantiationException e) {
@@ -325,13 +329,19 @@ public class Webcam {
 		} catch (IllegalAccessException e) {
 			throw new WebcamException(e);
 		}
-		Webcam.driver = driver;
 	}
 
-	protected static void clearDriver() {
+	public static void resetDriver() {
+
 		DRIVERS_LIST.clear();
 		DRIVERS_LIST.addAll(Arrays.asList(DRIVERS_DEFAULT));
+
 		driver = null;
+
+		if (webcams != null && !webcams.isEmpty()) {
+			webcams.clear();
+		}
+
 		webcams = null;
 	}
 
@@ -341,6 +351,7 @@ public class Webcam {
 	 * @param clazz webcam video driver class
 	 */
 	public static void registerDriver(Class<? extends WebcamDriver> clazz) {
+		DRIVERS_CLASS_LIST.add(clazz);
 		registerDriver(clazz.getCanonicalName());
 	}
 

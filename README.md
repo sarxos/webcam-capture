@@ -9,11 +9,24 @@ Complete documentation, API, examples, tutorials and many more can be found here
 
 [![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 
-## How To Use
+## Maven
 
-Basic example of how _Webcam Capture_ can be used to get image from PC webcam.
+```xml
+<dependency>
+	<groupId>com.github.sarxos</groupId>
+	<artifactId>webcam-capture</artifactId>
+	<version>0.3.5</version>
+</dependency>
+```
 
-### Basic Example
+If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.5/webcam-capture-0.3.5-dist.zip)**
+you can download ZIP containing all required 3rd-party JARs.
+
+## Examples
+
+Some pretty basic examples.
+
+### Save Webcam Image In File
 
 Code below will capture image from your PC webcam and save it in ```test.png``` file:
 
@@ -22,6 +35,8 @@ Webcam webcam = Webcam.getDefault();
 BufferedImage image = webcam.getImage();
 ImageIO.write(image, "PNG", new File("test.png"));
 ```
+
+### Display Webcam Image In JFrame
 
 This one will display image from webcam in ```JFrame``` window:
 
@@ -36,25 +51,23 @@ window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 For examples of how to use Webcam Capture with **IP cameras** please follow the **[appropriate
 subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam)**.
 
-### Maven
+## Drivers
 
-_Webcam Capture_ is available in Maven Central, so you can either add Maven (or Ivy or Grandle)
-dependency to your project or access page above and download complete ZIP package, and then add 
-all JARs into your project's classpath.
+Webcam Capture can utilize additional drivers to extend its own functionality. Currently below
+drivers are stable and available in Maven Central:
 
-```xml
-<dependency>
-	<groupId>com.github.sarxos</groupId>
-	<artifactId>webcam-capture</artifactId>
-	<version>0.3.5</version>
-</dependency>
-```
+* **[IP Camera Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam)** (adds IP / network cameras support)  
+* **[JMF Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-jmf)** (JMF replacement for build-in webcam driver)
 
-### Required JARs
+Stable but not available in Maven Central:
 
-If you are not using Maven nor any other dependency manager, you can simply download ZIP file
-containing all required JARs. This ZIP is available for download 
-**[here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.5/webcam-capture-0.3.5-dist.zip)**.
+* **[LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-civil)** (LTI-CIVIL replacement for build-in webcam driver)
+* **[OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-civil)** (OpenIMAJ replacement for build-in webcam driver)
+
+Unstable drivers (experimental stuff, can be dropped in future):
+
+* **[OpenCV Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-javacv)** (JavaCV / OpenCV replacement for build-in webcam driver)  
+* **[VLC Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-vlcj)** (VLC replacement for build-in webcam driver)
 
 ## License
 
@@ -65,5 +78,4 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 
