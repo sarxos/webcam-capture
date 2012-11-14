@@ -17,7 +17,7 @@
 	<name>Webcam Capture Parent POM</name>
 	<description>This is Webcam Capture root POM</description>
 	<inceptionYear>2012</inceptionYear>
-	<url>https://github.com/sarxos/${project.id}</url>
+	<url>https://github.com/sarxos/${project.repoid}</url>
 
 	<modules>
 		<module>webcam-capture</module>
@@ -32,7 +32,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.id>webcam-capture</project.id>
+		<project.repoid>webcam-capture</project.repoid>
 	</properties>
 
 	<organization>
@@ -56,19 +56,19 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:git:git@github.com:sarxos/${project.id}.git</connection>
-		<developerConnection>scm:git:git@github.com:sarxos/${project.id}.git</developerConnection>
-		<url>git@github.com:sarxos/${project.id}.git</url>
+		<connection>scm:git:git@github.com:sarxos/${project.repoid}.git</connection>
+		<developerConnection>scm:git:git@github.com:sarxos/${project.repoid}.git</developerConnection>
+		<url>git@github.com:sarxos/${project.repoid}.git</url>
 	</scm>
 	
 	<issueManagement>
 		<system>GitHub Issues Manager</system>
-		<url>https://github.com/sarxos/${project.id}/issues</url>
+		<url>https://github.com/sarxos/${project.repoid}/issues</url>
 	</issueManagement>
 
 	<ciManagement>
 		<system>Travis CI</system>
-		<url>http://travis-ci.org/#!/sarxos/${project.id}</url>
+		<url>http://travis-ci.org/#!/sarxos/${project.repoid}</url>
 	</ciManagement>
 
 	<developers>
@@ -106,9 +106,6 @@
 		</profile>
 		<profile>
 			<id>snapshot</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<properties>
 				<repo-id>sonatype-nexus-staging</repo-id>
 				<repo-url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</repo-url>
@@ -117,6 +114,7 @@
 		<profile>
 			<id>release</id>
 			<activation>
+				<activeByDefault>false</activeByDefault>
 				<property>
 					<name>performRelease</name>
 					<value>true</value>

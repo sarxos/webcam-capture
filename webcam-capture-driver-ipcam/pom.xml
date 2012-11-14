@@ -22,25 +22,25 @@
 	<licenses>
 		<license>
 			<name>MIT License</name>
-			<url>http://webcam-capture.sarxos.pl/LICENSE.txt</url>
+			<url>http://${project.repoid}.sarxos.pl/LICENSE.txt</url>
 			<distribution>repo,manual</distribution>
 		</license>
 	</licenses>
 
 	<scm>
-		<connection>scm:git:git@github.com:sarxos/webcam-capture.git</connection>
-		<developerConnection>scm:git:git@github.com:sarxos/webcam-capture.git</developerConnection>
-		<url>git@github.com:sarxos/webcam-capture.git</url>
+		<connection>scm:git:git@github.com:sarxos/${project.repoid}.git</connection>
+		<developerConnection>scm:git:git@github.com:sarxos/${project.repoid}.git</developerConnection>
+		<url>git@github.com:sarxos/${project.repoid}.git</url>
 	</scm>
 	
 	<issueManagement>
 		<system>GitHub Issues Manager</system>
-		<url>https://github.com/sarxos/webcam-capture/issues</url>
+		<url>https://github.com/sarxos/${project.repoid}/issues</url>
 	</issueManagement>
 
 	<ciManagement>
 		<system>Travis CI</system>
-		<url>http://travis-ci.org/#!/sarxos/webcam-capture</url>
+		<url>http://travis-ci.org/#!/sarxos/${project.repoid}</url>
 	</ciManagement>
 
 	<developers>

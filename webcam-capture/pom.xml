@@ -36,19 +36,19 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:git:git@github.com:sarxos/${project.id}.git</connection>
-		<developerConnection>scm:git:git@github.com:sarxos/${project.id}.git</developerConnection>
-		<url>git@github.com:sarxos/${project.id}.git</url>
+		<connection>scm:git:git@github.com:sarxos/${project.repoid}.git</connection>
+		<developerConnection>scm:git:git@github.com:sarxos/${project.repoid}.git</developerConnection>
+		<url>git@github.com:sarxos/${project.repoid}.git</url>
 	</scm>
 	
 	<issueManagement>
 		<system>GitHub Issues Manager</system>
-		<url>https://github.com/sarxos/${project.id}/issues</url>
+		<url>https://github.com/sarxos/${project.repoid}/issues</url>
 	</issueManagement>
 
 	<ciManagement>
 		<system>Travis CI</system>
-		<url>http://travis-ci.org/#!/sarxos/${project.id}</url>
+		<url>http://travis-ci.org/#!/sarxos/${project.repoid}</url>
 	</ciManagement>
 
 	<developers>
