@@ -2,6 +2,7 @@ package com.github.sarxos.webcam.ds.ipcam;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -50,13 +51,50 @@ public class IpCamDevice implements WebcamDevice {
 		private BufferedImage image = null;
 		private boolean running = true;
 		private WebcamException exception = null;
+		private HttpGet get = null;
+		private URI uri = null;
 
-		public PushImageReader(InputStream is) {
-			stream = new IpCamMJPEGStream(is);
+		public PushImageReader(URI uri) {
+			this.uri = uri;
+			stream = new IpCamMJPEGStream(requestStream(uri));
+		}
+
+		private InputStream requestStream(URI uri) {
+
+			BasicHttpContext context = new BasicHttpContext();
+
+			IpCamAuth auth = getAuth();
+			if (auth != null) {
+				AuthCache cache = new BasicAuthCache();
+				cache.put(new HttpHost(uri.getHost()), new BasicScheme());
+				context.setAttribute(ClientContext.AUTH_CACHE, cache);
+			}
+
+			try {
+				get = new HttpGet(uri);
+
+				HttpResponse respone = client.execute(get, context);
+				HttpEntity entity = respone.getEntity();
+
+				Header ct = entity.getContentType();
+				if (ct == null) {
+					throw new WebcamException("Content Type header is missing");
+				}
+
+				if (ct.getValue().startsWith("image/")) {
+					throw new WebcamException("Cannot read images in PUSH mode, change mode to PULL");
+				}
+
+				return entity.getContent();
+
+			} catch (Exception e) {
+				throw new WebcamException("Cannot download image", e);
+			}
 		}
 
 		@Override
 		public void run() {
+
 			while (running) {
 
 				if (stream.isClosed()) {
@@ -81,7 +119,25 @@ public class IpCamDevice implements WebcamDevice {
 					// case when someone manually closed stream, do not log
 					// exception, this is normal behavior
 					if (stream.isClosed()) {
+						LOG.debug("Stream already closed, returning");
 						return;
+					}
+
+					if (e instanceof EOFException) {
+
+						LOG.debug("EOF detected, recreating MJPEG stream");
+
+						get.releaseConnection();
+
+						try {
+							stream.close();
+						} catch (IOException ioe) {
+							throw new WebcamException(ioe);
+						}
+
+						stream = new IpCamMJPEGStream(requestStream(uri));
+
+						continue;
 					}
 
 					LOG.error("Cannot read MJPEG frame", e);
@@ -238,46 +294,14 @@ public class IpCamDevice implements WebcamDevice {
 
 			synchronized (this) {
 
-				InputStream is = null;
-
 				URI uri = null;
-
 				try {
 					uri = getURL().toURI();
 				} catch (URISyntaxException e) {
 					throw new WebcamException(String.format("Incorrect URI syntax '%s'", uri), e);
 				}
 
-				BasicHttpContext context = new BasicHttpContext();
-
-				IpCamAuth auth = getAuth();
-				if (auth != null) {
-					AuthCache cache = new BasicAuthCache();
-					cache.put(new HttpHost(uri.getHost()), new BasicScheme());
-					context.setAttribute(ClientContext.AUTH_CACHE, cache);
-				}
-
-				try {
-					HttpGet get = new HttpGet(uri);
-					HttpResponse respone = client.execute(get, context);
-					HttpEntity entity = respone.getEntity();
-
-					Header ct = entity.getContentType();
-					if (ct == null) {
-						throw new WebcamException("Content Type header is missing");
-					}
-
-					if (ct.getValue().startsWith("image/")) {
-						throw new WebcamException("Cannot read images in PUSH mode, change mode to PULL");
-					}
-
-					is = entity.getContent();
-
-				} catch (Exception e) {
-					throw new WebcamException("Cannot download image", e);
-				}
-
-				pushReader = new PushImageReader(is);
+				pushReader = new PushImageReader(uri);
 
 				// TODO: change to executor
 
