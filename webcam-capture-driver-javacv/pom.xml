@@ -5,10 +5,12 @@
 	<parent>
 		<groupId>com.github.sarxos</groupId>
 		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.4</version>
+		<version>0.3.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>webcam-capture-driver-javacv</artifactId>
+	<packaging>jar</packaging>
+	
 	<name>Webcam Capture - JavaCV Driver</name>
 	<description>Webcam Capture driver using JavaCV - Java binding for OpenCV framework</description>
 
@@ -31,7 +33,7 @@
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
 			<artifactId>webcam-capture</artifactId>
-			<version>0.3.4-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.javacv</groupId>
@@ -81,5 +83,14 @@
 			<version>${javacv.version}</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

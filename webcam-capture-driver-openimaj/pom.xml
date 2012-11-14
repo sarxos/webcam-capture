@@ -5,10 +5,12 @@
 	<parent>
 		<groupId>com.github.sarxos</groupId>
 		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.4</version>
+		<version>0.3.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>webcam-capture-driver-openimaj</artifactId>
+	<packaging>jar</packaging>
+	
 	<name>Webcam Capture - OpenIMAJ Driver</name>
 	<description>Webcam Capture driver allowing you to capture images using OpenIMAJ library.</description>
 		
@@ -33,10 +35,24 @@
 	
 	<dependencies>
 		<dependency>
+			<groupId>com.github.sarxos</groupId>
+			<artifactId>webcam-capture</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-video-capture</artifactId>
 			<version>1.0.6-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 	
 </project>

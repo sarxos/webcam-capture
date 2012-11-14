@@ -5,10 +5,11 @@
 	<parent>
 		<groupId>com.github.sarxos</groupId>
 		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.4</version>
+		<version>0.3.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>webcam-capture-driver-civil</artifactId>
+	
 	<name>Webcam Capture - LTI CIVIL Driver</name>
 	<description>This is LTI Civil implementation of webcam video driver. It allows you to capture webcam images using LTI-CIVIL library.</description>
 
@@ -21,10 +22,24 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.github.sarxos</groupId>
+			<artifactId>webcam-capture</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.lti-civil</groupId>
 			<artifactId>lti-civil-no-swt</artifactId>
 			<version>20070920-1721</version>
 		</dependency>
 	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 	
 </project>
