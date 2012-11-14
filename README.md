@@ -53,7 +53,7 @@ all JARs into your project's classpath.
 ### Required JARs
 
 If you are not using Maven nor any other dependency manager, you can simply download ZIP file
-containing all required JARs. ZIP for version 0.3.1 is available for download 
+containing all required JARs. This ZIP is available for download 
 **[here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.4/webcam-capture-0.3.4-dist.zip)**.
 
 ## News
