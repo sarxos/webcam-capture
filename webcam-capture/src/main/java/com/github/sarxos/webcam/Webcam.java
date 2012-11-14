@@ -22,11 +22,13 @@ public class Webcam {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Webcam.class);
 
+	//@formatter:off
 	private static final String[] DRIVERS_DEFAULT = new String[] {
 		"com.github.sarxos.webcam.ds.openimaj.OpenImajDriver",
 		"com.github.sarxos.webcam.ds.civil.LtiCivilDriver",
 		"com.github.sarxos.webcam.ds.jmf.JmfDriver",
 	};
+	//@formatter:on
 
 	private static final List<String> DRIVERS_LIST = new ArrayList<String>(Arrays.asList(DRIVERS_DEFAULT));
 
@@ -221,6 +223,7 @@ public class Webcam {
 				driver = WebcamDriverUtils.findDriver(DRIVERS_LIST);
 			}
 			if (driver == null) {
+				LOG.info("Webcam driver has not been found, default one will be used!");
 				driver = new DefaultDriver();
 			}
 

@@ -53,9 +53,7 @@ public class WebcamDriverUtils {
 			}
 		}
 
-		LOG.error("Webcam driver has not been found! Please add one to the classpath!");
-
-		throw new WebcamException("No webcam driver available");
+		return null;
 	}
 
 	/**
