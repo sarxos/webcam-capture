@@ -11,11 +11,11 @@ Complete documentation, API, examples, tutorials and many more can be found here
 
 ## How To Use
 
+Basic example of how _Webcam Capture_ can be used to get image from PC webcam.
+
 ### Basic Example
 
-This is the basic example of how _Webcam Capture_ can be used to get image from PC webcam. Code
-below will capture image from your PC webcam and save it in ```test.png``` file in current
-directory.
+Code below will capture image from your PC webcam and save it in ```test.png``` file:
 
 ```java
 Webcam webcam = Webcam.getDefault();
@@ -23,7 +23,17 @@ BufferedImage image = webcam.getImage();
 ImageIO.write(image, "PNG", new File("test.png"));
 ```
 
-For examples of how to use Webcam Capture with **IP cameras** please follow to the **[appropriate
+This one will display image from webcam in ```JFrame``` window:
+
+```java
+JFrame window = new JFrame("Test webcam panel");
+window.add(new WebcamPanel(Webcam.getDefault()));
+window.pack();
+window.setVisible(true);
+window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+```
+
+For examples of how to use Webcam Capture with **IP cameras** please follow the **[appropriate
 subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam)**.
 
 ### Maven
@@ -48,7 +58,9 @@ containing all required JARs. ZIP for version 0.3.1 is available for download
 
 ## News
 
-* 14-11-2011 - Version 0.3.4 released, additional driver supporting IP cameras
+* 14-11-2011 - Version 0.3.4 released:
+** Additional driver supporting IP / network cameras,
+** Better repainting in ```WebcamPanel``` component,
 
 ## License
 

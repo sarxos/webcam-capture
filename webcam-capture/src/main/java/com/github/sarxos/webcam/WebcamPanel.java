@@ -35,8 +35,6 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 			while (webcam.isOpen()) {
 
-				LOG.debug("Read image");
-
 				image = webcam.getImage();
 				if (image == null) {
 					LOG.error("Image is null");
@@ -52,7 +50,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 					Thread.sleep((long) (1000 / frequency));
 
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					LOG.error("Nasty interrupted exception");
 				}
 
 				repaint();
