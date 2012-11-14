@@ -31,7 +31,7 @@ public class DefaultDriver implements WebcamDriver {
 	public List<WebcamDevice> getDevices() {
 
 		if (grabber == null) {
-			LOG.debug("Creating grabber");
+			LOG.debug("Creating grabber for driver");
 			grabber = new OpenIMAJGrabber();
 		}
 
@@ -55,5 +55,4 @@ public class DefaultDriver implements WebcamDriver {
 
 		return devices;
 	}
-
 }

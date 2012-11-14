@@ -30,6 +30,7 @@ public class DefaultDevice implements WebcamDevice {
 	 * Artificial view sizes. I'm really not sure if will fit into other webcams
 	 * but hope that OpenIMAJ can handle this.
 	 */
+	//@formatter:off
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
 		new Dimension(176, 144),
 		new Dimension(320, 240),
@@ -37,6 +38,7 @@ public class DefaultDevice implements WebcamDevice {
 		new Dimension(640, 400),
 		new Dimension(640, 480),
 	};
+	//@formatter:on
 
 	private static final int[] BAND_OFFSETS = new int[] { 0, 1, 2 };
 	private static final int[] BITS = { 8, 8, 8 };
@@ -50,7 +52,7 @@ public class DefaultDevice implements WebcamDevice {
 	private Dimension size = null;
 	private ComponentSampleModel sampleModel = null;
 	private ColorModel colorModel = null;
-	private boolean open = false;
+	private volatile boolean open = false;
 
 	protected DefaultDevice(Device device) {
 		this.device = device;
@@ -83,6 +85,8 @@ public class DefaultDevice implements WebcamDevice {
 			throw new WebcamException("Cannot get image when webcam device is not open");
 		}
 
+		grabber.nextFrame();
+
 		Pointer<Byte> image = grabber.getImage();
 		if (image == null) {
 			return null;
@@ -93,18 +97,22 @@ public class DefaultDevice implements WebcamDevice {
 
 		DataBufferByte buffer = new DataBufferByte(data, bytes.length, OFFSET);
 		WritableRaster raster = Raster.createWritableRaster(sampleModel, buffer, null);
-		BufferedImage bi = new BufferedImage(colorModel, raster, false, null);
 
+		BufferedImage bi = new BufferedImage(colorModel, raster, false, null);
 		bi.flush();
 
 		return bi;
 	}
 
 	@Override
-	public void open() {
+	public synchronized void open() {
 
 		if (open) {
 			return;
+		}
+
+		if (size == null) {
+			size = getSizes()[0];
 		}
 
 		grabber = new OpenIMAJGrabber();
@@ -130,9 +138,11 @@ public class DefaultDevice implements WebcamDevice {
 		int i = 0;
 		do {
 			grabber.nextFrame();
+			grabber.getImage();
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
+				LOG.error("Nasty interrupted exception", e);
 			}
 		} while (i++ < 3);
 

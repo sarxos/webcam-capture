@@ -21,7 +21,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamPanel.class);
 
-	private double frequency = 65; // Hz
+	private double frequency = 5; // Hz
 
 	private class Repainter extends Thread {
 
@@ -34,6 +34,8 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			super.run();
 
 			while (webcam.isOpen()) {
+
+				LOG.debug("Read image");
 
 				image = webcam.getImage();
 				if (image == null) {
@@ -52,6 +54,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+
 				repaint();
 			}
 		}
@@ -62,6 +65,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	private Repainter repainter = null;
 
 	public WebcamPanel(Webcam webcam) {
+
 		this.webcam = webcam;
 		this.webcam.addWebcamListener(this);
 
