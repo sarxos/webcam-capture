@@ -23,8 +23,8 @@ BufferedImage image = webcam.getImage();
 ImageIO.write(image, "PNG", new File("test.png"));
 ```
 
-For examples of **how to use Webcam Capture with IP cameras** please follow to the [appropriate
-subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam).
+For examples of how to use Webcam Capture with **IP cameras** please follow to the **[appropriate
+subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam)**.
 
 ### Maven
 
@@ -36,7 +36,7 @@ all JARs into your project's classpath.
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3.3</version>
+	<version>0.3.4</version>
 </dependency>
 ```
 
@@ -44,9 +44,11 @@ all JARs into your project's classpath.
 
 If you are not using Maven nor any other dependency manager, you can simply download ZIP file
 containing all required JARs. ZIP for version 0.3.1 is available for download 
-**[here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.1/webcam-capture-0.3.1-dist.zip)**.
+**[here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.4/webcam-capture-0.3.4-dist.zip)**.
 
 ## News
+
+* 14-11-2011 - Version 0.3.4 released, additional driver supporting IP cameras
 
 ## License
 
