@@ -46,7 +46,7 @@ all JARs into your project's classpath.
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3.4</version>
+	<version>0.3.5</version>
 </dependency>
 ```
 
@@ -54,13 +54,7 @@ all JARs into your project's classpath.
 
 If you are not using Maven nor any other dependency manager, you can simply download ZIP file
 containing all required JARs. This ZIP is available for download 
-**[here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.4/webcam-capture-0.3.4-dist.zip)**.
-
-## News
-
-* 14-11-2011 - Version 0.3.4 released:
-** Additional driver supporting IP / network cameras,
-** Better repainting in ```WebcamPanel``` component,
+**[here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.5/webcam-capture-0.3.5-dist.zip)**.
 
 ## License
 

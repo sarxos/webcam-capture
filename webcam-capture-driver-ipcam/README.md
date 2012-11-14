@@ -16,6 +16,16 @@ Support for few IP cameras is build in and the list includes:
 * [B7210](http://www.zavio.com/product.php?id=45) by [Zavio](http://www.zavio.com/) (JPEG)
 * [F3201](http://www.zavio.com/product.php?id=28) by [Zavio](http://www.zavio.com/) (JPEG)
 
+## Maven
+
+```xml
+<dependency>
+	<groupId>com.github.sarxos</groupId>
+	<artifactId>webcam-capture-driver-ipcam</artifactId>
+	<version>0.3.5</version>
+</parent>
+```
+
 ## Code Examples
 
 Few real live examples of how to use Webcam Capture together with IP camera driver.
