@@ -48,6 +48,8 @@ window.setVisible(true);
 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 ```
 
+### Display Image From IP / Network Camera
+
 For examples of how to use Webcam Capture with **IP cameras** please follow the **[appropriate
 subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam)**.
 
