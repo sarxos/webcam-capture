@@ -9,12 +9,17 @@ What are the differences between those two modes:
 * ```PULL``` - will request new JPEG image each time when it is required,
 * ```PUSH``` - stream Motion JPEG in real time and serve newest image on-demand.
 
-Support for few IP cameras is build in and the list includes:
+Support for few IP cameras is build-in, that list includes:
 
 * [IP Robocam 641](http://www.marmitek.com/en/product-details/home-automation-security/ip-cameras/ip-robocam-641.php) by [Marmitek](http://www.marmitek.com/) (MJPEG)
 * [Speed Dome X104S](http://www.ipcctv.com/product.php?xProd=10&xSec=26) by [Xvision](http://www.ipcctv.com/) (MJPEG)
 * [B7210](http://www.zavio.com/product.php?id=45) by [Zavio](http://www.zavio.com/) (JPEG)
 * [F3201](http://www.zavio.com/product.php?id=28) by [Zavio](http://www.zavio.com/) (JPEG)
+
+If you would like to have more IP cameras supported, please create new issue, describe the camera
+model, provide demo URL and API if available. You can also create your own IP camera class. In such 
+a case please use provided models as a reference. In case of any issues don't hesitate to ask for
+help :) Later, when your class is ready, I will be happy to merge it with official distribution.
 
 ## Maven
 
