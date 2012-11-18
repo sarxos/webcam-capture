@@ -121,7 +121,7 @@ public class Webcam {
 			try {
 				l.webcamOpen(we);
 			} catch (Exception e) {
-				LOG.error("Notify webcam open, exception when calling {}", WebcamListener.class.getSimpleName(), e);
+				LOG.error(String.format("Notify webcam open, exception when calling %s listener", l.getClass()), e);
 			}
 		}
 	}
@@ -160,7 +160,7 @@ public class Webcam {
 			try {
 				l.webcamClosed(we);
 			} catch (Exception e) {
-				LOG.error("Notify webcam closed, exception when calling {}", WebcamListener.class.getSimpleName(), e);
+				LOG.error(String.format("Notify webcam closed, exception when calling %s listener", l.getClass()), e);
 			}
 		}
 	}
