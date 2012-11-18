@@ -1,0 +1,432 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Webcam Capture in Java</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <script src="examples/google-code-prettify/prettify.js"></script>
+    <link rel="stylesheet" href="examples/google-code-prettify/sons-of-obsidian-2.css">
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  </head>
+  <body>
+  
+      <a href="https://github.com/sarxos/webcam-capture"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 100;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+
+      <header>
+        <h1>Webcam Capture</h1>
+        <p>Generic Webcam Java Utility</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/sarxos/webcam-capture" class="button fork"><strong>GitHub</strong></a>
+        <div class="downloads">
+          <span>Download:</span>
+          <ul>
+            <li><a href="http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.5/webcam-capture-0.3.5-dist.zip" class="button">ZIP</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+
+
+
+<h1>Webcam Capture</h1>
+
+<p>
+The goal of this project is to provide really simple webcam API allowing you to use your
+build-in, external (USB-connected) webcams or IP / network cameras directly from Java code. 
+It provides basic webcam 
+interface and a set of additional <i>drivers</i> which can be used to replace default build-in
+drivers to extend and/or replace default functionality.
+</p>
+
+<p>Continous Integration build status (Travis CI):</p>
+
+<p>
+<a href="http://travis-ci.org/sarxos/webcam-capture"><img src="https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master" alt="Build Status" title="" /></a>
+</p>
+
+<h3>Requirements</h3>
+
+<p>
+<ul>
+<li>Java 6 (or higher) installed,</li>
+<li>Webcam connected and configured,</li>
+<li>In case of IP / network cameras, Internet access is required,</li>
+</ul>
+</p>
+
+<h3>Core Features</h3>
+
+<p>
+<ul>
+<li><b>Simple API</b> - write only few lines of code and start capturing images.</li>
+<li><b>Build-in video driver</b> - default build-in video grabber is provided, so you don't need to install any additional software (such as JMF, etc).</li>
+<li><b>System independent</b> - it will run without problems on most widely used operating systems - Windows (2k/XP/Vista/7, both 32- and 64-bit), Linux (x86, x64 and 32-bit ARM) and Mac OS X.</li>
+<li><b>Implementation independent</b> - write your code once and don't care which capture framework you will be using in future (LTI-CIVIL, JMF, QTJ, etc).</li>
+<li><b>Automated resources management</b> - you do not have to remember to deallocate resources used by your capturing device, library will always do that for you (while VM has been closed gracefully).</li>
+</ul>
+</p>
+
+
+
+<h2>How To Start</h2>
+
+<p>
+<i>Webcam Capture</i> is avilable in Maven Central, so if you can add its dependency to your
+project if you are using one of the dependency manager:
+</p>
+
+<h3>Maven</h3>
+
+<pre class="prettyprint prettyprinted language-xml linenums">
+&lt;dependency&gt;
+    &lt;groupId&gt;com.github.sarxos&lt;/groupId&gt;
+    &lt;artifactId&gt;webcam-capture&lt;/artifactId&gt;
+    &lt;version&gt;0.3.5&lt;/version&gt;
+&lt;/dependency&gt;
+</pre>
+
+<h3>No Dependency Manager?</h3>
+
+<p>
+Download ZIP file containing complete API reference, required JARs, sources and examples
+(link is visible at the right top corner of this page), uncompress, and add <i>webcam-capture-[version].jar</i>
+and all JARs under <i>libs</i> directory to your project's classpath:
+</p>
+
+<h2>Additional Drivers</h2>
+
+<p>
+Currently <i>Webcam Capture</i> supports the following drivers:
+</p>
+
+<h3>IP / Network Camera Driver</h3>
+
+<p>
+This is IP camera driver for Webcam Capture project. It allows Webcam Capture to 
+handle pictures from IP cameras supporting JPEG and MJPEG (Motion JPEG) compression.
+For more information about supported models, how to extend, examples, use-cases, please
+follow to the Github project available <b><a href="https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam">here</a></b>.
+</p>
+
+<p>
+This driver is available in Maven Central.
+</p>
+
+<h3>JMF / FMJ Driver</h3>
+
+<p>
+This is driver containing video grabber for Webcam Capture project. It utilizes JMF
+capabilities to access PC webcam (those USB-connected too) and can be used as a replacement 
+for default build-in driver. Its advantage is the fact it's pretty fast, but unformtunately, 
+from the other hand, it requires <a href="http://www.oracle.com/technetwork/java/javase/download-142937.html">JMF</a> 
+to be installed on your PC.
+</p>
+
+<p>
+If you do not want to use JMF (due to e.g. licensing issues), you can choose 
+<a href="http://fmj-sf.net/">FMJ</a>, which is a freeware replacement for JMF.
+</p>
+
+<p>
+<b>NOTE!</b> Be aware of the fact that both JMF and FMJ are not being maintained any more!
+</p>
+
+<p>
+This driver is available in Maven Central.
+</p>
+
+<h3>OpenIMAJ Driver</h3>
+
+<p>
+This is driver containing video grabber for Webcam Capture project. It utilizes 
+<a href="http://sourceforge.net/p/openimaj/home/OpenIMAJ/">OpenIMAJ</a> framework
+capabilities to access PC webcam and can be used as a replacement 
+for default build-in driver. Its advantage is the fact it's pretty fast, supports 
+multiple platforms, but disadventage is the size of required 3<sup>rd</sup> party 
+JARs (around ~20MB). Default build-in driver uses OpenIMAJ natives to support video grabbing,
+but id does not require all those additional JARs.
+</p>
+
+<p>
+This driver is <b>NOT</b> available in Maven Central, but it can be used in Maven build.
+In such a case user has to add those repositories to project's POM:
+</p>
+
+<pre class="prettyprint prettyprinted language-xml linenums">
+&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;OpenIMAJ maven repository&lt;/id&gt;
+        &lt;url&gt;http://maven.openimaj.org/&lt;/url&gt;
+    &lt;/repository&gt;
+    &lt;repository&gt;
+        &lt;id&gt;Octopussy thirdparty maven repository&lt;/id&gt;
+        &lt;url&gt;http://octopussy.ecs.soton.ac.uk/m2/thirdparty/&lt;/url&gt;
+    &lt;/repository&gt;
+    &lt;repository&gt;
+        &lt;id&gt;OpenIMAJ Snapshots maven repository&lt;/id&gt;
+        &lt;url&gt;http://octopussy.ecs.soton.ac.uk/m2/snapshots/&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+</pre>
+
+
+<h3>LTI-CIVIL Driver</h3>
+
+<p>
+This is driver containing video grabber for Webcam Capture project. It utilizes 
+<a href="http://lti-civil.org/">LTI-CIVIL</a> project
+capabilities to access PC webcam and can be used as a replacement 
+for default build-in driver. LTI-CIVIL supports Windows, Linux and MAC OS platforms.
+For Mac OS it utilizes QTJ framework capabilities. For other ones it uses precompiled 
+natives.
+</p>
+
+<p>
+This driver is <b>NOT</b> available in Maven Central, but it can be used in Maven build.
+In such a case user has to add those repositories to project's POM:
+</p>
+
+<pre class="prettyprint prettyprinted language-xml linenums">
+&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;sarxos-repo&lt;/id&gt;
+        &lt;url&gt;http://repo.sarxos.pl/maven2&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+</pre>
+
+<p>
+<b>NOTE!</b> Be aware of the fact that LTI-CIVIL not being maintained any more by its owner!
+</p>
+
+
+<h3>OpenCV Driver</h3>
+
+<p><b>EXPERIMENTAL STUFF!</b></p>
+
+<p>
+This is driver containing video grabber for Webcam Capture project. It utilizes 
+<a href="http://code.google.com/p/javacv/">JavaCV</a> Java wrapper for 
+<a href="http://opencv.willowgarage.com/wiki/">OpenCV</a> project
+capabilities to access PC webcam and can be used as a replacement 
+for default build-in driver. Its advantage is quite stable interface, but unfortunately
+it requires quite huge (around ~100MB) pre-installed OpenCV bundle.
+</p>
+
+<p>
+This driver is <b>NOT</b> available in Maven Central, but it can be used in Maven build.
+In such a case user has to add those repositories to project's POM:
+</p>
+
+<pre class="prettyprint prettyprinted language-xml linenums">
+&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;javacv&lt;/id&gt;
+        &lt;url&gt;http://maven2.javacv.googlecode.com/git&lt;/url&gt;
+    &lt;/repository&gt;
+    &lt;repository&gt;
+        &lt;id&gt;kevoree&lt;/id&gt;
+        &lt;url&gt;http://maven.kevoree.org/release&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+</pre>
+
+<h3>VLCj Driver</h3>
+
+<p><b>EXPERIMENTAL STUFF!</b></p>
+
+<p>
+This is driver containing video grabber for Webcam Capture project. It utilizes 
+<a href="https://github.com/caprica/vlcj">VLCj</a> Java wrapper for Videolan
+<a href="http://www.videolan.org/vlc/">VLC</a> project
+capabilities to access PC webcam and can be used as a replacement 
+for default build-in driver. Unfortunately it require VLC media player to be 
+pre-installed on the system where driver will be used.
+</p>
+
+<p>
+This driver is <b>NOT</b> available in Maven Central, but it can be used in Maven build.
+In such a case user has to add those repositories to project's POM:
+</p>
+
+<pre class="prettyprint prettyprinted language-xml linenums">
+&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;caprica&lt;/id&gt;
+        &lt;url&gt;http://www.capricasoftware.co.uk/repo&lt;/url&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+</pre>
+
+
+
+
+
+
+
+<h1>Examples</h1>
+
+<h3>Capture Image</h3>
+
+<p>To capture single image and save it to disk:</p>
+
+<pre class="prettyprint prettyprinted language-java linenums">
+Webcam webcam = Webcam.getDefault();
+BufferedImage image = webcam.getImage();
+ImageIO.write(image, "PNG", new File("test.png"));
+</pre>
+
+<p>If you have more then one webcam connected to your computer:</p>
+
+<pre class="prettyprint prettyprinted language-java linenums">
+Webcam laptop = Webcam.getWebcams().get(0);
+Webcam kitchen = Webcam.getWebcams().get(1);
+Webcam roof = Webcam.getWebcams().get(2);
+</pre>
+
+<h3>Detect Motion</h3>
+
+<p>To detect motion with your webcam - loop solution:</p>
+
+<pre class="prettyprint prettyprinted language-java linenums">
+WebcamMotionDetector detector = new WebcamMotionDetector(Webcam.getDefault());
+detector.setInterval(100); // one check per 100 ms (10 FPS)
+detector.start();
+
+while (true) {
+    if (detector.isMotion()) {
+        System.out.println("Detected motion I, alarm turn on you have");
+    }
+    Thread.sleep(500);
+}
+</pre>
+
+<p>To detect motion with webcam - listener solution:</p>
+
+<pre class="prettyprint prettyprinted language-java linenums">
+public class DetectMotionExample implements WebcamMotionListener {
+
+    WebcamMotionDetector detector = new WebcamMotionDetector(Webcam.getDefault());
+
+    public DetectMotionExample() {
+        detector.setInterval(100); // one check per 100 ms (10 FPS)
+        detector.addMotionListener(this);
+        detector.start();
+    }
+
+    @Override
+    public void motionDetected(WebcamMotionEvent wme) {
+        System.out.println("Detected motion I, alarm turn on you have");
+    }
+
+    public static void main(String[] args) throws IOException {
+        new DetectMotionExample();
+        System.in.read(); // keeps your program open
+    }
+}
+</pre>
+
+<h3>Swing Support</h3>
+
+<p>
+You can display image from webcam in Swing JPanel. There is a special component
+designed for this.
+</p>
+
+<pre class="prettyprint prettyprinted language-java linenums">
+JFrame window = new JFrame("Test Webcam Panel");
+window.add(new WebcamPanel(Webcam.getDefault()));
+window.pack();
+window.setVisible(true);
+window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+</pre>
+
+<h3>Display Image From IP / Network Camera</h3>
+
+<p>
+To use Webcam Capture together with IP or network camera you have to add 
+<a href="https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam">IP / network camera driver</a>
+to your Webcam Capture project.
+</p>
+
+<pre class="prettyprint prettyprinted language-java linenums">
+IpCamDevice ipcam = new B7210("B7210", "114.32.216.24");
+ipcam.setAuth(new IpCamAuth("demo", "demo"));
+ipcam.setSize(B7210.SIZE_QVGA);
+
+IpCamDriver driver = new IpCamDriver();
+driver.register(ipcam);
+
+Webcam.setDriver(driver);
+
+WebcamPanel panel = new WebcamPanel(Webcam.getDefault());
+panel.setFPS(0.5); // 1 frame per 2 seconds
+
+JFrame f = new JFrame("Night Tree Somewhere");
+f.add(panel);
+f.pack();
+f.setVisible(true);
+f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+</pre>
+
+More IP / network camera examples are available in Github project's page.
+
+
+<h3>Logging</h3>
+
+<p>Logging (Logback via SLF4J) is already there, so you can enable it simply by adding 
+<b>logback.xml</b> configuration file somewhere in your filesystem and calling:
+</p>
+
+<pre class="prettyprint prettyprinted language-java linenums">
+WebcamLogConfigurator.configure("path/to/logback.xml");
+</pre>
+
+
+<h3>Want More?</h3>
+
+<p>
+There are more examples available in <b>src/example</b>, don't forget to 
+check them - please follow to the <a href="https://github.com/sarxos/webcam-capture">Github Project's Page</a> where <i>Webcam Capture</i>
+source code is stored!
+</p>
+
+
+
+<h1>License</h1>
+
+<p>Copyright (C) 2012 Bartosz Firyn</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+
+
+
+      </section>
+      <footer>
+        <p>Maintained by <a href="https://github.com/sarxos">SarXos</a></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    <script type="text/javascript">
+    prettyPrint();
+    </script>
+
+  </body>
+</html>
