@@ -2,6 +2,7 @@ package com.github.sarxos.webcam;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JPanel;
 
@@ -62,7 +63,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	private BufferedImage image = null;
 	private Repainter repainter = null;
 
-	public WebcamPanel(Webcam webcam) {
+	public WebcamPanel(Webcam webcam, boolean start) {
 
 		this.webcam = webcam;
 		this.webcam.addWebcamListener(this);
@@ -73,10 +74,15 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 		setPreferredSize(webcam.getViewSize());
 
-		if (repainter == null) {
-			repainter = new Repainter();
+		repainter = new Repainter();
+
+		if (start) {
 			repainter.start();
 		}
+	}
+
+	public WebcamPanel(Webcam webcam) {
+		this(webcam, true);
 	}
 
 	@Override
@@ -114,7 +120,19 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		}
 	}
 
+	private AtomicBoolean started = new AtomicBoolean(false);
+
 	private volatile boolean paused = false;
+
+	public void start() {
+		if (started.compareAndSet(false, true)) {
+			repainter.start();
+		}
+	}
+
+	public void stop() {
+		webcam.close();
+	}
 
 	/**
 	 * Pause rendering.
@@ -132,9 +150,6 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	public void resume() {
 		if (!paused) {
 			return;
-		}
-		synchronized (repainter) {
-			repainter.notifyAll();
 		}
 		paused = false;
 	}

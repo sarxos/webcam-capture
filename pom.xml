@@ -23,7 +23,6 @@
 		<module>webcam-capture</module>
 		<module>webcam-capture-driver-ipcam</module>
 		<module>webcam-capture-driver-jmf</module>
-		<module>webcam-capture-pages</module>
 		<!-- below ones cannot be released since all of them require external 3rd-party repos -->
 		<!-- 
 		<module>webcam-capture-driver-civil</module>
@@ -246,7 +245,7 @@
 							<simpleHTMLChangeLogFilename>CHANGELOG.htm</simpleHTMLChangeLogFilename>
 							<generateHTMLTableOnlyChangeLog>false</generateHTMLTableOnlyChangeLog>
 						</configuration>
-					</plugin>					
+					</plugin>		
 				</plugins>
 			</build>
 		</profile>
@@ -284,7 +283,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>		
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 	        	<artifactId>maven-site-plugin</artifactId>
