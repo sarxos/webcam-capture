@@ -1,8 +1,12 @@
 # webcam-capture-driver-jmf
 
-This id driver for Webcam Capture project. It utilizes JMF capabilities of accessing
-PC webcam and can be a replacement for default build-in driver. Its advantage is the
-fact it's pretty fast, but requires JMF to be installed on your PC.
+This is driver containing video grabber for Webcam Capture project. It utilizes JMF 
+capabilities to access
+PC webcam (those USB-connected too) and can be used as a replacement for default 
+build-in driver. Its advantage is the
+fact it's pretty fast, but unformtunately, from the other hand, it requires 
+**[JMF](http://www.oracle.com/technetwork/java/javase/download-142937.html)** to be 
+installed on your PC.
 
 ## Maven
 
