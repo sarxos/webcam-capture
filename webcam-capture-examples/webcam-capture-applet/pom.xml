@@ -5,7 +5,7 @@
 
 	<parent>
 		<groupId>com.github.sarxos</groupId>
-		<artifactId>webcam-capture-parent</artifactId>
+		<artifactId>webcam-capture-examples</artifactId>
 		<version>0.3.5</version>
 	</parent>
 

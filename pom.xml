@@ -24,12 +24,12 @@
 		<module>webcam-capture-driver-ipcam</module>
 		<module>webcam-capture-driver-jmf</module>
 		<!-- below ones cannot be released since all of them require external 3rd-party repos -->
-		<!-- 
 		<module>webcam-capture-driver-civil</module>
 		<module>webcam-capture-driver-openimaj</module>
 		<module>webcam-capture-driver-vlcj</module>
 		<module>webcam-capture-driver-javacv</module>
-		 -->
+		<module>webcam-capture-examples</module>
+		<module>webcam-capture-pages</module>
 	</modules>
 
 	<properties>

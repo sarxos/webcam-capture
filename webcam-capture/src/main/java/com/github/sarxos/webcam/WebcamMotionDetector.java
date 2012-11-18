@@ -24,6 +24,8 @@ public class WebcamMotionDetector {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamMotionDetector.class);
 
+	public static final int DEFAULT_THREASHOLD = 25;
+
 	/**
 	 * Create new threads for detector internals.
 	 * 
@@ -179,7 +181,7 @@ public class WebcamMotionDetector {
 	 * @param webcam web camera instance
 	 */
 	public WebcamMotionDetector(Webcam webcam) {
-		this(webcam, 25, 0);
+		this(webcam, DEFAULT_THREASHOLD, 0);
 	}
 
 	public void start() {
