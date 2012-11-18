@@ -67,7 +67,31 @@ public class Webcam {
 	 * @param device - device to be used as webcam
 	 */
 	protected Webcam(WebcamDevice device) {
+		if (device == null) {
+			throw new IllegalArgumentException("Webcam device cannot be null");
+		}
 		this.device = device;
+	}
+
+	/**
+	 * Check if size is set up.
+	 */
+	private void ensureSize() {
+
+		Dimension size = device.getSize();
+		if (size == null) {
+
+			Dimension[] sizes = device.getSizes();
+
+			if (sizes == null) {
+				throw new WebcamException("Sizes array from driver cannot be null!");
+			}
+			if (sizes.length == 0) {
+				throw new WebcamException("Sizes array from driver is empty, cannot choose image size");
+			}
+
+			device.setSize(sizes[0]);
+		}
 	}
 
 	/**
@@ -83,9 +107,7 @@ public class Webcam {
 			LOG.info("Opening webcam " + getName());
 		}
 
-		if (device.getSize() == null) {
-			device.setSize(device.getSizes()[0]);
-		}
+		ensureSize();
 
 		device.open();
 		open = true;
@@ -99,7 +121,7 @@ public class Webcam {
 			try {
 				l.webcamOpen(we);
 			} catch (Exception e) {
-				e.printStackTrace();
+				LOG.error("Notify webcam open, exception when calling {}", WebcamListener.class.getSimpleName(), e);
 			}
 		}
 	}
@@ -127,7 +149,7 @@ public class Webcam {
 		}
 
 		if (LOG.isInfoEnabled()) {
-			LOG.info("Closing webcam " + getName());
+			LOG.info("Closing {}", getName());
 		}
 
 		device.close();
@@ -138,7 +160,7 @@ public class Webcam {
 			try {
 				l.webcamClosed(we);
 			} catch (Exception e) {
-				e.printStackTrace();
+				LOG.error("Notify webcam closed, exception when calling {}", WebcamListener.class.getSimpleName(), e);
 			}
 		}
 	}
@@ -171,7 +193,12 @@ public class Webcam {
 
 	public void setViewSize(Dimension size) {
 
-		// check if dimension is valid one
+		if (size == null) {
+			throw new IllegalArgumentException("View size cannot be null!");
+		}
+
+		// check if dimension is valid
+
 		boolean ok = false;
 		Dimension[] sizes = getViewSizes();
 		for (Dimension d : sizes) {
@@ -192,7 +219,7 @@ public class Webcam {
 		}
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Setting new view size " + size);
+			LOG.debug("Setting new view size {} x {}", size.width, size.height);
 		}
 
 		device.setSize(size);
@@ -205,6 +232,7 @@ public class Webcam {
 	 */
 	public synchronized BufferedImage getImage() {
 		if (!open) {
+			LOG.debug("Try to get image on closed webcam, opening it automatically");
 			open();
 		}
 		return device.getImage();
@@ -229,8 +257,7 @@ public class Webcam {
 			}
 
 			for (WebcamDevice device : driver.getDevices()) {
-				Webcam webcam = new Webcam(device);
-				webcams.add(webcam);
+				webcams.add(new Webcam(device));
 			}
 
 			if (LOG.isInfoEnabled()) {
@@ -271,17 +298,20 @@ public class Webcam {
 
 	@Override
 	public String toString() {
-		return "webcam:" + getName();
+		return String.format("Webcam %s", getName());
 	}
 
 	/**
 	 * Add webcam listener.
 	 * 
-	 * @param l a listener to add
+	 * @param l the listener to be added
 	 */
-	public void addWebcamListener(WebcamListener l) {
+	public boolean addWebcamListener(WebcamListener l) {
+		if (l == null) {
+			throw new IllegalArgumentException("Webcam listener cannot be null!");
+		}
 		synchronized (listeners) {
-			listeners.add(l);
+			return listeners.add(l);
 		}
 	}
 
@@ -291,6 +321,12 @@ public class Webcam {
 	public WebcamListener[] getWebcamListeners() {
 		synchronized (listeners) {
 			return listeners.toArray(new WebcamListener[listeners.size()]);
+		}
+	}
+
+	public boolean removeWebcamListener(WebcamListener l) {
+		synchronized (listeners) {
+			return listeners.remove(l);
 		}
 	}
 
@@ -307,6 +343,9 @@ public class Webcam {
 	 * @param driver new video driver to use (e.g. Civil, JFM, FMJ, QTJ, etc)
 	 */
 	public static void setDriver(WebcamDriver driver) {
+		if (driver == null) {
+			throw new IllegalArgumentException("Webcam driver cannot be null!");
+		}
 		resetDriver();
 		Webcam.driver = driver;
 	}
@@ -322,6 +361,10 @@ public class Webcam {
 
 		resetDriver();
 
+		if (driverClass == null) {
+			throw new IllegalArgumentException("Webcam driver class cannot be null!");
+		}
+
 		try {
 			driver = driverClass.newInstance();
 		} catch (InstantiationException e) {
@@ -329,6 +372,7 @@ public class Webcam {
 		} catch (IllegalAccessException e) {
 			throw new WebcamException(e);
 		}
+
 	}
 
 	public static void resetDriver() {
@@ -351,6 +395,9 @@ public class Webcam {
 	 * @param clazz webcam video driver class
 	 */
 	public static void registerDriver(Class<? extends WebcamDriver> clazz) {
+		if (clazz == null) {
+			throw new IllegalArgumentException("Webcam driver class to register cannot be null!");
+		}
 		DRIVERS_CLASS_LIST.add(clazz);
 		registerDriver(clazz.getCanonicalName());
 	}
@@ -361,6 +408,9 @@ public class Webcam {
 	 * @param clazzName webcam video driver class name
 	 */
 	public static void registerDriver(String clazzName) {
+		if (clazzName == null) {
+			throw new IllegalArgumentException("Webcam driver class name to register cannot be null!");
+		}
 		DRIVERS_LIST.add(clazzName);
 	}
 

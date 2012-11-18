@@ -31,7 +31,7 @@ public class DefaultDriver implements WebcamDriver {
 	public List<WebcamDevice> getDevices() {
 
 		if (grabber == null) {
-			LOG.debug("Creating grabber for driver");
+			LOG.debug("Creating grabber");
 			grabber = new OpenIMAJGrabber();
 		}
 
@@ -43,12 +43,18 @@ public class DefaultDriver implements WebcamDriver {
 
 			DeviceList list = grabber.getVideoDevices().get();
 			for (Device device : list.asArrayList()) {
+
+				if (device == null) {
+					LOG.error("Native discovery problem! Null device detected by grabber!");
+					continue;
+				}
+
 				devices.add(new DefaultDevice(device));
 			}
 
 			if (LOG.isDebugEnabled()) {
 				for (WebcamDevice device : devices) {
-					LOG.debug("Found device " + device);
+					LOG.debug("Found device {}", device);
 				}
 			}
 		}
