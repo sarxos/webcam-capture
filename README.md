@@ -9,6 +9,20 @@ Complete documentation, API, examples, tutorials and many more can be found here
 
 [![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 
+## Features
+
+* Define simple API,
+* Do not require additional software to be installed on PC,
+* Supports multiple platforms (Windows, Linux, Mac OS, etc) and various architectures (32-bit, 64-bit, ARM),
+* Can stream images from build-in or USB-connected PC webcams, 
+* Can stream images from IP / network cameras,
+* Can re-stream images,
+* Can detect motion,
+* Is available in Maven Central,
+* Is also available as standalone ZIP binaries with all dependencies included,
+* Supports additional video grabbing drivers (such as OpenIMAJ, LTI-CIVIL, JMF, FMJ, OpenCV, VLC, IP Camera),
+* Contains Swing component to display image from webcam / IP / network camera.
+
 ## Maven
 
 ```xml
@@ -48,10 +62,43 @@ window.setVisible(true);
 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 ```
 
-### Display Image From IP / Network Camera
+### Take Picture From IP / Network Camera
 
-For examples of how to use Webcam Capture with **IP cameras** please follow the **[appropriate
+This is simple example of how to use Webcam Capture with **IP / network camera**:
+
+```java
+String address = "http://88.37.116.138/mjpg/video.mjpg ";
+IpCamDevice livecam = new IpCamDevice("Lignano Beach", new URL(address), IpCamMode.PUSH);
+IpCamDriver driver = new IpCamDriver();
+driver.register(livecam);
+Webcam.setDriver(driver);
+Image image = Webcam.getDefault().getImage(); // live picture from Lignano beach (Italia)
+```
+
+For more detailed / complex examples of how to use Webcam Capture with IP / network cameras please follow to **[this
 subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam)**.
+
+### Detect Motion
+
+This code will print appropriate message whenever motion si detected.
+
+```java
+WebcamMotionDetector detector = new WebcamMotionDetector(Webcam.getDefault(), 25, 1000);
+detector.setInterval(100);
+detector.start();
+while (true) {
+    if (detector.isMotion()) {
+    	System.out.printl("Motion detected!");
+    }
+    Thread.sleep(200);
+}
+```
+
+More detailed motion detector example with some fancy GUI can be found **[in this subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-motiondetector)**.
+
+### Use Webcam In Applet
+
+Example of how to enable Webcam Capture capabilities in Java Applet can be found **[in this subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-applet)**.
 
 ## Drivers
 
