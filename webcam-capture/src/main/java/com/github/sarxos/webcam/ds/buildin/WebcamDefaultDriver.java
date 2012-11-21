@@ -8,9 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
+import com.github.sarxos.webcam.ds.buildin.cgt.GetDevicesTask;
 import com.github.sarxos.webcam.ds.buildin.natives.Device;
-import com.github.sarxos.webcam.ds.buildin.natives.DeviceList;
-import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
 
 
 /**
@@ -24,16 +23,12 @@ public class WebcamDefaultDriver implements WebcamDriver {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamDefaultDriver.class);
 
-	private static OpenIMAJGrabber grabber = null;
+	private static final GetDevicesTask DEVICES_TASK = new GetDevicesTask();
+
 	private static List<WebcamDevice> devices = null;
 
 	@Override
 	public List<WebcamDevice> getDevices() {
-
-		if (grabber == null) {
-			LOG.debug("Creating grabber for driver");
-			grabber = new OpenIMAJGrabber();
-		}
 
 		if (devices == null) {
 
@@ -41,8 +36,7 @@ public class WebcamDefaultDriver implements WebcamDriver {
 
 			devices = new ArrayList<WebcamDevice>();
 
-			DeviceList list = grabber.getVideoDevices().get();
-			for (Device device : list.asArrayList()) {
+			for (Device device : DEVICES_TASK.getDevices()) {
 				devices.add(new WebcamDefaultDevice(device));
 			}
 

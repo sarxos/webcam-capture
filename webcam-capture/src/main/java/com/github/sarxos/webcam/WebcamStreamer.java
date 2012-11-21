@@ -1,8 +1,9 @@
 package com.github.sarxos.webcam;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
@@ -22,7 +23,7 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamStreamer.class);
 
-	private static final String BOUNDARY = "mjpeg-frame";
+	private static final String BOUNDARY = "mjpegframe";
 
 	private class Acceptor implements Runnable {
 
@@ -64,6 +65,8 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 
 	private class Connection implements Runnable {
 
+		private static final String CRLF = "\r\n";
+
 		private Socket socket = null;
 
 		public Connection(Socket socket) {
@@ -74,18 +77,29 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 		public void run() {
 
 			BufferedReader br = null;
-			DataOutputStream dos = null;
+			BufferedOutputStream bos = null;
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
 			try {
 
 				br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				dos = new DataOutputStream(socket.getOutputStream());
+				bos = new BufferedOutputStream(socket.getOutputStream());
 
 				try {
-					while (true) {
+
+					while (webcam.isOpen()) {
+
+						if (socket.isInputShutdown()) {
+							break;
+						}
+						if (socket.isClosed()) {
+							break;
+						}
 
 						String line = br.readLine();
-						if (line.isEmpty()) {
+						if (line == null || line.isEmpty()) {
+							bos.write(("--" + BOUNDARY + "--" + CRLF).getBytes());
+							LOG.info("Breaking");
 							break;
 						}
 
@@ -94,37 +108,54 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 							socket.setSoTimeout(0);
 							socket.setKeepAlive(true);
 
-							StringBuilder sb = new StringBuilder();
-							sb.append("HTTP/1.0 200 OK\n");
-							sb.append("Connection: keep-alive\n");
-							sb.append("Cache-Control: no-cache\n");
-							sb.append("Cache-Control: private\n");
-							sb.append("Pragma: no-cache\n");
-							sb.append("Content-type: multipart/x-mixed-replace; boundary=").append(BOUNDARY).append("\n\n");
+							getImage();
 
-							dos.writeBytes(sb.toString());
-							dos.flush();
+							StringBuilder sb = new StringBuilder();
+							sb.append("HTTP/1.0 200 OK").append(CRLF);
+							sb.append("Connection: keep-alive").append(CRLF);
+							sb.append("Cache-Control: no-cache").append(CRLF);
+							sb.append("Cache-Control: private").append(CRLF);
+							sb.append("Pragma: no-cache").append(CRLF);
+							sb.append("Content-type: multipart/x-mixed-replace; boundary=--").append(BOUNDARY).append(CRLF);
+							sb.append(CRLF);
+
+							bos.write(sb.toString().getBytes());
 
 							do {
 
+								baos.reset();
+
+								ImageIO.write(getImage(), "JPG", baos);
+
 								sb.delete(0, sb.length());
+								sb.append("--").append(BOUNDARY).append(CRLF);
+								sb.append("Content-type: image/jpeg").append(CRLF);
+								sb.append("Content-Length: ").append(baos.size()).append(CRLF);
+								sb.append(CRLF);
 
-								sb.append("--").append(BOUNDARY).append("\n");
-								sb.append("Content-type: image/jpeg\n\n");
-
-								dos.writeBytes(sb.toString());
-
-								ImageIO.write(getImage(), "JPG", dos);
-
-								dos.flush();
+								bos.write(sb.toString().getBytes());
+								bos.write(baos.toByteArray());
+								bos.write(CRLF.getBytes());
+								bos.flush();
 
 								Thread.sleep(getDelay());
 
-							} while (true);
+							} while (webcam.isOpen());
 						}
 					}
 				} catch (Exception e) {
-					dos.writeBytes("HTTP/1.0 501 Internal Server Error\n\n\n");
+
+					String message = e.getMessage();
+					if (message != null) {
+						if (message.startsWith("Software caused connection abort")) {
+							LOG.info("User closed stream");
+							return;
+						}
+					}
+
+					LOG.error("Error", e);
+
+					bos.write("HTTP/1.0 501 Internal Server Error\r\n\r\n\r\n".getBytes());
 				}
 
 			} catch (IOException e) {
@@ -137,9 +168,9 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 						LOG.error("Cannot close buffered reader", e);
 					}
 				}
-				if (dos != null) {
+				if (bos != null) {
 					try {
-						dos.close();
+						bos.close();
 					} catch (IOException e) {
 						LOG.error("Cannot close data output stream", e);
 					}

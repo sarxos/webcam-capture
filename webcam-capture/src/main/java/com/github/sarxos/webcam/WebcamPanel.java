@@ -34,6 +34,10 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		public void run() {
 			super.run();
 
+			if (!webcam.isOpen()) {
+				webcam.open();
+			}
+
 			while (webcam.isOpen()) {
 
 				image = webcam.getImage();
@@ -68,8 +72,10 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		this.webcam = webcam;
 		this.webcam.addWebcamListener(this);
 
-		if (!webcam.isOpen()) {
-			webcam.open();
+		if (start) {
+			if (!webcam.isOpen()) {
+				webcam.open();
+			}
 		}
 
 		setPreferredSize(webcam.getViewSize());
@@ -91,6 +97,9 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		super.paintComponent(g);
 
 		if (image == null) {
+			g.setColor(getForeground());
+			g.drawLine(0, 0, getWidth(), getHeight());
+			g.drawLine(0, getHeight(), getWidth(), 0);
 			return;
 		}
 
@@ -126,6 +135,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 	public void start() {
 		if (started.compareAndSet(false, true)) {
+			webcam.open();
 			repainter.start();
 		}
 	}

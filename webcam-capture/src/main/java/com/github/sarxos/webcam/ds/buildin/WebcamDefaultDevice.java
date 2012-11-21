@@ -12,19 +12,28 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
-import org.bridj.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
+import com.github.sarxos.webcam.ds.buildin.cgt.CloseSessionTask;
+import com.github.sarxos.webcam.ds.buildin.cgt.GetImageTask;
+import com.github.sarxos.webcam.ds.buildin.cgt.GetSizeTask;
+import com.github.sarxos.webcam.ds.buildin.cgt.NextFrameTask;
+import com.github.sarxos.webcam.ds.buildin.cgt.StartSessionTask;
 import com.github.sarxos.webcam.ds.buildin.natives.Device;
-import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
 
 
 public class WebcamDefaultDevice implements WebcamDevice {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamDefaultDevice.class);
+
+	private static final NextFrameTask FRAME_TASK = new NextFrameTask();
+	private static final GetImageTask IMAGE_TASK = new GetImageTask();
+	private static final StartSessionTask SESSION_TASK = new StartSessionTask();
+	private static final GetSizeTask SIZE_TASK = new GetSizeTask();
+	private static final CloseSessionTask CLOSE_TASK = new CloseSessionTask();
 
 	/**
 	 * Artificial view sizes. I'm really not sure if will fit into other webcams
@@ -47,7 +56,6 @@ public class WebcamDefaultDevice implements WebcamDevice {
 
 	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 
-	private OpenIMAJGrabber grabber = null;
 	private Device device = null;
 	private Dimension size = null;
 	private ComponentSampleModel sampleModel = null;
@@ -60,7 +68,7 @@ public class WebcamDefaultDevice implements WebcamDevice {
 
 	@Override
 	public String getName() {
-		return device.getNameStr() + " " + device.getIdentifierStr();
+		return String.format("%s %s", device.getNameStr(), device.getIdentifierStr());
 	}
 
 	@Override
@@ -85,14 +93,9 @@ public class WebcamDefaultDevice implements WebcamDevice {
 			throw new WebcamException("Cannot get image when webcam device is not open");
 		}
 
-		grabber.nextFrame();
+		FRAME_TASK.nextFrame();
 
-		Pointer<Byte> image = grabber.getImage();
-		if (image == null) {
-			return null;
-		}
-
-		byte[] bytes = image.getBytes(size.width * size.height * 3);
+		byte[] bytes = IMAGE_TASK.getImage(size);
 		byte[][] data = new byte[][] { bytes };
 
 		DataBufferByte buffer = new DataBufferByte(data, bytes.length, OFFSET);
@@ -105,7 +108,7 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	}
 
 	@Override
-	public synchronized void open() {
+	public void open() {
 
 		if (open) {
 			return;
@@ -115,17 +118,17 @@ public class WebcamDefaultDevice implements WebcamDevice {
 			size = getSizes()[0];
 		}
 
-		grabber = new OpenIMAJGrabber();
-
-		boolean started = grabber.startSession(size.width, size.height, 0, Pointer.pointerTo(device));
+		boolean started = SESSION_TASK.startSession(size, device);
 		if (!started) {
 			throw new WebcamException("Cannot start video data grabber!");
 		}
 
+		Dimension size2 = SIZE_TASK.getSize();
+
 		int w1 = size.width;
-		int w2 = grabber.getWidth();
+		int w2 = size2.width;
 		int h1 = size.height;
-		int h2 = grabber.getHeight();
+		int h2 = size2.height;
 
 		if (w1 != w2 || h1 != h2) {
 			LOG.warn("Different size obtained vs requested - [" + w1 + "x" + h1 + "] vs [" + w2 + "x" + h2 + "]. Setting correct one. New size is [" + w2 + "x" + h2 + "]");
@@ -137,8 +140,8 @@ public class WebcamDefaultDevice implements WebcamDevice {
 
 		int i = 0;
 		do {
-			grabber.nextFrame();
-			grabber.getImage();
+			FRAME_TASK.nextFrame();
+			IMAGE_TASK.getImage(size);
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -156,7 +159,7 @@ public class WebcamDefaultDevice implements WebcamDevice {
 			return;
 		}
 
-		grabber.stopSession();
+		CLOSE_TASK.closeSession();
 		open = false;
 	}
 
