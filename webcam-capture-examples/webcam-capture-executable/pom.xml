@@ -11,6 +11,9 @@
 	<artifactId>webcam-capture-example-executable</artifactId>
 	<packaging>jar</packaging>
 
+	<name>Webcam Capture - Executable Example</name>
+	<description>Example how to create executable application which uses PC webcam</description>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.github.sarxos</groupId>

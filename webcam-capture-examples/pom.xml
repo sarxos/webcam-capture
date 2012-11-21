@@ -17,6 +17,7 @@
 
 	<modules>
 		<module>webcam-capture-applet</module>
+		<module>webcam-capture-executable</module>
 		<module>webcam-capture-motiondetector</module>
 	</modules>
 
