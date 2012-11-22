@@ -4,20 +4,61 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
 
+/**
+ * Webcam device abstraction.
+ * 
+ * @author Bartosz Firyn (SarXos)
+ */
 public interface WebcamDevice {
 
-	public String getName();
+	/**
+	 * Get device name.
+	 * 
+	 * @return Device name
+	 */
+	String getName();
 
-	public Dimension[] getSizes();
+	/**
+	 * Get the list of all possible image resolutions.
+	 * 
+	 * @return Possible resolutions
+	 */
+	Dimension[] getSizes();
 
-	public Dimension getSize();
+	/**
+	 * Get currently set image size.
+	 * 
+	 * @return The size which is currently set
+	 */
+	Dimension getSize();
 
-	public void setSize(Dimension size);
+	/**
+	 * Set new expected image size.
+	 * 
+	 * @param size the size to be set
+	 */
+	void setSize(Dimension size);
 
-	public BufferedImage getImage();
+	/**
+	 * Fetch image from underlying camera.
+	 * 
+	 * @return Image
+	 */
+	BufferedImage getImage();
 
-	public void open();
+	/**
+	 * Open device, it can be closed any time.
+	 */
+	void open();
 
-	public void close();
+	/**
+	 * Close device, however it can be open again.
+	 */
+	void close();
+
+	/**
+	 * Dispose device. After device is disposed it cannot be open again.
+	 */
+	void dispose();
 
 }

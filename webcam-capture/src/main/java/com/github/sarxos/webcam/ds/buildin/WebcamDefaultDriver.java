@@ -2,6 +2,7 @@ package com.github.sarxos.webcam.ds.buildin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,20 +22,34 @@ import com.github.sarxos.webcam.ds.buildin.natives.Device;
  */
 public class WebcamDefaultDriver implements WebcamDriver {
 
+	/**
+	 * Logger.
+	 */
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamDefaultDriver.class);
 
-	private static final GetDevicesTask DEVICES_TASK = new GetDevicesTask();
+	/**
+	 * Synchronous video grabber processor.
+	 */
+	private static final WebcamGrabberProcessor processor = new WebcamGrabberProcessor();
 
-	private static List<WebcamDevice> devices = null;
+	/**
+	 * Task to fetch images list from grabber.
+	 */
+	private static final GetDevicesTask DEVICES_TASK = new GetDevicesTask(processor);
+
+	/**
+	 * Static devices list.
+	 */
+	private static final List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
+
+	private static final AtomicBoolean initialized = new AtomicBoolean(false);
 
 	@Override
 	public List<WebcamDevice> getDevices() {
 
-		if (devices == null) {
+		if (initialized.compareAndSet(false, true)) {
 
 			LOG.debug("Searching devices");
-
-			devices = new ArrayList<WebcamDevice>();
 
 			for (Device device : DEVICES_TASK.getDevices()) {
 				devices.add(new WebcamDefaultDevice(device));

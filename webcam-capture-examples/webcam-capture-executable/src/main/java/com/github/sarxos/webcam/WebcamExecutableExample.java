@@ -14,6 +14,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 import net.sf.image4j.codec.ico.ICODecoder;
 
@@ -66,7 +68,18 @@ public class WebcamExecutableExample extends JFrame implements ActionListener {
 	boolean running = false;
 
 	public static void main(String[] args) throws IOException {
-		new WebcamExecutableExample();
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				new WebcamExecutableExample();
+			}
+		});
 	}
 
 	@Override

@@ -19,8 +19,10 @@ public class JavaCvDevice implements WebcamDevice {
 
 	private int address = -1;
 	private String name = null;
-	private boolean open = false;
 	private FrameGrabber grabber = null;
+
+	private volatile boolean open = false;
+	private volatile boolean disposed = false;
 
 	public JavaCvDevice(int address) {
 		this.address = address;
@@ -66,7 +68,7 @@ public class JavaCvDevice implements WebcamDevice {
 	@Override
 	public void open() {
 
-		if (open) {
+		if (open || disposed) {
 			return;
 		}
 
@@ -79,12 +81,12 @@ public class JavaCvDevice implements WebcamDevice {
 			grabber.start();
 			open = true;
 		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
-			dispose();
+			release();
 			throw new WebcamException(e);
 		}
 	}
 
-	private void dispose() {
+	private void release() {
 		if (grabber != null) {
 			try {
 				grabber.release();
@@ -108,5 +110,10 @@ public class JavaCvDevice implements WebcamDevice {
 		} finally {
 			dispose();
 		}
+	}
+
+	@Override
+	public void dispose() {
+		disposed = true;
 	}
 }

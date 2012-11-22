@@ -37,17 +37,21 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 	private Dimension size = null;
 	private Image image = null;
 	private CaptureStream stream = null;
-	private boolean open = false;
-	private boolean capturing = false;
+
+	private volatile boolean open = false;
+	private volatile boolean capturing = false;
+	private volatile boolean disposed = false;
 
 	public LtiCivilDevice(CaptureDeviceInfo cdi) {
 		this.cdi = cdi;
 	}
 
+	@Override
 	public String getName() {
 		return cdi.getDescription();
 	}
 
+	@Override
 	public Dimension[] getSizes() {
 
 		if (dimensions == null) {
@@ -76,6 +80,7 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 
 			Collections.sort(dimensions, new Comparator<Dimension>() {
 
+				@Override
 				public int compare(Dimension a, Dimension b) {
 					int apx = a.width * a.height;
 					int bpx = b.width * b.height;
@@ -93,6 +98,7 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 		return dimensions.toArray(new Dimension[dimensions.size()]);
 	}
 
+	@Override
 	public BufferedImage getImage() {
 		if (!capturing) {
 			return null;
@@ -100,19 +106,24 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 		return AWTImageConverter.toBufferedImage(image);
 	}
 
+	@Override
 	public void onError(CaptureStream stream, CaptureException e) {
 		LOG.error("Exception in capture stream", e);
 	}
 
+	@Override
 	public void onNewImage(CaptureStream stream, Image image) {
 		this.image = image;
 		this.capturing = true;
 	}
 
+	@Override
 	public void open() {
-		if (open) {
+
+		if (open || disposed) {
 			return;
 		}
+
 		try {
 			stream = LtiCivilDriver.getCaptureSystem().openCaptureDeviceStream(cdi.getDeviceID());
 			stream.setVideoFormat(findFormat());
@@ -155,6 +166,7 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 		throw new RuntimeException("Cannot find RGB24 video format for size [" + size.width + "x" + size.height + "]");
 	}
 
+	@Override
 	public void close() {
 		if (!open) {
 			return;
@@ -167,11 +179,18 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 		}
 	}
 
+	@Override
 	public Dimension getSize() {
 		return size;
 	}
 
+	@Override
 	public void setSize(Dimension d) {
 		this.size = d;
+	}
+
+	@Override
+	public void dispose() {
+		disposed = true;
 	}
 }

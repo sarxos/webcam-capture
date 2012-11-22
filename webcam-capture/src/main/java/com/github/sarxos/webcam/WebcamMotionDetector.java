@@ -52,7 +52,7 @@ public class WebcamMotionDetector {
 		@Override
 		public void run() {
 			running = true;
-			while (running) {
+			while (running && webcam.isOpen()) {
 				detect();
 				try {
 					Thread.sleep(interval);

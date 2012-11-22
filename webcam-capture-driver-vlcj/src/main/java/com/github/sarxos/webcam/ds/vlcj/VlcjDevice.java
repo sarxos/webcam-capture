@@ -26,53 +26,60 @@ public class VlcjDevice implements WebcamDevice {
 	/**
 	 * Artificial view sizes. In future this should be read from media item.
 	 */
+	//@formatter:off
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
 		new Dimension(320, 240),
 	};
+	//@formatter:on
 
-	// list of VLC args by Andrew Davison
-	// (http://fivedots.coe.psu.ac.th/~ad/jg/nui025/snapsWithoutJMF.pdf)
+	//@formatter:off
 	private final static String[] VLC_ARGS = {
+
+		// VLC args by Andrew Davison:
+		// http://fivedots.coe.psu.ac.th/~ad/jg/nui025/snapsWithoutJMF.pdf
 
 		// ... have no idea what is this ...
 		"--intf",
-
+	
 		// no interface
 		"dummy",
-
+	
 		// ... have no idea what is this ...
 		"--vout",
-
+	
 		// no video output
 		"dummy",
-
+	
 		// no audio decoding
 		"--no-audio",
-
+	
 		// do not display title
 		"--no-video-title-show",
-
+	
 		// no stats
 		"--no-stats",
-
+	
 		// no subtitles
 		"--no-sub-autodetect-file",
-
+	
 		// no snapshot previews
 		"--no-snapshot-preview",
-
+	
 		// reduce capture lag/latency
 		"--live-caching=50",
-
+	
 		// turn off warnings
 		"--quiet",
 	};
+	//@formatter:on
 
 	private Dimension size = null;
 	private MediaListItem item = null;
 	private MediaPlayerFactory factory = null;
 	private MediaPlayer player = null;
-	private boolean open = false;
+
+	private volatile boolean open = false;
+	private volatile boolean disposed = false;
 
 	public VlcjDevice(MediaListItem item) {
 		this.item = item;
@@ -122,7 +129,12 @@ public class VlcjDevice implements WebcamDevice {
 	}
 
 	@Override
-	public void open() {
+	public synchronized void open() {
+
+		if (disposed) {
+			LOG.warn("Cannot open device because it has been disposed");
+			return;
+		}
 
 		if (open) {
 			return;
@@ -136,9 +148,9 @@ public class VlcjDevice implements WebcamDevice {
 		// for nix systems this should be changed dshow -> ... !!
 
 		String[] options = {
-			":dshow-vdev=" + item.name(),
-			":dshow-size=" + size.width + "x" + size.height,
-			":dshow-adev=none", // no audio device
+		":dshow-vdev=" + item.name(),
+		":dshow-size=" + size.width + "x" + size.height,
+		":dshow-adev=none", // no audio device
 		};
 
 		player.startMedia(getCapDevice(), options);
@@ -169,7 +181,7 @@ public class VlcjDevice implements WebcamDevice {
 	}
 
 	@Override
-	public void close() {
+	public synchronized void close() {
 
 		if (!open) {
 			return;
@@ -183,4 +195,8 @@ public class VlcjDevice implements WebcamDevice {
 		open = false;
 	}
 
+	@Override
+	public synchronized void dispose() {
+		disposed = true;
+	}
 }

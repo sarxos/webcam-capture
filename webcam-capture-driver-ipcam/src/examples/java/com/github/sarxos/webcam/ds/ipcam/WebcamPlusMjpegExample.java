@@ -20,11 +20,6 @@ import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
  */
 public class WebcamPlusMjpegExample {
 
-	static {
-		System.setProperty("http.proxyHost", "global.proxy.lucent.com");
-		System.setProperty("http.proxyPort", "8000");
-	}
-
 	/**
 	 * Customized webcam driver.
 	 */

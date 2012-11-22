@@ -27,13 +27,10 @@ import com.github.sarxos.webcam.ds.buildin.natives.Device;
 
 public class WebcamDefaultDevice implements WebcamDevice {
 
+	/**
+	 * Logger.
+	 */
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamDefaultDevice.class);
-
-	private static final NextFrameTask FRAME_TASK = new NextFrameTask();
-	private static final GetImageTask IMAGE_TASK = new GetImageTask();
-	private static final StartSessionTask SESSION_TASK = new StartSessionTask();
-	private static final GetSizeTask SIZE_TASK = new GetSizeTask();
-	private static final CloseSessionTask CLOSE_TASK = new CloseSessionTask();
 
 	/**
 	 * Artificial view sizes. I'm really not sure if will fit into other webcams
@@ -49,18 +46,52 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	};
 	//@formatter:on
 
+	/**
+	 * RGB offsets.
+	 */
 	private static final int[] BAND_OFFSETS = new int[] { 0, 1, 2 };
+
+	/**
+	 * Number of bytes in each pixel.
+	 */
 	private static final int[] BITS = { 8, 8, 8 };
+
+	/**
+	 * Image offset.
+	 */
 	private static final int[] OFFSET = new int[] { 0 };
+
+	/**
+	 * Data type used in image.
+	 */
 	private static final int DATA_TYPE = DataBuffer.TYPE_BYTE;
 
+	/**
+	 * Image color space.
+	 */
 	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+
+	/**
+	 * Synchronous webcam video grabber processor.
+	 */
+	private final WebcamGrabberProcessor processor = new WebcamGrabberProcessor();
+
+	// synchronous grabber tasks
+
+	private final NextFrameTask frameTask = new NextFrameTask(processor);
+	private final GetImageTask imageTask = new GetImageTask(processor);
+	private final StartSessionTask sessionTask = new StartSessionTask(processor);
+	private final GetSizeTask sizeTask = new GetSizeTask(processor);
+	private final CloseSessionTask closeTask = new CloseSessionTask(processor);
 
 	private Device device = null;
 	private Dimension size = null;
 	private ComponentSampleModel sampleModel = null;
 	private ColorModel colorModel = null;
+
 	private volatile boolean open = false;
+	private volatile boolean opening = false;
+	private volatile boolean disposed = false;
 
 	protected WebcamDefaultDevice(Device device) {
 		this.device = device;
@@ -93,9 +124,9 @@ public class WebcamDefaultDevice implements WebcamDevice {
 			throw new WebcamException("Cannot get image when webcam device is not open");
 		}
 
-		FRAME_TASK.nextFrame();
+		frameTask.nextFrame();
 
-		byte[] bytes = IMAGE_TASK.getImage(size);
+		byte[] bytes = imageTask.getImage(size);
 		byte[][] data = new byte[][] { bytes };
 
 		DataBufferByte buffer = new DataBufferByte(data, bytes.length, OFFSET);
@@ -110,46 +141,79 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	@Override
 	public void open() {
 
-		if (open) {
+		if (disposed) {
+			LOG.warn("Cannot open webcam when it's already disposed");
 			return;
+		}
+
+		synchronized (device) {
+
+			if (opening) {
+				try {
+					device.wait();
+				} catch (InterruptedException e) {
+					throw new WebcamException("Opening wait interrupted");
+				} finally {
+					opening = false;
+				}
+			}
+
+			if (open) {
+				return;
+			} else {
+				opening = true;
+			}
 		}
 
 		if (size == null) {
 			size = getSizes()[0];
 		}
 
-		boolean started = SESSION_TASK.startSession(size, device);
-		if (!started) {
-			throw new WebcamException("Cannot start video data grabber!");
-		}
+		try {
 
-		Dimension size2 = SIZE_TASK.getSize();
-
-		int w1 = size.width;
-		int w2 = size2.width;
-		int h1 = size.height;
-		int h2 = size2.height;
-
-		if (w1 != w2 || h1 != h2) {
-			LOG.warn("Different size obtained vs requested - [" + w1 + "x" + h1 + "] vs [" + w2 + "x" + h2 + "]. Setting correct one. New size is [" + w2 + "x" + h2 + "]");
-			size = new Dimension(w2, h2);
-		}
-
-		sampleModel = new ComponentSampleModel(DATA_TYPE, size.width, size.height, 3, size.width * 3, BAND_OFFSETS);
-		colorModel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
-
-		int i = 0;
-		do {
-			FRAME_TASK.nextFrame();
-			IMAGE_TASK.getImage(size);
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				LOG.error("Nasty interrupted exception", e);
+			boolean started = sessionTask.startSession(size, device);
+			if (!started) {
+				throw new WebcamException("Cannot start video data grabber!");
 			}
-		} while (i++ < 3);
 
-		open = true;
+			Dimension size2 = sizeTask.getSize();
+
+			int w1 = size.width;
+			int w2 = size2.width;
+			int h1 = size.height;
+			int h2 = size2.height;
+
+			if (w1 != w2 || h1 != h2) {
+				LOG.warn("Different size obtained vs requested - [{}x{}] vs [{}x{}]. Setting correct one. New size is [{}x{}]", new Object[] { w1, h1, w2, h2, w2, h2 });
+				size = new Dimension(w2, h2);
+			}
+
+			sampleModel = new ComponentSampleModel(DATA_TYPE, size.width, size.height, 3, size.width * 3, BAND_OFFSETS);
+			colorModel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
+
+			int i = 0;
+			do {
+
+				frameTask.nextFrame();
+				imageTask.getImage(size);
+
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					LOG.error("Nasty interrupted exception", e);
+				}
+			} while (i++ < 3);
+
+			open = true;
+			opening = false;
+
+		} finally {
+
+			// notify all threads also waiting for open
+			synchronized (device) {
+				device.notifyAll();
+			}
+		}
 	}
 
 	@Override
@@ -159,8 +223,15 @@ public class WebcamDefaultDevice implements WebcamDevice {
 			return;
 		}
 
-		CLOSE_TASK.closeSession();
-		open = false;
+		synchronized (device) {
+			closeTask.closeSession();
+			open = false;
+		}
+	}
+
+	@Override
+	public void dispose() {
+		disposed = true;
 	}
 
 }

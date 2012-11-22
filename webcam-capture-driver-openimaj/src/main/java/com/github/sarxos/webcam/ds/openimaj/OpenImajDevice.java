@@ -34,7 +34,9 @@ public class OpenImajDevice implements WebcamDevice {
 	private Device device = null;
 	private VideoCapture capture = null;
 	private Dimension size = null;
-	private boolean open = false;
+
+	private volatile boolean open = false;
+	private volatile boolean disposed = false;
 
 	public OpenImajDevice(Device device) {
 		this.device = device;
@@ -77,6 +79,11 @@ public class OpenImajDevice implements WebcamDevice {
 	@Override
 	public void open() {
 
+		if (disposed) {
+			LOG.warn("Cannot open device because it's already disposed");
+			return;
+		}
+
 		if (open) {
 			return;
 		}
@@ -116,5 +123,10 @@ public class OpenImajDevice implements WebcamDevice {
 		open = false;
 
 		LOG.info("OpenIMAJ webcam device has been closed");
+	}
+
+	@Override
+	public void dispose() {
+		disposed = true;
 	}
 }

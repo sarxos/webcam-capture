@@ -5,9 +5,15 @@ import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
 
 public abstract class WebcamGrabberTask {
 
-	protected void process() {
-		WebcamGrabberProcessor.getInstance().process(this);
+	protected volatile OpenIMAJGrabber grabber = null;
+
+	protected void process(WebcamGrabberProcessor grabber) {
+		grabber.process(this);
 	}
 
-	protected abstract void handle(OpenIMAJGrabber grabber);
+	public void setGrabber(OpenIMAJGrabber grabber) {
+		this.grabber = grabber;
+	}
+
+	protected abstract void handle();
 }

@@ -94,6 +94,7 @@ public class JmfDevice implements WebcamDevice {
 			semaphore.release();
 		}
 
+		@Override
 		public void controllerUpdate(ControllerEvent ce) {
 			if (ce instanceof StartEvent) {
 				available = true;
@@ -121,6 +122,8 @@ public class JmfDevice implements WebcamDevice {
 	 */
 	private volatile boolean started = false;
 
+	private volatile boolean disposed = false;
+
 	private PlayerStarter starter = null;
 	private Semaphore semaphore = new Semaphore(0, true);
 
@@ -142,6 +145,7 @@ public class JmfDevice implements WebcamDevice {
 		this.cdi = cdi;
 	}
 
+	@Override
 	public String getName() {
 		return cdi.getName();
 	}
@@ -229,6 +233,7 @@ public class JmfDevice implements WebcamDevice {
 		return format;
 	}
 
+	@Override
 	public Dimension[] getSizes() {
 
 		if (dimensions == null) {
@@ -243,6 +248,7 @@ public class JmfDevice implements WebcamDevice {
 
 			Collections.sort(dimensions, new Comparator<Dimension>() {
 
+				@Override
 				public int compare(Dimension a, Dimension b) {
 					int apx = a.width * a.height;
 					int bpx = b.width * b.height;
@@ -260,14 +266,17 @@ public class JmfDevice implements WebcamDevice {
 		return dimensions.toArray(new Dimension[dimensions.size()]);
 	}
 
+	@Override
 	public Dimension getSize() {
 		return dimension;
 	}
 
+	@Override
 	public void setSize(Dimension size) {
 		this.dimension = size;
 	}
 
+	@Override
 	public BufferedImage getImage() {
 
 		if (!open) {
@@ -295,7 +304,13 @@ public class JmfDevice implements WebcamDevice {
 		return buffered;
 	}
 
+	@Override
 	public void open() {
+
+		if (disposed) {
+			LOG.warn("Cannot open device because it's already disposed");
+			return;
+		}
 
 		if (open) {
 			LOG.debug("Opening webcam - already open!");
@@ -344,6 +359,7 @@ public class JmfDevice implements WebcamDevice {
 		open = started && available;
 	}
 
+	@Override
 	public void close() {
 
 		if (!started && !available && !open) {
@@ -364,6 +380,11 @@ public class JmfDevice implements WebcamDevice {
 			player.close();
 			player.deallocate();
 		}
+	}
+
+	@Override
+	public void dispose() {
+		disposed = true;
 	}
 
 }

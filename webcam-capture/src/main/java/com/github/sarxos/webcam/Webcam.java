@@ -45,6 +45,7 @@ public class Webcam {
 		public void run() {
 			LOG.info("Automatic resource deallocation");
 			super.run();
+			webcam.dispose();
 			webcam.close0();
 		}
 	}
@@ -416,5 +417,10 @@ public class Webcam {
 
 	protected WebcamDevice getDevice() {
 		return device;
+	}
+
+	protected void dispose() {
+		device.close();
+		device.dispose();
 	}
 }

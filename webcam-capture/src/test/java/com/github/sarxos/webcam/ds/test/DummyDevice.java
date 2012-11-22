@@ -14,8 +14,8 @@ public class DummyDevice implements WebcamDevice {
 
 	private static final AtomicInteger INSTANCE_NUM = new AtomicInteger(0);
 	private static final Dimension[] DIMENSIONS = new Dimension[] {
-		new Dimension(300, 200),
-		new Dimension(400, 300),
+	new Dimension(300, 200),
+	new Dimension(400, 300),
 	};
 
 	private String name = DummyDevice.class.getSimpleName() + "-" + INSTANCE_NUM.incrementAndGet();
@@ -72,6 +72,11 @@ public class DummyDevice implements WebcamDevice {
 
 	public boolean isOpen() {
 		return open;
+	}
+
+	@Override
+	public void dispose() {
+		// do nothing
 	}
 
 }

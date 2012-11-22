@@ -184,8 +184,10 @@ public class IpCamDevice implements WebcamDevice {
 	private IpCamAuth auth = null;
 	private IpCamHttpClient client = new IpCamHttpClient();
 	private PushImageReader pushReader = null;
-	private boolean open = false;
 	private boolean failOnError = false;
+
+	private volatile boolean open = false;
+	private volatile boolean disposed = false;
 
 	private Dimension[] sizes = null;
 	private Dimension size = null;
@@ -378,6 +380,10 @@ public class IpCamDevice implements WebcamDevice {
 
 	@Override
 	public void open() {
+		if (disposed) {
+			LOG.warn("Device cannopt be open because it's already disposed");
+			return;
+		}
 		open = true;
 	}
 
@@ -422,5 +428,10 @@ public class IpCamDevice implements WebcamDevice {
 
 	public void setFailOnError(boolean failOnError) {
 		this.failOnError = failOnError;
+	}
+
+	@Override
+	public void dispose() {
+		disposed = true;
 	}
 }
