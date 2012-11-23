@@ -94,11 +94,25 @@ while (true) {
 }
 ```
 
-More detailed motion detector example with some fancy GUI can be found **[in this subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-motiondetector)**.
+More detailed motion detector example with some fancy GUI can be found  in
+**[webcam-capture-motiondetector](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-motiondetector)**
+subproject.
 
 ### Use Webcam In Applet
 
-Example of how to enable Webcam Capture capabilities in Java Applet can be found **[in this subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-applet)**.
+Example of how to enable Webcam Capture capabilities in Java Applet can be found in 
+**[webcam-capture-applet](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-applet)**
+subproject. 
+
+### Custom Painter for WebcamPanel
+
+You can very easily create your own image painter which can be used by `WebcamPanel`. Such custom 
+painter can do fantastic things with image from camera, add some effects, filters, etc. Can also 
+perform image analysis and display output in real-time. 
+
+To explore example of how to create simple custom painter, please follow to the 
+**[webcam-capture-painter](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-painter)**
+subproject. I'm sure you can find some fancy stuff there.
 
 ## Drivers
 
