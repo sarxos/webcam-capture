@@ -23,12 +23,106 @@ import org.slf4j.LoggerFactory;
  */
 public class WebcamPanel extends JPanel implements WebcamListener {
 
+	/**
+	 * Interface of the painter used to draw image in panel.
+	 * 
+	 * @author Bartosz Firyn (SarXos)
+	 */
+	public static interface Painter {
+
+		/**
+		 * Paints panel without image.
+		 * 
+		 * @param g2 the graphics 2D object used for drawing
+		 */
+		void paintPanel(WebcamPanel owner, Graphics2D g2);
+
+		/**
+		 * Paints webcam image in panel.
+		 * 
+		 * @param g2 the graphics 2D object used for drawing
+		 */
+		void paintImage(WebcamPanel owner, BufferedImage image, Graphics2D g2);
+	}
+
+	/**
+	 * Default painter used to draw image in panel.
+	 * 
+	 * @author Bartosz Firyn (SarXos)
+	 */
+	public class DefaultPainter implements Painter {
+
+		@Override
+		public void paintPanel(WebcamPanel owner, Graphics2D g2) {
+
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setBackground(Color.BLACK);
+			g2.fillRect(0, 0, getWidth(), getHeight());
+
+			int cx = (getWidth() - 70) / 2;
+			int cy = (getHeight() - 40) / 2;
+
+			g2.setStroke(new BasicStroke(2));
+			g2.setColor(Color.LIGHT_GRAY);
+			g2.fillRoundRect(cx, cy, 70, 40, 10, 10);
+			g2.setColor(Color.WHITE);
+			g2.fillOval(cx + 5, cy + 5, 30, 30);
+			g2.setColor(Color.LIGHT_GRAY);
+			g2.fillOval(cx + 10, cy + 10, 20, 20);
+			g2.setColor(Color.WHITE);
+			g2.fillOval(cx + 12, cy + 12, 16, 16);
+			g2.fillRoundRect(cx + 50, cy + 5, 15, 10, 5, 5);
+			g2.fillRect(cx + 63, cy + 25, 7, 2);
+			g2.fillRect(cx + 63, cy + 28, 7, 2);
+			g2.fillRect(cx + 63, cy + 31, 7, 2);
+
+			String str = starting ? "Initializing" : "No Image";
+			FontMetrics metrics = g2.getFontMetrics(getFont());
+			int w = metrics.stringWidth(str);
+			int h = metrics.getHeight();
+
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+			g2.drawString(str, (getWidth() - w) / 2, cy - h / 2);
+
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setColor(Color.DARK_GRAY);
+			g2.setStroke(new BasicStroke(3));
+			g2.drawLine(0, 0, getWidth(), getHeight());
+			g2.drawLine(0, getHeight(), getWidth(), 0);
+		}
+
+		@Override
+		public void paintImage(WebcamPanel owner, BufferedImage image, Graphics2D g2) {
+			g2.drawImage(image, 0, 0, null);
+		}
+
+	}
+
+	/**
+	 * S/N used by Java to serialize beans.
+	 */
 	private static final long serialVersionUID = 5792962512394656227L;
 
+	/**
+	 * Logger.
+	 */
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamPanel.class);
 
-	private double frequency = 5; // FPS
+	/**
+	 * Minimum FPS frequency.
+	 */
+	public static final double MIN_FREQUENCY = 0.016; // 1 frame per minute
 
+	/**
+	 * Maximum FPS frequency.
+	 */
+	private static final double MAX_FREQUENCY = 25; // 25 frames per second
+
+	/**
+	 * Repainter reads images from camera and forces panel repainting.
+	 * 
+	 * @author Bartosz Firyn (SarXos)
+	 */
 	private class Repainter extends Thread {
 
 		public Repainter() {
@@ -76,80 +170,109 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		}
 	}
 
-	private Webcam webcam = null;
-	private BufferedImage image = null;
-	private Repainter repainter = null;
+	/**
+	 * Painting frequency.
+	 */
+	private double frequency = 5; // FPS
 
+	/**
+	 * Webcam object used to fetch images.
+	 */
+	private Webcam webcam = null;
+
+	/**
+	 * Image currently being displayed.
+	 */
+	private BufferedImage image = null;
+
+	/**
+	 * Repainter is used to fetch images from camera and force panel repaint
+	 * when image is ready.
+	 */
+	private Repainter repainter = new Repainter();
+
+	/**
+	 * Webcam is currently starting.
+	 */
 	private volatile boolean starting = false;
 
+	/**
+	 * Painting is paused.
+	 */
+	private volatile boolean paused = false;
+
+	/**
+	 * Webcam has been started.
+	 */
+	private AtomicBoolean started = new AtomicBoolean(false);
+
+	/**
+	 * Painter used to draw image in panel.
+	 * 
+	 * @see #setPainter(Painter)
+	 * @see #getPainter()
+	 */
+	private Painter painter = new DefaultPainter();
+
+	/**
+	 * Creates webcam panel and automatically start webcam.
+	 * 
+	 * @param webcam the webcam to be used to fetch images
+	 */
+	public WebcamPanel(Webcam webcam) {
+		this(webcam, true);
+	}
+
+	/**
+	 * Creates new webcam panel which display image from camera in you your
+	 * Swing application.
+	 * 
+	 * @param webcam the webcam to be used to fetch images
+	 * @param start true if webcam shall be automatically started
+	 */
 	public WebcamPanel(Webcam webcam, boolean start) {
 
 		this.webcam = webcam;
 		this.webcam.addWebcamListener(this);
 
+		repainter.setName(String.format("%s-repainter", webcam.getName()));
+
+		setPreferredSize(webcam.getViewSize());
+
 		if (start) {
 			if (!webcam.isOpen()) {
 				webcam.open();
 			}
-		}
-
-		setPreferredSize(webcam.getViewSize());
-
-		repainter = new Repainter();
-
-		if (start) {
 			repainter.start();
 		}
 	}
 
-	public WebcamPanel(Webcam webcam) {
-		this(webcam, true);
+	/**
+	 * Set new painter. Painter is a class which pains image visible when
+	 * 
+	 * @param painter the painter object to be set
+	 */
+	public void setPainter(Painter painter) {
+		this.painter = painter;
+	}
+
+	/**
+	 * Get painter used to draw image in webcam panel.
+	 * 
+	 * @return Painter object
+	 */
+	public Painter getPainter() {
+		return painter;
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
-
+		Graphics2D g2 = (Graphics2D) g;
 		if (image == null) {
-			Graphics2D g2 = (Graphics2D) g;
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setBackground(Color.BLACK);
-			g2.fillRect(0, 0, getWidth(), getHeight());
-
-			int cx = (getWidth() - 70) / 2;
-			int cy = (getHeight() - 40) / 2;
-
-			g2.setStroke(new BasicStroke(2));
-			g2.setColor(Color.LIGHT_GRAY);
-			g2.fillRoundRect(cx, cy, 70, 40, 10, 10);
-			g2.setColor(Color.WHITE);
-			g2.fillOval(cx + 5, cy + 5, 30, 30);
-			g2.setColor(Color.LIGHT_GRAY);
-			g2.fillOval(cx + 10, cy + 10, 20, 20);
-			g2.setColor(Color.WHITE);
-			g2.fillOval(cx + 12, cy + 12, 16, 16);
-			g2.fillRoundRect(cx + 50, cy + 5, 15, 10, 5, 5);
-			g2.fillRect(cx + 63, cy + 25, 7, 2);
-			g2.fillRect(cx + 63, cy + 28, 7, 2);
-			g2.fillRect(cx + 63, cy + 31, 7, 2);
-
-			String str = starting ? "Initializing" : "No Image";
-			FontMetrics metrics = g2.getFontMetrics(getFont());
-			int w = metrics.stringWidth(str);
-			int h = metrics.getHeight();
-
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-			g2.drawString(str, (getWidth() - w) / 2, cy - h / 2);
-
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setColor(Color.DARK_GRAY);
-			g2.setStroke(new BasicStroke(3));
-			g2.drawLine(0, 0, getWidth(), getHeight());
-			g2.drawLine(0, getHeight(), getWidth(), 0);
-
-			return;
+			painter.paintPanel(this, g2);
+		} else {
+			painter.paintImage(this, image, g2);
 		}
-
-		g.drawImage(image, 0, 0, null);
 	}
 
 	@Override
@@ -175,21 +298,32 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		}
 	}
 
-	private AtomicBoolean started = new AtomicBoolean(false);
-
-	private volatile boolean paused = false;
-
+	/**
+	 * Open webcam and start rendering.
+	 */
 	public void start() {
 		if (started.compareAndSet(false, true)) {
+
 			starting = true;
+
+			if (repainter == null) {
+				repainter = new Repainter();
+			}
+
 			repainter.start();
 			webcam.open();
 			starting = false;
 		}
 	}
 
+	/**
+	 * Stop rendering and close webcam.
+	 */
 	public void stop() {
-		webcam.close();
+		if (started.compareAndSet(true, false)) {
+			image = null;
+			webcam.close();
+		}
 	}
 
 	/**
@@ -213,14 +347,13 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	}
 
 	/**
-	 * @return Rendering frequency (in FPS).
+	 * Get rendering frequency in FPS (equivalent to Hz).
+	 * 
+	 * @return Rendering frequency
 	 */
 	public double getFrequency() {
 		return frequency;
 	}
-
-	private static final double MIN_FREQUENCY = 0.016; // 1 frame per minute
-	private static final double MAX_FREQUENCY = 25; // 25 frames per second
 
 	/**
 	 * Set rendering frequency (in Hz or FPS). Minimum frequency is 0.016 (1
@@ -238,4 +371,12 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		this.frequency = frequency;
 	}
 
+	/**
+	 * Is webcam starting.
+	 * 
+	 * @return
+	 */
+	public boolean isStarting() {
+		return starting;
+	}
 }
