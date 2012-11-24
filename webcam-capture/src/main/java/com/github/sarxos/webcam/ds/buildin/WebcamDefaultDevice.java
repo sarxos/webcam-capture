@@ -27,6 +27,13 @@ import com.github.sarxos.webcam.ds.buildin.natives.Device;
 
 public class WebcamDefaultDevice implements WebcamDevice {
 
+	public static final Dimension SIZE_QQVGA = new Dimension(176, 144);
+	public static final Dimension SIZE_QVGA = new Dimension(320, 240);
+	public static final Dimension SIZE_CIF = new Dimension(352, 288);
+	public static final Dimension SIZE_HVGA = new Dimension(480, 400);
+	public static final Dimension SIZE_VGA = new Dimension(640, 480);
+	public static final Dimension SIZE_XGA = new Dimension(1024, 768);
+
 	/**
 	 * Logger.
 	 */
@@ -38,11 +45,12 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	 */
 	//@formatter:off
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
-		new Dimension(176, 144),
-		new Dimension(320, 240),
-		new Dimension(352, 288),
-		new Dimension(640, 400),
-		new Dimension(640, 480),
+		SIZE_QQVGA,
+		SIZE_QVGA,
+		SIZE_CIF,
+		SIZE_HVGA,
+		SIZE_VGA,
+		SIZE_XGA,
 	};
 	//@formatter:on
 
@@ -128,6 +136,11 @@ public class WebcamDefaultDevice implements WebcamDevice {
 
 		byte[] bytes = imageTask.getImage(size);
 		byte[][] data = new byte[][] { bytes };
+
+		if (bytes == null) {
+			LOG.error("Images byte array is null!");
+			return null;
+		}
 
 		DataBufferByte buffer = new DataBufferByte(data, bytes.length, OFFSET);
 		WritableRaster raster = Raster.createWritableRaster(sampleModel, buffer, null);
