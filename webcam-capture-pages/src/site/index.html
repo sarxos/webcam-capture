@@ -31,7 +31,7 @@
         <div class="downloads">
           <span>Download:</span>
           <ul>
-            <li><a href="http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.5/webcam-capture-0.3.5-dist.zip" class="button">ZIP</a></li>
+            <li><a href="http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.6/webcam-capture-0.3.6-dist.zip" class="button">ZIP</a></li>
           </ul>
         </div>
       </div><!-- end banner -->
@@ -74,15 +74,18 @@ drivers to extend and/or replace default functionality.
 
 <p>
 <ul>
-<li><b>Simple API</b> - write only few lines of code and start capturing images.</li>
-<li><b>Build-in video driver</b> - default build-in video grabber is provided, so you don't need to install any additional software (such as JMF, etc).</li>
+<li><b>Simple and thread-safe API</b> - write only few lines of code and start capturing images.</li>
+<li><b>Work standalone</b> - no additional software has to be installed to use it.</li>
 <li><b>System independent</b> - it will run without problems on most widely used operating systems - Windows (2k/XP/Vista/7, both 32- and 64-bit), Linux (x86, x64 and 32-bit ARM) and Mac OS X.</li>
+<li><b>Build-in video driver</b> - default build-in video grabber is provided, so you don't need to install any additional software (such as JMF, etc).</li>
 <li><b>Implementation independent</b> - write your code once and don't care which capture framework you will be using in future (LTI-CIVIL, JMF, QTJ, etc).</li>
 <li><b>Automated resources management</b> - you do not have to remember to deallocate resources used by your capturing device, library will always do that for you (while VM has been closed gracefully).</li>
+<li><b>Motion detector</b> - build in motion detector makes it easy to implement motion detecting features.</li>
+<li><b>Available in Maven Central</b> - it is available in Maven Central so your project can be deployed there too.</li>
+<li><b>Re-streamer</b> - simple JPEG/MJPEG re-streamer is build in, just run it and enjoy hosting your live stream.</li>
+<li><b>Swing ready</b> - contains Swing component to display images, together with painter API and thread-safe API which prevents Swing EDT from blocking issues when using camera.</li>
 </ul>
 </p>
-
-
 
 <h2>How To Start</h2>
 
@@ -97,7 +100,7 @@ project if you are using one of the dependency manager:
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.sarxos&lt;/groupId&gt;
     &lt;artifactId&gt;webcam-capture&lt;/artifactId&gt;
-    &lt;version&gt;0.3.5&lt;/version&gt;
+    &lt;version&gt;0.3.6&lt;/version&gt;
 &lt;/dependency&gt;
 </pre>
 
@@ -399,7 +402,7 @@ WebcamLogConfigurator.configure("path/to/logback.xml");
 </pre>
 
 
-<h3>Want More?</h3>
+<h2>More Examples?</h2>
 
 <p>
 There are more examples available in <b>src/example</b>, don't forget to 

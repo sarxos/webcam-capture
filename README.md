@@ -11,17 +11,17 @@ Complete documentation, API, examples, tutorials and many more can be found here
 
 ## Features
 
-* Define simple API,
-* Do not require additional software to be installed on PC,
+* Simple and thread-safe API,
+* No additional software required,
 * Supports multiple platforms (Windows, Linux, Mac OS, etc) and various architectures (32-bit, 64-bit, ARM),
-* Can stream images from build-in or USB-connected PC webcams, 
-* Can stream images from IP / network cameras,
+* Stream images from build-in or USB-connected PC webcams, 
+* Stream images from IP / network cameras,
+* Detect motion,
+* Available in Maven Central,
 * Can re-stream images,
-* Can detect motion,
-* Is available in Maven Central,
-* Is also available as standalone ZIP binaries with all dependencies included,
+* Also available as standalone ZIP binaries with all dependencies included,
 * Supports additional video grabbing drivers (such as OpenIMAJ, LTI-CIVIL, JMF, FMJ, OpenCV, VLC, IP Camera),
-* Contains Swing component to display image from webcam / IP / network camera.
+* Contains Swing component to display image from webcam / IP / network camera,
 
 ## Maven
 
@@ -29,11 +29,11 @@ Complete documentation, API, examples, tutorials and many more can be found here
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3.5</version>
+	<version>0.3.6</version>
 </dependency>
 ```
 
-If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.5/webcam-capture-0.3.5-dist.zip)**
+If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.6/webcam-capture-0.3.6-dist.zip)**
 you can download ZIP containing all required 3rd-party JARs.
 
 ## Examples
@@ -113,6 +113,28 @@ perform image analysis and display output in real-time.
 To explore example of how to create simple custom painter, please follow to the 
 **[webcam-capture-painter](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-painter)**
 subproject. I'm sure you can find some fancy stuff there.
+
+### Read QR Codes
+
+Example presenting how to read QR codes with _Webcam Capture_ and 
+[ZXing](https://github.com/zxing/zxing) project is available in 
+**[webcam-capture-qrcode](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-qrcode)**
+subproject.
+
+```java
+BufferedImage image = webcam.getImage();
+LuminanceSource source = new BufferedImageLuminanceSource(image);
+BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+try {
+	Result result = new MultiFormatReader().decode(bitmap);
+	if (result != null) {
+		System.out.println("QR code text: " + result.getText());
+	}
+} catch (NotFoundException e) {
+	System.out.println("No QR code in camera view");
+}
+```
 
 ## Drivers
 
