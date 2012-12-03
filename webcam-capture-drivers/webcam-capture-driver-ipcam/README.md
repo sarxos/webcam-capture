@@ -67,7 +67,7 @@ f.setVisible(true);
 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 ```
 
-![Night Tree Somewhere](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-driver-ipcam/src/etc/resources/night-tree.png "Night Tree Somewhere")
+![Night Tree Somewhere](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-drivers/webcam-capture-driver-ipcam/src/etc/resources/night-tree.png "Night Tree Somewhere")
 
 ### Example 2
 
@@ -92,7 +92,7 @@ f.setVisible(true);
 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 ```
 
-![Dasding Studio Live IP Camera](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-driver-ipcam/src/etc/resources/dasding-live.png "Dasding Studio Live IP Camera")
+![Dasding Studio Live IP Camera](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-drivers/webcam-capture-driver-ipcam/src/etc/resources/dasding-live.png "Dasding Studio Live IP Camera")
 
 ### Example 3
 
@@ -119,7 +119,7 @@ f.setVisible(true);
 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 ```
 
-![Lignano Beach](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-driver-ipcam/src/etc/resources/lignano-beach.png "Lignano Beach")
+![Lignano Beach](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-drivers/webcam-capture-driver-ipcam/src/etc/resources/lignano-beach.png "Lignano Beach")
 
 ### Need More Examples ???
 
