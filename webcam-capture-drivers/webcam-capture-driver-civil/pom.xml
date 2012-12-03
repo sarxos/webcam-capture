@@ -4,24 +4,22 @@
 
 	<parent>
 		<groupId>com.github.sarxos</groupId>
-		<artifactId>webcam-capture-parent</artifactId>
+		<artifactId>webcam-capture-drivers</artifactId>
 		<version>0.3.7-SNAPSHOT</version>
 	</parent>
+
+	<artifactId>webcam-capture-driver-civil</artifactId>
 	
-	<artifactId>webcam-capture-driver-vlcj</artifactId>
-	<packaging>jar</packaging>
-	
-	<name>Webcam Capture - VLCj Driver</name>
-	<description>Webcam Capture driver using vlcj framework to grab  frames from camera</description>
+	<name>Webcam Capture - LTI CIVIL Driver</name>
+	<description>This is LTI Civil implementation of webcam video driver. It allows you to capture webcam images using LTI-CIVIL library.</description>
 
 	<repositories>
 		<repository>
-			<id>caprica</id>
-			<name>Caprica Software</name>
-			<url>http://www.capricasoftware.co.uk/repo</url>
+			<id>sarxos-repo</id>
+			<url>http://repo.sarxos.pl/maven2</url>
 		</repository>
 	</repositories>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
@@ -29,12 +27,12 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>uk.co.caprica</groupId>
-			<artifactId>vlcj</artifactId>
-			<version>2.2.0-SNAPSHOT</version>
+			<groupId>org.lti-civil</groupId>
+			<artifactId>lti-civil-no-swt</artifactId>
+			<version>20070920-1721</version>
 		</dependency>
 	</dependencies>
-
+	
 	<build>
 		<plugins>
 			<plugin>
