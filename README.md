@@ -76,7 +76,7 @@ Image image = Webcam.getDefault().getImage(); // live picture from Lignano beach
 ```
 
 For more detailed / complex examples of how to use Webcam Capture with IP / network cameras please follow to **[this
-subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam)**.
+subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam)**.
 
 ### Detect Motion
 
@@ -116,8 +116,8 @@ subproject. I'm sure you can find some fancy stuff there.
 
 ### Read QR Codes
 
-Example presenting how to read QR codes with _Webcam Capture_ and 
-[ZXing](https://github.com/zxing/zxing) project is available in 
+Example presenting how to read QR codes using _Webcam Capture_ together with 
+[ZXing](https://github.com/zxing/zxing) is available in 
 **[webcam-capture-qrcode](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-qrcode)**
 subproject.
 
@@ -141,18 +141,18 @@ try {
 Webcam Capture can utilize additional drivers to extend its own functionality. Currently below
 drivers are stable and available in Maven Central:
 
-* **[IP Camera Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam)** (adds IP / network cameras support)  
-* **[JMF Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-jmf)** (JMF replacement for build-in webcam driver)
+* **[IP Camera Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam)** (adds IP / network cameras support)  
+* **[JMF Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf)** (JMF replacement for build-in webcam driver)
 
 Stable but not available in Maven Central:
 
-* **[LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-civil)** (LTI-CIVIL replacement for build-in webcam driver)
-* **[OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-civil)** (OpenIMAJ replacement for build-in webcam driver)
+* **[LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-civil)** (LTI-CIVIL replacement for build-in webcam driver)
+* **[OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-civil)** (OpenIMAJ replacement for build-in webcam driver)
 
 Unstable drivers (experimental stuff, can be dropped in future):
 
-* **[OpenCV Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-javacv)** (JavaCV / OpenCV replacement for build-in webcam driver)  
-* **[VLC Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-vlcj)** (VLC replacement for build-in webcam driver)
+* **[OpenCV Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv)** (JavaCV / OpenCV replacement for build-in webcam driver)  
+* **[VLC Driver](https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj)** (VLC replacement for build-in webcam driver)
 
 ## License
 
