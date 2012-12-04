@@ -52,6 +52,8 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	 */
 	public class DefaultPainter implements Painter {
 
+		private String name = null;
+
 		@Override
 		public void paintPanel(WebcamPanel owner, Graphics2D g2) {
 
@@ -76,26 +78,35 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			g2.fillRect(cx + 63, cy + 28, 7, 2);
 			g2.fillRect(cx + 63, cy + 31, 7, 2);
 
+			g2.setColor(Color.DARK_GRAY);
+			g2.setStroke(new BasicStroke(3));
+			g2.drawLine(0, 0, getWidth(), getHeight());
+			g2.drawLine(0, getHeight(), getWidth(), 0);
+
 			String str = starting ? "Initializing" : "No Image";
 			FontMetrics metrics = g2.getFontMetrics(getFont());
 			int w = metrics.stringWidth(str);
 			int h = metrics.getHeight();
 
+			g2.setColor(Color.WHITE);
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-			g2.drawString(str, (getWidth() - w) / 2, cy - h / 2);
+			g2.drawString(str, (getWidth() - w) / 2, cy - h);
 
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setColor(Color.DARK_GRAY);
-			g2.setStroke(new BasicStroke(3));
-			g2.drawLine(0, 0, getWidth(), getHeight());
-			g2.drawLine(0, getHeight(), getWidth(), 0);
+			if (name == null) {
+				name = webcam.getName();
+			}
+
+			str = name;
+			w = metrics.stringWidth(str);
+			h = metrics.getHeight();
+
+			g2.drawString(str, (getWidth() - w) / 2, cy - 2 * h);
 		}
 
 		@Override
 		public void paintImage(WebcamPanel owner, BufferedImage image, Graphics2D g2) {
 			g2.drawImage(image, 0, 0, null);
 		}
-
 	}
 
 	/**
@@ -231,6 +242,10 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	 * @param start true if webcam shall be automatically started
 	 */
 	public WebcamPanel(Webcam webcam, boolean start) {
+
+		if (webcam == null) {
+			throw new IllegalArgumentException(String.format("Webcam argument in %s constructor cannot be null!", getClass().getSimpleName()));
+		}
 
 		this.webcam = webcam;
 		this.webcam.addWebcamListener(this);
