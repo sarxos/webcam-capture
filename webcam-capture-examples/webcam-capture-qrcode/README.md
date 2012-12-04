@@ -6,7 +6,10 @@ This example show how to read QR codes with Webcam Capture.
 
 This example show how to process QR codes with your webcam using 
 [Webcam Capture](https://github.com/sarxos/webcam-capture) 
-project together with [ZXing](https://github.com/zxing/zxing) library. 
+project together with [ZXing](https://github.com/zxing/zxing) library.
+
+Demo showing how it is working is **[available](http://youtu.be/JLUJWgveEco)** 
+on YouTube. 
 
 ### Screenshoots:
 
@@ -23,6 +26,14 @@ side there is a text area containing QR code data. In this case this is just a l
 to the web page from where I took my QR code example.
 
 ![QR Code Example Application](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/qrcode-zxing.png "QR Code Example Application")
+
+Some other QR codes:
+
+![QR Code 2](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/qrcode2.jpg "QR Code 2")
+![QR Code 3](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/qrcode3.jpg "QR Code 3")
+![QR Code 4](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/qrcode4.jpg "QR Code 4")
+![QR Code 5](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/qrcode5.jpg "QR Code 5")
+![QR Code 6](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/qrcode6.jpg "QR Code 6")
 
 ## License
 
