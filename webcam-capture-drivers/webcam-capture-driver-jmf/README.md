@@ -14,11 +14,11 @@ installed on your PC.
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-jmf</artifactId>
-	<version>0.3.5</version>
+	<version>0.3.6</version>
 </dependency>
 ```
 
-If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-jmf/0.3.5/webcam-capture-driver-jmf-0.3.5-dist.zip)**
+If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-jmf/0.3.6/webcam-capture-driver-jmf-0.3.6-dist.zip)**
 you can download ZIP containing all required 3rd-party JARs.
 
 ## License
