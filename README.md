@@ -114,9 +114,9 @@ To explore example of how to create simple custom painter, please follow to the
 **[webcam-capture-painter](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-painter)**
 subproject. I'm sure you can find some fancy stuff there.
 
-### Read QR Codes
+### Read QR / DataMatrix / Bar Codes
 
-Example presenting how to read QR codes using _Webcam Capture_ together with 
+Example presenting how to read QR / DataMatrix / Bar codes using _Webcam Capture_ together with 
 [ZXing](https://github.com/zxing/zxing) is available in 
 **[webcam-capture-qrcode](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-qrcode)**
 subproject.
