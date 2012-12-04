@@ -33,7 +33,7 @@ public class WebcamQRCodeExample extends JFrame implements Runnable, ThreadFacto
 		super();
 
 		setLayout(new FlowLayout());
-		setTitle("Read QR Code With Webcam");
+		setTitle("Read QR / Bar Code With Webcam");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		webcam = Webcam.getWebcams().get(0);

@@ -1,10 +1,10 @@
 # Webcam Capture QR Code Reader Example
 
-This example show how to read QR codes with Webcam Capture.
+This example show how to read QR and bar codes with Webcam Capture.
  
 ## What Is This
 
-This example show how to process QR codes with your webcam using 
+This example show how to process QR and bar codes with your webcam using 
 [Webcam Capture](https://github.com/sarxos/webcam-capture) 
 project together with [ZXing](https://github.com/zxing/zxing) library.
 
@@ -17,17 +17,19 @@ First I took a picture of some sample QR code I found on Google
 ([link](http://www.google.pl/imgres?um=1&hl=pl&client=firefox-a&sa=N&tbo=d&rls=org.mozilla:en-US:official&biw=1366&bih=552&tbm=isch&tbnid=ZnVvKF0A2BGNTM:&imgrefurl=http://www.qrstuff.com/&docid=1A-zeI71ulZS1M&imgurl=http://www.qrstuff.com/images/sample.png&w=3000&h=3000&ei=yLSwUNTdCIOC4gS1xIGIBQ&zoom=1&iact=hc&vpx=154&vpy=141&dur=1160&hovh=225&hovw=225&tx=124&ty=78&sig=117284320547613276213&page=1&tbnh=149&tbnw=159&start=0&ndsp=24&ved=1t:429,r:1,s:0,i:87))
 and then put it opposite to my build-in PC web camera.
 
-This is picture from my cell phone:
-
-![QR Code](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/20121124.jpg "QR Code")
-
 In the application window webcam image is displayed on the left side, and on the right
 side there is a text area containing QR code data. In this case this is just a link
 to the web page from where I took my QR code example.
 
 ![QR Code Example Application](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/qrcode-zxing.png "QR Code Example Application")
 
-Some other QR codes:
+Some bar codes:
+
+![Bar Code 1](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/bar1.jpg "Bar Code 1")
+![Bar Code 2](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/bar2.jpg "Bar Code 2")
+![Bar Code 3](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/bar3.jpg "Bar Code 3")
+
+Some QR codes:
 
 ![QR Code 2](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/qrcode2.jpg "QR Code 2")
 ![QR Code 3](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-qrcode/src/etc/resources/qrcode3.jpg "QR Code 3")
