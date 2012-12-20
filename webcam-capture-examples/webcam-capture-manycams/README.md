@@ -14,7 +14,7 @@ is ready in less than 1 second.
 
 Camera used to perform tests:
 
-![Camera](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-manycams/src/etc/resources/not-running.jpg "Camera")
+![Camera](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-manycams/src/etc/resources/camera.jpg "Camera")
 
 ### Screenshoots:
 
