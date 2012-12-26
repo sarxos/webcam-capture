@@ -129,6 +129,7 @@
 						<Private-Package>
 							com.github.sarxos.webcam.ds.buildin*
 						</Private-Package>
+						<Include-Resources>{maven-resources}</Include-Resources>
 					</instructions>
 				</configuration>
 			</plugin>
