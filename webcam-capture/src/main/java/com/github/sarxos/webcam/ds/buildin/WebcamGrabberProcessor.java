@@ -63,7 +63,8 @@ public class WebcamGrabberProcessor {
 
 	/**
 	 * Internal task used to create new grabber. Yeah, native grabber
-	 * construction also has to be super-synchronized.
+	 * construction, same as all other methods invoked on its instance, also has
+	 * to be super-synchronized.
 	 * 
 	 * @author Bartosz Firyn (SarXos)
 	 */
@@ -128,9 +129,9 @@ public class WebcamGrabberProcessor {
 		synchronized (this) {
 			if (grabber == null) {
 				NewGrabberTask grabberTask = new NewGrabberTask();
-				tasks.offer(grabberTask);
 				try {
 					synchronized (grabberTask) {
+						tasks.offer(grabberTask);
 						grabberTask.wait();
 						grabber = grabberTask.getGrabber();
 					}
