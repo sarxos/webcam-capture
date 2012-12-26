@@ -10,6 +10,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
 
 
@@ -57,6 +58,8 @@ public class Webcam {
 	 * Webcam listeners.
 	 */
 	private List<WebcamListener> listeners = new ArrayList<WebcamListener>();
+
+	private List<Dimension> customSizes = new ArrayList<Dimension>();
 
 	private ShutdownHook hook = null;
 	private WebcamDevice device = null;
@@ -192,6 +195,18 @@ public class Webcam {
 		return device.getSizes();
 	}
 
+	public void setCustomViewSizes(Dimension[] sizes) {
+		if (sizes == null) {
+			customSizes.clear();
+			return;
+		}
+		customSizes = Arrays.asList(sizes);
+	}
+
+	public Dimension[] getCustomViewSizes() {
+		return customSizes.toArray(new Dimension[customSizes.size()]);
+	}
+
 	public void setViewSize(Dimension size) {
 
 		if (size == null) {
@@ -200,12 +215,22 @@ public class Webcam {
 
 		// check if dimension is valid
 
+		Dimension[] predefined = getViewSizes();
+		Dimension[] custom = getCustomViewSizes();
+
 		boolean ok = false;
-		Dimension[] sizes = getViewSizes();
-		for (Dimension d : sizes) {
+		for (Dimension d : predefined) {
 			if (d.width == size.width && d.height == size.height) {
 				ok = true;
 				break;
+			}
+		}
+		if (!ok) {
+			for (Dimension d : custom) {
+				if (d.width == size.width && d.height == size.height) {
+					ok = true;
+					break;
+				}
 			}
 		}
 
@@ -213,7 +238,10 @@ public class Webcam {
 			StringBuilder sb = new StringBuilder("Incorrect dimension [");
 			sb.append(size.width).append("x").append(size.height).append("] ");
 			sb.append("possible ones are ");
-			for (Dimension d : sizes) {
+			for (Dimension d : predefined) {
+				sb.append("[").append(d.width).append("x").append(d.height).append("] ");
+			}
+			for (Dimension d : custom) {
 				sb.append("[").append(d.width).append("x").append(d.height).append("] ");
 			}
 			throw new IllegalArgumentException(sb.toString());
@@ -415,10 +443,21 @@ public class Webcam {
 		DRIVERS_LIST.add(clazzName);
 	}
 
-	protected WebcamDevice getDevice() {
+	/**
+	 * Return underlying webcam device. Depending on the driver used to discover
+	 * devices, this method can return instances of different class. By default
+	 * {@link WebcamDefaultDevice} is returned when no external driver is used.
+	 * 
+	 * @return Underlying webcam device instance
+	 */
+	public WebcamDevice getDevice() {
 		return device;
 	}
 
+	/**
+	 * Completely dispose capture device. After this operation webcam cannot be
+	 * used any more and reinstantiation is required.
+	 */
 	protected void dispose() {
 		device.close();
 		device.dispose();

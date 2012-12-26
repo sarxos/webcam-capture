@@ -32,7 +32,14 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	public static final Dimension SIZE_CIF = new Dimension(352, 288);
 	public static final Dimension SIZE_HVGA = new Dimension(480, 400);
 	public static final Dimension SIZE_VGA = new Dimension(640, 480);
+	public static final Dimension SIZE_PAL = new Dimension(768, 576);
+	public static final Dimension SIZE_SVGA = new Dimension(800, 600);
 	public static final Dimension SIZE_XGA = new Dimension(1024, 768);
+	public static final Dimension SIZE_HD720 = new Dimension(1280, 720);
+	public static final Dimension SIZE_WXGA = new Dimension(1280, 768);
+	public static final Dimension SIZE_SXGA = new Dimension(1280, 1024);
+	public static final Dimension SIZE_UXGA = new Dimension(1600, 1200);
+	public static final Dimension SIZE_QXGA = new Dimension(2048, 1536);
 
 	/**
 	 * Logger.
@@ -96,6 +103,7 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	private Dimension size = null;
 	private ComponentSampleModel sampleModel = null;
 	private ColorModel colorModel = null;
+	private boolean failOnSizeMismatch = false;
 
 	private volatile boolean open = false;
 	private volatile boolean opening = false;
@@ -197,6 +205,11 @@ public class WebcamDefaultDevice implements WebcamDevice {
 			int h2 = size2.height;
 
 			if (w1 != w2 || h1 != h2) {
+
+				if (failOnSizeMismatch) {
+					throw new WebcamException(String.format("Different size obtained vs requested - [%dx%d] vs [%dx%d]", w1, h1, w2, h2));
+				}
+
 				LOG.warn("Different size obtained vs requested - [{}x{}] vs [{}x{}]. Setting correct one. New size is [{}x{}]", new Object[] { w1, h1, w2, h2, w2, h2 });
 				size = new Dimension(w2, h2);
 			}
@@ -222,7 +235,7 @@ public class WebcamDefaultDevice implements WebcamDevice {
 
 		} finally {
 
-			// notify all threads also waiting for open
+			// notify all threads which are also waiting for device to be open
 			synchronized (device) {
 				device.notifyAll();
 			}
@@ -247,4 +260,13 @@ public class WebcamDefaultDevice implements WebcamDevice {
 		disposed = true;
 	}
 
+	/**
+	 * Determines if device should fail when requested image size is different
+	 * than actually received.
+	 * 
+	 * @param fail the fail on size mismatch flag, true or false
+	 */
+	public void setFailOnSizeMismatch(boolean fail) {
+		this.failOnSizeMismatch = fail;
+	}
 }
