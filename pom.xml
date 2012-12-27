@@ -29,6 +29,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.repoid>webcam-capture</project.repoid>
+		<project.assembly.descriptor>../distribution.xml</project.assembly.descriptor>
 	</properties>
 
 	<organization>
@@ -185,7 +186,7 @@
 							<version>2.3</version>
 							<configuration>
 								<descriptors>
-									<descriptor>../distribution.xml</descriptor>
+									<descriptor>${project.assembly.descriptor}</descriptor>
 								</descriptors>
 							</configuration>
 							<executions>
