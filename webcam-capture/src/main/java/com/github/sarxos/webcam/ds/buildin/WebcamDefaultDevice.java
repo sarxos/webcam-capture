@@ -50,7 +50,7 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	 * Artificial view sizes. I'm really not sure if will fit into other webcams
 	 * but hope that OpenIMAJ can handle this.
 	 */
-	//@formatter:off
+	// @formatter:off
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
 		SIZE_QQVGA,
 		SIZE_QVGA,
@@ -59,7 +59,7 @@ public class WebcamDefaultDevice implements WebcamDevice {
 		SIZE_VGA,
 		SIZE_XGA,
 	};
-	//@formatter:on
+	// @formatter:on
 
 	/**
 	 * RGB offsets.

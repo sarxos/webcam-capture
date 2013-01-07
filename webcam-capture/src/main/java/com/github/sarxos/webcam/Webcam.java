@@ -23,13 +23,13 @@ public class Webcam {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Webcam.class);
 
-	//@formatter:off
+	// @formatter:off
 	private static final String[] DRIVERS_DEFAULT = new String[] {
 		"com.github.sarxos.webcam.ds.openimaj.OpenImajDriver",
 		"com.github.sarxos.webcam.ds.civil.LtiCivilDriver",
 		"com.github.sarxos.webcam.ds.jmf.JmfDriver",
 	};
-	//@formatter:on
+	// @formatter:on
 
 	private static final List<String> DRIVERS_LIST = new ArrayList<String>(Arrays.asList(DRIVERS_DEFAULT));
 	private static final List<Class<?>> DRIVERS_CLASS_LIST = new ArrayList<Class<?>>();
@@ -53,6 +53,11 @@ public class Webcam {
 
 	private static WebcamDriver driver = null;
 	private static List<Webcam> webcams = null;
+
+	/**
+	 * Is automated deallocation on TERM signal enabled.
+	 */
+	private static volatile boolean deallocOnTermSignal = false;
 
 	/**
 	 * Webcam listeners.
@@ -144,7 +149,7 @@ public class Webcam {
 	}
 
 	/**
-	 * Close webcam.
+	 * Close webcam (internal impl).
 	 */
 	private void close0() {
 
@@ -285,7 +290,14 @@ public class Webcam {
 				driver = new WebcamDefaultDriver();
 			}
 
-			for (WebcamDevice device : driver.getDevices()) {
+			List<WebcamDevice> devices = driver.getDevices();
+
+			if (deallocOnTermSignal) {
+				LOG.warn("Automated deallocation on TERM signal is enabled!");
+				WebcamDeallocator.store(devices.toArray(new WebcamDevice[devices.size()]));
+			}
+
+			for (WebcamDevice device : devices) {
 				webcams.add(new Webcam(device));
 			}
 
@@ -461,5 +473,20 @@ public class Webcam {
 	protected void dispose() {
 		device.close();
 		device.dispose();
+	}
+
+	/**
+	 * <b>CAUTION!!!</b><br>
+	 * <br>
+	 * This is experimental feature to be used mostly in in development phase.
+	 * After you set handle term signal to true, and fetch capture devices,
+	 * Webcam Capture API will listen for TERM signal and try to close all
+	 * devices after it has been received. <b>This feature can be unstable on
+	 * some systems!</b>
+	 * 
+	 * @param on
+	 */
+	public static void handleTermSignal(boolean on) {
+		deallocOnTermSignal = on;
 	}
 }
