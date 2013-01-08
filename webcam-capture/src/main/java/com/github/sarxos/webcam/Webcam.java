@@ -6,6 +6,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +41,7 @@ public class Webcam {
 	private static final List<String> DRIVERS_LIST = new ArrayList<String>(Arrays.asList(DRIVERS_DEFAULT));
 	private static final List<Class<?>> DRIVERS_CLASS_LIST = new ArrayList<Class<?>>();
 
-	private static class ShutdownHook extends Thread {
+	private static final class ShutdownHook extends Thread {
 
 		private Webcam webcam = null;
 
@@ -50,6 +57,32 @@ public class Webcam {
 			webcam.close0();
 		}
 	}
+
+	private static final class WebcamsDiscovery implements Callable<List<Webcam>> {
+
+		private final WebcamDriver driver;
+
+		public WebcamsDiscovery(WebcamDriver driver) {
+			this.driver = driver;
+		}
+
+		@Override
+		public List<Webcam> call() throws Exception {
+			List<Webcam> webcams = new ArrayList<Webcam>();
+			for (WebcamDevice device : driver.getDevices()) {
+				webcams.add(new Webcam(device));
+			}
+			return webcams;
+		}
+	}
+
+	/**
+	 * Timeout for devices discovery. By default this is set to 1 minute, but
+	 * can be changed by appropriate static setter.
+	 * 
+	 * @see Webcam#setDiscoveryTimeout(long)
+	 */
+	private static long timeout = 60000;
 
 	private static WebcamDriver driver = null;
 	private static List<Webcam> webcams = null;
@@ -202,6 +235,12 @@ public class Webcam {
 		return device.getSizes();
 	}
 
+	/**
+	 * Set custom resolution. If you are using this method you have to make sure
+	 * that your webcam device can support this specific resolution.
+	 * 
+	 * @param sizes the array of custom resolutions to be supported by webcam
+	 */
 	public void setCustomViewSizes(Dimension[] sizes) {
 		if (sizes == null) {
 			customSizes.clear();
@@ -214,6 +253,14 @@ public class Webcam {
 		return customSizes.toArray(new Dimension[customSizes.size()]);
 	}
 
+	/**
+	 * Set new view size. New size has to exactly the same as one of the default
+	 * sized or exactly the same as one of the custom ones.
+	 * 
+	 * @param size the new view size to be set
+	 * @see Webcam#setCustomViewSizes(Dimension[])
+	 * @see Webcam#getViewSizes()
+	 */
 	public void setViewSize(Dimension size) {
 
 		if (size == null) {
@@ -285,11 +332,27 @@ public class Webcam {
 	 * Get list of webcams to use.
 	 * 
 	 * @return List of webcams
+	 * @throws WebcamException when something is wrong
 	 */
 	public static List<Webcam> getWebcams() {
-		if (webcams == null) {
+		try {
+			return getWebcams(timeout);
+		} catch (TimeoutException e) {
+			throw new WebcamException(e);
+		}
+	}
 
-			webcams = new ArrayList<Webcam>();
+	/**
+	 * Get list of webcams to use.
+	 * 
+	 * @param timeout the devices discovery timeout
+	 * @return List of webcams
+	 * @throws TimeoutException when timeout has been exceeded
+	 * @throws WebcamException when something is wrong
+	 */
+	public static List<Webcam> getWebcams(long timeout) throws TimeoutException {
+
+		if (webcams == null) {
 
 			if (driver == null) {
 				driver = WebcamDriverUtils.findDriver(DRIVERS_LIST, DRIVERS_CLASS_LIST);
@@ -299,8 +362,28 @@ public class Webcam {
 				driver = new WebcamDefaultDriver();
 			}
 
-			for (WebcamDevice device : driver.getDevices()) {
-				webcams.add(new Webcam(device));
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			Future<List<Webcam>> future = executor.submit(new WebcamsDiscovery(driver));
+			executor.shutdown();
+
+			try {
+
+				executor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+
+				if (future.isDone()) {
+					webcams = future.get();
+				} else {
+					future.cancel(true);
+				}
+
+			} catch (InterruptedException e) {
+				throw new WebcamException(e);
+			} catch (ExecutionException e) {
+				throw new WebcamException(e);
+			}
+
+			if (webcams == null) {
+				throw new TimeoutException(String.format("Webcams discovery timeout (%d ms) has been exceeded", timeout));
 			}
 
 			if (deallocOnTermSignal) {
@@ -323,10 +406,28 @@ public class Webcam {
 	}
 
 	/**
+	 * Will discover and return first webcam available in the system.
+	 * 
 	 * @return Default webcam (first from the list)
+	 * @throws WebcamException if something is wrong
 	 */
 	public static Webcam getDefault() {
-		List<Webcam> webcams = getWebcams();
+		try {
+			return getDefault(timeout);
+		} catch (TimeoutException e) {
+			throw new WebcamException(e);
+		}
+	}
+
+	/**
+	 * Will discover and return first webcam available in the system.
+	 * 
+	 * @param timeout the webcam discovery timeout (1 minute by default)
+	 * @return Default webcam (first from the list)
+	 * @throws TimeoutException when discovery timeout has been exceeded
+	 */
+	public static Webcam getDefault(long timeout) throws TimeoutException {
+		List<Webcam> webcams = getWebcams(timeout);
 		if (webcams.isEmpty()) {
 			throw new WebcamException("No webcam available in the system");
 		}
@@ -372,6 +473,12 @@ public class Webcam {
 		}
 	}
 
+	/**
+	 * Removes webcam listener.
+	 * 
+	 * @param l the listener to be removed
+	 * @return True if listener has been removed, false otherwise
+	 */
 	public boolean removeWebcamListener(WebcamListener l) {
 		synchronized (listeners) {
 			return listeners.remove(l);
@@ -510,5 +617,15 @@ public class Webcam {
 	 */
 	public static void handleTermSignal(boolean on) {
 		deallocOnTermSignal = on;
+	}
+
+	/**
+	 * Set new devices discovery timeout. By default this is set to 1 minute
+	 * (60000 milliseconds).
+	 * 
+	 * @param timeout the new discovery timeout in milliseconds
+	 */
+	public static void setDiscoveryTimeout(long timeout) {
+		Webcam.timeout = timeout;
 	}
 }

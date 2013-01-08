@@ -32,7 +32,7 @@ public class WebcamTest {
 	}
 
 	@Test
-	public void test_getDevices() {
+	public void test_getWebcams() {
 
 		List<Webcam> webcams = Webcam.getWebcams();
 		List<WebcamDevice> devices = DummyDriver.getInstance().getDevices();

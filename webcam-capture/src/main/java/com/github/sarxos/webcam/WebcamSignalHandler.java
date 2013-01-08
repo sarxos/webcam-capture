@@ -24,7 +24,7 @@ class WebcamSignalHandler extends Observable implements SignalHandler {
 	}
 
 	@Override
-	public void handle(final sun.misc.Signal signal) {
+	public void handle(Signal signal) {
 
 		// do nothing on "signal default" or "signal ignore"
 		if (handler == SIG_DFL || handler == SIG_IGN) {
