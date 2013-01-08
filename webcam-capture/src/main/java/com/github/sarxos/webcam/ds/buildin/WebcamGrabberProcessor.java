@@ -19,7 +19,7 @@ import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
  * 
  * @author Bartosz Firyn (SarXos)
  */
-public class WebcamGrabberProcessor {
+public final class WebcamGrabberProcessor {
 
 	/**
 	 * Thread factory for processor.

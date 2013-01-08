@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -58,7 +59,7 @@ public class Webcam {
 		}
 	}
 
-	private static final class WebcamsDiscovery implements Callable<List<Webcam>> {
+	private static final class WebcamsDiscovery implements Callable<List<Webcam>>, ThreadFactory {
 
 		private final WebcamDriver driver;
 
@@ -73,6 +74,13 @@ public class Webcam {
 				webcams.add(new Webcam(device));
 			}
 			return webcams;
+		}
+
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = new Thread(r, "webcam-discovery");
+			t.setDaemon(true);
+			return t;
 		}
 	}
 
@@ -180,6 +188,7 @@ public class Webcam {
 		}
 
 		Runtime.getRuntime().removeShutdownHook(hook);
+
 		close0();
 	}
 
@@ -362,8 +371,10 @@ public class Webcam {
 				driver = new WebcamDefaultDriver();
 			}
 
-			ExecutorService executor = Executors.newSingleThreadExecutor();
-			Future<List<Webcam>> future = executor.submit(new WebcamsDiscovery(driver));
+			WebcamsDiscovery discovery = new WebcamsDiscovery(driver);
+			ExecutorService executor = Executors.newSingleThreadExecutor(discovery);
+			Future<List<Webcam>> future = executor.submit(discovery);
+
 			executor.shutdown();
 
 			try {
@@ -537,7 +548,14 @@ public class Webcam {
 
 		driver = null;
 
+		if (deallocOnTermSignal) {
+			WebcamDeallocator.unstore();
+		}
+
 		if (webcams != null && !webcams.isEmpty()) {
+			for (Webcam webcam : webcams) {
+				webcam.dispose();
+			}
 			webcams.clear();
 		}
 
@@ -586,12 +604,21 @@ public class Webcam {
 	 */
 	protected void dispose() {
 
+		LOG.info("Disposing webcam {}", getName());
+
+		// hook can be null because there is a possibility that webcam has never
+		// been open and therefore hook was not created
+		if (hook != null) {
+			Runtime.getRuntime().removeShutdownHook(hook);
+		}
+
 		open = false;
 		disposed = true;
 
 		WebcamEvent we = new WebcamEvent(this);
 		for (WebcamListener l : listeners) {
 			try {
+				l.webcamClosed(we);
 				l.webcamDisposed(we);
 			} catch (Exception e) {
 				LOG.error(String.format("Notify webcam disposed, exception when calling %s listener", l.getClass()), e);

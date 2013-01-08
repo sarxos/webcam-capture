@@ -3,8 +3,6 @@ package com.github.sarxos.webcam;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.Observable;
-import java.util.Observer;
 
 
 /**
@@ -13,10 +11,11 @@ import java.util.Observer;
  * 
  * @author Bartosz Firyn (SarXos)
  */
-class WebcamDeallocator implements Observer {
+final class WebcamDeallocator {
 
-	private Webcam[] webcams = null;
-	private WebcamSignalHandler handler = new WebcamSignalHandler();
+	private static final WebcamSignalHandler HANDLER = new WebcamSignalHandler();
+
+	private final Webcam[] webcams;
 
 	/**
 	 * This constructor is used internally to create new deallocator for the
@@ -25,43 +24,48 @@ class WebcamDeallocator implements Observer {
 	 * @param devices the devices to be stored in deallocator
 	 */
 	private WebcamDeallocator(Webcam[] devices) {
-		if (devices != null && devices.length > 0) {
-			this.webcams = devices;
-			this.handler.listen("TERM", this);
-		}
+		this.webcams = devices;
 	}
 
 	/**
 	 * Store devices to be deallocated when TERM signal has been received.
 	 * 
-	 * @param devices the devices array to be stored by deallocator
+	 * @param webcams the webcams array to be stored in deallocator
 	 */
-	protected static final void store(Webcam[] devices) {
-		new WebcamDeallocator(devices);
+	protected static final void store(Webcam[] webcams) {
+		if (HANDLER.get() == null) {
+			HANDLER.set(new WebcamDeallocator(webcams));
+		} else {
+			throw new IllegalStateException("Deallocator is already set!");
+		}
 	}
 
-	@Override
-	public void update(Observable observable, Object object) {
-		for (Webcam device : webcams) {
+	protected static final void unstore() {
+		HANDLER.reset();
+	}
+
+	protected void deallocate() {
+		for (Webcam w : webcams) {
 			try {
-				device.dispose();
+				w.dispose();
 			} catch (Throwable t) {
 				caugh(t);
 			}
 		}
 	}
 
-	public void caugh(Throwable e) {
+	private void caugh(Throwable t) {
 		File f = new File(String.format("webcam-capture-hs-%s", System.currentTimeMillis()));
 		PrintStream ps = null;
 		try {
-			e.printStackTrace(ps = new PrintStream(f));
-		} catch (FileNotFoundException e2) {
-			// ignore, stdout is not working, cannot do anything more
+			t.printStackTrace(ps = new PrintStream(f));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} finally {
 			if (ps != null) {
 				ps.close();
 			}
 		}
 	}
+
 }
