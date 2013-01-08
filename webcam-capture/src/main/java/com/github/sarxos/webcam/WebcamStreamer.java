@@ -247,10 +247,15 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 	public void webcamClosed(WebcamEvent we) {
 	}
 
+	@Override
+	public void webcamDisposed(WebcamEvent we) {
+	}
+
 	public static void main(String[] args) throws InterruptedException {
 		new WebcamStreamer(8081, Webcam.getDefault(), 0.5, true);
 		do {
 			Thread.sleep(1000);
 		} while (true);
 	}
+
 }

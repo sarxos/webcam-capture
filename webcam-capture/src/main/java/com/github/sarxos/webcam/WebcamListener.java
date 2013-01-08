@@ -21,4 +21,10 @@ public interface WebcamListener {
 	 */
 	public void webcamClosed(WebcamEvent we);
 
+	/**
+	 * Webcam has been disposed
+	 * 
+	 * @param we a webcam event
+	 */
+	public void webcamDisposed(WebcamEvent we);
 }

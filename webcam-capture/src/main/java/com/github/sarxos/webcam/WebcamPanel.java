@@ -313,6 +313,11 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		}
 	}
 
+	@Override
+	public void webcamDisposed(WebcamEvent we) {
+		webcamClosed(we);
+	}
+
 	/**
 	 * Open webcam and start rendering.
 	 */

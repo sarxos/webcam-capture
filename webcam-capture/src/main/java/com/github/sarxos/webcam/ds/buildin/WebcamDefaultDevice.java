@@ -109,13 +109,20 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	private volatile boolean opening = false;
 	private volatile boolean disposed = false;
 
+	private String name = null;
+	private String id = null;
+	private String fullname = null;
+
 	protected WebcamDefaultDevice(Device device) {
 		this.device = device;
+		this.name = device.getNameStr();
+		this.id = device.getIdentifierStr();
+		this.fullname = String.format("%s %s", this.name, this.id);
 	}
 
 	@Override
 	public String getName() {
-		return String.format("%s %s", device.getNameStr(), device.getIdentifierStr());
+		return fullname;
 	}
 
 	@Override
@@ -136,8 +143,13 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	@Override
 	public BufferedImage getImage() {
 
+		if (disposed) {
+			throw new WebcamException("Cannot get image since device is already disposed");
+		}
+
 		if (!open) {
-			throw new WebcamException("Cannot get image when webcam device is not open");
+			LOG.error("Cannot get image when device is closed");
+			return null;
 		}
 
 		frameTask.nextFrame();
@@ -163,8 +175,7 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	public void open() {
 
 		if (disposed) {
-			LOG.warn("Cannot open webcam when it's already disposed");
-			return;
+			throw new WebcamException("Cannot open webcam when device it's already disposed");
 		}
 
 		synchronized (device) {
@@ -223,6 +234,11 @@ public class WebcamDefaultDevice implements WebcamDevice {
 				frameTask.nextFrame();
 				imageTask.getImage(size);
 
+				if (disposed) {
+					opening = false;
+					return;
+				}
+
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -257,6 +273,10 @@ public class WebcamDefaultDevice implements WebcamDevice {
 
 	@Override
 	public void dispose() {
+		if (disposed) {
+			return;
+		}
+		close();
 		disposed = true;
 	}
 

@@ -7,7 +7,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 
-
 /**
  * Deallocator which goal is to release all devices resources when SIGTERM
  * signal is detected.
@@ -16,7 +15,7 @@ import java.util.Observer;
  */
 class WebcamDeallocator implements Observer {
 
-	private WebcamDevice[] devices = null;
+	private Webcam[] webcams = null;
 	private WebcamSignalHandler handler = new WebcamSignalHandler();
 
 	/**
@@ -25,9 +24,9 @@ class WebcamDeallocator implements Observer {
 	 * 
 	 * @param devices the devices to be stored in deallocator
 	 */
-	private WebcamDeallocator(WebcamDevice[] devices) {
+	private WebcamDeallocator(Webcam[] devices) {
 		if (devices != null && devices.length > 0) {
-			this.devices = devices;
+			this.webcams = devices;
 			this.handler.listen("TERM", this);
 		}
 	}
@@ -37,15 +36,15 @@ class WebcamDeallocator implements Observer {
 	 * 
 	 * @param devices the devices array to be stored by deallocator
 	 */
-	protected static final void store(WebcamDevice[] devices) {
+	protected static final void store(Webcam[] devices) {
 		new WebcamDeallocator(devices);
 	}
 
 	@Override
 	public void update(Observable observable, Object object) {
-		for (WebcamDevice device : devices) {
+		for (Webcam device : webcams) {
 			try {
-				device.close();
+				device.dispose();
 			} catch (Throwable t) {
 				caugh(t);
 			}

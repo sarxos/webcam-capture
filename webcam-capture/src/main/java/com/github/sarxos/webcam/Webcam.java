@@ -68,7 +68,9 @@ public class Webcam {
 
 	private ShutdownHook hook = null;
 	private WebcamDevice device = null;
-	private boolean open = false;
+
+	private volatile boolean open = false;
+	private volatile boolean disposed = false;
 
 	/**
 	 * Webcam class.
@@ -264,12 +266,19 @@ public class Webcam {
 	 * 
 	 * @return Captured image
 	 */
-	public synchronized BufferedImage getImage() {
-		if (!open) {
-			LOG.debug("Try to get image on closed webcam, opening it automatically");
-			open();
+	public BufferedImage getImage() {
+
+		if (disposed) {
+			return null;
 		}
-		return device.getImage();
+
+		synchronized (this) {
+			if (!open) {
+				LOG.debug("Try to get image on closed webcam, opening it automatically");
+				open();
+			}
+			return device.getImage();
+		}
 	}
 
 	/**
@@ -290,15 +299,13 @@ public class Webcam {
 				driver = new WebcamDefaultDriver();
 			}
 
-			List<WebcamDevice> devices = driver.getDevices();
+			for (WebcamDevice device : driver.getDevices()) {
+				webcams.add(new Webcam(device));
+			}
 
 			if (deallocOnTermSignal) {
 				LOG.warn("Automated deallocation on TERM signal is enabled!");
-				WebcamDeallocator.store(devices.toArray(new WebcamDevice[devices.size()]));
-			}
-
-			for (WebcamDevice device : devices) {
-				webcams.add(new Webcam(device));
+				WebcamDeallocator.store(webcams.toArray(new Webcam[webcams.size()]));
 			}
 
 			if (LOG.isInfoEnabled()) {
@@ -471,8 +478,23 @@ public class Webcam {
 	 * used any more and reinstantiation is required.
 	 */
 	protected void dispose() {
-		device.close();
-		device.dispose();
+
+		open = false;
+		disposed = true;
+
+		WebcamEvent we = new WebcamEvent(this);
+		for (WebcamListener l : listeners) {
+			try {
+				l.webcamDisposed(we);
+			} catch (Exception e) {
+				LOG.error(String.format("Notify webcam disposed, exception when calling %s listener", l.getClass()), e);
+			}
+		}
+
+		synchronized (this) {
+			device.close();
+			device.dispose();
+		}
 	}
 
 	/**
