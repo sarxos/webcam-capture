@@ -439,18 +439,14 @@ public class Webcam {
 		if (l == null) {
 			throw new IllegalArgumentException("Webcam listener cannot be null!");
 		}
-		synchronized (listeners) {
-			return listeners.add(l);
-		}
+		return listeners.add(l);
 	}
 
 	/**
 	 * @return All webcam listeners
 	 */
 	public WebcamListener[] getWebcamListeners() {
-		synchronized (listeners) {
-			return listeners.toArray(new WebcamListener[listeners.size()]);
-		}
+		return listeners.toArray(new WebcamListener[listeners.size()]);
 	}
 
 	/**
@@ -460,9 +456,7 @@ public class Webcam {
 	 * @return True if listener has been removed, false otherwise
 	 */
 	public boolean removeWebcamListener(WebcamListener l) {
-		synchronized (listeners) {
-			return listeners.remove(l);
-		}
+		return listeners.remove(l);
 	}
 
 	/**
@@ -649,6 +643,9 @@ public class Webcam {
 	 * @return True, if listeners list size has been changed, false otherwise
 	 */
 	public static boolean addDiscoveryListener(WebcamDiscoveryListener l) {
+		if (l == null) {
+			throw new IllegalArgumentException("Webcam discovery listener cannot be null!");
+		}
 		return DISCOVERY_LISTENERS.add(l);
 	}
 
