@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamDiscoverySupport;
 import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.ds.buildin.cgt.GetDevicesTask;
 import com.github.sarxos.webcam.ds.buildin.natives.Device;
@@ -19,7 +20,7 @@ import com.github.sarxos.webcam.ds.buildin.natives.Device;
  * 
  * @author Bartosz Firyn (SarXos)
  */
-public class WebcamDefaultDriver implements WebcamDriver {
+public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 	/**
 	 * Logger.
@@ -54,5 +55,15 @@ public class WebcamDefaultDriver implements WebcamDriver {
 		}
 
 		return devices;
+	}
+
+	@Override
+	public long getScanInterval() {
+		return 3000;
+	}
+
+	@Override
+	public boolean isScanPossible() {
+		return true;
 	}
 }

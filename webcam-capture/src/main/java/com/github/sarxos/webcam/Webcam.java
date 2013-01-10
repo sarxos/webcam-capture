@@ -6,12 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -42,6 +36,8 @@ public class Webcam {
 	private static final List<String> DRIVERS_LIST = new ArrayList<String>(Arrays.asList(DRIVERS_DEFAULT));
 	private static final List<Class<?>> DRIVERS_CLASS_LIST = new ArrayList<Class<?>>();
 
+	private static final List<WebcamDiscoveryListener> DISCOVERY_LISTENERS = Collections.synchronizedList(new ArrayList<WebcamDiscoveryListener>());
+
 	private static final class ShutdownHook extends Thread {
 
 		private Webcam webcam = null;
@@ -59,41 +55,9 @@ public class Webcam {
 		}
 	}
 
-	private static final class WebcamsDiscovery implements Callable<List<Webcam>>, ThreadFactory {
-
-		private final WebcamDriver driver;
-
-		public WebcamsDiscovery(WebcamDriver driver) {
-			this.driver = driver;
-		}
-
-		@Override
-		public List<Webcam> call() throws Exception {
-			List<Webcam> webcams = new ArrayList<Webcam>();
-			for (WebcamDevice device : driver.getDevices()) {
-				webcams.add(new Webcam(device));
-			}
-			return webcams;
-		}
-
-		@Override
-		public Thread newThread(Runnable r) {
-			Thread t = new Thread(r, "webcam-discovery");
-			t.setDaemon(true);
-			return t;
-		}
-	}
-
-	/**
-	 * Timeout for devices discovery. By default this is set to 1 minute, but
-	 * can be changed by appropriate static setter.
-	 * 
-	 * @see Webcam#setDiscoveryTimeout(long)
-	 */
-	private static long timeout = 60000;
-
 	private static WebcamDriver driver = null;
-	private static List<Webcam> webcams = null;
+
+	private static WebcamDiscoveryService discovery = null;
 
 	/**
 	 * Is automated deallocation on TERM signal enabled.
@@ -103,7 +67,7 @@ public class Webcam {
 	/**
 	 * Webcam listeners.
 	 */
-	private List<WebcamListener> listeners = new ArrayList<WebcamListener>();
+	private List<WebcamListener> listeners = Collections.synchronizedList(new ArrayList<WebcamListener>());
 
 	private List<Dimension> customSizes = new ArrayList<Dimension>();
 
@@ -112,6 +76,14 @@ public class Webcam {
 
 	private volatile boolean open = false;
 	private volatile boolean disposed = false;
+
+	/**
+	 * Timeout for devices discovery. By default this is set to 1 minute, but
+	 * can be changed by appropriate static setter.
+	 * 
+	 * @see Webcam#setDiscoveryTimeout(long)
+	 */
+	private static long timeout = 60000;
 
 	/**
 	 * Webcam class.
@@ -173,7 +145,7 @@ public class Webcam {
 			try {
 				l.webcamOpen(we);
 			} catch (Exception e) {
-				LOG.error(String.format("Notify webcam open, exception when calling %s listener", l.getClass()), e);
+				LOG.error(String.format("Notify webcam open, exception when calling listener %s", l.getClass()), e);
 			}
 		}
 	}
@@ -338,10 +310,13 @@ public class Webcam {
 	}
 
 	/**
-	 * Get list of webcams to use.
+	 * Get list of webcams to use. This method will wait predefined time
+	 * interval for webcam devices to be discovered. By default this time is set
+	 * to 1 minute.
 	 * 
-	 * @return List of webcams
+	 * @return List of webcams existing in the ssytem
 	 * @throws WebcamException when something is wrong
+	 * @see Webcam#getWebcams(long, TimeUnit)
 	 */
 	public static List<Webcam> getWebcams() {
 		try {
@@ -352,68 +327,38 @@ public class Webcam {
 	}
 
 	/**
-	 * Get list of webcams to use.
+	 * Get list of webcams to use. This method will wait given time interval for
+	 * webcam devices to be discovered. Time argument is given in milliseconds.
+	 * 
+	 * @param timeout the time to wait for webcam devices to be discovered
+	 * @return List of webcams existing in the ssytem
+	 * @throws WebcamException when something is wrong
+	 * @see Webcam#getWebcams(long, TimeUnit)
+	 */
+	public static List<Webcam> getWebcams(long timeout) throws TimeoutException {
+		return getWebcams(timeout, TimeUnit.MILLISECONDS);
+	}
+
+	/**
+	 * Get list of webcams to use. This method will wait given time interval for
+	 * webcam devices to be discovered.
 	 * 
 	 * @param timeout the devices discovery timeout
+	 * @param tunit the time unit
 	 * @return List of webcams
 	 * @throws TimeoutException when timeout has been exceeded
 	 * @throws WebcamException when something is wrong
 	 */
-	public static List<Webcam> getWebcams(long timeout) throws TimeoutException {
+	public static List<Webcam> getWebcams(long timeout, TimeUnit tunit) throws TimeoutException {
 
-		if (webcams == null) {
+		WebcamDiscoveryService discovery = getDiscoveryService();
+		List<Webcam> webcams = discovery.getWebcams(timeout, tunit);
 
-			if (driver == null) {
-				driver = WebcamDriverUtils.findDriver(DRIVERS_LIST, DRIVERS_CLASS_LIST);
-			}
-			if (driver == null) {
-				LOG.info("Webcam driver has not been found, default one will be used!");
-				driver = new WebcamDefaultDriver();
-			}
-
-			WebcamsDiscovery discovery = new WebcamsDiscovery(driver);
-			ExecutorService executor = Executors.newSingleThreadExecutor(discovery);
-			Future<List<Webcam>> future = executor.submit(discovery);
-
-			executor.shutdown();
-
-			try {
-
-				executor.awaitTermination(timeout, TimeUnit.MILLISECONDS);
-
-				if (future.isDone()) {
-					webcams = future.get();
-				} else {
-					future.cancel(true);
-				}
-
-			} catch (InterruptedException e) {
-				throw new WebcamException(e);
-			} catch (ExecutionException e) {
-				throw new WebcamException(e);
-			}
-
-			if (webcams == null) {
-				throw new TimeoutException(String.format("Webcams discovery timeout (%d ms) has been exceeded", timeout));
-			}
-
-			if (deallocOnTermSignal) {
-				LOG.warn("Automated deallocation on TERM signal is enabled!");
-				WebcamDeallocator.store(webcams.toArray(new Webcam[webcams.size()]));
-			}
-
-			if (LOG.isInfoEnabled()) {
-				for (Webcam webcam : webcams) {
-					LOG.info("Webcam found " + webcam.getName());
-				}
-			}
+		if (!discovery.isRunning()) {
+			discovery.start();
 		}
 
-		return Collections.unmodifiableList(webcams);
-	}
-
-	protected static void clearWebcams() {
-		webcams = null;
+		return webcams;
 	}
 
 	/**
@@ -421,6 +366,7 @@ public class Webcam {
 	 * 
 	 * @return Default webcam (first from the list)
 	 * @throws WebcamException if something is wrong
+	 * @see Webcam#getWebcams()
 	 */
 	public static Webcam getDefault() {
 		try {
@@ -436,12 +382,35 @@ public class Webcam {
 	 * @param timeout the webcam discovery timeout (1 minute by default)
 	 * @return Default webcam (first from the list)
 	 * @throws TimeoutException when discovery timeout has been exceeded
+	 * @see Webcam#getWebcams(long)
 	 */
 	public static Webcam getDefault(long timeout) throws TimeoutException {
-		List<Webcam> webcams = getWebcams(timeout);
+		return getDefault(timeout, TimeUnit.MILLISECONDS);
+	}
+
+	/**
+	 * Will discover and return first webcam available in the system.
+	 * 
+	 * @param timeout the webcam discovery timeout (1 minute by default)
+	 * @param tunit the time unit
+	 * @return Default webcam (first from the list)
+	 * @throws TimeoutException when discovery timeout has been exceeded
+	 * @see Webcam#getWebcams(long, TimeUnit)
+	 */
+	public static Webcam getDefault(long timeout, TimeUnit tunit) throws TimeoutException {
+
+		if (timeout < 0) {
+			throw new IllegalArgumentException("Timeout cannot be negative");
+		}
+		if (tunit == null) {
+			throw new IllegalArgumentException("Time unit cannot be null!");
+		}
+
+		List<Webcam> webcams = getWebcams(timeout, tunit);
 		if (webcams.isEmpty()) {
 			throw new WebcamException("No webcam available in the system");
 		}
+
 		return webcams.get(0);
 	}
 
@@ -497,14 +466,30 @@ public class Webcam {
 	}
 
 	/**
-	 * @return Data source currently used by webcam
+	 * Return webcam driver. Perform search if necessary.<br>
+	 * <br>
+	 * <b>This method is not thread-safe!</b>
+	 * 
+	 * @return Webcam driver
 	 */
 	public static WebcamDriver getDriver() {
+
+		if (driver == null) {
+			driver = WebcamDriverUtils.findDriver(DRIVERS_LIST, DRIVERS_CLASS_LIST);
+		}
+
+		if (driver == null) {
+			LOG.info("Webcam driver has not been found, default one will be used!");
+			driver = new WebcamDefaultDriver();
+		}
+
 		return driver;
 	}
 
 	/**
-	 * Set new video driver to be used by webcam.
+	 * Set new video driver to be used by webcam.<br>
+	 * <br>
+	 * <b>This method is not thread-safe!</b>
 	 * 
 	 * @param driver new video driver to use (e.g. Civil, JFM, FMJ, QTJ, etc)
 	 */
@@ -519,7 +504,9 @@ public class Webcam {
 	/**
 	 * Set new video driver class to be used by webcam. Class given in the
 	 * argument shall extend {@link WebcamDriver} interface and should have
-	 * public default constructor, so instance can be created by reflection.
+	 * public default constructor, so instance can be created by reflection.<br>
+	 * <br>
+	 * <b>This method is not thread-safe!</b>
 	 * 
 	 * @param driver new video driver class to use
 	 */
@@ -541,6 +528,11 @@ public class Webcam {
 
 	}
 
+	/**
+	 * Reset webcam driver.<br>
+	 * <br>
+	 * <b>This method is not thread-safe!</b>
+	 */
 	public static void resetDriver() {
 
 		DRIVERS_LIST.clear();
@@ -548,18 +540,10 @@ public class Webcam {
 
 		driver = null;
 
-		if (deallocOnTermSignal) {
-			WebcamDeallocator.unstore();
+		if (discovery != null) {
+			discovery.dispose();
+			discovery = null;
 		}
-
-		if (webcams != null && !webcams.isEmpty()) {
-			for (Webcam webcam : webcams) {
-				webcam.dispose();
-			}
-			webcams.clear();
-		}
-
-		webcams = null;
 	}
 
 	/**
@@ -640,10 +624,58 @@ public class Webcam {
 	 * devices after it has been received. <b>This feature can be unstable on
 	 * some systems!</b>
 	 * 
-	 * @param on
+	 * @param on signal handling will be enabled if true, disabled otherwise
 	 */
-	public static void handleTermSignal(boolean on) {
+	public static void setHandleTermSignal(boolean on) {
+		if (on) {
+			LOG.warn("Automated deallocation on TERM signal is now enabled! Make sure to not use it in production!");
+		}
 		deallocOnTermSignal = on;
+	}
+
+	/**
+	 * Is TERM signal handler enabled.
+	 * 
+	 * @return True if enabled, false otherwise
+	 */
+	public static boolean isHandleTermSignal() {
+		return deallocOnTermSignal;
+	}
+
+	/**
+	 * Add new webcam discovery listener.
+	 * 
+	 * @param l the listener to be added
+	 * @return True, if listeners list size has been changed, false otherwise
+	 */
+	public static boolean addDiscoveryListener(WebcamDiscoveryListener l) {
+		return DISCOVERY_LISTENERS.add(l);
+	}
+
+	public static WebcamDiscoveryListener[] getDiscoveryListeners() {
+		return DISCOVERY_LISTENERS.toArray(new WebcamDiscoveryListener[DISCOVERY_LISTENERS.size()]);
+	}
+
+	/**
+	 * Remove discovery listener
+	 * 
+	 * @param l the listener to be removed
+	 * @return True if listeners list contained the specified element
+	 */
+	public static boolean removeDiscoveryListener(WebcamDiscoveryListener l) {
+		return DISCOVERY_LISTENERS.remove(l);
+	}
+
+	/**
+	 * Return discovery service.
+	 * 
+	 * @return Discovery service
+	 */
+	public static WebcamDiscoveryService getDiscoveryService() {
+		if (discovery == null) {
+			discovery = new WebcamDiscoveryService(getDriver());
+		}
+		return discovery;
 	}
 
 	/**
@@ -654,5 +686,14 @@ public class Webcam {
 	 */
 	public static void setDiscoveryTimeout(long timeout) {
 		Webcam.timeout = timeout;
+	}
+
+	/**
+	 * Return default webcam discovery timeout in milliseconds.
+	 * 
+	 * @return Timeout in milliseconds
+	 */
+	public static long getDiscoveryTimeout() {
+		return Webcam.timeout;
 	}
 }

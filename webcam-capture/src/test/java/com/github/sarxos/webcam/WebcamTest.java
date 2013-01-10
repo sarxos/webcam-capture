@@ -28,7 +28,6 @@ public class WebcamTest {
 	@After
 	public void cleanup() {
 		Webcam.resetDriver();
-		Webcam.clearWebcams();
 	}
 
 	@Test
@@ -127,7 +126,6 @@ public class WebcamTest {
 	public void test_registerDriver() {
 
 		Webcam.resetDriver();
-		Webcam.clearWebcams();
 
 		Webcam.registerDriver(DummyDriver.class);
 		Webcam.getWebcams();
