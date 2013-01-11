@@ -204,42 +204,49 @@ public class WebcamDiscoveryService implements Runnable {
 			// if any left in old ones it means that devices has been removed
 			if (oldones.size() > 0) {
 
+				List<Webcam> notified = new ArrayList<Webcam>();
+
 				for (WebcamDevice device : oldones) {
 					for (Webcam webcam : webcams) {
 						if (webcam.getDevice().getName().equals(device.getName())) {
-							notifyWebcamGone(webcam, listeners);
+							notified.add(webcam);
+							break;
 						}
 					}
 				}
 
-				webcams = toWebcams(tmpnew);
+				setCurrentWebcams(tmpnew);
 
-				if (Webcam.isHandleTermSignal()) {
-					WebcamDeallocator.unstore();
-					WebcamDeallocator.store(webcams.toArray(new Webcam[webcams.size()]));
+				for (Webcam webcam : notified) {
+					notifyWebcamGone(webcam, listeners);
+					webcam.dispose();
 				}
 			}
 
 			// if any left in new ones it means that devices has been added
 			if (newones.size() > 0) {
 
-				webcams = toWebcams(tmpnew);
-
-				if (Webcam.isHandleTermSignal()) {
-					WebcamDeallocator.unstore();
-					WebcamDeallocator.store(webcams.toArray(new Webcam[webcams.size()]));
-				}
+				setCurrentWebcams(tmpnew);
 
 				for (WebcamDevice device : newones) {
 					for (Webcam webcam : webcams) {
 						if (webcam.getDevice().getName().equals(device.getName())) {
 							notifyWebcamFound(webcam, listeners);
+							break;
 						}
 					}
 				}
 			}
 
 		} while (running);
+	}
+
+	private void setCurrentWebcams(List<WebcamDevice> devices) {
+		webcams = toWebcams(devices);
+		if (Webcam.isHandleTermSignal()) {
+			WebcamDeallocator.unstore();
+			WebcamDeallocator.store(webcams.toArray(new Webcam[webcams.size()]));
+		}
 	}
 
 	private static void notifyWebcamGone(Webcam webcam, WebcamDiscoveryListener[] listeners) {
