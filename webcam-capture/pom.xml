@@ -77,7 +77,7 @@
 		<dependency>
 			<groupId>com.nativelibs4java</groupId>
 			<artifactId>bridj</artifactId>
-			<version>0.6.1</version>
+			<version>0.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -88,11 +88,7 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.0.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.osgi.core</artifactId>
-			<version>1.4.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -119,15 +115,16 @@
 						<Bundle-Name>${project.name}</Bundle-Name>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Bundle-DocURL>${project.url}</Bundle-DocURL>
-						<Bundle-Activator>com.github.sarxos.webcam.WebcamActivator</Bundle-Activator>
 						<Import-Package>
 							*,
 						</Import-Package>
 						<Export-Package>
-							com.github.sarxos.webcam*
+							com.github.sarxos.webcam,
+							com.github.sarxos.webcam.log,
+							com.github.sarxos.webcam.util,
 						</Export-Package>
 						<Private-Package>
-							com.github.sarxos.webcam.ds.buildin*
+							!*,
 						</Private-Package>
 						<Include-Resources>{maven-resources}</Include-Resources>
 					</instructions>
