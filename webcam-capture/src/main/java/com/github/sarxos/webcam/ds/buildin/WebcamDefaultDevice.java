@@ -27,6 +27,12 @@ import com.github.sarxos.webcam.ds.buildin.natives.Device;
 
 public class WebcamDefaultDevice implements WebcamDevice {
 
+	static {
+		if (!"true".equals(System.getProperty("webcam.debug"))) {
+			System.setProperty("bridj.quiet", "true");
+		}
+	}
+
 	public static final Dimension SIZE_QQVGA = new Dimension(176, 144);
 	public static final Dimension SIZE_QVGA = new Dimension(320, 240);
 	public static final Dimension SIZE_CIF = new Dimension(352, 288);
