@@ -148,9 +148,7 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 								try {
 									bos.flush();
 								} catch (SocketException e) {
-									if (!socket.isClosed()) {
-										throw e;
-									}
+									// ignore, user closed stream
 								}
 
 								Thread.sleep(getDelay());
