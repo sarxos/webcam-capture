@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -123,6 +124,13 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 
 							do {
 
+								if (socket.isInputShutdown()) {
+									break;
+								}
+								if (socket.isClosed()) {
+									break;
+								}
+
 								baos.reset();
 
 								ImageIO.write(getImage(), "JPG", baos);
@@ -136,7 +144,14 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 								bos.write(sb.toString().getBytes());
 								bos.write(baos.toByteArray());
 								bos.write(CRLF.getBytes());
-								bos.flush();
+
+								try {
+									bos.flush();
+								} catch (SocketException e) {
+									if (!socket.isClosed()) {
+										throw e;
+									}
+								}
 
 								Thread.sleep(getDelay());
 
