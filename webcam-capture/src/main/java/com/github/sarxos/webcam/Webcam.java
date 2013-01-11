@@ -587,7 +587,11 @@ public class Webcam {
 		// hook can be null because there is a possibility that webcam has never
 		// been open and therefore hook was not created
 		if (hook != null) {
-			Runtime.getRuntime().removeShutdownHook(hook);
+			try {
+				Runtime.getRuntime().removeShutdownHook(hook);
+			} catch (IllegalStateException e) {
+				// ignore, it means that shutdown is in progress
+			}
 		}
 
 		open = false;
