@@ -27,6 +27,66 @@
 		</dependency>
 	</dependencies>
 
+	<profiles>
+		<profile>
+			<id>build-executable</id>
+			<activation>
+				<os>
+					<family>Windows</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.akathist.maven.plugins.launch4j</groupId>
+						<artifactId>launch4j-maven-plugin</artifactId>
+						<version>1.5.1</version>
+						<executions>
+							<execution>
+								<id>l4j-gui</id>
+								<phase>package</phase>
+								<goals>
+									<goal>launch4j</goal>
+								</goals>
+								<configuration>
+									<headerType>gui</headerType>
+									<outfile>${project.build.directory}/capture.exe</outfile>
+									<jar>${project.build.directory}/${project.artifactId}-${project.version}.jar</jar>
+									<errTitle>Error</errTitle>
+									<icon>src/main/resources/Security-Camera.ico</icon>
+									<classPath>
+										<mainClass>com.github.sarxos.webcam.WebcamExecutableExample</mainClass>
+										<addDependencies>true</addDependencies>
+										<jarLocation>libs</jarLocation>
+									</classPath>
+									<jre>
+										<minVersion>1.5.0</minVersion>
+										<maxVersion>1.6.0</maxVersion>
+									</jre>
+									<singleInstance>
+										<mutexName>WebcamCapture</mutexName>
+										<windowTitle>${project.name}</windowTitle>
+									</singleInstance>					
+									<versionInfo>
+										<fileVersion>1.2.3.4</fileVersion>
+										<txtFileVersion>v1.2.3.4</txtFileVersion>
+										<fileDescription>${project.name}</fileDescription>
+										<copyright>Bartosz Firyn</copyright>
+										<productVersion>1.2.3.4</productVersion>
+										<txtProductVersion>v1.2.3.4</txtProductVersion>
+										<productName>${project.name}</productName>
+										<internalName>${project.name}</internalName>
+										<originalFilename>capture.exe</originalFilename>
+									</versionInfo>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -54,52 +114,8 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>com.akathist.maven.plugins.launch4j</groupId>
-				<artifactId>launch4j-maven-plugin</artifactId>
-				<version>1.5.1</version>
-				<executions>
-					<execution>
-						<id>l4j-gui</id>
-						<phase>package</phase>
-						<goals>
-							<goal>launch4j</goal>
-						</goals>
-						<configuration>
-							<headerType>gui</headerType>
-							<outfile>${project.build.directory}/capture.exe</outfile>
-							<jar>${project.build.directory}/${project.artifactId}-${project.version}.jar</jar>
-							<errTitle>Error</errTitle>
-							<icon>src/main/resources/Security-Camera.ico</icon>
-							<classPath>
-								<mainClass>com.github.sarxos.webcam.WebcamExecutableExample</mainClass>
-								<addDependencies>true</addDependencies>
-								<jarLocation>libs</jarLocation>
-							</classPath>
-							<jre>
-								<minVersion>1.5.0</minVersion>
-								<maxVersion>1.6.0</maxVersion>
-							</jre>
-							<singleInstance>
-								<mutexName>WebcamCapture</mutexName>
-								<windowTitle>${project.name}</windowTitle>
-							</singleInstance>					
-							<versionInfo>
-								<fileVersion>1.2.3.4</fileVersion>
-								<txtFileVersion>v1.2.3.4</txtFileVersion>
-								<fileDescription>${project.name}</fileDescription>
-								<copyright>Bartosz Firyn</copyright>
-								<productVersion>1.2.3.4</productVersion>
-								<txtProductVersion>v1.2.3.4</txtProductVersion>
-								<productName>${project.name}</productName>
-								<internalName>${project.name}</internalName>
-								<originalFilename>capture.exe</originalFilename>
-							</versionInfo>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
+
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -115,9 +131,7 @@
 										<artifactId>maven-dependency-plugin</artifactId>
 										<versionRange>[2.5.1,)</versionRange>
 										<goals>
-											<goal>
-												copy-dependencies
-											</goal>
+											<goal>copy-dependencies</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>

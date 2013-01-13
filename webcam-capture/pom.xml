@@ -124,7 +124,8 @@
 							com.github.sarxos.webcam.util,
 						</Export-Package>
 						<Private-Package>
-							!*,
+							com.github.sarxos.webcam.ds,
+							com.github.sarxos.webcam.ds.*,
 						</Private-Package>
 						<Include-Resources>{maven-resources}</Include-Resources>
 					</instructions>

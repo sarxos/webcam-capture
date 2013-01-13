@@ -282,9 +282,9 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-	        	<artifactId>maven-site-plugin</artifactId>
-	        	<version>3.0</version>
-	        </plugin>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.0</version>
+			</plugin>
 		</plugins>
 	
 		<pluginManagement>
@@ -430,8 +430,8 @@
 				<artifactId>maven-overview-plugin</artifactId>
 				<version>1.6</version>
 				<configuration>
-                    <width>700</width>
-                    <height>700</height>
+					<width>700</width>
+					<height>700</height>
 				</configuration>
 			</plugin>
 			<plugin>
