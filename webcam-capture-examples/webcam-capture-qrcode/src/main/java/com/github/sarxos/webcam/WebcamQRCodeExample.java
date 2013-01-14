@@ -1,5 +1,6 @@
 package com.github.sarxos.webcam;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.Executor;
@@ -9,7 +10,6 @@ import java.util.concurrent.ThreadFactory;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
-import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
@@ -36,15 +36,17 @@ public class WebcamQRCodeExample extends JFrame implements Runnable, ThreadFacto
 		setTitle("Read QR / Bar Code With Webcam");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		Dimension size = WebcamResolution.QVGA.getSize();
+
 		webcam = Webcam.getWebcams().get(0);
-		webcam.setViewSize(WebcamDefaultDevice.SIZE_QVGA);
+		webcam.setViewSize(size);
 
 		panel = new WebcamPanel(webcam);
-		panel.setPreferredSize(WebcamDefaultDevice.SIZE_QVGA);
+		panel.setPreferredSize(size);
 
 		textarea = new JTextArea();
 		textarea.setEditable(false);
-		textarea.setPreferredSize(WebcamDefaultDevice.SIZE_QVGA);
+		textarea.setPreferredSize(size);
 
 		add(panel);
 		add(textarea);

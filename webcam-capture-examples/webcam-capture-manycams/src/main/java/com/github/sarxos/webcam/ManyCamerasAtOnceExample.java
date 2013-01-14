@@ -7,8 +7,6 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
-
 
 @SuppressWarnings("serial")
 public class ManyCamerasAtOnceExample extends JFrame {
@@ -21,7 +19,7 @@ public class ManyCamerasAtOnceExample extends JFrame {
 
 		for (Webcam webcam : Webcam.getWebcams()) {
 
-			webcam.setViewSize(WebcamDefaultDevice.SIZE_QVGA);
+			webcam.setViewSize(WebcamResolution.QVGA.getSize());
 			WebcamPanel panel = new WebcamPanel(webcam, false);
 
 			panels.add(panel);

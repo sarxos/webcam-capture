@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
+import com.github.sarxos.webcam.WebcamResolution;
 import com.github.sarxos.webcam.ds.buildin.cgt.CloseSessionTask;
 import com.github.sarxos.webcam.ds.buildin.cgt.GetImageTask;
 import com.github.sarxos.webcam.ds.buildin.cgt.GetSizeTask;
@@ -33,20 +34,6 @@ public class WebcamDefaultDevice implements WebcamDevice {
 		}
 	}
 
-	public static final Dimension SIZE_QQVGA = new Dimension(176, 144);
-	public static final Dimension SIZE_QVGA = new Dimension(320, 240);
-	public static final Dimension SIZE_CIF = new Dimension(352, 288);
-	public static final Dimension SIZE_HVGA = new Dimension(480, 400);
-	public static final Dimension SIZE_VGA = new Dimension(640, 480);
-	public static final Dimension SIZE_PAL = new Dimension(768, 576);
-	public static final Dimension SIZE_SVGA = new Dimension(800, 600);
-	public static final Dimension SIZE_XGA = new Dimension(1024, 768);
-	public static final Dimension SIZE_HD720 = new Dimension(1280, 720);
-	public static final Dimension SIZE_WXGA = new Dimension(1280, 768);
-	public static final Dimension SIZE_SXGA = new Dimension(1280, 1024);
-	public static final Dimension SIZE_UXGA = new Dimension(1600, 1200);
-	public static final Dimension SIZE_QXGA = new Dimension(2048, 1536);
-
 	/**
 	 * Logger.
 	 */
@@ -58,12 +45,12 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	 */
 	// @formatter:off
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
-		SIZE_QQVGA,
-		SIZE_QVGA,
-		SIZE_CIF,
-		SIZE_HVGA,
-		SIZE_VGA,
-		SIZE_XGA,
+		WebcamResolution.QQVGA.getSize(),
+		WebcamResolution.QVGA.getSize(),
+		WebcamResolution.CIF.getSize(),
+		WebcamResolution.HVGA.getSize(),
+		WebcamResolution.VGA.getSize(),
+		WebcamResolution.XGA.getSize(),
 	};
 	// @formatter:on
 
