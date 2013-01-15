@@ -136,6 +136,24 @@ try {
 }
 ```
 
+### Timeout When Webcam Device Busy
+
+Sometimes webcam device can be used by other process (e.g. Skype) or can be
+unavailable due to various issues. In such a case Java process will not be able
+to allocate it properly. To avoid application hang one can specify timeout 
+parameter to be used in ```getWebcams(..)``` and ```getDefault(..)``` methods:
+
+Example below will wait 5 seconds for device to be discovered and throw 
+```TimeoutException``` if it cannot be found in such time interval.
+
+```java
+try {
+	Webcam webcam = Webcam.getDefault(5, TimeUnit.SECONDS);
+} catch (TimeoutException e) {
+	System.err.println("Cannot find default webcam due to discovery timeout");
+}
+``` 
+
 ## Drivers
 
 Webcam Capture can utilize additional drivers to extend its own functionality. Currently below
