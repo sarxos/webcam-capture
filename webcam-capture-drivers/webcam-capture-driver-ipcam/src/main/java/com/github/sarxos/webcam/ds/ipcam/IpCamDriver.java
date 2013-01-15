@@ -14,6 +14,16 @@ import com.github.sarxos.webcam.WebcamDriver;
  */
 public class IpCamDriver implements WebcamDriver {
 
+	public IpCamDriver() {
+		this(null);
+	}
+
+	public IpCamDriver(IpCamStorage storage) {
+		if (storage != null) {
+			storage.open();
+		}
+	}
+
 	@Override
 	public List<WebcamDevice> getDevices() {
 		return Collections.unmodifiableList((List<? extends WebcamDevice>) IpCamDeviceRegistry.getIpCameras());

@@ -1,7 +1,9 @@
 package com.github.sarxos.webcam;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -105,6 +107,25 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 		@Override
 		public void paintImage(WebcamPanel owner, BufferedImage image, Graphics2D g2) {
+
+			int w = getWidth();
+			int h = getHeight();
+
+			if (fillArea && image.getWidth() != w && image.getHeight() != h) {
+
+				BufferedImage resized = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
+				Graphics2D gr = resized.createGraphics();
+				gr.setComposite(AlphaComposite.Src);
+				gr.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+				gr.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+				gr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				gr.drawImage(image, 0, 0, w, h, null);
+				gr.dispose();
+				resized.flush();
+
+				image = resized;
+			}
+
 			g2.drawImage(image, 0, 0, null);
 		}
 	}
@@ -158,15 +179,26 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 			while (webcam.isOpen()) {
 
-				image = webcam.getImage();
-				if (image == null) {
-					LOG.error("Image is null");
-				}
+				BufferedImage tmp = webcam.getImage();
 
 				try {
-					if (paused) {
-						synchronized (this) {
-							this.wait();
+
+					if (tmp == null) {
+
+						if (webcam.isOpen()) {
+							break;
+						}
+
+						LOG.error("Image is null");
+
+					} else {
+
+						image = tmp;
+
+						if (paused) {
+							synchronized (this) {
+								this.wait();
+							}
 						}
 					}
 
@@ -180,6 +212,8 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			}
 		}
 	}
+
+	private boolean fillArea = false;
 
 	/**
 	 * Painting frequency.
@@ -242,6 +276,22 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	 * @param start true if webcam shall be automatically started
 	 */
 	public WebcamPanel(Webcam webcam, boolean start) {
+		this(webcam, null, start);
+	}
+
+/**
+	 * Creates new webcam panel which display image from camera in you your
+	 * Swing application. If panel size argument is null, then image size will
+	 * be used. If you would like to fill panel area with image even if its size 
+	 * is different, then you can use {@link #setFillArea(boolean)) method to 
+	 * configure this.
+	 * 
+	 * @param webcam the webcam to be used to fetch images
+	 * @param size the size of panel
+	 * @param start true if webcam shall be automatically started
+	 * @see WebcamPanel#setFillArea(boolean)
+	 */
+	public WebcamPanel(Webcam webcam, Dimension size, boolean start) {
 
 		if (webcam == null) {
 			throw new IllegalArgumentException(String.format("Webcam argument in %s constructor cannot be null!", getClass().getSimpleName()));
@@ -252,7 +302,11 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 		repainter.setName(String.format("%s-repainter", webcam.getName()));
 
-		setPreferredSize(webcam.getViewSize());
+		if (size == null) {
+			setPreferredSize(webcam.getViewSize());
+		} else {
+			setPreferredSize(size);
+		}
 
 		if (start) {
 			if (!webcam.isOpen()) {
@@ -398,5 +452,26 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	 */
 	public boolean isStarting() {
 		return starting;
+	}
+
+	/**
+	 * Image will be resized to fill panel area if true. If false then image
+	 * will be rendered as it was obtained from webcam instance.
+	 * 
+	 * @param fillArea shall image be resided to fill panel area
+	 */
+	public void setFillArea(boolean fillArea) {
+		this.fillArea = fillArea;
+	}
+
+	/**
+	 * Get value of fill area setting. Image will be resized to fill panel area
+	 * if true. If false then image will be rendered as it was obtained from
+	 * webcam instance.
+	 * 
+	 * @return True if image is being resized, false otherwise
+	 */
+	public boolean isFillArea() {
+		return fillArea;
 	}
 }

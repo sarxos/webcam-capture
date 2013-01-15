@@ -2,9 +2,8 @@ package com.github.sarxos.webcam.ds.ipcam;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
@@ -20,7 +19,7 @@ public class IpCamDeviceRegistry {
 	/**
 	 * Contains IP cameras.
 	 */
-	private static final Set<IpCamDevice> DEVICES = new HashSet<IpCamDevice>();
+	private static final List<IpCamDevice> DEVICES = new ArrayList<IpCamDevice>();
 
 	/**
 	 * Register IP camera.
@@ -39,6 +38,10 @@ public class IpCamDeviceRegistry {
 
 	public static void register(String name, URL url, IpCamMode mode) {
 		register(new IpCamDevice(name, url, mode));
+	}
+
+	public static void register(String name, URL url, IpCamMode mode, IpCamAuth auth) {
+		register(new IpCamDevice(name, url, mode, auth));
 	}
 
 	public static boolean isRegistered(IpCamDevice ipcam) {
@@ -83,6 +86,6 @@ public class IpCamDeviceRegistry {
 	 * @return Collection of registered IP cameras
 	 */
 	public static List<IpCamDevice> getIpCameras() {
-		return new ArrayList<IpCamDevice>(DEVICES);
+		return Collections.unmodifiableList(DEVICES);
 	}
 }

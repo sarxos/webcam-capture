@@ -1,0 +1,8 @@
+<storage>
+	<ipcam name="Dasding 1" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=1" />
+	<ipcam name="Dasding 2" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=2" />
+	<ipcam name="Dasding 4" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=4" />
+	<ipcam name="Dasding 6" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=6" />
+	<ipcam name="Dasding 7" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=7" />
+	<ipcam name="Dasding 10" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=10" />
+</storage>

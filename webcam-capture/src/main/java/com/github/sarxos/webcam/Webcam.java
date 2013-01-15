@@ -48,7 +48,7 @@ public class Webcam {
 
 		@Override
 		public void run() {
-			LOG.info("Automatic resource deallocation");
+			LOG.info("Automatic {} deallocation", webcam.getName());
 			super.run();
 			webcam.dispose();
 			webcam.close0();

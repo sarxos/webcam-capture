@@ -245,13 +245,20 @@ public class IpCamDevice implements WebcamDevice {
 			open();
 		}
 
-		BufferedImage img = getImage();
-		int w = img.getWidth();
-		int h = img.getHeight();
-
-		sizes = new Dimension[] { new Dimension(w, h) };
+		int attempts = 0;
+		do {
+			BufferedImage img = getImage();
+			if (img != null) {
+				sizes = new Dimension[] { new Dimension(img.getWidth(), img.getHeight()) };
+				break;
+			}
+		} while (attempts++ < 5);
 
 		close();
+
+		if (sizes == null) {
+			throw new WebcamException("Cannot get initial image from IP camera device " + getName());
+		}
 
 		return sizes;
 	}

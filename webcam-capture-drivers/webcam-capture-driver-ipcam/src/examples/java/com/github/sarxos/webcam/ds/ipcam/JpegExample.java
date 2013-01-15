@@ -1,8 +1,12 @@
 package com.github.sarxos.webcam.ds.ipcam;
 
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 
 import com.github.sarxos.webcam.Webcam;
@@ -17,23 +21,28 @@ public class JpegExample {
 		// available to be viewed online. Here in this example we are creating
 		// IP camera device working in PULL mode to request static JPEG images.
 
-		String address = "http://www.dasding.de/ext/webcam/webcam770.php?cam=1";
-		IpCamDevice livecam = new IpCamDevice("dasding", new URL(address), IpCamMode.PULL);
+		JFrame f = new JFrame("Dasding Studio Live IP Cameras");
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setLayout(new GridLayout(0, 3, 1, 1));
 
-		IpCamDriver driver = new IpCamDriver();
-		driver.register(livecam);
+		List<WebcamPanel> panels = new ArrayList<WebcamPanel>();
 
-		Webcam.setDriver(driver);
+		for (Webcam webcam : Webcam.getWebcams()) {
 
-		WebcamPanel panel = new WebcamPanel(Webcam.getDefault());
-		panel.setFPS(0.2); // 1 frame per 5 seconds
+			WebcamPanel panel = new WebcamPanel(webcam, new Dimension(256, 144), false);
+			panel.setFillArea(true);
+			panel.setFPS(0.2); // 0.2 FPS = 1 frame per 5 seconds
+			panel.setBorder(BorderFactory.createEmptyBorder());
 
-		JFrame f = new JFrame("Dasding Studio Live IP Camera");
-		f.add(panel);
+			f.add(panel);
+			panels.add(panel);
+		}
+
 		f.pack();
 		f.setVisible(true);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		for (WebcamPanel panel : panels) {
+			panel.start();
+		}
 	}
-
 }
