@@ -27,7 +27,7 @@ help :) Later, when your class is ready, I will be happy to merge it with offici
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-ipcam</artifactId>
-	<version>0.3.6</version>
+	<version>0.3.7</version>
 </parent>
 ```
 

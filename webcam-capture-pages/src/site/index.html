@@ -31,7 +31,7 @@
         <div class="downloads">
           <span>Download:</span>
           <ul>
-            <li><a href="http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.6/webcam-capture-0.3.6-dist.zip" class="button">ZIP</a></li>
+            <li><a href="http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture/0.3.7/webcam-capture-0.3.7-dist.zip" class="button">ZIP</a></li>
           </ul>
         </div>
       </div><!-- end banner -->
@@ -100,7 +100,7 @@ project if you are using one of the dependency manager:
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.sarxos&lt;/groupId&gt;
     &lt;artifactId&gt;webcam-capture&lt;/artifactId&gt;
-    &lt;version&gt;0.3.6&lt;/version&gt;
+    &lt;version&gt;0.3.7&lt;/version&gt;
 &lt;/dependency&gt;
 </pre>
 
@@ -388,13 +388,106 @@ f.setVisible(true);
 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 </pre>
 
+<p>
 More IP / network camera examples are available in Github project's page.
+</p>
+
+
+<h3>Development Troubleshooting</h3>
+
+<p>
+In the development phase you will probably kill running application many
+time (by stop button in Eclipse, Netbeans or other IDE), or by calling 
+<i>kill -TERM &lt;pid&gt;</i> command from CLI. You have to be aware that
+killing running application when Webcam Capture is already running can have 
+unwanted side-effects, such as:
+</p>
+
+<ul>
+<li>Devices cannot be discovered,</li>
+<li>Devices discovery hangs applciation or operating system,</li>
+<li>Cannot open webcam device,</li>
+<li>Cannot capture image from webcam,</li>
+<li>Webcam found but later does not exists,</li>
+<li>Etc.</li>
+</ul>
+
+<p>
+All those issues arose from the same root cause - memory has not been 
+properly deallocated in the native layer. That's because you killed application
+instead of closing it gracefully.
+</p>
+
+<p>
+However, there is a solution for this problem. For such purpose special TERM 
+signal handler has been implemented, and you can enable it before you actually
+start using Webcam Capture API. This can be done by calling this code (please 
+<b>make sure</b> to call it before you use any other method!):
+</p>
+
+<pre class="prettyprint prettyprinted language-java linenums">
+Webcam.setTermSignalHandler(true);
+</pre>
+
+<p>
+<b>IMPORTANT NOTE!</b> This is development setting and <b>shall not</b> be used
+in production code!!! It modified the way of how JVM terminates its process, so
+depending on the system there can be some unknown side-effects. Also features used
+in this handler are undocumented and can be removed in further Java releases
+without prior notification.
+</p>
+
 
 
 <h3>Logging</h3>
 
-<p>Logging (Logback via SLF4J) is already there, so you can enable it simply by adding 
-<b>logback.xml</b> configuration file somewhere in your filesystem and calling:
+<p>
+Logging has been implemented via SLF4J API, so all you need to do 
+is to add specific implementation and create configuration file.
+</p>
+
+<h4>Logging Example With Logback Library</h4>
+
+<p>
+This paragraph describes in short how to use <a href="http://logback.qos.ch/">Logback</a> 
+to enable logs from Webcam Capture API.
+</p>
+
+<p>
+Go to <a href="http://logback.qos.ch/">Logback home page</a> and download
+ZIP files containing all required JARs. Extract ZIP and add those files into
+your classpath:
+</p>
+
+<ul>
+<li>logback-classic-<b>[version]</b>.jar</li>
+<li>logback-core-<b>[version]</b>.jar</li>
+</ul>
+
+<p>
+NOTE! The <b>[version]</b> is current Logback release signature (e.g. 1.0.9).
+</p>
+
+<p>
+Create <b>logback.xml</b> file and put this content inside:
+</p>
+
+<pre class="prettyprint prettyprinted language-xml linenums">
+&lt;configuration scan=&quot;true&quot; scanPeriod=&quot;30 seconds&quot;&gt;
+	&lt;appender name=&quot;STDOUT&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt;
+		&lt;layout class=&quot;ch.qos.logback.classic.PatternLayout&quot;&gt;
+			&lt;Pattern&gt;%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n&lt;/Pattern&gt;
+		&lt;/layout&gt;
+	&lt;/appender&gt;
+	&lt;root level=&quot;debug&quot;&gt;
+		&lt;appender-ref ref=&quot;STDOUT&quot; /&gt;
+	&lt;/root&gt;
+&lt;/configuration&gt;
+</pre>
+
+<p>
+When you include this file in your classpath, it will be discovered
+automatically, but you can also load it manually by calling:
 </p>
 
 <pre class="prettyprint prettyprinted language-java linenums">
@@ -407,14 +500,18 @@ WebcamLogConfigurator.configure("path/to/logback.xml");
 <p>
 There are more examples available in <b>src/example</b>, don't forget to 
 check them - please follow to the <a href="https://github.com/sarxos/webcam-capture">Github Project's Page</a> where <i>Webcam Capture</i>
-source code is stored!
+source code is stored! Here are the examples links:
 </p>
 
+<ul>
+<li><a href="https://github.com/sarxos/webcam-capture/tree/master/webcam-capture/src/example/java/com/github/sarxos/webcam">Small examples</a></li>
+<li><a href="https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples">Large examples</a></li>
+</ul>
 
 
 <h1>License</h1>
 
-<p>Copyright (C) 2012 Bartosz Firyn</p>
+<p>Copyright (C) 2012 - 213 Bartosz Firyn</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
 <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
 <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
