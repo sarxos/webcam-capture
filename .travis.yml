@@ -1,5 +1,5 @@
 language: java
-before_script:
+before_install:
   - mvn install -DskipTests=true -X
 script:
   - mvn test -X
