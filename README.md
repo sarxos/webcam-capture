@@ -17,11 +17,11 @@ Complete documentation, API, examples, tutorials and many more can be found here
 * Stream images from build-in or USB-connected PC webcams, 
 * Stream images from IP / network cameras,
 * Detect motion,
-* Available in Maven Central,
-* Can re-stream images,
+* All required JARs Available in Maven Central,
+* Can re-stream images as MJPEG,
 * Also available as standalone ZIP binaries with all dependencies included,
 * Supports additional video grabbing drivers (such as OpenIMAJ, LTI-CIVIL, JMF, FMJ, OpenCV, VLC, IP Camera),
-* Contains Swing component to display image from webcam / IP / network camera,
+* Ready to use Swing component designed to display image from webcam / IP / network camera,
 
 ## Maven
 
@@ -154,7 +154,7 @@ try {
 }
 ``` 
 
-## Drivers
+## Addtional Drivers
 
 Webcam Capture can utilize additional drivers to extend its own functionality. Currently below
 drivers are stable and available in Maven Central:
@@ -162,7 +162,7 @@ drivers are stable and available in Maven Central:
 * **[IP Camera Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam)** (adds IP / network cameras support)  
 * **[JMF Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf)** (JMF replacement for build-in webcam driver)
 
-Stable but not available in Maven Central:
+Stable but not available in Maven Central (due to 3rd-party dependencies not yet available in Central):
 
 * **[LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-civil)** (LTI-CIVIL replacement for build-in webcam driver)
 * **[OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-civil)** (OpenIMAJ replacement for build-in webcam driver)
@@ -171,6 +171,12 @@ Unstable drivers (experimental stuff, can be dropped in future):
 
 * **[OpenCV Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv)** (JavaCV / OpenCV replacement for build-in webcam driver)  
 * **[VLC Driver](https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj)** (VLC replacement for build-in webcam driver)
+
+If no additional driver has been included in the classpath, then default 
+one will be used instead. It consist of refined part of official [OpenIMAJ](http://sourceforge.net/p/openimaj/home/OpenIMAJ/) 
+code from [hardware/core-video-capture](http://sourceforge.net/p/openimaj/code/1756/tree/trunk/hardware/core-video-capture/) 
+module enhanced with multi-threading support which makes overral solution 
+thread-safe.
 
 ## License
 
