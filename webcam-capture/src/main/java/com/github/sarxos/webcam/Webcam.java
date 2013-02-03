@@ -17,14 +17,20 @@ import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
 
 
 /**
- * Webcam class.
+ * Webcam class. It wraps webcam device obtained from webcam driver.
  * 
  * @author Bartosz Firyn (bfiryn)
  */
 public class Webcam {
 
+	/**
+	 * Logger instance.
+	 */
 	private static final Logger LOG = LoggerFactory.getLogger(Webcam.class);
 
+	/**
+	 * List of default drivers to search in classpath.
+	 */
 	// @formatter:off
 	private static final String[] DRIVERS_DEFAULT = new String[] {
 		"com.github.sarxos.webcam.ds.openimaj.OpenImajDriver",
@@ -34,12 +40,21 @@ public class Webcam {
 	// @formatter:on
 
 	private static final List<String> DRIVERS_LIST = new ArrayList<String>(Arrays.asList(DRIVERS_DEFAULT));
+
 	private static final List<Class<?>> DRIVERS_CLASS_LIST = new ArrayList<Class<?>>();
 
 	private static final List<WebcamDiscoveryListener> DISCOVERY_LISTENERS = Collections.synchronizedList(new ArrayList<WebcamDiscoveryListener>());
 
+	/**
+	 * Shutdown hook to be executed when JVM exits gracefully.
+	 * 
+	 * @author Bartosz Firyn (sarxos)
+	 */
 	private static final class ShutdownHook extends Thread {
 
+		/**
+		 * Webcam instance to be disposed / closed.
+		 */
 		private Webcam webcam = null;
 
 		public ShutdownHook(Webcam webcam) {
@@ -55,8 +70,14 @@ public class Webcam {
 		}
 	}
 
+	/**
+	 * Webcam driver (LtiCivil, JMF, FMJ, JQT, OpenCV, VLCj, etc).
+	 */
 	private static WebcamDriver driver = null;
 
+	/**
+	 * Webcam discovery service.
+	 */
 	private static WebcamDiscoveryService discovery = null;
 
 	/**
@@ -69,26 +90,36 @@ public class Webcam {
 	 */
 	private List<WebcamListener> listeners = Collections.synchronizedList(new ArrayList<WebcamListener>());
 
+	/**
+	 * List of custom resolution sizes supported by webcam instance.
+	 */
 	private List<Dimension> customSizes = new ArrayList<Dimension>();
 
+	/**
+	 * Shutdown hook.
+	 */
 	private ShutdownHook hook = null;
-	private WebcamDevice device = null;
-
-	private volatile boolean open = false;
-	private volatile boolean disposed = false;
 
 	/**
-	 * Timeout for devices discovery. By default this is set to 1 minute, but
-	 * can be changed by appropriate static setter.
-	 * 
-	 * @see Webcam#setDiscoveryTimeout(long)
+	 * Underlying webcam device.
 	 */
-	private static long timeout = 60000;
+	private WebcamDevice device = null;
+
+	/**
+	 * Is webcam open?
+	 */
+	private volatile boolean open = false;
+
+	/**
+	 * Is webcam already disposed?
+	 */
+	private volatile boolean disposed = false;
 
 	/**
 	 * Webcam class.
 	 * 
 	 * @param device - device to be used as webcam
+	 * @throws IllegalArgumentException when argument is null
 	 */
 	protected Webcam(WebcamDevice device) {
 		if (device == null) {
@@ -108,10 +139,10 @@ public class Webcam {
 			Dimension[] sizes = device.getSizes();
 
 			if (sizes == null) {
-				throw new WebcamException("Sizes array from driver cannot be null!");
+				throw new WebcamException("Device error - sizes array from driver cannot be null!");
 			}
 			if (sizes.length == 0) {
-				throw new WebcamException("Sizes array from driver is empty, cannot choose image size");
+				throw new WebcamException("Device error - sizes array from driver cannot be empty");
 			}
 
 			device.setSize(sizes[0]);
@@ -318,11 +349,13 @@ public class Webcam {
 	 * @throws WebcamException when something is wrong
 	 * @see Webcam#getWebcams(long, TimeUnit)
 	 */
-	public static List<Webcam> getWebcams() {
+	public static List<Webcam> getWebcams() throws WebcamException {
 		try {
-			return getWebcams(timeout);
+			return getWebcams(Long.MAX_VALUE);
 		} catch (TimeoutException e) {
-			throw new WebcamException(e);
+			// this should never happen since user would have to wait 300000000
+			// years for it to occur
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -335,7 +368,7 @@ public class Webcam {
 	 * @throws WebcamException when something is wrong
 	 * @see Webcam#getWebcams(long, TimeUnit)
 	 */
-	public static List<Webcam> getWebcams(long timeout) throws TimeoutException {
+	public static List<Webcam> getWebcams(long timeout) throws TimeoutException, WebcamException {
 		return getWebcams(timeout, TimeUnit.MILLISECONDS);
 	}
 
@@ -349,7 +382,7 @@ public class Webcam {
 	 * @throws TimeoutException when timeout has been exceeded
 	 * @throws WebcamException when something is wrong
 	 */
-	public static List<Webcam> getWebcams(long timeout, TimeUnit tunit) throws TimeoutException {
+	public static List<Webcam> getWebcams(long timeout, TimeUnit tunit) throws TimeoutException, WebcamException {
 
 		WebcamDiscoveryService discovery = getDiscoveryService();
 		List<Webcam> webcams = discovery.getWebcams(timeout, tunit);
@@ -365,14 +398,16 @@ public class Webcam {
 	 * Will discover and return first webcam available in the system.
 	 * 
 	 * @return Default webcam (first from the list)
-	 * @throws WebcamException if something is wrong
+	 * @throws WebcamException if something is really wrong
 	 * @see Webcam#getWebcams()
 	 */
-	public static Webcam getDefault() {
+	public static Webcam getDefault() throws WebcamException {
 		try {
-			return getDefault(timeout);
+			return getDefault(Long.MAX_VALUE);
 		} catch (TimeoutException e) {
-			throw new WebcamException(e);
+			// this should never happen since user would have to wait 300000000
+			// years for it to occur
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -382,9 +417,10 @@ public class Webcam {
 	 * @param timeout the webcam discovery timeout (1 minute by default)
 	 * @return Default webcam (first from the list)
 	 * @throws TimeoutException when discovery timeout has been exceeded
+	 * @throws WebcamException if something is really wrong
 	 * @see Webcam#getWebcams(long)
 	 */
-	public static Webcam getDefault(long timeout) throws TimeoutException {
+	public static Webcam getDefault(long timeout) throws TimeoutException, WebcamException {
 		return getDefault(timeout, TimeUnit.MILLISECONDS);
 	}
 
@@ -395,9 +431,10 @@ public class Webcam {
 	 * @param tunit the time unit
 	 * @return Default webcam (first from the list)
 	 * @throws TimeoutException when discovery timeout has been exceeded
+	 * @throws WebcamException if something is really wrong
 	 * @see Webcam#getWebcams(long, TimeUnit)
 	 */
-	public static Webcam getDefault(long timeout, TimeUnit tunit) throws TimeoutException {
+	public static Webcam getDefault(long timeout, TimeUnit tunit) throws TimeoutException, WebcamException {
 
 		if (timeout < 0) {
 			throw new IllegalArgumentException("Timeout cannot be negative");
@@ -407,11 +444,14 @@ public class Webcam {
 		}
 
 		List<Webcam> webcams = getWebcams(timeout, tunit);
-		if (webcams.isEmpty()) {
-			throw new WebcamException("No webcam available in the system");
+
+		if (!webcams.isEmpty()) {
+			return webcams.get(0);
 		}
 
-		return webcams.get(0);
+		LOG.warn("No webcam has been detected!");
+
+		return null;
 	}
 
 	/**
@@ -434,6 +474,7 @@ public class Webcam {
 	 * Add webcam listener.
 	 * 
 	 * @param l the listener to be added
+	 * @throws IllegalArgumentException when argument is null
 	 */
 	public boolean addWebcamListener(WebcamListener l) {
 		if (l == null) {
@@ -485,7 +526,8 @@ public class Webcam {
 	 * <br>
 	 * <b>This method is not thread-safe!</b>
 	 * 
-	 * @param driver new video driver to use (e.g. Civil, JFM, FMJ, QTJ, etc)
+	 * @param driver new webcam driver to be used (e.g. LtiCivil, JFM, FMJ, QTJ)
+	 * @throws IllegalArgumentException when argument is null
 	 */
 	public static void setDriver(WebcamDriver driver) {
 		if (driver == null) {
@@ -503,6 +545,7 @@ public class Webcam {
 	 * <b>This method is not thread-safe!</b>
 	 * 
 	 * @param driver new video driver class to use
+	 * @throws IllegalArgumentException when argument is null
 	 */
 	public static void setDriver(Class<? extends WebcamDriver> driverClass) {
 
@@ -544,6 +587,7 @@ public class Webcam {
 	 * Register new webcam video driver.
 	 * 
 	 * @param clazz webcam video driver class
+	 * @throws IllegalArgumentException when argument is null
 	 */
 	public static void registerDriver(Class<? extends WebcamDriver> clazz) {
 		if (clazz == null) {
@@ -557,6 +601,7 @@ public class Webcam {
 	 * Register new webcam video driver.
 	 * 
 	 * @param clazzName webcam video driver class name
+	 * @throws IllegalArgumentException when argument is null
 	 */
 	public static void registerDriver(String clazzName) {
 		if (clazzName == null) {
@@ -645,6 +690,7 @@ public class Webcam {
 	 * 
 	 * @param l the listener to be added
 	 * @return True, if listeners list size has been changed, false otherwise
+	 * @throws IllegalArgumentException when argument is null
 	 */
 	public static boolean addDiscoveryListener(WebcamDiscoveryListener l) {
 		if (l == null) {
@@ -677,24 +723,5 @@ public class Webcam {
 			discovery = new WebcamDiscoveryService(getDriver());
 		}
 		return discovery;
-	}
-
-	/**
-	 * Set new devices discovery timeout. By default this is set to 1 minute
-	 * (60000 milliseconds).
-	 * 
-	 * @param timeout the new discovery timeout in milliseconds
-	 */
-	public static void setDiscoveryTimeout(long timeout) {
-		Webcam.timeout = timeout;
-	}
-
-	/**
-	 * Return default webcam discovery timeout in milliseconds.
-	 * 
-	 * @return Timeout in milliseconds
-	 */
-	public static long getDiscoveryTimeout() {
-		return Webcam.timeout;
 	}
 }
