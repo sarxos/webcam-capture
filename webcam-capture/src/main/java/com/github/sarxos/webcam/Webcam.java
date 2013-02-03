@@ -73,12 +73,12 @@ public class Webcam {
 	/**
 	 * Webcam driver (LtiCivil, JMF, FMJ, JQT, OpenCV, VLCj, etc).
 	 */
-	private static WebcamDriver driver = null;
+	private static volatile WebcamDriver driver = null;
 
 	/**
 	 * Webcam discovery service.
 	 */
-	private static WebcamDiscoveryService discovery = null;
+	private static volatile WebcamDiscoveryService discovery = null;
 
 	/**
 	 * Is automated deallocation on TERM signal enabled.
@@ -331,13 +331,14 @@ public class Webcam {
 			return null;
 		}
 
-		synchronized (this) {
-			if (!open) {
-				LOG.debug("Try to get image on closed webcam, opening it automatically");
+		if (!open) {
+			LOG.debug("Try to get image on closed webcam, opening it automatically");
+			synchronized (this) {
 				open();
 			}
-			return device.getImage();
 		}
+
+		return device.getImage();
 	}
 
 	/**
@@ -382,7 +383,7 @@ public class Webcam {
 	 * @throws TimeoutException when timeout has been exceeded
 	 * @throws WebcamException when something is wrong
 	 */
-	public static List<Webcam> getWebcams(long timeout, TimeUnit tunit) throws TimeoutException, WebcamException {
+	public static synchronized List<Webcam> getWebcams(long timeout, TimeUnit tunit) throws TimeoutException, WebcamException {
 
 		WebcamDiscoveryService discovery = getDiscoveryService();
 		List<Webcam> webcams = discovery.getWebcams(timeout, tunit);
@@ -402,6 +403,7 @@ public class Webcam {
 	 * @see Webcam#getWebcams()
 	 */
 	public static Webcam getDefault() throws WebcamException {
+
 		try {
 			return getDefault(Long.MAX_VALUE);
 		} catch (TimeoutException e) {
@@ -507,7 +509,7 @@ public class Webcam {
 	 * 
 	 * @return Webcam driver
 	 */
-	public static WebcamDriver getDriver() {
+	public static synchronized WebcamDriver getDriver() {
 
 		if (driver == null) {
 			driver = WebcamDriverUtils.findDriver(DRIVERS_LIST, DRIVERS_CLASS_LIST);
@@ -529,11 +531,14 @@ public class Webcam {
 	 * @param driver new webcam driver to be used (e.g. LtiCivil, JFM, FMJ, QTJ)
 	 * @throws IllegalArgumentException when argument is null
 	 */
-	public static void setDriver(WebcamDriver driver) {
+	public static synchronized void setDriver(WebcamDriver driver) {
+
 		if (driver == null) {
 			throw new IllegalArgumentException("Webcam driver cannot be null!");
 		}
+
 		resetDriver();
+
 		Webcam.driver = driver;
 	}
 
@@ -547,7 +552,7 @@ public class Webcam {
 	 * @param driver new video driver class to use
 	 * @throws IllegalArgumentException when argument is null
 	 */
-	public static void setDriver(Class<? extends WebcamDriver> driverClass) {
+	public static synchronized void setDriver(Class<? extends WebcamDriver> driverClass) {
 
 		resetDriver();
 
@@ -718,7 +723,7 @@ public class Webcam {
 	 * 
 	 * @return Discovery service
 	 */
-	public static WebcamDiscoveryService getDiscoveryService() {
+	public static synchronized WebcamDiscoveryService getDiscoveryService() {
 		if (discovery == null) {
 			discovery = new WebcamDiscoveryService(getDriver());
 		}

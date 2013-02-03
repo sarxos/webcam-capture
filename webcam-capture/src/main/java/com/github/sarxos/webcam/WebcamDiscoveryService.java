@@ -78,11 +78,7 @@ public class WebcamDiscoveryService implements Runnable {
 		return devices;
 	}
 
-	public List<Webcam> getWebcams() throws TimeoutException {
-		return getWebcams(Webcam.getDiscoveryTimeout(), TimeUnit.MILLISECONDS);
-	}
-
-	public List<Webcam> getWebcams(long timeout, TimeUnit tunit) throws TimeoutException {
+	public synchronized List<Webcam> getWebcams(long timeout, TimeUnit tunit) throws TimeoutException {
 
 		if (timeout < 0) {
 			throw new IllegalArgumentException("Timeout cannot be negative");
@@ -162,7 +158,7 @@ public class WebcamDiscoveryService implements Runnable {
 			List<WebcamDevice> tmpold = null;
 
 			try {
-				tmpold = getDevices(getWebcams(Webcam.getDiscoveryTimeout(), TimeUnit.MILLISECONDS));
+				tmpold = getDevices(getWebcams(Long.MAX_VALUE, TimeUnit.MILLISECONDS));
 			} catch (TimeoutException e) {
 				throw new WebcamException(e);
 			}

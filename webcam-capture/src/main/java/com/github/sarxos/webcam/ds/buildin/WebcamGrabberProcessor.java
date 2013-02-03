@@ -2,12 +2,12 @@ package com.github.sarxos.webcam.ds.buildin;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.sarxos.webcam.WebcamException;
+import com.github.sarxos.webcam.ds.buildin.cgt.NewGrabberTask;
 import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
 
 
@@ -28,10 +28,17 @@ public final class WebcamGrabberProcessor {
 	 */
 	private static final class ProcessorThreadFactory implements ThreadFactory {
 
+		private static int number = 0;
+
 		@Override
 		public Thread newThread(Runnable r) {
-			Thread t = new Thread(r, getClass().getSimpleName());
+
+			// should always be 1, but add some unique name for debugging
+			// purpose just in case if there is some bug in my understanding
+
+			Thread t = new Thread(r, "processor-" + (++number));
 			t.setDaemon(true);
+
 			return t;
 		}
 	}
@@ -44,49 +51,77 @@ public final class WebcamGrabberProcessor {
 	 */
 	private static final class StaticProcessor implements Runnable {
 
+		private class IO {
+
+			public AtomicReference<WebcamGrabberTask> input = new AtomicReference<WebcamGrabberTask>();
+			public AtomicReference<WebcamGrabberTask> output = new AtomicReference<WebcamGrabberTask>();
+
+			public IO(WebcamGrabberTask task) {
+				input.set(task);
+			}
+		}
+
+		private final AtomicReference<IO> ioref = new AtomicReference<IO>();
+
+		/**
+		 * Process task.
+		 * 
+		 * @param task the task to be processed
+		 * @return Processed task
+		 * @throws InterruptedException when thread has been interrupted
+		 */
+		public WebcamGrabberTask process(WebcamGrabberTask task) throws InterruptedException {
+
+			IO io = new IO(task);
+
+			// submit task wrapped in IO pair
+			synchronized (ioref) {
+				while (!ioref.compareAndSet(null, io)) {
+					ioref.wait();
+				}
+			}
+
+			// obtain processed task
+			synchronized (io.output) {
+				while ((task = io.output.getAndSet(null)) == null) {
+					io.output.wait();
+				}
+			}
+
+			return task;
+		}
+
 		@Override
 		public void run() {
+
+			WebcamGrabberTask t = null;
+			IO io = null;
+
 			while (true) {
-				WebcamGrabberTask task = null;
-				try {
-					(task = tasks.take()).handle();
-				} catch (InterruptedException e) {
-					throw new WebcamException("Take interrupted", e);
-				} finally {
-					synchronized (task) {
-						task.notifyAll();
+
+				if ((io = ioref.getAndSet(null)) != null) {
+
+					synchronized (ioref) {
+						ioref.notify();
+					}
+
+					(t = io.input.get()).handle();
+					io.output.set(t);
+
+					synchronized (io.output) {
+						io.output.notify();
+					}
+
+				} else {
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e.getMessage(), e);
 					}
 				}
 			}
 		}
 	}
-
-	/**
-	 * Internal task used to create new grabber. Yeah, native grabber
-	 * construction, same as all other methods invoked on its instance, also has
-	 * to be super-synchronized.
-	 * 
-	 * @author Bartosz Firyn (SarXos)
-	 */
-	private static final class NewGrabberTask extends WebcamGrabberTask {
-
-		private volatile OpenIMAJGrabber grabber = null;
-
-		public OpenIMAJGrabber getGrabber() {
-			return grabber;
-		}
-
-		@Override
-		protected void handle() {
-			grabber = new OpenIMAJGrabber();
-		}
-	}
-
-	/**
-	 * Synchronous queue used to exchange tasks between threads and static
-	 * processor.
-	 */
-	private static final SynchronousQueue<WebcamGrabberTask> tasks = new SynchronousQueue<WebcamGrabberTask>(true);
 
 	/**
 	 * Execution service.
@@ -118,6 +153,20 @@ public final class WebcamGrabberProcessor {
 	}
 
 	/**
+	 * Create native grabber.
+	 * 
+	 * @return New grabber
+	 */
+	private OpenIMAJGrabber createGrabber() {
+		NewGrabberTask ngt = new NewGrabberTask();
+		try {
+			return ((NewGrabberTask) processor.process(ngt)).getGrabber();
+		} catch (InterruptedException e) {
+			throw new WebcamException("Grabber creation interrupted", e);
+		}
+	}
+
+	/**
 	 * Process task.
 	 * 
 	 * @param task the task to be processed
@@ -126,31 +175,18 @@ public final class WebcamGrabberProcessor {
 
 		// construct grabber if not available yet
 
-		synchronized (this) {
-			if (grabber == null) {
-				NewGrabberTask grabberTask = new NewGrabberTask();
-				try {
-					synchronized (grabberTask) {
-						tasks.offer(grabberTask);
-						grabberTask.wait();
-						grabber = grabberTask.getGrabber();
-					}
-				} catch (InterruptedException e) {
-					throw new WebcamException("Grabber creation interrupted", e);
-				}
-			}
+		if (grabber == null) {
+			grabber = createGrabber();
 		}
 
-		// run task and wait for it to be completed
+		// process task and wait for it to be completed
+
+		task.setGrabber(grabber);
 
 		try {
-			synchronized (task) {
-				task.setGrabber(grabber);
-				tasks.offer(task, 30, TimeUnit.MINUTES);
-				task.wait();
-			}
+			processor.process(task);
 		} catch (InterruptedException e) {
-			throw new WebcamException("Offer interrupted", e);
+			throw new WebcamException("Processing interrupted", e);
 		}
 	}
 }

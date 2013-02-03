@@ -16,7 +16,7 @@ public abstract class WebcamGrabberTask {
 	protected volatile OpenIMAJGrabber grabber = null;
 
 	/**
-	 * Process task by processor thread.
+	 * ne = true; Process task by processor thread.
 	 * 
 	 * @param processor the processor to be used to process this task
 	 */

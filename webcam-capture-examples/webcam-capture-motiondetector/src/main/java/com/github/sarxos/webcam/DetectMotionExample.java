@@ -18,9 +18,6 @@ import javax.swing.JLabel;
  */
 public class DetectMotionExample extends JFrame implements Runnable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -585739158170333370L;
 
 	private static final int INTERVAL = 100; // ms
