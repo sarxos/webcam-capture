@@ -52,21 +52,22 @@ public class Webcam {
 	 */
 	private static final class ShutdownHook extends Thread {
 
+		private static int number = 0;
+
 		/**
 		 * Webcam instance to be disposed / closed.
 		 */
 		private Webcam webcam = null;
 
 		public ShutdownHook(Webcam webcam) {
+			super("shutdown-hook-" + (++number));
 			this.webcam = webcam;
 		}
 
 		@Override
 		public void run() {
 			LOG.info("Automatic {} deallocation", webcam.getName());
-			super.run();
 			webcam.dispose();
-			webcam.close0();
 		}
 	}
 
@@ -134,6 +135,7 @@ public class Webcam {
 	private void ensureSize() {
 
 		Dimension size = device.getSize();
+
 		if (size == null) {
 
 			Dimension[] sizes = device.getSizes();
@@ -155,12 +157,11 @@ public class Webcam {
 	public synchronized void open() {
 
 		if (open) {
+			LOG.debug("Webcam has already been open {}", getName());
 			return;
 		}
 
-		if (LOG.isInfoEnabled()) {
-			LOG.info("Opening webcam " + getName());
-		}
+		LOG.info("Opening webcam {}", getName());
 
 		ensureSize();
 
@@ -226,14 +227,14 @@ public class Webcam {
 	 * 
 	 * @return true if open, false otherwise
 	 */
-	public synchronized boolean isOpen() {
+	public boolean isOpen() {
 		return open;
 	}
 
 	/**
 	 * @return Webcam view size (picture size) in pixels.
 	 */
-	public Dimension getViewSize() {
+	public synchronized Dimension getViewSize() {
 		return device.getSize();
 	}
 
@@ -243,7 +244,7 @@ public class Webcam {
 	 * 
 	 * @return
 	 */
-	public Dimension[] getViewSizes() {
+	public synchronized Dimension[] getViewSizes() {
 		return device.getSizes();
 	}
 
@@ -273,7 +274,7 @@ public class Webcam {
 	 * @see Webcam#setCustomViewSizes(Dimension[])
 	 * @see Webcam#getViewSizes()
 	 */
-	public void setViewSize(Dimension size) {
+	public synchronized void setViewSize(Dimension size) {
 
 		if (size == null) {
 			throw new IllegalArgumentException("View size cannot be null!");
@@ -313,9 +314,7 @@ public class Webcam {
 			throw new IllegalArgumentException(sb.toString());
 		}
 
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("Setting new view size {} x {}", size.width, size.height);
-		}
+		LOG.debug("Setting new view size {} x {}", size.width, size.height);
 
 		device.setSize(size);
 	}
@@ -325,17 +324,15 @@ public class Webcam {
 	 * 
 	 * @return Captured image
 	 */
-	public BufferedImage getImage() {
+	public synchronized BufferedImage getImage() {
 
 		if (disposed) {
+			LOG.warn("Cannot get image - webcam has been already disposed");
 			return null;
 		}
 
 		if (!open) {
-			LOG.debug("Try to get image on closed webcam, opening it automatically");
-			synchronized (this) {
-				open();
-			}
+			open();
 		}
 
 		return device.getImage();
@@ -644,8 +641,11 @@ public class Webcam {
 			}
 		}
 
-		open = false;
+		// make sure to dispose first !!
 		disposed = true;
+		open = false;
+
+		LOG.trace("Disposed flag set, open flag disabled");
 
 		WebcamEvent we = new WebcamEvent(this);
 		for (WebcamListener l : listeners) {
@@ -658,9 +658,10 @@ public class Webcam {
 		}
 
 		synchronized (this) {
-			device.close();
 			device.dispose();
 		}
+
+		LOG.debug("Webcam disposed {}", getName());
 	}
 
 	/**

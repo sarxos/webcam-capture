@@ -17,8 +17,8 @@ public class TakePictureDifferentSizeExample {
 
 	public static void main(String[] args) throws IOException {
 		Webcam webcam = Webcam.getDefault();
-		webcam.setViewSize(new Dimension(176, 144));
 		webcam.open();
+		webcam.setViewSize(new Dimension(1024, 768));
 		ImageIO.write(webcam.getImage(), "PNG", new File("test.png"));
 		webcam.close();
 	}

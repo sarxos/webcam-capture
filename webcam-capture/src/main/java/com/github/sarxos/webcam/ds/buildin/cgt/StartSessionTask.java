@@ -22,9 +22,12 @@ public class StartSessionTask extends WebcamGrabberTask {
 	}
 
 	public boolean startSession(Dimension size, Device device) {
+
 		this.size = size;
 		this.device = device;
+
 		process(processor);
+
 		return started;
 	}
 

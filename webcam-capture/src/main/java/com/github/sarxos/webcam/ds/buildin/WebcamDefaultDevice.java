@@ -99,7 +99,6 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	private boolean failOnSizeMismatch = false;
 
 	private volatile boolean open = false;
-	private volatile boolean opening = false;
 	private volatile boolean disposed = false;
 
 	private String name = null;
@@ -145,7 +144,11 @@ public class WebcamDefaultDevice implements WebcamDevice {
 			return null;
 		}
 
+		LOG.trace("Webcam device get image (next frame)");
+
 		frameTask.nextFrame();
+
+		LOG.trace("Webcam device get image (transfer buffer)");
 
 		byte[] bytes = imageTask.getImage(size);
 		byte[][] data = new byte[][] { bytes };
@@ -167,88 +170,68 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	@Override
 	public void open() {
 
+		LOG.debug("Opening webcam device {}", getName());
+
 		if (disposed) {
 			throw new WebcamException("Cannot open webcam when device it's already disposed");
-		}
-
-		synchronized (device) {
-
-			if (opening) {
-				try {
-					device.wait();
-				} catch (InterruptedException e) {
-					throw new WebcamException("Opening wait interrupted");
-				} finally {
-					opening = false;
-				}
-			}
-
-			if (open) {
-				return;
-			} else {
-				opening = true;
-			}
 		}
 
 		if (size == null) {
 			size = getSizes()[0];
 		}
 
-		try {
+		LOG.debug("Webcam device starting session, size {}", size);
 
-			boolean started = sessionTask.startSession(size, device);
-			if (!started) {
-				throw new WebcamException("Cannot start video data grabber!");
-			}
-
-			Dimension size2 = sizeTask.getSize();
-
-			int w1 = size.width;
-			int w2 = size2.width;
-			int h1 = size.height;
-			int h2 = size2.height;
-
-			if (w1 != w2 || h1 != h2) {
-
-				if (failOnSizeMismatch) {
-					throw new WebcamException(String.format("Different size obtained vs requested - [%dx%d] vs [%dx%d]", w1, h1, w2, h2));
-				}
-
-				LOG.warn("Different size obtained vs requested - [{}x{}] vs [{}x{}]. Setting correct one. New size is [{}x{}]", new Object[] { w1, h1, w2, h2, w2, h2 });
-				size = new Dimension(w2, h2);
-			}
-
-			sampleModel = new ComponentSampleModel(DATA_TYPE, size.width, size.height, 3, size.width * 3, BAND_OFFSETS);
-			colorModel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
-
-			int i = 0;
-			do {
-
-				frameTask.nextFrame();
-				imageTask.getImage(size);
-
-				if (disposed) {
-					opening = false;
-					return;
-				}
-
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					LOG.error("Nasty interrupted exception", e);
-				}
-			} while (i++ < 3);
-
-			open = true;
-			opening = false;
-
-		} finally {
-
-			// notify all threads which are also waiting for device to be open
-			synchronized (device) {
-				device.notifyAll();
-			}
+		boolean started = sessionTask.startSession(size, device);
+		if (!started) {
+			throw new WebcamException("Cannot start video data grabber!");
 		}
+
+		LOG.debug("Webcam device session started");
+
+		Dimension size2 = sizeTask.getSize();
+
+		int w1 = size.width;
+		int w2 = size2.width;
+		int h1 = size.height;
+		int h2 = size2.height;
+
+		if (w1 != w2 || h1 != h2) {
+
+			if (failOnSizeMismatch) {
+				throw new WebcamException(String.format("Different size obtained vs requested - [%dx%d] vs [%dx%d]", w1, h1, w2, h2));
+			}
+
+			LOG.warn("Different size obtained vs requested - [{}x{}] vs [{}x{}]. Setting correct one. New size is [{}x{}]", new Object[] { w1, h1, w2, h2, w2, h2 });
+			size = new Dimension(w2, h2);
+		}
+
+		sampleModel = new ComponentSampleModel(DATA_TYPE, size.width, size.height, 3, size.width * 3, BAND_OFFSETS);
+		colorModel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
+
+		LOG.debug("Initialize buffer");
+
+		int i = 0;
+		do {
+
+			frameTask.nextFrame();
+			imageTask.getImage(size);
+
+			if (disposed) {
+				return;
+			}
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				LOG.error("Nasty interrupted exception", e);
+			}
+
+		} while (i++ < 3);
+
+		LOG.debug("Webcam device is now open");
+
+		open = true;
 	}
 
 	@Override
@@ -258,19 +241,23 @@ public class WebcamDefaultDevice implements WebcamDevice {
 			return;
 		}
 
-		synchronized (device) {
-			closeTask.closeSession();
-			open = false;
-		}
+		LOG.debug("Closing webcam device");
+
+		open = false;
+		closeTask.closeSession();
 	}
 
 	@Override
 	public void dispose() {
+
 		if (disposed) {
 			return;
 		}
-		close();
+
+		LOG.debug("Disposing webcam device {}", getName());
+
 		disposed = true;
+		close();
 	}
 
 	/**

@@ -1,6 +1,9 @@
 package com.github.sarxos.webcam;
 
+import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.github.sarxos.webcam.log.WebcamLogConfigurator;
 
 
 public class ConcurrentThreadsExample {
@@ -17,17 +20,32 @@ public class ConcurrentThreadsExample {
 
 		@Override
 		public void run() {
+
+			Webcam webcam = Webcam.getDefault();
+			webcam.open();
+
 			while (true) {
-				Webcam.getDefault().getImage();
-				int value = counter.incrementAndGet();
-				if (value != 0 && value % 10 == 0) {
-					System.out.println(Thread.currentThread().getName() + ": Frames captured: " + value);
+
+				if (!webcam.isOpen()) {
+					break;
+				}
+
+				BufferedImage image = webcam.getImage();
+				if (image == null) {
+					break;
+				}
+
+				int n = counter.incrementAndGet();
+				if (n != 0 && n % 10 == 0) {
+					System.out.println(Thread.currentThread().getName() + ": Frames captured: " + n);
 				}
 			}
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Throwable {
+
+		WebcamLogConfigurator.configure("src/example/resources/logback.xml");
 
 		/**
 		 * This example will start several concurrent threads which use single
@@ -39,5 +57,9 @@ public class ConcurrentThreadsExample {
 			System.out.println("Thread: " + i);
 			new Capture().start();
 		}
+
+		Thread.sleep(10000);
+
+		System.exit(1);
 	}
 }
