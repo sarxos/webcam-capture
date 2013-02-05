@@ -52,7 +52,7 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 	}
 
 	@Override
-	public Dimension[] getSizes() {
+	public Dimension[] getResolutions() {
 
 		if (dimensions == null) {
 			dimensions = new ArrayList<Dimension>();
@@ -180,17 +180,22 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 	}
 
 	@Override
-	public Dimension getSize() {
+	public Dimension getResolution() {
 		return size;
 	}
 
 	@Override
-	public void setSize(Dimension d) {
+	public void setResolution(Dimension d) {
 		this.size = d;
 	}
 
 	@Override
 	public void dispose() {
 		disposed = true;
+	}
+
+	@Override
+	public boolean isOpen() {
+		return open;
 	}
 }

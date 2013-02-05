@@ -37,17 +37,17 @@ public class JavaCvDevice implements WebcamDevice {
 	}
 
 	@Override
-	public Dimension[] getSizes() {
+	public Dimension[] getResolutions() {
 		throw new WebcamException("Not implemented");
 	}
 
 	@Override
-	public Dimension getSize() {
+	public Dimension getResolution() {
 		throw new WebcamException("Not implemented");
 	}
 
 	@Override
-	public void setSize(Dimension size) {
+	public void setResolution(Dimension size) {
 		throw new WebcamException("Not implemented");
 	}
 
@@ -115,5 +115,10 @@ public class JavaCvDevice implements WebcamDevice {
 	@Override
 	public void dispose() {
 		disposed = true;
+	}
+
+	@Override
+	public boolean isOpen() {
+		return open;
 	}
 }

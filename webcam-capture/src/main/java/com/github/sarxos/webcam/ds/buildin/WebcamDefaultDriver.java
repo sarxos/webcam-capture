@@ -3,20 +3,22 @@ package com.github.sarxos.webcam.ds.buildin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bridj.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDiscoverySupport;
 import com.github.sarxos.webcam.WebcamDriver;
-import com.github.sarxos.webcam.ds.buildin.cgt.GetDevicesTask;
 import com.github.sarxos.webcam.ds.buildin.natives.Device;
+import com.github.sarxos.webcam.ds.buildin.natives.DeviceList;
+import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
 
 
 /**
  * Default build-in webcam driver based on natives from OpenIMAJ framework. It
- * can be widely used on various systems - Mac OS X, Linux (x86, x64, 32-bit
- * ARM), Windows (win32, win64).
+ * can be widely used on various systems - Mac OS, Linux (x86, x64, ARM),
+ * Windows (win32, win64).
  * 
  * @author Bartosz Firyn (SarXos)
  */
@@ -28,14 +30,9 @@ public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamDefaultDriver.class);
 
 	/**
-	 * Synchronous video grabber processor.
+	 * Native grabber.
 	 */
-	private static final WebcamGrabberProcessor processor = new WebcamGrabberProcessor();
-
-	/**
-	 * Task to fetch images list from grabber.
-	 */
-	private static final GetDevicesTask DEVICES_TASK = new GetDevicesTask(processor);
+	private static final OpenIMAJGrabber GRABBER = new OpenIMAJGrabber();
 
 	@Override
 	public List<WebcamDevice> getDevices() {
@@ -43,8 +40,10 @@ public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport
 		LOG.debug("Searching devices");
 
 		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
+		Pointer<DeviceList> pointer = GRABBER.getVideoDevices();
+		DeviceList list = pointer.get();
 
-		for (Device device : DEVICES_TASK.getDevices()) {
+		for (Device device : list.asArrayList()) {
 			devices.add(new WebcamDefaultDevice(device));
 		}
 

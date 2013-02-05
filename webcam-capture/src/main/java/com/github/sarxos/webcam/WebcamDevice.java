@@ -23,21 +23,21 @@ public interface WebcamDevice {
 	 * 
 	 * @return Possible resolutions
 	 */
-	Dimension[] getSizes();
+	Dimension[] getResolutions();
 
 	/**
 	 * Get currently set image size.
 	 * 
 	 * @return The size which is currently set
 	 */
-	Dimension getSize();
+	Dimension getResolution();
 
 	/**
 	 * Set new expected image size.
 	 * 
 	 * @param size the size to be set
 	 */
-	void setSize(Dimension size);
+	void setResolution(Dimension size);
 
 	/**
 	 * Fetch image from underlying camera.
@@ -60,5 +60,12 @@ public interface WebcamDevice {
 	 * Dispose device. After device is disposed it cannot be open again.
 	 */
 	void dispose();
+
+	/**
+	 * Is webcam device open?
+	 * 
+	 * @return True if webcam device is open, false otherwise
+	 */
+	boolean isOpen();
 
 }

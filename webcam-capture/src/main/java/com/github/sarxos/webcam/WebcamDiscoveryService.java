@@ -321,7 +321,7 @@ public class WebcamDiscoveryService implements Runnable {
 	/**
 	 * Cleanup.
 	 */
-	protected synchronized void dispose() {
+	protected synchronized void shutdown() {
 
 		stop();
 

@@ -28,17 +28,17 @@ public class DummyDevice implements WebcamDevice {
 	}
 
 	@Override
-	public Dimension[] getSizes() {
+	public Dimension[] getResolutions() {
 		return DIMENSIONS;
 	}
 
 	@Override
-	public Dimension getSize() {
+	public Dimension getResolution() {
 		return size;
 	}
 
 	@Override
-	public void setSize(Dimension size) {
+	public void setResolution(Dimension size) {
 		this.size = size;
 	}
 

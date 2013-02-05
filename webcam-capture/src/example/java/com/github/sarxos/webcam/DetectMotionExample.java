@@ -2,11 +2,6 @@ package com.github.sarxos.webcam;
 
 import java.io.IOException;
 
-import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamMotionDetector;
-import com.github.sarxos.webcam.WebcamMotionEvent;
-import com.github.sarxos.webcam.WebcamMotionListener;
-
 
 /**
  * Detect motion.

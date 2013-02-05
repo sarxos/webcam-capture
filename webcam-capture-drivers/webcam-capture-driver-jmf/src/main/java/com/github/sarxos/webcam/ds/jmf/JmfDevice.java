@@ -234,7 +234,7 @@ public class JmfDevice implements WebcamDevice {
 	}
 
 	@Override
-	public Dimension[] getSizes() {
+	public Dimension[] getResolutions() {
 
 		if (dimensions == null) {
 			dimensions = new ArrayList<Dimension>();
@@ -267,12 +267,12 @@ public class JmfDevice implements WebcamDevice {
 	}
 
 	@Override
-	public Dimension getSize() {
+	public Dimension getResolution() {
 		return dimension;
 	}
 
 	@Override
-	public void setSize(Dimension size) {
+	public void setResolution(Dimension size) {
 		this.dimension = size;
 	}
 
@@ -385,6 +385,11 @@ public class JmfDevice implements WebcamDevice {
 	@Override
 	public void dispose() {
 		disposed = true;
+	}
+
+	@Override
+	public boolean isOpen() {
+		return open;
 	}
 
 }

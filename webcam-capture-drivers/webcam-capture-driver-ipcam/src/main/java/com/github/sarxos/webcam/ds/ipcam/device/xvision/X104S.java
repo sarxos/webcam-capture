@@ -42,12 +42,12 @@ public class X104S extends IpCamDevice {
 	}
 
 	@Override
-	public Dimension[] getSizes() {
+	public Dimension[] getResolutions() {
 		return SIZES;
 	}
 
 	@Override
-	public void setSize(Dimension size) {
+	public void setResolution(Dimension size) {
 
 		int index = -1;
 		for (int i = 0; i < SIZES.length; i++) {
@@ -61,7 +61,7 @@ public class X104S extends IpCamDevice {
 			throw new IllegalArgumentException(String.format("Incorrect size %s", size));
 		}
 
-		super.setSize(size);
+		super.setResolution(size);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class X104S extends IpCamDevice {
 
 		int index = -1;
 		for (int i = 0; i < SIZES.length; i++) {
-			if (SIZES[i].equals(getSize())) {
+			if (SIZES[i].equals(getResolution())) {
 				index = i;
 				break;
 			}

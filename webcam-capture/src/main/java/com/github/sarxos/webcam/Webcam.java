@@ -8,12 +8,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.sarxos.webcam.ds.WebcamProcessor;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
+import com.github.sarxos.webcam.ds.cgt.WebcamCloseTask;
+import com.github.sarxos.webcam.ds.cgt.WebcamDisposeTask;
+import com.github.sarxos.webcam.ds.cgt.WebcamOpenTask;
+import com.github.sarxos.webcam.ds.cgt.WebcamReadBufferTask;
 
 
 /**
@@ -76,6 +82,9 @@ public class Webcam {
 	 */
 	private static volatile WebcamDriver driver = null;
 
+	// TODO: create only if !WebcamDriver::isThreadSafe()
+	private static final WebcamProcessor processor = new WebcamProcessor();
+
 	/**
 	 * Webcam discovery service.
 	 */
@@ -84,7 +93,9 @@ public class Webcam {
 	/**
 	 * Is automated deallocation on TERM signal enabled.
 	 */
-	private static volatile boolean deallocOnTermSignal = false;
+	private static boolean deallocOnTermSignal = false;
+
+	private static boolean autoOpen = false;
 
 	/**
 	 * Webcam listeners.
@@ -109,12 +120,12 @@ public class Webcam {
 	/**
 	 * Is webcam open?
 	 */
-	private volatile boolean open = false;
+	private AtomicBoolean open = new AtomicBoolean(false);
 
 	/**
 	 * Is webcam already disposed?
 	 */
-	private volatile boolean disposed = false;
+	private AtomicBoolean disposed = new AtomicBoolean(false);
 
 	/**
 	 * Webcam class.
@@ -130,96 +141,35 @@ public class Webcam {
 	}
 
 	/**
-	 * Check if size is set up.
+	 * Open the webcam.
 	 */
-	private void ensureSize() {
+	public void open() {
 
-		Dimension size = device.getSize();
-
-		if (size == null) {
-
-			Dimension[] sizes = device.getSizes();
-
-			if (sizes == null) {
-				throw new WebcamException("Device error - sizes array from driver cannot be null!");
-			}
-			if (sizes.length == 0) {
-				throw new WebcamException("Device error - sizes array from driver cannot be empty");
-			}
-
-			device.setSize(sizes[0]);
-		}
-	}
-
-	/**
-	 * Open webcam.
-	 */
-	public synchronized void open() {
-
-		if (open) {
-			LOG.debug("Webcam has already been open {}", getName());
+		if (!open.compareAndSet(false, true)) {
+			LOG.debug("Webcam is already open {}", getName());
 			return;
 		}
 
-		LOG.info("Opening webcam {}", getName());
+		WebcamOpenTask task = new WebcamOpenTask(processor, device, true);
+		task.open(this);
 
-		ensureSize();
-
-		device.open();
-		open = true;
-
-		hook = new ShutdownHook(this);
-
-		Runtime.getRuntime().addShutdownHook(hook);
-
-		WebcamEvent we = new WebcamEvent(this);
-		for (WebcamListener l : listeners) {
-			try {
-				l.webcamOpen(we);
-			} catch (Exception e) {
-				LOG.error(String.format("Notify webcam open, exception when calling listener %s", l.getClass()), e);
-			}
-		}
+		Runtime.getRuntime().addShutdownHook(hook = new ShutdownHook(this));
 	}
 
 	/**
-	 * Close webcam.
+	 * Close the webcam.
 	 */
-	public synchronized void close() {
+	public void close() {
 
-		if (!open) {
+		if (!open.compareAndSet(true, false)) {
+			LOG.debug("Webcam is already closed {}", getName());
 			return;
 		}
+
+		WebcamCloseTask task = new WebcamCloseTask(processor, device, true);
+		task.close(this);
 
 		Runtime.getRuntime().removeShutdownHook(hook);
-
-		close0();
-	}
-
-	/**
-	 * Close webcam (internal impl).
-	 */
-	private void close0() {
-
-		if (!open) {
-			return;
-		}
-
-		if (LOG.isInfoEnabled()) {
-			LOG.info("Closing {}", getName());
-		}
-
-		device.close();
-		open = false;
-
-		WebcamEvent we = new WebcamEvent(this);
-		for (WebcamListener l : listeners) {
-			try {
-				l.webcamClosed(we);
-			} catch (Exception e) {
-				LOG.error(String.format("Notify webcam closed, exception when calling %s listener", l.getClass()), e);
-			}
-		}
 	}
 
 	/**
@@ -228,7 +178,7 @@ public class Webcam {
 	 * @return true if open, false otherwise
 	 */
 	public boolean isOpen() {
-		return open;
+		return open.get();
 	}
 
 	/**
@@ -236,8 +186,8 @@ public class Webcam {
 	 * 
 	 * @return Webcam resolution (picture size) in pixels.
 	 */
-	public synchronized Dimension getViewSize() {
-		return device.getSize();
+	public Dimension getViewSize() {
+		return device.getResolution();
 	}
 
 	/**
@@ -246,8 +196,8 @@ public class Webcam {
 	 * 
 	 * @return
 	 */
-	public synchronized Dimension[] getViewSizes() {
-		return device.getSizes();
+	public Dimension[] getViewSizes() {
+		return device.getResolutions();
 	}
 
 	/**
@@ -276,16 +226,24 @@ public class Webcam {
 	 * @see Webcam#setCustomViewSizes(Dimension[])
 	 * @see Webcam#getViewSizes()
 	 */
-	public synchronized void setViewSize(Dimension size) {
+	public void setViewSize(Dimension size) {
 
 		if (size == null) {
 			throw new IllegalArgumentException("Resolution cannot be null!");
 		}
-		if (open) {
+
+		if (open.get()) {
 			throw new IllegalStateException("Cannot change resolution when webcam is open, please close it first");
 		}
 
-		// check if dimension is valid
+		// check if new resolution is the same as current one
+
+		Dimension current = getViewSize();
+		if (current != null && current.width == size.width && current.height == size.height) {
+			return;
+		}
+
+		// check if new resolution is valid
 
 		Dimension[] predefined = getViewSizes();
 		Dimension[] custom = getCustomViewSizes();
@@ -319,28 +277,45 @@ public class Webcam {
 			throw new IllegalArgumentException(sb.toString());
 		}
 
-		LOG.debug("Setting new view size {} x {}", size.width, size.height);
+		LOG.debug("Setting new resolution {}x{}", size.width, size.height);
 
-		device.setSize(size);
+		device.setResolution(size);
 	}
 
 	/**
-	 * Capture image from webcam.
+	 * Capture image from webcam and return it. Will return image object or null
+	 * if webcam is closed or has been already disposed by JVM.<br>
+	 * <br>
+	 * <b>IMPORTANT NOTE!!!</b><br>
+	 * <br>
+	 * There are two possible behaviors of what webcam should do when you try to
+	 * get image and webcam is actually closed. Normally it will return null,
+	 * but there is a special flag which can be statically set to switch all
+	 * webcams to auto open mode. In this mode, webcam will be automatically
+	 * open, when you try to get image from closed webcam. Please be aware of
+	 * some side effects! In case of multi-threaded applications, there is no
+	 * guarantee that one thread will not try to open webcam even if it was
+	 * manually closed in different thread.
 	 * 
-	 * @return Captured image
+	 * @return Captured image or null if webcam is closed or disposed by JVM
 	 */
-	public synchronized BufferedImage getImage() {
+	public BufferedImage getImage() {
 
-		if (disposed) {
-			LOG.warn("Cannot get image - webcam has been already disposed");
+		if (disposed.get()) {
+			LOG.warn("Cannot get image, webcam has been already disposed");
 			return null;
 		}
 
-		if (!open) {
-			open();
+		if (!open.get()) {
+			if (autoOpen) {
+				open();
+			} else {
+				return null;
+			}
 		}
 
-		return device.getImage();
+		WebcamReadBufferTask task = new WebcamReadBufferTask(processor, device, true);
+		return task.getImage();
 	}
 
 	/**
@@ -353,11 +328,13 @@ public class Webcam {
 	 * @see Webcam#getWebcams(long, TimeUnit)
 	 */
 	public static List<Webcam> getWebcams() throws WebcamException {
+
+		// timeout exception below will never be caught since user would have to
+		// wait around three hundreds billion years for it to occur
+
 		try {
 			return getWebcams(Long.MAX_VALUE);
 		} catch (TimeoutException e) {
-			// this should never happen since user would have to wait 300000000
-			// years for it to occur
 			throw new RuntimeException(e);
 		}
 	}
@@ -585,7 +562,7 @@ public class Webcam {
 		driver = null;
 
 		if (discovery != null) {
-			discovery.dispose();
+			discovery.shutdown();
 			discovery = null;
 		}
 	}
@@ -630,27 +607,20 @@ public class Webcam {
 
 	/**
 	 * Completely dispose capture device. After this operation webcam cannot be
-	 * used any more and reinstantiation is required.
+	 * used any more and full reinstantiation is required.
 	 */
 	protected void dispose() {
 
-		LOG.info("Disposing webcam {}", getName());
-
-		// hook can be null because there is a possibility that webcam has never
-		// been open and therefore hook was not created
-		if (hook != null) {
-			try {
-				Runtime.getRuntime().removeShutdownHook(hook);
-			} catch (IllegalStateException e) {
-				// ignore, it means that shutdown is in progress
-			}
+		if (!disposed.compareAndSet(false, true)) {
+			return;
 		}
 
-		// make sure to dispose first !!
-		disposed = true;
-		open = false;
+		open.set(false);
 
-		LOG.trace("Disposed flag set, open flag disabled");
+		LOG.info("Disposing webcam {}", getName());
+
+		WebcamDisposeTask task = new WebcamDisposeTask(processor, device, true);
+		task.dispose();
 
 		WebcamEvent we = new WebcamEvent(this);
 		for (WebcamListener l : listeners) {
@@ -662,8 +632,14 @@ public class Webcam {
 			}
 		}
 
-		synchronized (this) {
-			device.dispose();
+		// hook can be null because there is a possibility that webcam has never
+		// been open and therefore hook was not created
+		if (hook != null) {
+			try {
+				Runtime.getRuntime().removeShutdownHook(hook);
+			} catch (IllegalStateException e) {
+				// ignore, it means that shutdown is in progress
+			}
 		}
 
 		LOG.debug("Webcam disposed {}", getName());
@@ -694,6 +670,34 @@ public class Webcam {
 	 */
 	public static boolean isHandleTermSignal() {
 		return deallocOnTermSignal;
+	}
+
+	/**
+	 * Switch all webcams to auto open mode. In this mode, each webcam will be
+	 * automatically open whenever user will try to get image from instance
+	 * which has not yet been open. Please be aware of some side effects! In
+	 * case of multi-threaded applications, there is no guarantee that one
+	 * thread will not try to open webcam even if it was manually closed in
+	 * different thread.
+	 * 
+	 * @param on true to enable, false to disable
+	 */
+	public static void setAutoOpenMode(boolean on) {
+		autoOpen = on;
+	}
+
+	/**
+	 * Is auto open mode enabled. Auto open mode will will automatically open
+	 * webcam whenever user will try to get image from instance which has not
+	 * yet been open. Please be aware of some side effects! In case of
+	 * multi-threaded applications, there is no guarantee that one thread will
+	 * not try to open webcam even if it was manually closed in different
+	 * thread.
+	 * 
+	 * @return True if mode is enabled, false otherwise
+	 */
+	public static boolean isAutoOpenMode() {
+		return autoOpen;
 	}
 
 	/**

@@ -11,19 +11,17 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.bridj.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
 import com.github.sarxos.webcam.WebcamResolution;
-import com.github.sarxos.webcam.ds.buildin.cgt.CloseSessionTask;
-import com.github.sarxos.webcam.ds.buildin.cgt.GetImageTask;
-import com.github.sarxos.webcam.ds.buildin.cgt.GetSizeTask;
-import com.github.sarxos.webcam.ds.buildin.cgt.NextFrameTask;
-import com.github.sarxos.webcam.ds.buildin.cgt.StartSessionTask;
 import com.github.sarxos.webcam.ds.buildin.natives.Device;
+import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
 
 
 public class WebcamDefaultDevice implements WebcamDevice {
@@ -79,27 +77,15 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	 */
 	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 
-	/**
-	 * Synchronous webcam video grabber processor.
-	 */
-	private final WebcamGrabberProcessor processor = new WebcamGrabberProcessor();
-
-	// synchronous grabber tasks
-
-	private final NextFrameTask frameTask = new NextFrameTask(processor);
-	private final GetImageTask imageTask = new GetImageTask(processor);
-	private final StartSessionTask sessionTask = new StartSessionTask(processor);
-	private final GetSizeTask sizeTask = new GetSizeTask(processor);
-	private final CloseSessionTask closeTask = new CloseSessionTask(processor);
-
+	private OpenIMAJGrabber grabber = new OpenIMAJGrabber();
 	private Device device = null;
 	private Dimension size = null;
 	private ComponentSampleModel sampleModel = null;
 	private ColorModel colorModel = null;
 	private boolean failOnSizeMismatch = false;
 
-	private volatile boolean open = false;
-	private volatile boolean disposed = false;
+	private AtomicBoolean disposed = new AtomicBoolean(false);
+	private AtomicBoolean open = new AtomicBoolean(false);
 
 	private String name = null;
 	private String id = null;
@@ -118,18 +104,18 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	}
 
 	@Override
-	public Dimension[] getSizes() {
+	public Dimension[] getResolutions() {
 		return DIMENSIONS;
 	}
 
 	@Override
-	public Dimension getSize() {
+	public Dimension getResolution() {
 		return size;
 	}
 
 	@Override
-	public void setSize(Dimension size) {
-		if (open) {
+	public void setResolution(Dimension size) {
+		if (open.get()) {
 			throw new IllegalStateException("Cannot change resolution when webcam is open, please close it first");
 		}
 		this.size = size;
@@ -138,22 +124,31 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	@Override
 	public BufferedImage getImage() {
 
-		if (disposed) {
-			throw new WebcamException("Cannot get image since device is already disposed");
+		if (disposed.get()) {
+			LOG.debug("Webcam is disposed, image will be null");
+			return null;
 		}
 
-		if (!open) {
-			LOG.error("Cannot get image when device is closed");
+		if (!open.get()) {
+			LOG.debug("Webcam is closed, image will be null");
 			return null;
 		}
 
 		LOG.trace("Webcam device get image (next frame)");
 
-		frameTask.nextFrame();
+		grabber.nextFrame();
 
-		LOG.trace("Webcam device get image (transfer buffer)");
+		Pointer<Byte> image = grabber.getImage();
+		if (image == null) {
+			LOG.warn("Null array pointer found instead of image");
+			return null;
+		}
 
-		byte[] bytes = imageTask.getImage(size);
+		int length = size.width * size.height * 3;
+
+		LOG.trace("Webcam device get image (transfer buffer) {} bytes", length);
+
+		byte[] bytes = image.getBytes(length);
 		byte[][] data = new byte[][] { bytes };
 
 		if (bytes == null) {
@@ -173,26 +168,26 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	@Override
 	public void open() {
 
-		LOG.debug("Opening webcam device {}", getName());
-
-		if (disposed) {
-			throw new WebcamException("Cannot open webcam when device it's already disposed");
+		if (disposed.get()) {
+			return;
 		}
 
+		LOG.debug("Opening webcam device {}", getName());
+
 		if (size == null) {
-			size = getSizes()[0];
+			size = getResolutions()[0];
 		}
 
 		LOG.debug("Webcam device starting session, size {}", size);
 
-		boolean started = sessionTask.startSession(size, device);
+		boolean started = grabber.startSession(size.width, size.height, 30, Pointer.pointerTo(device));
 		if (!started) {
-			throw new WebcamException("Cannot start video data grabber!");
+			throw new WebcamException("Cannot start native grabber!");
 		}
 
 		LOG.debug("Webcam device session started");
 
-		Dimension size2 = sizeTask.getSize();
+		Dimension size2 = new Dimension(grabber.getWidth(), grabber.getHeight());
 
 		int w1 = size.width;
 		int w2 = size2.width;
@@ -217,12 +212,7 @@ public class WebcamDefaultDevice implements WebcamDevice {
 		int i = 0;
 		do {
 
-			frameTask.nextFrame();
-			imageTask.getImage(size);
-
-			if (disposed) {
-				return;
-			}
+			grabber.nextFrame();
 
 			try {
 				Thread.sleep(1000);
@@ -230,36 +220,34 @@ public class WebcamDefaultDevice implements WebcamDevice {
 				LOG.error("Nasty interrupted exception", e);
 			}
 
-		} while (i++ < 3);
+		} while (++i < 3);
 
 		LOG.debug("Webcam device is now open");
 
-		open = true;
+		open.set(true);
 	}
 
 	@Override
 	public void close() {
 
-		if (!open) {
+		if (!open.compareAndSet(true, false)) {
 			return;
 		}
 
 		LOG.debug("Closing webcam device");
 
-		open = false;
-		closeTask.closeSession();
+		grabber.stopSession();
 	}
 
 	@Override
 	public void dispose() {
 
-		if (disposed) {
+		if (!disposed.compareAndSet(false, true)) {
 			return;
 		}
 
 		LOG.debug("Disposing webcam device {}", getName());
 
-		disposed = true;
 		close();
 	}
 
@@ -271,5 +259,10 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	 */
 	public void setFailOnSizeMismatch(boolean fail) {
 		this.failOnSizeMismatch = fail;
+	}
+
+	@Override
+	public boolean isOpen() {
+		return open.get();
 	}
 }

@@ -12,6 +12,9 @@ import com.github.sarxos.webcam.util.ImageUtils;
 public class WebcamUtils {
 
 	public static final void capture(Webcam webcam, File file) {
+		if (!webcam.isOpen()) {
+			webcam.open();
+		}
 		try {
 			ImageIO.write(webcam.getImage(), ImageUtils.FORMAT_JPG, file);
 		} catch (IOException e) {
@@ -20,6 +23,9 @@ public class WebcamUtils {
 	}
 
 	public static final void capture(Webcam webcam, File file, String format) {
+		if (!webcam.isOpen()) {
+			webcam.open();
+		}
 		try {
 			ImageIO.write(webcam.getImage(), format, file);
 		} catch (IOException e) {

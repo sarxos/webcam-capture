@@ -58,11 +58,6 @@ public class WebcamTest {
 
 		Assert.assertTrue(webcam.isOpen());
 		webcam.open();
-
-		Assert.assertTrue(webcam.isOpen());
-		webcam = Webcam.getWebcams().get(1);
-		webcam.getImage();
-
 		Assert.assertTrue(webcam.isOpen());
 	}
 
@@ -83,6 +78,7 @@ public class WebcamTest {
 	public void test_getImage() {
 
 		Webcam webcam = Webcam.getDefault();
+		webcam.open();
 		Image image = webcam.getImage();
 
 		Assert.assertNotNull(image);

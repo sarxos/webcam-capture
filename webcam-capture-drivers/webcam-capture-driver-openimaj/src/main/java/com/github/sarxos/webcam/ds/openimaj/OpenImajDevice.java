@@ -48,17 +48,17 @@ public class OpenImajDevice implements WebcamDevice {
 	}
 
 	@Override
-	public Dimension[] getSizes() {
+	public Dimension[] getResolutions() {
 		return DIMENSIONS;
 	}
 
 	@Override
-	public Dimension getSize() {
+	public Dimension getResolution() {
 		return size;
 	}
 
 	@Override
-	public void setSize(Dimension size) {
+	public void setResolution(Dimension size) {
 		if (open) {
 			throw new RuntimeException("Cannot set new size when device is open, please close it first");
 		}
@@ -128,5 +128,10 @@ public class OpenImajDevice implements WebcamDevice {
 	@Override
 	public void dispose() {
 		disposed = true;
+	}
+
+	@Override
+	public boolean isOpen() {
+		return open;
 	}
 }

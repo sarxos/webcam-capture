@@ -106,17 +106,17 @@ public class VlcjDevice implements WebcamDevice {
 	}
 
 	@Override
-	public Dimension[] getSizes() {
+	public Dimension[] getResolutions() {
 		return DIMENSIONS;
 	}
 
 	@Override
-	public Dimension getSize() {
+	public Dimension getResolution() {
 		return size;
 	}
 
 	@Override
-	public void setSize(Dimension size) {
+	public void setResolution(Dimension size) {
 		this.size = size;
 	}
 
@@ -198,5 +198,10 @@ public class VlcjDevice implements WebcamDevice {
 	@Override
 	public synchronized void dispose() {
 		disposed = true;
+	}
+
+	@Override
+	public boolean isOpen() {
+		return open;
 	}
 }

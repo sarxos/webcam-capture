@@ -235,7 +235,7 @@ public class IpCamDevice implements WebcamDevice {
 	}
 
 	@Override
-	public Dimension[] getSizes() {
+	public Dimension[] getResolutions() {
 
 		if (sizes != null) {
 			return sizes;
@@ -268,15 +268,15 @@ public class IpCamDevice implements WebcamDevice {
 	}
 
 	@Override
-	public Dimension getSize() {
+	public Dimension getResolution() {
 		if (size == null) {
-			size = getSizes()[0];
+			size = getResolutions()[0];
 		}
 		return size;
 	}
 
 	@Override
-	public void setSize(Dimension size) {
+	public void setResolution(Dimension size) {
 		this.size = size;
 	}
 
@@ -440,5 +440,10 @@ public class IpCamDevice implements WebcamDevice {
 	@Override
 	public void dispose() {
 		disposed = true;
+	}
+
+	@Override
+	public boolean isOpen() {
+		return open;
 	}
 }
