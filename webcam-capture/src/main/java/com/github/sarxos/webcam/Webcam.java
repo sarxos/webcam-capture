@@ -232,7 +232,9 @@ public class Webcam {
 	}
 
 	/**
-	 * @return Webcam view size (picture size) in pixels.
+	 * Get current webcam resolution in pixels.
+	 * 
+	 * @return Webcam resolution (picture size) in pixels.
 	 */
 	public synchronized Dimension getViewSize() {
 		return device.getSize();
@@ -277,7 +279,10 @@ public class Webcam {
 	public synchronized void setViewSize(Dimension size) {
 
 		if (size == null) {
-			throw new IllegalArgumentException("View size cannot be null!");
+			throw new IllegalArgumentException("Resolution cannot be null!");
+		}
+		if (open) {
+			throw new IllegalStateException("Cannot change resolution when webcam is open, please close it first");
 		}
 
 		// check if dimension is valid

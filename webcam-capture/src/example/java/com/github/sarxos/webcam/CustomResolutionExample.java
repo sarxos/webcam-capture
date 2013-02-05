@@ -8,12 +8,19 @@ public class CustomResolutionExample {
 
 	public static void main(String[] args) {
 
+		/**
+		 * When you set custom resolutions you have to be sure that your webcam
+		 * device will handle them!
+		 */
+
+		//@formatter:off
 		Dimension[] nonStandardResolutions = new Dimension[] {
-		WebcamResolution.PAL.getSize(),
-		WebcamResolution.HD720.getSize(),
-		new Dimension(2000, 1000),
-		new Dimension(1000, 500),
+			WebcamResolution.PAL.getSize(),
+			WebcamResolution.HD720.getSize(),
+			new Dimension(2000, 1000),
+			new Dimension(1000, 500),
 		};
+		//@formatter:on
 
 		Webcam webcam = Webcam.getDefault();
 		webcam.setCustomViewSizes(nonStandardResolutions);

@@ -129,6 +129,9 @@ public class WebcamDefaultDevice implements WebcamDevice {
 
 	@Override
 	public void setSize(Dimension size) {
+		if (open) {
+			throw new IllegalStateException("Cannot change resolution when webcam is open, please close it first");
+		}
 		this.size = size;
 	}
 
