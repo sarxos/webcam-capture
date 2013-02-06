@@ -36,6 +36,31 @@ Complete documentation, API, examples, tutorials and many more can be found here
 If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.7/webcam-capture-0.3.7-dist.zip)**
 you can download ZIP containing all required 3rd-party JARs.
 
+## Contribution
+
+If you have spare time, knownledge or money you can help developing 
+awesome Webcam Capture API and make it even better! Several kinds of 
+contributions are welcome:
+
+* **Report** - If you've found a bug or you've came-up with some fantastic feature which 
+can make Webcam Capture a better API to use, don't hesitate to 
+[create new issue](https://github.com/sarxos/webcam-capture/issues/new) 
+where you can describe in details what the problem is, or what would you
+like to improve.
+* **Test** - Since Webcam Capture use small part of native code, it's very 
+hard to cover all supported operating systems. I'm always testing it
+on 64-bit Ubuntu Linux, Windows XP and Vista (both 32-bit), but I
+have no possibility to test on Raspberry Pi, Mac OS and 32-bit Linux.
+Please help and test on those systems if you have such possibility. 
+* **Write code** - If you know Java or C++ you can help developing Webcam Capture by 
+forking repository and sending pull requests.
+* **Donate** - People have expressed a wish to donate a little money. Donating won't 
+get you anything special, other than a warm feeling inside, and possibly 
+urge me to produce more freely available material for Webcam Capture 
+project. You can donate via PayPal by sending money to songo.bercik@interia.pl, 
+or by pressing _donate_ button available **[here](http://webcam-capture.sarxos.pl/#contribute)**.
+
+
 ## Examples
 
 Some pretty basic examples.
