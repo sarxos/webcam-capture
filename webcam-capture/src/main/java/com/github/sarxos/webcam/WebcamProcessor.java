@@ -36,8 +36,6 @@ public class WebcamProcessor {
 		private SynchronousQueue<WebcamTask> inbound = new SynchronousQueue<WebcamTask>(true);
 		private SynchronousQueue<WebcamTask> outbound = new SynchronousQueue<WebcamTask>(true);
 
-		private volatile boolean running = true;
-
 		/**
 		 * Process task.
 		 * 
@@ -50,14 +48,9 @@ public class WebcamProcessor {
 			return outbound.take();
 		}
 
-		public void stop() {
-			running = false;
-		}
-
 		@Override
 		public void run() {
-			running = true;
-			while (running) {
+			while (true) {
 				WebcamTask t = null;
 				try {
 					(t = inbound.take()).handle();
@@ -108,13 +101,5 @@ public class WebcamProcessor {
 		} catch (InterruptedException e) {
 			throw new WebcamException("Processing interrupted", e);
 		}
-	}
-
-	/**
-	 * Stop processing thread.
-	 */
-	public void shutdown() {
-		processor.stop();
-		started.set(false);
 	}
 }

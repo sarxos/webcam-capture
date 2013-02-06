@@ -22,26 +22,34 @@ public class WebcamTest {
 
 	@Before
 	public void prepare() {
+		System.out.println(Thread.currentThread().getName() + ": Register dummy driver");
 		Webcam.registerDriver(DummyDriver.class);
 	}
 
 	@After
 	public void cleanup() {
+		System.out.println(Thread.currentThread().getName() + ": Reset driver");
 		Webcam.resetDriver();
 	}
 
 	@Test
 	public void test_getWebcams() {
 
+		System.out.println(Thread.currentThread().getName() + ": test_getWebcams() start");
+
 		List<Webcam> webcams = Webcam.getWebcams();
 		List<WebcamDevice> devices = DummyDriver.getInstance().getDevices();
 
 		Assert.assertTrue(webcams.size() > 0);
 		Assert.assertEquals(devices.size(), webcams.size());
+
+		System.out.println(Thread.currentThread().getName() + ": test_getWebcams() end");
 	}
 
 	@Test
 	public void test_getDefault() {
+
+		System.out.println(Thread.currentThread().getName() + ": test_getDefault() start");
 
 		List<Webcam> webcams = Webcam.getWebcams();
 		List<WebcamDevice> devices = DummyDriver.getInstance().getDevices();
@@ -49,48 +57,74 @@ public class WebcamTest {
 		Assert.assertNotNull(Webcam.getDefault());
 		Assert.assertSame(webcams.get(0), Webcam.getDefault());
 		Assert.assertSame(devices.get(0), Webcam.getDefault().getDevice());
+
+		System.out.println(Thread.currentThread().getName() + ": test_getDefault() end");
 	}
 
 	@Test
 	public void test_open() {
+
+		System.out.println(Thread.currentThread().getName() + ": test_open() start");
+
 		Webcam webcam = Webcam.getDefault();
 		webcam.open();
 
 		Assert.assertTrue(webcam.isOpen());
 		webcam.open();
 		Assert.assertTrue(webcam.isOpen());
+
+		System.out.println(Thread.currentThread().getName() + ": test_open() end");
 	}
 
 	@Test
 	public void test_close() {
 
+		System.out.println(Thread.currentThread().getName() + ": test_close() start");
+
 		Webcam webcam = Webcam.getDefault();
 		webcam.open();
+
+		Assert.assertSame(DummyDriver.class, Webcam.getDriver().getClass());
 
 		Assert.assertTrue(webcam.isOpen());
 		webcam.close();
 		Assert.assertFalse(webcam.isOpen());
 		webcam.close();
 		Assert.assertFalse(webcam.isOpen());
+
+		System.out.println(Thread.currentThread().getName() + ": test_close() end");
 	}
 
 	@Test
 	public void test_getImage() {
 
+		System.out.println(Thread.currentThread().getName() + ": test_getImage() start");
+
 		Webcam webcam = Webcam.getDefault();
 		webcam.open();
+
+		Assert.assertSame(DummyDriver.class, Webcam.getDriver().getClass());
+
 		Image image = webcam.getImage();
 
 		Assert.assertNotNull(image);
+
+		System.out.println(Thread.currentThread().getName() + ": test_getImage() end");
 	}
 
 	@Test
 	public void test_getSizes() {
 
+		System.out.println(Thread.currentThread().getName() + ": test_getSizes() start");
+
 		Dimension[] sizes = Webcam.getDefault().getViewSizes();
+
+		Assert.assertSame(DummyDriver.class, Webcam.getDriver().getClass());
 
 		Assert.assertNotNull(sizes);
 		Assert.assertEquals(2, sizes.length);
+
+		System.out.println(Thread.currentThread().getName() + ": test_getSizes() end");
 	}
 
 	@Test

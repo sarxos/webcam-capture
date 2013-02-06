@@ -84,7 +84,7 @@ public class Webcam {
 	/**
 	 * Webcam tasks processor synchronize non-thread-safe operations.
 	 */
-	private static WebcamProcessor processor = null;
+	private static WebcamProcessor processor = new WebcamProcessor();
 
 	/**
 	 * Webcam discovery service.
@@ -500,10 +500,6 @@ public class Webcam {
 			driver = new WebcamDefaultDriver();
 		}
 
-		if (!driver.isThreadSafe()) {
-			processor = new WebcamProcessor();
-		}
-
 		return driver;
 	}
 
@@ -524,10 +520,6 @@ public class Webcam {
 		resetDriver();
 
 		Webcam.driver = driver;
-
-		if (!driver.isThreadSafe()) {
-			processor = new WebcamProcessor();
-		}
 	}
 
 	/**
@@ -555,10 +547,6 @@ public class Webcam {
 		} catch (IllegalAccessException e) {
 			throw new WebcamException(e);
 		}
-
-		if (!driver.isThreadSafe()) {
-			processor = new WebcamProcessor();
-		}
 	}
 
 	/**
@@ -566,22 +554,17 @@ public class Webcam {
 	 * <br>
 	 * <b>This method is not thread-safe!</b>
 	 */
-	public static void resetDriver() {
+	public static synchronized void resetDriver() {
 
 		DRIVERS_LIST.clear();
 		DRIVERS_LIST.addAll(Arrays.asList(DRIVERS_DEFAULT));
-
-		driver = null;
 
 		if (discovery != null) {
 			discovery.shutdown();
 			discovery = null;
 		}
 
-		if (processor != null) {
-			processor.shutdown();
-			processor = null;
-		}
+		driver = null;
 	}
 
 	/**
