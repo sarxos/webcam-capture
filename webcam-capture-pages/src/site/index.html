@@ -60,6 +60,8 @@ drivers to extend and/or replace default functionality.
 <a href="http://travis-ci.org/sarxos/webcam-capture"><img src="https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master" alt="Build Status" title="" /></a>
 </p>
 
+
+<a class="anchor" name="requirements"></a>
 <h3>Requirements</h3>
 
 <p>
@@ -70,23 +72,68 @@ drivers to extend and/or replace default functionality.
 </ul>
 </p>
 
+<a class="anchor" name="core-features"></a>
 <h3>Core Features</h3>
 
 <p>
 <ul>
-<li><b>Simple and thread-safe API</b> - write only few lines of code and start capturing images.</li>
-<li><b>Work standalone</b> - no additional software has to be installed to use it.</li>
-<li><b>System independent</b> - it will run without problems on most widely used operating systems - Windows (2k/XP/Vista/7, both 32- and 64-bit), Linux (x86, x64 and 32-bit ARM) and Mac OS X.</li>
-<li><b>Build-in video driver</b> - default build-in video grabber is provided, so you don't need to install any additional software (such as JMF, etc).</li>
-<li><b>Implementation independent</b> - write your code once and don't care which capture framework you will be using in future (LTI-CIVIL, JMF, QTJ, etc).</li>
-<li><b>Automated resources management</b> - you do not have to remember to deallocate resources used by your capturing device, library will always do that for you (while VM has been closed gracefully).</li>
+<li><b>Simple and thread-safe API</b> - write only few lines of code is enough to start capturing images.</li>
+<li><b>Standalone</b> - no additional software has to be installed to use it.</li>
+<li><b>System independent</b> - it will run without problems on most widely used operating systems - Windows (2k/XP/Vista/7, both 32- and 64-bit), Linux (x86, x64), ARM devices (e.g. Raspberry Pi at Arch Linux), and Mac OS X.</li>
+<li><b>Implementation independent</b> - write your code once and if you find better driver in future, just wrap it in WebcamDriver class and don't care about any code changes.</li>
+<li><b>Resources management</b> - you do not have to remember to deallocate resources used by your capturing device, library will always do that for you.</li>
 <li><b>Motion detector</b> - build in motion detector makes it easy to implement motion detecting features.</li>
-<li><b>Available in Maven Central</b> - it is available in Maven Central so your project can be deployed there too.</li>
+<li><b>Available from Maven Central</b> - it is available in Maven Central and therefore will not suddenly disappear.</li>
 <li><b>Re-streamer</b> - simple JPEG/MJPEG re-streamer is build in, just run it and enjoy hosting your live stream.</li>
 <li><b>Swing ready</b> - contains Swing component to display images, together with painter API and thread-safe API which prevents Swing EDT from blocking issues when using camera.</li>
 </ul>
 </p>
 
+
+<a class="anchor" name="contribute"></a>
+<h2>Contribute</h2>
+
+<p>
+If you have spare time, knownledge or even some small money amount 
+to spent, you can help developing awesome Webcam Capture API and make
+it even better! Several kinds of contributions are very welcome:
+</p>
+
+<p>
+<ul>
+<li><b>Report</b> - if you've found a bug or you've came-up with 
+some fantastic feature which 
+can make Webcam Capture a better API to use, don't hesitate to 
+<a href="https://github.com/sarxos/webcam-capture/issues/new">create new issue</a> 
+where you can describe in details what the problem is, or what would you
+like to improve.</li>
+<li><b>Test</b> - since Webcam Capture use native code, it's very 
+hard to cover all supported operating systems. I'm always testing it
+on 64-bit Ubuntu Linux, Windows XP and Vista (both 32-bit), but I
+have no possibility to test on Raspberry Pi, Mac OS and 32-bit Linux.</li>
+<li><b>Code</b> - if you know Java or C++ you can help developing 
+Webcam Capture by <a href="https://github.com/sarxos/webcam-capture">forking repository</a>
+and sending pull requests. </li>
+<li><b>Donate</b> - people have expressed a wish to donate a little
+money. Donating won't get you anything special, other than a warm
+feeling inside, and possibly urge me to produce more freely 
+available material for Webcam Capture project. You can 
+donate via PayPal by sending money to songo.bercik@interia.pl, or 
+by the donation button below.<br/><br/>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="UYMENK76CSYZU">
+<input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal — The safer, easier way to pay online.">
+<img alt="" border="0" src="https://www.paypalobjects.com/pl_PL/i/scr/pixel.gif" width="1" height="1">
+</form>
+
+</li>
+</ul>
+</p>
+
+
+<a class="anchor" name="how-to-start"></a>
 <h2>How To Start</h2>
 
 <p>
@@ -285,12 +332,41 @@ In such a case user has to add those repositories to project's POM:
 
 <h1>Examples</h1>
 
+<p>
+Confirmed to be perfectly running on the following systems (please
+report at the project page if you tested it on other system, just 
+create new issue for that purpose):
+</p>
+
+<p>
+<ul>
+<li>Windows XP 32-bit</li>
+<li>Windows Vista 32-bit</li>
+<li>Windows 7 64-bit</li>
+<li>Ubuntu 12.04 64-bit</li>
+<li>Mac OS Snow Leopard</li>
+<li>Raspberry Pi @ Arch Linux</li>
+</ul>
+</p>
+
+<p>
+Problems detected on those configurations:
+</p>
+
+<p>
+<ul>
+<li>Raspberry Pi @ Wheezy</li>
+</ul>
+</p>
+
+
 <h3>Capture Image</h3>
 
 <p>To capture single image and save it to disk:</p>
 
 <pre class="prettyprint prettyprinted language-java linenums">
 Webcam webcam = Webcam.getDefault();
+webcam.open();
 BufferedImage image = webcam.getImage();
 ImageIO.write(image, "PNG", new File("test.png"));
 </pre>

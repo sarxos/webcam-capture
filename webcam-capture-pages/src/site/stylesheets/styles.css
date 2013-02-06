@@ -109,6 +109,14 @@ a:active {
   outline: 0;
 }
 
+a[name].anchor {
+	position: relative;
+	top: -190px;
+	display: block;
+	height: 0;
+	width: 0;
+}
+
 /* =============================================================================
    Typography
    ========================================================================== */
@@ -156,9 +164,9 @@ abbr[title] {
 /*
  * Addresses style set to 'bolder' in FF3+, S4/5, Chrome
 */
-b,
-strong {
+b, strong {
   font-weight: bold;
+  color: #222;
 }
 
 blockquote {
@@ -473,12 +481,13 @@ table {
 }
 
 body {
-  font: 14px/22px "Quattrocento Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #666;
+  font: 15px/22px "Quattrocento Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #444;
   font-weight: 300;
   margin: 0px;
   padding: 0px 0 20px 0px;
   background: url(../images/body-background.png) #eae6d1;
+  text-align: justify;
 }
 
 h1, h2, h3, h4, h5, h6 {
