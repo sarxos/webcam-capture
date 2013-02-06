@@ -21,6 +21,10 @@ public class JpegExample {
 		// available to be viewed online. Here in this example we are creating
 		// IP camera device working in PULL mode to request static JPEG images.
 
+		IpCamStorage storage = new IpCamStorage("src/examples/resources/cameras.xml");
+
+		Webcam.setDriver(new IpCamDriver(storage));
+
 		JFrame f = new JFrame("Dasding Studio Live IP Cameras");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setLayout(new GridLayout(0, 3, 1, 1));

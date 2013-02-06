@@ -69,4 +69,9 @@ public class VlcjDriver implements WebcamDriver {
 
 		return devices;
 	}
+
+	@Override
+	public boolean isThreadSafe() {
+		return false;
+	}
 }

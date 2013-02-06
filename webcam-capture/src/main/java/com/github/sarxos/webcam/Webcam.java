@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.sarxos.webcam.ds.WebcamProcessor;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
 import com.github.sarxos.webcam.ds.cgt.WebcamCloseTask;
@@ -80,10 +79,12 @@ public class Webcam {
 	/**
 	 * Webcam driver (LtiCivil, JMF, FMJ, JQT, OpenCV, VLCj, etc).
 	 */
-	private static volatile WebcamDriver driver = null;
+	private static WebcamDriver driver = null;
 
-	// TODO: create only if !WebcamDriver::isThreadSafe()
-	private static final WebcamProcessor processor = new WebcamProcessor();
+	/**
+	 * Webcam tasks processor synchronize non-thread-safe operations.
+	 */
+	private static WebcamProcessor processor = null;
 
 	/**
 	 * Webcam discovery service.
@@ -150,7 +151,7 @@ public class Webcam {
 			return;
 		}
 
-		WebcamOpenTask task = new WebcamOpenTask(processor, device, true);
+		WebcamOpenTask task = new WebcamOpenTask(this);
 		task.open(this);
 
 		Runtime.getRuntime().addShutdownHook(hook = new ShutdownHook(this));
@@ -166,7 +167,7 @@ public class Webcam {
 			return;
 		}
 
-		WebcamCloseTask task = new WebcamCloseTask(processor, device, true);
+		WebcamCloseTask task = new WebcamCloseTask(this);
 		task.close(this);
 
 		Runtime.getRuntime().removeShutdownHook(hook);
@@ -314,7 +315,7 @@ public class Webcam {
 			}
 		}
 
-		WebcamReadBufferTask task = new WebcamReadBufferTask(processor, device, true);
+		WebcamReadBufferTask task = new WebcamReadBufferTask(this);
 		return task.getImage();
 	}
 
@@ -499,6 +500,10 @@ public class Webcam {
 			driver = new WebcamDefaultDriver();
 		}
 
+		if (!driver.isThreadSafe()) {
+			processor = new WebcamProcessor();
+		}
+
 		return driver;
 	}
 
@@ -519,6 +524,10 @@ public class Webcam {
 		resetDriver();
 
 		Webcam.driver = driver;
+
+		if (!driver.isThreadSafe()) {
+			processor = new WebcamProcessor();
+		}
 	}
 
 	/**
@@ -547,6 +556,9 @@ public class Webcam {
 			throw new WebcamException(e);
 		}
 
+		if (!driver.isThreadSafe()) {
+			processor = new WebcamProcessor();
+		}
 	}
 
 	/**
@@ -564,6 +576,11 @@ public class Webcam {
 		if (discovery != null) {
 			discovery.shutdown();
 			discovery = null;
+		}
+
+		if (processor != null) {
+			processor.shutdown();
+			processor = null;
 		}
 	}
 
@@ -605,6 +622,10 @@ public class Webcam {
 		return device;
 	}
 
+	protected WebcamProcessor getProcessor() {
+		return processor;
+	}
+
 	/**
 	 * Completely dispose capture device. After this operation webcam cannot be
 	 * used any more and full reinstantiation is required.
@@ -619,7 +640,7 @@ public class Webcam {
 
 		LOG.info("Disposing webcam {}", getName());
 
-		WebcamDisposeTask task = new WebcamDisposeTask(processor, device, true);
+		WebcamDisposeTask task = new WebcamDisposeTask(this);
 		task.dispose();
 
 		WebcamEvent we = new WebcamEvent(this);

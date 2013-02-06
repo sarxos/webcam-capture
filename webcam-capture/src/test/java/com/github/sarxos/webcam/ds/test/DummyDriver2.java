@@ -11,10 +11,10 @@ import com.github.sarxos.webcam.WebcamDriver;
 public class DummyDriver2 implements WebcamDriver {
 
 	private static final List<WebcamDevice> DEVICES = new ArrayList<WebcamDevice>(Arrays.asList(new WebcamDevice[] {
-		new DummyDevice(),
-		new DummyDevice(),
-		new DummyDevice(),
-		new DummyDevice(),
+	new DummyDevice(),
+	new DummyDevice(),
+	new DummyDevice(),
+	new DummyDevice(),
 	}));
 
 	private static DummyDriver2 instance = null;
@@ -32,6 +32,11 @@ public class DummyDriver2 implements WebcamDriver {
 	@Override
 	public List<WebcamDevice> getDevices() {
 		return DEVICES;
+	}
+
+	@Override
+	public boolean isThreadSafe() {
+		return false;
 	}
 
 }

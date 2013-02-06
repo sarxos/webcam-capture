@@ -65,4 +65,9 @@ public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport
 	public boolean isScanPossible() {
 		return true;
 	}
+
+	@Override
+	public boolean isThreadSafe() {
+		return false;
+	}
 }

@@ -51,4 +51,9 @@ public class JavaCvDriver implements WebcamDriver {
 
 	}
 
+	@Override
+	public boolean isThreadSafe() {
+		return false;
+	}
+
 }

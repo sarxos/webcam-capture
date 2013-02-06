@@ -9,14 +9,15 @@ import javax.media.CaptureDeviceInfo;
 import javax.media.CaptureDeviceManager;
 import javax.media.Format;
 
-import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamDriver;
 
 
 public class JmfDriver implements WebcamDriver {
 
 	private static List<WebcamDevice> devices = null;
 
+	@Override
 	public List<WebcamDevice> getDevices() {
 
 		if (devices == null) {
@@ -34,5 +35,10 @@ public class JmfDriver implements WebcamDriver {
 		}
 
 		return devices;
+	}
+
+	@Override
+	public boolean isThreadSafe() {
+		return false;
 	}
 }

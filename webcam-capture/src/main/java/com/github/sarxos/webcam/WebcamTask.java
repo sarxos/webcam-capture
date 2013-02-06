@@ -1,8 +1,4 @@
-package com.github.sarxos.webcam.ds;
-
-import com.github.sarxos.webcam.WebcamDevice;
-import com.github.sarxos.webcam.WebcamException;
-
+package com.github.sarxos.webcam;
 
 public abstract class WebcamTask {
 
@@ -11,18 +7,15 @@ public abstract class WebcamTask {
 	private WebcamDevice device = null;
 	private WebcamException exception = null;
 
-	public WebcamTask(WebcamProcessor processor, WebcamDevice device, boolean sync) {
+	public WebcamTask(Webcam webcam) {
 
-		if (processor == null) {
-			throw new IllegalArgumentException("Processor argument cannot be null!");
-		}
-		if (device == null) {
-			throw new IllegalArgumentException("Device argument cannot be null!");
+		if (webcam == null) {
+			throw new IllegalArgumentException("Webcam argument cannot be null!");
 		}
 
-		this.processor = processor;
-		this.device = device;
-		this.sync = sync;
+		this.sync = !Webcam.getDriver().isThreadSafe();
+		this.device = webcam.getDevice();
+		this.processor = webcam.getProcessor();
 	}
 
 	public WebcamDevice getDevice() {
@@ -36,6 +29,9 @@ public abstract class WebcamTask {
 	 */
 	public void process() {
 		if (sync) {
+			if (processor == null) {
+				throw new RuntimeException("Driver should be synchronized, but processor is null");
+			}
 			processor.process(this);
 		} else {
 			handle();

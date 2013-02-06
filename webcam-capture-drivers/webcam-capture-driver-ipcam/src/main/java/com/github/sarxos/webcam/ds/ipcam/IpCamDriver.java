@@ -32,4 +32,9 @@ public class IpCamDriver implements WebcamDriver {
 	public void register(IpCamDevice device) {
 		IpCamDeviceRegistry.register(device);
 	}
+
+	@Override
+	public boolean isThreadSafe() {
+		return true;
+	}
 }

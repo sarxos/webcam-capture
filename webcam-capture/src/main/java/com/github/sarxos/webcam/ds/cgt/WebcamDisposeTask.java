@@ -1,8 +1,7 @@
 package com.github.sarxos.webcam.ds.cgt;
 
-import com.github.sarxos.webcam.WebcamDevice;
-import com.github.sarxos.webcam.ds.WebcamProcessor;
-import com.github.sarxos.webcam.ds.WebcamTask;
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamTask;
 
 
 /**
@@ -12,8 +11,8 @@ import com.github.sarxos.webcam.ds.WebcamTask;
  */
 public class WebcamDisposeTask extends WebcamTask {
 
-	public WebcamDisposeTask(WebcamProcessor processor, WebcamDevice device, boolean sync) {
-		super(processor, device, sync);
+	public WebcamDisposeTask(Webcam webcam) {
+		super(webcam);
 	}
 
 	public void dispose() {

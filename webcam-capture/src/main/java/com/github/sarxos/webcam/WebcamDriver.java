@@ -15,6 +15,14 @@ public interface WebcamDriver {
 	 * 
 	 * @return List of webcam devices
 	 */
-	public List<WebcamDevice> getDevices();
+	List<WebcamDevice> getDevices();
+
+	/**
+	 * Is driver thread-safe. Thread safe drivers operations does not have to be
+	 * synchronized.
+	 * 
+	 * @return True in case if driver is thread-safe, false otherwise
+	 */
+	boolean isThreadSafe();
 
 }

@@ -1,12 +1,10 @@
-package com.github.sarxos.webcam.ds;
+package com.github.sarxos.webcam;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.github.sarxos.webcam.WebcamException;
 
 
 public class WebcamProcessor {
@@ -38,6 +36,8 @@ public class WebcamProcessor {
 		private SynchronousQueue<WebcamTask> inbound = new SynchronousQueue<WebcamTask>(true);
 		private SynchronousQueue<WebcamTask> outbound = new SynchronousQueue<WebcamTask>(true);
 
+		private volatile boolean running = true;
+
 		/**
 		 * Process task.
 		 * 
@@ -50,9 +50,14 @@ public class WebcamProcessor {
 			return outbound.take();
 		}
 
+		public void stop() {
+			running = false;
+		}
+
 		@Override
 		public void run() {
-			while (true) {
+			running = true;
+			while (running) {
 				WebcamTask t = null;
 				try {
 					(t = inbound.take()).handle();
@@ -79,7 +84,7 @@ public class WebcamProcessor {
 	/**
 	 * Execution service.
 	 */
-	private static final Executor runner = Executors.newSingleThreadExecutor(new ProcessorThreadFactory());
+	private static final ExecutorService runner = Executors.newSingleThreadExecutor(new ProcessorThreadFactory());
 
 	/**
 	 * Static processor.
@@ -92,11 +97,24 @@ public class WebcamProcessor {
 		}
 	}
 
+	/**
+	 * Process single webcam task.
+	 * 
+	 * @param task the task to be processed
+	 */
 	public void process(WebcamTask task) {
 		try {
 			processor.process(task);
 		} catch (InterruptedException e) {
 			throw new WebcamException("Processing interrupted", e);
 		}
+	}
+
+	/**
+	 * Stop processing thread.
+	 */
+	public void shutdown() {
+		processor.stop();
+		started.set(false);
 	}
 }

@@ -7,8 +7,7 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
-import com.github.sarxos.webcam.ds.WebcamProcessor;
-import com.github.sarxos.webcam.ds.WebcamTask;
+import com.github.sarxos.webcam.WebcamTask;
 
 
 public class WebcamOpenTask extends WebcamTask {
@@ -17,8 +16,8 @@ public class WebcamOpenTask extends WebcamTask {
 
 	private Webcam webcam = null;
 
-	public WebcamOpenTask(WebcamProcessor processor, WebcamDevice device, boolean sync) {
-		super(processor, device, sync);
+	public WebcamOpenTask(Webcam webcam) {
+		super(webcam);
 	}
 
 	public void open(Webcam webcam) {

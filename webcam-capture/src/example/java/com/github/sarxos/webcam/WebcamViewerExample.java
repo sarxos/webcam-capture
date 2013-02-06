@@ -4,8 +4,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 
@@ -19,9 +17,7 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 	private static final long serialVersionUID = -2831291292491395695L;
 
 	private Webcam webcam = null;
-
-	private JPanel wait = null;
-	private WebcamPanel view = null;
+	private WebcamPanel viewer = null;
 
 	@Override
 	public void run() {
@@ -30,31 +26,30 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		addWindowListener(this);
 
-		wait = new JPanel();
-		wait.add(new JLabel("Initialization"));
+		webcam = Webcam.getDefault();
+		if (webcam == null) {
+			System.out.println("No webcams found...");
+			System.exit(1);
+		}
 
-		setContentPane(wait);
+		webcam.setViewSize(WebcamResolution.VGA.getSize());
+		webcam.addWebcamListener(WebcamViewerExample.this);
 
+		viewer = new WebcamPanel(webcam, false);
+
+		setContentPane(viewer);
 		pack();
 		setVisible(true);
 
-		SwingUtilities.invokeLater(new Runnable() {
+		Thread t = new Thread() {
 
 			@Override
 			public void run() {
-
-				webcam = Webcam.getDefault();
-				if (webcam == null) {
-					System.out.println("No webcams found...");
-					System.exit(1);
-				}
-
-				view = new WebcamPanel(webcam);
-
-				webcam.addWebcamListener(WebcamViewerExample.this);
-				webcam.open();
+				viewer.start();
 			}
-		});
+		};
+		t.setDaemon(true);
+		t.start();
 	}
 
 	public static void main(String[] args) {
@@ -63,23 +58,21 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 
 	@Override
 	public void webcamOpen(WebcamEvent we) {
-		setContentPane(view);
-		pack();
+		System.out.println("webcam open");
 	}
 
 	@Override
 	public void webcamClosed(WebcamEvent we) {
-		setContentPane(wait);
-		pack();
+		System.out.println("webcam closed");
 	}
 
 	@Override
 	public void webcamDisposed(WebcamEvent we) {
+		System.out.println("webcam disposed");
 	}
 
 	@Override
 	public void windowActivated(WindowEvent e) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -101,12 +94,14 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 
 	@Override
 	public void windowDeiconified(WindowEvent e) {
-		view.resume();
+		System.out.println("webcam viewer resumed");
+		viewer.resume();
 	}
 
 	@Override
 	public void windowIconified(WindowEvent e) {
-		view.pause();
+		System.out.println("webcam viewer paused");
+		viewer.pause();
 	}
 
 }

@@ -30,4 +30,16 @@ public class WebcamCompositeDriver implements WebcamDriver {
 		}
 		return all;
 	}
+
+	@Override
+	public boolean isThreadSafe() {
+		boolean safe = true;
+		for (WebcamDriver driver : drivers) {
+			safe &= driver.isThreadSafe();
+			if (!safe) {
+				break;
+			}
+		}
+		return safe;
+	}
 }

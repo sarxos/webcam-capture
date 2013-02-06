@@ -303,7 +303,11 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		repainter.setName(String.format("%s-repainter", webcam.getName()));
 
 		if (size == null) {
-			setPreferredSize(webcam.getViewSize());
+			Dimension r = webcam.getViewSize();
+			if (r == null) {
+				r = webcam.getViewSizes()[0];
+			}
+			setPreferredSize(r);
 		} else {
 			setPreferredSize(size);
 		}

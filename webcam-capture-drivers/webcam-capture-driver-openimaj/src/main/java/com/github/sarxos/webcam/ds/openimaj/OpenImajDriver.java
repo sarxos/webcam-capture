@@ -36,4 +36,9 @@ public class OpenImajDriver implements WebcamDriver {
 		return webcamDevices;
 	}
 
+	@Override
+	public boolean isThreadSafe() {
+		return false;
+	}
+
 }

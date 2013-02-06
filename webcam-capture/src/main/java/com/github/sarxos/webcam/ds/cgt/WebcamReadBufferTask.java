@@ -2,17 +2,17 @@ package com.github.sarxos.webcam.ds.cgt;
 
 import java.awt.image.BufferedImage;
 
+import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamDevice;
-import com.github.sarxos.webcam.ds.WebcamProcessor;
-import com.github.sarxos.webcam.ds.WebcamTask;
+import com.github.sarxos.webcam.WebcamTask;
 
 
 public class WebcamReadBufferTask extends WebcamTask {
 
 	private BufferedImage image = null;
 
-	public WebcamReadBufferTask(WebcamProcessor processor, WebcamDevice device, boolean sync) {
-		super(processor, device, sync);
+	public WebcamReadBufferTask(Webcam webcam) {
+		super(webcam);
 	}
 
 	public BufferedImage getImage() {

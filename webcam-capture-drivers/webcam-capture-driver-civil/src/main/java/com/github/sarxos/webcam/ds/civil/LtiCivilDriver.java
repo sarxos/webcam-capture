@@ -48,6 +48,7 @@ public class LtiCivilDriver implements WebcamDriver {
 		return system;
 	}
 
+	@Override
 	public List<WebcamDevice> getDevices() {
 
 		if (!initialized) {
@@ -70,6 +71,11 @@ public class LtiCivilDriver implements WebcamDriver {
 		}
 
 		return devices;
+	}
+
+	@Override
+	public boolean isThreadSafe() {
+		return false;
 	}
 
 }
