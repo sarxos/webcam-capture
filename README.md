@@ -38,16 +38,17 @@ you can download ZIP containing all required 3rd-party JARs.
 
 ## Contribution
 
-If you have spare time, knownledge or money you can help developing 
+If you have spare time, knownledge or some small amount of money you 
+can help developing 
 awesome Webcam Capture API and make it even better! Several kinds of 
-contributions are welcome:
+contributions are very welcome:
 
-* **Report** - If you've found a bug or you've came-up with some fantastic feature which 
+* **Report bug or feature** - If you've found a bug or you've came-up with some fantastic feature which 
 can make Webcam Capture a better API to use, don't hesitate to 
 [create new issue](https://github.com/sarxos/webcam-capture/issues/new) 
 where you can describe in details what the problem is, or what would you
 like to improve.
-* **Test** - Since Webcam Capture use small part of native code, it's very 
+* **Perform tests** - Since Webcam Capture use some part of native code, it's very 
 hard to cover all supported operating systems. I'm always testing it
 on 64-bit Ubuntu Linux, Windows XP and Vista (both 32-bit), but I
 have no possibility to test on Raspberry Pi, Mac OS and 32-bit Linux.
