@@ -29,11 +29,11 @@ Complete documentation, API, examples, tutorials and many more can be found here
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3.7</version>
+	<version>0.3.8</version>
 </dependency>
 ```
 
-If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.7/webcam-capture-0.3.7-dist.zip)**
+If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.8/webcam-capture-0.3.8-dist.zip)**
 you can download ZIP containing all required 3rd-party JARs.
 
 ## Contribution
