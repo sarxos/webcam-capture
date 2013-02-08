@@ -10,9 +10,8 @@ import java.util.concurrent.ThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jhlabs.image.BoxBlurFilter;
-import com.jhlabs.image.GrayscaleFilter;
-import com.jhlabs.image.PixelUtils;
+import com.github.sarxos.webcam.util.jh.JHBlurFilter;
+import com.github.sarxos.webcam.util.jh.JHGrayFilter;
 
 
 /**
@@ -31,11 +30,13 @@ public class WebcamMotionDetector {
 	 * 
 	 * @author Bartosz Firyn (SarXos)
 	 */
-	private class DetectorThreadFactory implements ThreadFactory {
+	private static final class DetectorThreadFactory implements ThreadFactory {
+
+		private static int number = 0;
 
 		@Override
 		public Thread newThread(Runnable runnable) {
-			Thread t = new Thread(runnable, "motion-detector-" + (number++));
+			Thread t = new Thread(runnable, "motion-detector-" + (++number));
 			t.setDaemon(true);
 			return t;
 		}
@@ -129,17 +130,12 @@ public class WebcamMotionDetector {
 	/**
 	 * Blur filter instance.
 	 */
-	private BoxBlurFilter blur = new BoxBlurFilter(3, 3, 1);
+	private JHBlurFilter blur = new JHBlurFilter(3, 3, 1);
 
 	/**
 	 * Grayscale filter instance.
 	 */
-	private GrayscaleFilter gray = new GrayscaleFilter();
-
-	/**
-	 * Thread number for thread factory.
-	 */
-	private int number = 0;
+	private JHGrayFilter gray = new JHGrayFilter();
 
 	/**
 	 * Thread factory.
@@ -229,7 +225,7 @@ public class WebcamMotionDetector {
 						int c = current.getRGB(i, j);
 						int p = previous.getRGB(i, j);
 
-						int rgb = PixelUtils.combinePixels(c, p, PixelUtils.DIFFERENCE);
+						int rgb = combinePixels(c, p);
 
 						int cr = (rgb & 0x00ff0000) >> 16;
 						int cg = (rgb & 0x0000ff00) >> 8;
@@ -325,5 +321,45 @@ public class WebcamMotionDetector {
 
 	public int getMotionStrength() {
 		return strength;
+	}
+
+	private static int combinePixels(int rgb1, int rgb2) {
+
+		int a1 = (rgb1 >> 24) & 0xff;
+		int r1 = (rgb1 >> 16) & 0xff;
+		int g1 = (rgb1 >> 8) & 0xff;
+		int b1 = rgb1 & 0xff;
+		int a2 = (rgb2 >> 24) & 0xff;
+		int r2 = (rgb2 >> 16) & 0xff;
+		int g2 = (rgb2 >> 8) & 0xff;
+		int b2 = rgb2 & 0xff;
+
+		r1 = clamp(Math.abs(r1 - r2));
+		g1 = clamp(Math.abs(g1 - g2));
+		b1 = clamp(Math.abs(b1 - b2));
+
+		if (a1 != 0xff) {
+			a1 = a1 * 0xff / 255;
+			int a3 = (255 - a1) * a2 / 255;
+			r1 = clamp((r1 * a1 + r2 * a3) / 255);
+			g1 = clamp((g1 * a1 + g2 * a3) / 255);
+			b1 = clamp((b1 * a1 + b2 * a3) / 255);
+			a1 = clamp(a1 + a3);
+		}
+
+		return (a1 << 24) | (r1 << 16) | (g1 << 8) | b1;
+	}
+
+	/**
+	 * Clamp a value to the range 0..255
+	 */
+	private static int clamp(int c) {
+		if (c < 0) {
+			return 0;
+		}
+		if (c > 255) {
+			return 255;
+		}
+		return c;
 	}
 }

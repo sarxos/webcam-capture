@@ -70,11 +70,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.jhlabs</groupId>
-			<artifactId>filters</artifactId>
-			<version>2.0.235-1</version>
-		</dependency>
-		<dependency>
 			<groupId>com.nativelibs4java</groupId>
 			<artifactId>bridj</artifactId>
 			<version>0.6.2</version>
@@ -126,6 +121,7 @@
 						<Private-Package>
 							com.github.sarxos.webcam.ds,
 							com.github.sarxos.webcam.ds.*,
+							com.github.sarxos.webcam.util.*,
 						</Private-Package>
 						<Include-Resources>{maven-resources}</Include-Resources>
 					</instructions>

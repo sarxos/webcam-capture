@@ -81,8 +81,8 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	private OpenIMAJGrabber grabber = null;
 	private Device device = null;
 	private Dimension size = null;
-	private ComponentSampleModel sampleModel = null;
-	private ColorModel colorModel = null;
+	private ComponentSampleModel smodel = null;
+	private ColorModel cmodel = null;
 	private boolean failOnSizeMismatch = false;
 
 	private AtomicBoolean disposed = new AtomicBoolean(false);
@@ -158,9 +158,9 @@ public class WebcamDefaultDevice implements WebcamDevice {
 		}
 
 		DataBufferByte buffer = new DataBufferByte(data, bytes.length, OFFSET);
-		WritableRaster raster = Raster.createWritableRaster(sampleModel, buffer, null);
+		WritableRaster raster = Raster.createWritableRaster(smodel, buffer, null);
 
-		BufferedImage bi = new BufferedImage(colorModel, raster, false, null);
+		BufferedImage bi = new BufferedImage(cmodel, raster, false, null);
 		bi.flush();
 
 		return bi;
@@ -219,8 +219,8 @@ public class WebcamDefaultDevice implements WebcamDevice {
 			size = new Dimension(w2, h2);
 		}
 
-		sampleModel = new ComponentSampleModel(DATA_TYPE, size.width, size.height, 3, size.width * 3, BAND_OFFSETS);
-		colorModel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
+		smodel = new ComponentSampleModel(DATA_TYPE, size.width, size.height, 3, size.width * 3, BAND_OFFSETS);
+		cmodel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
 
 		LOG.debug("Initialize buffer");
 
