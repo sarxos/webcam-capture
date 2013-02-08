@@ -195,9 +195,9 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 						image = tmp;
 
-						if (paused) {
+						while (paused) {
 							synchronized (this) {
-								this.wait();
+								this.wait(250);
 							}
 						}
 					}
@@ -422,6 +422,9 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			return;
 		}
 		paused = false;
+		synchronized (repainter) {
+			repainter.notifyAll();
+		}
 	}
 
 	/**
