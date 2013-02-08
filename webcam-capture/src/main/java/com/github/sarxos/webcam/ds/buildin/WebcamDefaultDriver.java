@@ -29,18 +29,19 @@ public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamDefaultDriver.class);
 
-	/**
-	 * Native grabber.
-	 */
-	private static final OpenIMAJGrabber GRABBER = new OpenIMAJGrabber();
+	private static OpenIMAJGrabber grabber = null;
 
 	@Override
 	public List<WebcamDevice> getDevices() {
 
 		LOG.debug("Searching devices");
 
+		if (grabber == null) {
+			grabber = new OpenIMAJGrabber();
+		}
+
 		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
-		Pointer<DeviceList> pointer = GRABBER.getVideoDevices();
+		Pointer<DeviceList> pointer = grabber.getVideoDevices();
 		DeviceList list = pointer.get();
 
 		for (Device device : list.asArrayList()) {
