@@ -21,6 +21,7 @@ import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
 import com.github.sarxos.webcam.WebcamResolution;
 import com.github.sarxos.webcam.ds.buildin.natives.Device;
+import com.github.sarxos.webcam.ds.buildin.natives.DeviceList;
 import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
 
 
@@ -77,7 +78,7 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	 */
 	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 
-	private OpenIMAJGrabber grabber = new OpenIMAJGrabber();
+	private OpenIMAJGrabber grabber = null;
 	private Device device = null;
 	private Dimension size = null;
 	private ComponentSampleModel sampleModel = null;
@@ -178,9 +179,23 @@ public class WebcamDefaultDevice implements WebcamDevice {
 			size = getResolutions()[0];
 		}
 
-		LOG.debug("Webcam device starting session, size {}", size);
+		LOG.debug("Webcam device {} starting session, size {}", device.getIdentifierStr(), size);
 
-		boolean started = grabber.startSession(size.width, size.height, 30, Pointer.pointerTo(device));
+		grabber = new OpenIMAJGrabber();
+
+		// NOTE!
+
+		// Following the note from OpenIMAJ code - it seams like there is some
+		// issue on 32-bit systems which prevents grabber to find devices.
+		// According to the mentioned note this for loop shall fix the problem.
+
+		DeviceList list = grabber.getVideoDevices().get();
+		for (Device d : list.asArrayList()) {
+			d.getNameStr();
+			d.getIdentifierStr();
+		}
+
+		boolean started = grabber.startSession(size.width, size.height, 50, Pointer.pointerTo(device));
 		if (!started) {
 			throw new WebcamException("Cannot start native grabber!");
 		}

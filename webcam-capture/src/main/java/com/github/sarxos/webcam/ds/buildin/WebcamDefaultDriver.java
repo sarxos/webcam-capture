@@ -2,6 +2,7 @@ package com.github.sarxos.webcam.ds.buildin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.bridj.Pointer;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDiscoverySupport;
 import com.github.sarxos.webcam.WebcamDriver;
+import com.github.sarxos.webcam.WebcamTask;
 import com.github.sarxos.webcam.ds.buildin.natives.Device;
 import com.github.sarxos.webcam.ds.buildin.natives.DeviceList;
 import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
@@ -24,6 +26,54 @@ import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
  */
 public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport {
 
+	private static class WebcamNewGrabberTask extends WebcamTask {
+
+		private AtomicReference<OpenIMAJGrabber> grabber = new AtomicReference<OpenIMAJGrabber>();
+
+		public WebcamNewGrabberTask(WebcamDriver driver) {
+			super(driver, null);
+		}
+
+		public OpenIMAJGrabber newGrabber() {
+			process();
+			return grabber.get();
+		}
+
+		@Override
+		protected void handle() {
+			grabber.set(new OpenIMAJGrabber());
+		}
+	}
+
+	private static class GetDevicesTask extends WebcamTask {
+
+		private volatile List<WebcamDevice> devices = null;
+		private volatile OpenIMAJGrabber grabber = null;
+
+		public GetDevicesTask(WebcamDriver driver) {
+			super(driver, null);
+		}
+
+		public List<WebcamDevice> getDevices(OpenIMAJGrabber grabber) {
+			this.grabber = grabber;
+			process();
+			return devices;
+		}
+
+		@Override
+		protected void handle() {
+
+			devices = new ArrayList<WebcamDevice>();
+
+			Pointer<DeviceList> pointer = grabber.getVideoDevices();
+			DeviceList list = pointer.get();
+
+			for (Device device : list.asArrayList()) {
+				devices.add(new WebcamDefaultDevice(device));
+			}
+		}
+	}
+
 	/**
 	 * Logger.
 	 */
@@ -37,16 +87,11 @@ public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport
 		LOG.debug("Searching devices");
 
 		if (grabber == null) {
-			grabber = new OpenIMAJGrabber();
+			WebcamNewGrabberTask task = new WebcamNewGrabberTask(this);
+			grabber = task.newGrabber();
 		}
 
-		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
-		Pointer<DeviceList> pointer = grabber.getVideoDevices();
-		DeviceList list = pointer.get();
-
-		for (Device device : list.asArrayList()) {
-			devices.add(new WebcamDefaultDevice(device));
-		}
+		List<WebcamDevice> devices = new GetDevicesTask(this).getDevices(grabber);
 
 		if (LOG.isDebugEnabled()) {
 			for (WebcamDevice device : devices) {

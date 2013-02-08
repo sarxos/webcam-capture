@@ -25,20 +25,23 @@ public class PureDefaultDeviceExample {
 			break;
 		}
 
-		grabber.startSession(320, 240, 30, Pointer.pointerTo(device));
+		boolean started = grabber.startSession(320, 240, 30, Pointer.pointerTo(device));
+		if (!started) {
+			throw new RuntimeException("Not able to start native grabber!");
+		}
 
-		long t1 = System.currentTimeMillis() / 1000;
+		long t1 = System.currentTimeMillis();
 
-		int n = 100;
+		int n = 1000;
 		int i = 0;
 		do {
 			grabber.nextFrame();
 			grabber.getImage().getBytes(320 * 240 * 3); // byte[]
 		} while (++i < n);
 
-		long t2 = System.currentTimeMillis() / 1000;
+		long t2 = System.currentTimeMillis();
 
-		System.out.println("FPS: " + ((double) n / (t2 - t1)));
+		System.out.println("Capturing time: " + (t2 - t1));
 
 		grabber.stopSession();
 	}

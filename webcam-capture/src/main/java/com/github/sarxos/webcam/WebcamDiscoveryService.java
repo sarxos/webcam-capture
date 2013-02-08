@@ -37,7 +37,7 @@ public class WebcamDiscoveryService implements Runnable {
 
 		@Override
 		public Thread newThread(Runnable r) {
-			Thread t = new Thread(r, "webcam-discovery");
+			Thread t = new Thread(r, "webcam-discovery-service");
 			t.setDaemon(true);
 			return t;
 		}

@@ -82,11 +82,6 @@ public class Webcam {
 	private static WebcamDriver driver = null;
 
 	/**
-	 * Webcam tasks processor synchronize non-thread-safe operations.
-	 */
-	private static WebcamProcessor processor = new WebcamProcessor();
-
-	/**
 	 * Webcam discovery service.
 	 */
 	private static volatile WebcamDiscoveryService discovery = null;
@@ -146,15 +141,32 @@ public class Webcam {
 	 */
 	public void open() {
 
-		if (!open.compareAndSet(false, true)) {
-			LOG.debug("Webcam is already open {}", getName());
+		if (open.compareAndSet(false, true)) {
+
+			WebcamOpenTask task = new WebcamOpenTask(driver, device);
+			task.open();
+
+			LOG.debug("Webcam is now open {}", getName());
+
+			// install shutdown hook
+
+			Runtime.getRuntime().addShutdownHook(hook = new ShutdownHook(this));
+
+			// notify listeners
+
+			WebcamEvent we = new WebcamEvent(this);
+			for (WebcamListener l : getWebcamListeners()) {
+				try {
+					l.webcamOpen(we);
+				} catch (Exception e) {
+					LOG.error(String.format("Notify webcam open, exception when calling listener %s", l.getClass()), e);
+				}
+			}
+
 			return;
 		}
 
-		WebcamOpenTask task = new WebcamOpenTask(this);
-		task.open(this);
-
-		Runtime.getRuntime().addShutdownHook(hook = new ShutdownHook(this));
+		LOG.debug("Webcam is already open {}", getName());
 	}
 
 	/**
@@ -162,15 +174,32 @@ public class Webcam {
 	 */
 	public void close() {
 
-		if (!open.compareAndSet(true, false)) {
-			LOG.debug("Webcam is already closed {}", getName());
+		if (open.compareAndSet(true, false)) {
+
+			// close webcam
+
+			WebcamCloseTask task = new WebcamCloseTask(driver, device);
+			task.close();
+
+			// remove shutdown hook (it's not more necessary)
+
+			Runtime.getRuntime().removeShutdownHook(hook);
+
+			// notify listeners
+
+			WebcamEvent we = new WebcamEvent(this);
+			for (WebcamListener l : getWebcamListeners()) {
+				try {
+					l.webcamClosed(we);
+				} catch (Exception e) {
+					LOG.error(String.format("Notify webcam closed, exception when calling %s listener", l.getClass()), e);
+				}
+			}
+
 			return;
 		}
 
-		WebcamCloseTask task = new WebcamCloseTask(this);
-		task.close(this);
-
-		Runtime.getRuntime().removeShutdownHook(hook);
+		LOG.debug("Webcam is already closed {}", getName());
 	}
 
 	/**
@@ -315,7 +344,7 @@ public class Webcam {
 			}
 		}
 
-		WebcamReadBufferTask task = new WebcamReadBufferTask(this);
+		WebcamReadBufferTask task = new WebcamReadBufferTask(driver, device);
 		return task.getImage();
 	}
 
@@ -605,10 +634,6 @@ public class Webcam {
 		return device;
 	}
 
-	protected WebcamProcessor getProcessor() {
-		return processor;
-	}
-
 	/**
 	 * Completely dispose capture device. After this operation webcam cannot be
 	 * used any more and full reinstantiation is required.
@@ -623,7 +648,7 @@ public class Webcam {
 
 		LOG.info("Disposing webcam {}", getName());
 
-		WebcamDisposeTask task = new WebcamDisposeTask(this);
+		WebcamDisposeTask task = new WebcamDisposeTask(driver, device);
 		task.dispose();
 
 		WebcamEvent we = new WebcamEvent(this);

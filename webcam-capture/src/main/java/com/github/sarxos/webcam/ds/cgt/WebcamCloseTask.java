@@ -3,10 +3,8 @@ package com.github.sarxos.webcam.ds.cgt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamDevice;
-import com.github.sarxos.webcam.WebcamEvent;
-import com.github.sarxos.webcam.WebcamListener;
+import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.WebcamTask;
 
 
@@ -14,14 +12,11 @@ public class WebcamCloseTask extends WebcamTask {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamCloseTask.class);
 
-	private Webcam webcam = null;
-
-	public WebcamCloseTask(Webcam webcam) {
-		super(webcam);
+	public WebcamCloseTask(WebcamDriver driver, WebcamDevice device) {
+		super(driver, device);
 	}
 
-	public void close(Webcam webcam) {
-		this.webcam = webcam;
+	public void close() {
 		process();
 	}
 
@@ -36,16 +31,5 @@ public class WebcamCloseTask extends WebcamTask {
 		LOG.info("Closing {}", device.getName());
 
 		device.close();
-
-		// TODO move back to Webcam
-
-		WebcamEvent we = new WebcamEvent(webcam);
-		for (WebcamListener l : webcam.getWebcamListeners()) {
-			try {
-				l.webcamClosed(we);
-			} catch (Exception e) {
-				LOG.error(String.format("Notify webcam closed, exception when calling %s listener", l.getClass()), e);
-			}
-		}
 	}
 }

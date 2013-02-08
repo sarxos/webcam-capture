@@ -36,7 +36,7 @@ public class ConcurrentThreadsExample {
 				}
 
 				int n = counter.incrementAndGet();
-				if (n != 0 && n % 10 == 0) {
+				if (n != 0 && n % 100 == 0) {
 					System.out.println(Thread.currentThread().getName() + ": Frames captured: " + n);
 				}
 			}

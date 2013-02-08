@@ -84,10 +84,12 @@ public class WebcamProcessor {
 	 */
 	private static final AtomicProcessor processor = new AtomicProcessor();
 
-	public WebcamProcessor() {
-		if (started.compareAndSet(false, true)) {
-			runner.execute(processor);
-		}
+	/**
+	 * Singleton instance.
+	 */
+	private static WebcamProcessor instance = null;
+
+	private WebcamProcessor() {
 	}
 
 	/**
@@ -96,10 +98,20 @@ public class WebcamProcessor {
 	 * @param task the task to be processed
 	 */
 	public void process(WebcamTask task) {
+		if (started.compareAndSet(false, true)) {
+			runner.execute(processor);
+		}
 		try {
 			processor.process(task);
 		} catch (InterruptedException e) {
 			throw new WebcamException("Processing interrupted", e);
 		}
+	}
+
+	public static synchronized WebcamProcessor getInstance() {
+		if (instance == null) {
+			instance = new WebcamProcessor();
+		}
+		return instance;
 	}
 }

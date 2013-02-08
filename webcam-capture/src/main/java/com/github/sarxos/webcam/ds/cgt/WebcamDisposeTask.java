@@ -1,6 +1,7 @@
 package com.github.sarxos.webcam.ds.cgt;
 
-import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.WebcamTask;
 
 
@@ -11,8 +12,8 @@ import com.github.sarxos.webcam.WebcamTask;
  */
 public class WebcamDisposeTask extends WebcamTask {
 
-	public WebcamDisposeTask(Webcam webcam) {
-		super(webcam);
+	public WebcamDisposeTask(WebcamDriver driver, WebcamDevice device) {
+		super(driver, device);
 	}
 
 	public void dispose() {
