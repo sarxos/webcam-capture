@@ -29,11 +29,11 @@ Complete documentation, API, examples, tutorials and many more can be found here
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3.8</version>
+	<version>0.3.9</version>
 </dependency>
 ```
 
-If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.8/webcam-capture-0.3.8-dist.zip)**
+If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.9/webcam-capture-0.3.9-dist.zip)**
 you can download ZIP containing all required 3rd-party JARs.
 
 ## Contribution
@@ -58,151 +58,77 @@ forking repository and sending pull requests.
 * **Donate** - People have expressed a wish to donate a little money. Donating won't 
 get you anything special, other than a warm feeling inside, and possibly 
 urge me to produce more freely available material for Webcam Capture 
-project. You can donate via PayPal by sending money to songo.bercik@interia.pl, 
-or by pressing _donate_ button available **[here](http://webcam-capture.sarxos.pl/#contribute)**.
+project. You can donate via PayPal, find _donate_ button available 
+**[here](http://webcam-capture.sarxos.pl/#contribute)** on the project page.
 
 
-## Examples
+## Hello World
 
-Some pretty basic examples.
-
-### Save Webcam Image In File
-
-Code below will capture image from your PC webcam and save it in ```test.png``` file:
+Code below will capture image from your default webcam and save it in ```test.png``` file:
 
 ```java
 Webcam webcam = Webcam.getDefault();
-BufferedImage image = webcam.getImage();
-ImageIO.write(image, "PNG", new File("test.png"));
+webcam.open();
+ImageIO.write(webcam.getImage(), "PNG", new File("test.png"));
 ```
 
-### Display Webcam Image In JFrame
+## More Examples
 
-This one will display image from webcam in ```JFrame``` window:
+Below is the list of pretty basic examples. All can be found in the source code.
 
-```java
-JFrame window = new JFrame("Test webcam panel");
-window.add(new WebcamPanel(Webcam.getDefault()));
-window.pack();
-window.setVisible(true);
-window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-```
+* [How to detect webcam](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/DetectWebcamExample.java)
+* [How to take picture and save to file](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/TakePictureExample.java)
+* [How to take pictures from two cameras and save to files](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/TakePictureFromTwoCamsExample.java)
+* [How to display image from webcam in Swing panel (basic)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/WebcamPanelExample.java)
+* [How to display image from webcam in Swing panel (more advanced)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/WebcamViewerExample.java)
+* [How to listen on camera connection / disconnection events](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/WebcamDiscoveryListenerExample.java)
+* [How to configure capture resolution](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/TakePictureDifferentSizeExample.java)
+* [How to configure non-standard capture resolutionj (e.g. HD720)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/CustomResolutionExample.java)
+* [How to save captured image in PNG / JPG / GIF / BMP etc](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/DifferentFileFormatsExample.java)
+* [How to capture with many parrallel threads](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/ConcurrentThreadsExample.java)
+* [How to detect motion (text mode only)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/DetectMotionExample.java)
 
-### Take Picture From IP / Network Camera
+And here are some more advanced examples, few with quite fancy GUI.
 
-This is simple example of how to use Webcam Capture with **IP / network camera**:
+* [How to detect motion and display effect in JFrame](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-examples/webcam-capture-motiondetector)
+* [How to use webcam capture in Java Applet](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-applet)
+* [How to paint custom effects in WebcamPanel displaying image from camera](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-painter)
+* [How to read QR / DataMatrix and Bar codes](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-qrcode)
 
-```java
-String address = "http://88.37.116.138/mjpg/video.mjpg ";
-IpCamDevice livecam = new IpCamDevice("Lignano Beach", new URL(address), IpCamMode.PUSH);
-IpCamDriver driver = new IpCamDriver();
-driver.register(livecam);
-Webcam.setDriver(driver);
-Image image = Webcam.getDefault().getImage(); // live picture from Lignano beach (Italia)
-```
 
-For more detailed / complex examples of how to use Webcam Capture with IP / network cameras please follow to **[this
-subproject](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam)**.
+## Capture Drivers
 
-### Detect Motion
+By default Webcam Capture use default driver which consists of small, refined
+part of awesome [OpenIMAJ](http://sourceforge.net/p/openimaj/home/OpenIMAJ/) 
+framework wrapped in thread-safe container which allows it to be used in 
+multithreaded applications. 
+However there are more ready-to-use drivers which can be used as a replacement 
+or addition to the default one. By utylizing those drivers Webcam Capture can 
+be extended with various new features (e.g. IP camera support).
 
-This code will print appropriate message whenever motion si detected.
+List of additional drivers includes:
 
-```java
-WebcamMotionDetector detector = new WebcamMotionDetector(Webcam.getDefault(), 25, 1000);
-detector.setInterval(100);
-detector.start();
-while (true) {
-    if (detector.isMotion()) {
-    	System.out.printl("Motion detected!");
-    }
-    Thread.sleep(200);
-}
-```
+* [IP Camera Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam) - available in Maven Central, adds IP / network cameras support
+* [JMF Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf) - available in Maven Central, JMF replacement for default driver
+* [LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-civil) - **not** available in Maven Central, LTI-CIVIL replacement for default driver
+* [OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-civil) - **not** available in Maven Central, OpenIMAJ replacement for default driver
+* [OpenCV Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv) - **unstable**, OpenCV replacement for default driver
+* [VLC Driver](https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj) - **unstable**, Linux only, VLC replacement for default driver
 
-More detailed motion detector example with some fancy GUI can be found  in
-**[webcam-capture-motiondetector](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-motiondetector)**
-subproject.
+## History
 
-### Use Webcam In Applet
-
-Example of how to enable Webcam Capture capabilities in Java Applet can be found in 
-**[webcam-capture-applet](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-applet)**
-subproject. 
-
-### Custom Painter for WebcamPanel
-
-You can very easily create your own image painter which can be used by `WebcamPanel`. Such custom 
-painter can do fantastic things with image from camera, add some effects, filters, etc. Can also 
-perform image analysis and display output in real-time. 
-
-To explore example of how to create simple custom painter, please follow to the 
-**[webcam-capture-painter](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-painter)**
-subproject. I'm sure you can find some fancy stuff there.
-
-### Read QR / DataMatrix / Bar Codes
-
-Example presenting how to read QR / DataMatrix / Bar codes using _Webcam Capture_ together with 
-[ZXing](https://github.com/zxing/zxing) is available in 
-**[webcam-capture-qrcode](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-qrcode)**
-subproject.
-
-```java
-BufferedImage image = webcam.getImage();
-LuminanceSource source = new BufferedImageLuminanceSource(image);
-BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-
-try {
-	Result result = new MultiFormatReader().decode(bitmap);
-	if (result != null) {
-		System.out.println("QR code text: " + result.getText());
-	}
-} catch (NotFoundException e) {
-	System.out.println("No QR code in camera view");
-}
-```
-
-### Timeout When Webcam Device Busy
-
-Sometimes webcam device can be used by other process (e.g. Skype) or can be
-unavailable due to various issues. In such a case Java process will not be able
-to allocate it properly. To avoid application hang one can specify timeout 
-parameter to be used in ```getWebcams(..)``` and ```getDefault(..)``` methods:
-
-Example below will wait 5 seconds for device to be discovered and throw 
-```TimeoutException``` if it cannot be found in such time interval.
-
-```java
-try {
-	Webcam webcam = Webcam.getDefault(5, TimeUnit.SECONDS);
-} catch (TimeoutException e) {
-	System.err.println("Cannot find default webcam due to discovery timeout");
-}
-``` 
-
-## Addtional Drivers
-
-Webcam Capture can utilize additional drivers to extend its own functionality. Currently below
-drivers are stable and available in Maven Central:
-
-* **[IP Camera Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam)** (adds IP / network cameras support)  
-* **[JMF Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf)** (JMF replacement for build-in webcam driver)
-
-Stable but not available in Maven Central (due to 3rd-party dependencies not yet available in Central):
-
-* **[LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-civil)** (LTI-CIVIL replacement for build-in webcam driver)
-* **[OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-civil)** (OpenIMAJ replacement for build-in webcam driver)
-
-Unstable drivers (experimental stuff, can be dropped in future):
-
-* **[OpenCV Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv)** (JavaCV / OpenCV replacement for build-in webcam driver)  
-* **[VLC Driver](https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj)** (VLC replacement for build-in webcam driver)
-
-If no additional driver has been included in the classpath, then default 
-one will be used instead. It consist of refined part of official [OpenIMAJ](http://sourceforge.net/p/openimaj/home/OpenIMAJ/) 
-code from [hardware/core-video-capture](http://sourceforge.net/p/openimaj/code/1756/tree/trunk/hardware/core-video-capture/) 
-module enhanced with multi-threading support which makes overral solution 
-thread-safe.
+I initially started working on Webcam Capture as a simple proof-of-concept after 
+I read [Andrew Davison](http://fivedots.coe.psu.ac.th/~ad/)'s fantastic book entitled
+[Killer Game Programming](http://www.amazon.com/Killer-Game-Programming-Andrew-Davison/dp/0596007302/ref=sr_1_1?s=books&ie=UTF8&qid=1360352393&sr=1-1&keywords=killer+game+programming)
+(also available [online](http://fivedots.coe.psu.ac.th/~ad/jg/)). Thank you Andrew! 
+Later I found that there is a complete mess in Java APIs allowing you to capture images
+from webcams. Once you choose specific API you cannot change it without modifying 
+large parts of the code. I decided to change this situation and write general purpose
+wrapper for various different APIs (like JMF, OpenCV, OPenIMAJ, LTI-CIVIL, VLC).
+In such a way, Webcam Capture as we know it today, was brought to life. Today you 
+can echange underlying frameworks just by choosing specific driver (one line code 
+change only) and if there is no driver for particular framework, then anyone can 
+write it to support any specific capturing method. 
 
 ## License
 
