@@ -59,7 +59,7 @@ forking repository and sending pull requests.
 get you anything special, other than a warm feeling inside, and possibly 
 urge me to produce more freely available material for Webcam Capture 
 project. You can donate via PayPal, find _donate_ button available 
-**[here](http://webcam-capture.sarxos.pl/#contribute)** on the project page.
+[here](http://webcam-capture.sarxos.pl/#contribute) on the project page.
 
 
 ## Hello World
@@ -103,7 +103,7 @@ part of awesome [OpenIMAJ](http://sourceforge.net/p/openimaj/home/OpenIMAJ/)
 framework wrapped in thread-safe container which allows it to be used in 
 multithreaded applications. 
 However there are more ready-to-use drivers which can be used as a replacement 
-or addition to the default one. By utylizing those drivers Webcam Capture can 
+or addition to the default one. By utilizing those drivers Webcam Capture can 
 be extended with various new features (e.g. IP camera support).
 
 List of additional drivers includes:
@@ -120,15 +120,15 @@ List of additional drivers includes:
 I initially started working on Webcam Capture as a simple proof-of-concept after 
 I read [Andrew Davison](http://fivedots.coe.psu.ac.th/~ad/)'s fantastic book entitled
 [Killer Game Programming](http://www.amazon.com/Killer-Game-Programming-Andrew-Davison/dp/0596007302/ref=sr_1_1?s=books&ie=UTF8&qid=1360352393&sr=1-1&keywords=killer+game+programming)
-(also available [online](http://fivedots.coe.psu.ac.th/~ad/jg/)). Thank you Andrew! 
+(which is also available [online](http://fivedots.coe.psu.ac.th/~ad/jg/)). Thank you Andrew! 
 Later I found that there is a complete mess in Java APIs allowing you to capture images
 from webcams. Once you choose specific API you cannot change it without modifying 
 large parts of the code. I decided to change this situation and write general purpose
-wrapper for various different APIs (like JMF, OpenCV, OPenIMAJ, LTI-CIVIL, VLC).
+wrapper for various different APIs (like JMF, OpenCV, OpenIMAJ, LTI-CIVIL, VLC).
 In such a way, Webcam Capture as we know it today, was brought to life. Today you 
-can echange underlying frameworks just by choosing specific driver (one line code 
-change only) and if there is no driver for particular framework, then anyone can 
-write it to support any specific capturing method. 
+can change underlying frameworks just by replacing webcam driver (one line code 
+change). If there is no driver for particular framework, it's very easy to write it
+yourself.
 
 ## License
 
