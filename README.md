@@ -110,8 +110,8 @@ List of additional drivers includes:
 
 * [IP Camera Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam) - available in Maven Central, adds IP / network cameras support
 * [JMF Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf) - available in Maven Central, JMF replacement for default driver
-* [LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-civil) - **not** available in Maven Central, LTI-CIVIL replacement for default driver
-* [OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-civil) - **not** available in Maven Central, OpenIMAJ replacement for default driver
+* [OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-openimaj) - **not** available in Maven Central, OpenIMAJ replacement for default driver
+* [LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-lti-civil) - **not** available in Maven Central, Windows only, LTI-CIVIL replacement for default driver
 * [OpenCV Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv) - **unstable**, OpenCV replacement for default driver
 * [VLC Driver](https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj) - **unstable**, Linux only, VLC replacement for default driver
 
