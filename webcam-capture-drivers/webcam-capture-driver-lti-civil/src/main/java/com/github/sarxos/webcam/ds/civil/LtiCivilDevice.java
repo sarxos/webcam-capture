@@ -24,7 +24,7 @@ import com.lti.civil.awt.AWTImageConverter;
 
 
 /**
- * Webcam device - implementation for LTI Civil framework.
+ * Webcam device - LTI-CIVIL framework compatible implementation.
  * 
  * @author Bartosz Firyn (SarXos)
  */
@@ -42,7 +42,7 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 	private volatile boolean capturing = false;
 	private volatile boolean disposed = false;
 
-	public LtiCivilDevice(CaptureDeviceInfo cdi) {
+	protected LtiCivilDevice(CaptureDeviceInfo cdi) {
 		this.cdi = cdi;
 	}
 

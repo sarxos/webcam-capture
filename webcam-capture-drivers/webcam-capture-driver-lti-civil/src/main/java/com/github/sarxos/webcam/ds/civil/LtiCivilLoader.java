@@ -60,7 +60,7 @@ public class LtiCivilLoader {
 	}
 
 	public static void load(String lib) {
-		LOG.info("Loading DLL: " + lib);
+		LOG.info("Loading native library: " + lib);
 		try {
 			System.loadLibrary(lib);
 			LOG.info("DLL has been loaded from memory: " + lib);
@@ -76,29 +76,54 @@ public class LtiCivilLoader {
 
 	public static void load(String path, String name) {
 
-		String libfile = name + ".dll";
+		String libroot = "/META-INF/lib";
+		String libpath = null;
+		String libfile = null;
 
-		File file = new File(System.getProperty("java.io.tmpdir") + "/" + path + libfile);
+		boolean arch64 = System.getProperty("os.arch").indexOf("64") != -1;
+		boolean linux = System.getProperty("os.name").toLowerCase().indexOf("linux") != -1;
+
+		if (linux) {
+			if (arch64) {
+				libpath = libroot + "/linux64/";
+				libfile = "lib" + name + ".so";
+			} else {
+				libpath = libroot + "/linux32/";
+				libfile = "lib" + name + ".so";
+			}
+		} else {
+			libpath = libroot + "/win32/";
+			libfile = name + ".dll";
+		}
+
+		File parent = new File(System.getProperty("java.io.tmpdir") + "/" + path);
+		if (!parent.exists()) {
+			if (!parent.mkdirs()) {
+				throw new RuntimeException("Cannot create directory: " + parent.getAbsolutePath());
+			}
+		}
+
+		File file = new File(parent, libfile);
 		if (!file.exists()) {
-			boolean created;
+
+			boolean created = false;
 			try {
 				created = file.createNewFile();
 			} catch (IOException e) {
-				throw new RuntimeException("It was not possible to create file " + file, e);
+				throw new RuntimeException("Not able to create file: " + file, e);
 			}
 			if (!created) {
-				throw new RuntimeException("It was not possible to create file " + file);
+				throw new RuntimeException("File cannot be created: " + file);
 			}
 
 			Runtime.getRuntime().addShutdownHook(new Deleter(file));
 		}
 
-		String libbin = "/META-INF/lib/";
-		String resname = libbin + libfile;
+		String resource = libpath + libfile;
 
-		InputStream in = LtiCivilDriver.class.getResourceAsStream(resname);
+		InputStream in = LtiCivilDriver.class.getResourceAsStream(resource);
 		if (in == null) {
-			throw new RuntimeException("No resource with this name is found: " + resname);
+			throw new RuntimeException("Resource not found: " + resource);
 		}
 
 		FileOutputStream fos = null;
@@ -130,8 +155,7 @@ public class LtiCivilLoader {
 		try {
 			System.load(file.getAbsolutePath());
 		} catch (UnsatisfiedLinkError e) {
-			throw new RuntimeException("DLL file cannot be loaded " + file, e);
+			throw new RuntimeException("Library file cannot be loaded: " + file, e);
 		}
 	}
-
 }
