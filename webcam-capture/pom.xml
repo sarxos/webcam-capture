@@ -1,6 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -11,7 +10,7 @@
 
 	<artifactId>webcam-capture</artifactId>
 	<packaging>bundle</packaging>
-	
+
 	<name>Webcam Capture</name>
 	<description>This library allows you to use your PC webcam, IP or network cameras directly from Java. It's compatible with most operating systems (Windows, Linux, MacOS).</description>
 
@@ -40,7 +39,7 @@
 		<developerConnection>scm:git:git@github.com:sarxos/${project.repoid}.git</developerConnection>
 		<url>git@github.com:sarxos/${project.repoid}.git</url>
 	</scm>
-	
+
 	<issueManagement>
 		<system>GitHub Issues Manager</system>
 		<url>https://github.com/sarxos/${project.repoid}/issues</url>
@@ -125,6 +124,22 @@
 						</Private-Package>
 						<Include-Resources>{maven-resources}</Include-Resources>
 					</instructions>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.5.2</version>
+				<configuration>
+					<check>
+						<branchRate>85</branchRate>
+						<lineRate>85</lineRate>
+						<haltOnFailure>true</haltOnFailure>
+						<totalBranchRate>85</totalBranchRate>
+						<totalLineRate>85</totalLineRate>
+						<packageLineRate>85</packageLineRate>
+						<packageBranchRate>85</packageBranchRate>
+					</check>
 				</configuration>
 			</plugin>
 		</plugins>

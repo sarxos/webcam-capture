@@ -20,7 +20,7 @@
 	</properties>
 
 	<modules>
-		<module>webcam-capture-driver-civil</module>
+		<module>webcam-capture-driver-lti-civil</module>
 		<module>webcam-capture-driver-ipcam</module>
 		<module>webcam-capture-driver-javacv</module>
 		<module>webcam-capture-driver-jmf</module>
