@@ -64,7 +64,7 @@ project. You can donate via PayPal, find _donate_ button available
 
 ## Hello World
 
-Code below will capture image from your default webcam and save it in ```test.png``` file:
+Code below will capture image from your default webcam and save it in ```hello-world.png``` file:
 
 ```java
 Webcam webcam = Webcam.getDefault();
