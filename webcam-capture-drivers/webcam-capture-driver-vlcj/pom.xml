@@ -12,7 +12,7 @@
 	<packaging>jar</packaging>
 	
 	<name>Webcam Capture - VLCj Driver</name>
-	<description>Webcam Capture driver using vlcj framework to grab  frames from camera</description>
+	<description>Webcam Capture driver using VLCj framework to grab  frames from camera</description>
 
 	<repositories>
 		<repository>

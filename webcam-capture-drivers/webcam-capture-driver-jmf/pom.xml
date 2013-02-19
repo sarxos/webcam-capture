@@ -13,53 +13,7 @@
 	
 	<name>Webcam Capture - JMF Driver</name>
 	<description>This is JMF implementation of webcam driver. It allows you to capture webcam media with JMF or FMJ installed.</description>
-	
-	<organization>
-		<name>Bartosz Firyn (SarXos)</name>
-		<url>https://github.com/sarxos</url>
-	</organization>
-
-	<licenses>
-		<license>
-			<name>MIT License</name>
-			<url>http://webcam-capture.sarxos.pl/LICENSE.txt</url>
-			<distribution>repo,manual</distribution>
-		</license>
-	</licenses>
-
-	<scm>
-		<connection>scm:git:git@github.com:sarxos/${project.repoid}.git</connection>
-		<developerConnection>scm:git:git@github.com:sarxos/${project.repoid}.git</developerConnection>
-		<url>git@github.com:sarxos/${project.repoid}.git</url>
-	</scm>
-	
-	<issueManagement>
-		<system>GitHub Issues Manager</system>
-		<url>https://github.com/sarxos/${project.repoid}/issues</url>
-	</issueManagement>
-
-	<ciManagement>
-		<system>Travis CI</system>
-		<url>http://travis-ci.org/#!/sarxos/${project.repoid}</url>
-	</ciManagement>
-
-	<developers>
-		<developer>
-			<id>sarxos</id>
-			<name>Bartosz Firyn</name>
-			<email>bartoszfiryn@gmail.com</email>
-			<roles>
-				<role>Project Manager</role>
-				<role>Architect</role>
-				<role>Developer</role>
-			</roles>
-			<url>http://me.sarxos.pl/</url>
-			<organization>Bartosz Firyn (SarXos)</organization>
-			<organizationUrl>https://github.com/sarxos</organizationUrl>
-			<timezone>+1</timezone>
-		</developer>
-	</developers>
-	
+		
 	<dependencies>
 		<dependency>
 			<groupId>com.github.sarxos</groupId>

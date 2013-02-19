@@ -9,9 +9,30 @@
 
 	<includeBaseDirectory>false</includeBaseDirectory>
 
+	<files>
+		<!-- webcam-capture license file for drivers and examples -->
+		<file>
+			<source>${project.basedir}/../../LICENSE.txt</source>
+			<outputDirectory>libs</outputDirectory>
+			<destName>webcam-capture-${project.version}.LICENSE</destName>
+		</file>
+	</files>
+
+
 	<fileSets>
+		<!-- for drivers and examples -->
 		<fileSet>
-			<directory>${project.basedir}</directory>
+			<directory>${project.basedir}/../..</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>README*</include>
+				<include>LICENSE*</include>
+				<include>NOTICE*</include>
+			</includes>
+		</fileSet>
+		<!-- for webcam-capture artifact only -->
+		<fileSet>
+			<directory>${project.basedir}/..</directory>
 			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>README*</include>
@@ -32,6 +53,20 @@
 			<outputDirectory>libs</outputDirectory>
 			<includes>
 				<include>*.jar</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/src/etc/licenses</directory>
+			<outputDirectory>libs</outputDirectory>
+			<includes>
+				<include>*.LICENSE</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/../../webcam-capture/src/etc/licenses</directory>
+			<outputDirectory>libs</outputDirectory>
+			<includes>
+				<include>*.LICENSE</include>
 			</includes>
 		</fileSet>
 		<fileSet>
