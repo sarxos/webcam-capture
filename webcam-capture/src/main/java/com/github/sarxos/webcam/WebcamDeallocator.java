@@ -32,7 +32,7 @@ final class WebcamDeallocator {
 	 * 
 	 * @param webcams the webcams array to be stored in deallocator
 	 */
-	protected static final void store(Webcam[] webcams) {
+	protected static void store(Webcam[] webcams) {
 		if (HANDLER.get() == null) {
 			HANDLER.set(new WebcamDeallocator(webcams));
 		} else {
@@ -40,7 +40,7 @@ final class WebcamDeallocator {
 		}
 	}
 
-	protected static final void unstore() {
+	protected static void unstore() {
 		HANDLER.reset();
 	}
 

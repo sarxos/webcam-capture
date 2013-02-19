@@ -667,7 +667,7 @@ public class Webcam {
 			try {
 				Runtime.getRuntime().removeShutdownHook(hook);
 			} catch (IllegalStateException e) {
-				// ignore, it means that shutdown is in progress
+				LOG.trace("Shutdown in progress, cannot remove hook");
 			}
 		}
 

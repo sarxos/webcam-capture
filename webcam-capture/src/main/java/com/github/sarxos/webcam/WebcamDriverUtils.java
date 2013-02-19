@@ -45,7 +45,7 @@ public class WebcamDriverUtils {
 				try {
 					clazz = Class.forName(name);
 				} catch (ClassNotFoundException e) {
-					// fall thru
+					LOG.trace("Class not found {}, fall thru", name);
 				}
 			}
 

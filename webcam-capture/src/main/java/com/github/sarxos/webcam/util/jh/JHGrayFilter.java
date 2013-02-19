@@ -44,13 +44,13 @@ public class JHGrayFilter extends JHFilter {
 			if (type == BufferedImage.TYPE_INT_ARGB) {
 				srcRaster.getDataElements(0, y, width, 1, inPixels);
 				for (int x = 0; x < width; x++) {
-					inPixels[x] = filterRGB(x, y, inPixels[x]);
+					inPixels[x] = filterRGB(inPixels[x]);
 				}
 				dstRaster.setDataElements(0, y, width, 1, inPixels);
 			} else {
 				src.getRGB(0, y, width, 1, inPixels, 0, width);
 				for (int x = 0; x < width; x++) {
-					inPixels[x] = filterRGB(x, y, inPixels[x]);
+					inPixels[x] = filterRGB(inPixels[x]);
 				}
 				dst.setRGB(0, y, width, 1, inPixels, 0, width);
 			}
@@ -59,7 +59,7 @@ public class JHGrayFilter extends JHFilter {
 		return dst;
 	}
 
-	private int filterRGB(int x, int y, int rgb) {
+	private int filterRGB(int rgb) {
 		int a = rgb & 0xff000000;
 		int r = (rgb >> 16) & 0xff;
 		int g = (rgb >> 8) & 0xff;

@@ -55,14 +55,14 @@ public class WebcamProcessor {
 				try {
 					(t = inbound.take()).handle();
 				} catch (InterruptedException e) {
-					return;
+					break;
 				} finally {
 					try {
 						if (t != null) {
 							outbound.put(t);
 						}
 					} catch (InterruptedException e) {
-						return;
+						break;
 					}
 				}
 			}

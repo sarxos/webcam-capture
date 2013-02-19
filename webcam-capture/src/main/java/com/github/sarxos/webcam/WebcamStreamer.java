@@ -148,7 +148,9 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 								try {
 									bos.flush();
 								} catch (SocketException e) {
-									// ignore, user closed stream
+									if (LOG.isTraceEnabled()) {
+										LOG.error("Socket exception", e);
+									}
 								}
 
 								Thread.sleep(getDelay());
@@ -159,11 +161,9 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 				} catch (Exception e) {
 
 					String message = e.getMessage();
-					if (message != null) {
-						if (message.startsWith("Software caused connection abort")) {
-							LOG.info("User closed stream");
-							return;
-						}
+					if (message != null && message.startsWith("Software caused connection abort")) {
+						LOG.info("User closed stream");
+						return;
 					}
 
 					LOG.error("Error", e);
