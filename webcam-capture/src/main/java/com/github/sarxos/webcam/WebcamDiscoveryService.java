@@ -142,9 +142,20 @@ public class WebcamDiscoveryService implements Runnable {
 		// wait initial time interval since devices has been initially
 		// discovered
 
+		Object monitor = new Object();
+
 		do {
 
-			delay();
+			synchronized (monitor) {
+				try {
+					monitor.wait(support.getScanInterval());
+				} catch (InterruptedException e) {
+					if (LOG.isTraceEnabled()) {
+						LOG.error("Interrupted", e);
+					}
+					break;
+				}
+			}
 
 			WebcamDiscoveryListener[] listeners = Webcam.getDiscoveryListeners();
 
@@ -264,14 +275,6 @@ public class WebcamDiscoveryService implements Runnable {
 			} catch (Exception e) {
 				LOG.error(String.format("Webcam found, exception when calling listener %s", l.getClass()), e);
 			}
-		}
-	}
-
-	private void delay() {
-		try {
-			Thread.sleep(support.getScanInterval());
-		} catch (InterruptedException e) {
-			throw new WebcamException(e);
 		}
 	}
 
