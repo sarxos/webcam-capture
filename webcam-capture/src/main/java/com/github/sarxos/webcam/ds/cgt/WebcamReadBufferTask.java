@@ -1,23 +1,24 @@
 package com.github.sarxos.webcam.ds.cgt;
 
-import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamDevice.BufferAccess;
 import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.WebcamTask;
 
 
 public class WebcamReadBufferTask extends WebcamTask {
 
-	private volatile BufferedImage image = null;
+	private volatile ByteBuffer buffer = null;
 
 	public WebcamReadBufferTask(WebcamDriver driver, WebcamDevice device) {
 		super(driver, device);
 	}
 
-	public BufferedImage getImage() {
+	public ByteBuffer getBuffer() {
 		process();
-		return image;
+		return buffer;
 	}
 
 	@Override
@@ -28,6 +29,10 @@ public class WebcamReadBufferTask extends WebcamTask {
 			return;
 		}
 
-		image = device.getImage();
+		if (!(device instanceof BufferAccess)) {
+			return;
+		}
+
+		buffer = ((BufferAccess) device).getImageBytes();
 	}
 }

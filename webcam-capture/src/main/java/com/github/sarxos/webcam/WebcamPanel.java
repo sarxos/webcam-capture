@@ -37,14 +37,14 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		 * 
 		 * @param g2 the graphics 2D object used for drawing
 		 */
-		void paintPanel(WebcamPanel owner, Graphics2D g2);
+		void paintPanel(WebcamPanel panel, Graphics2D g2);
 
 		/**
 		 * Paints webcam image in panel.
 		 * 
 		 * @param g2 the graphics 2D object used for drawing
 		 */
-		void paintImage(WebcamPanel owner, BufferedImage image, Graphics2D g2);
+		void paintImage(WebcamPanel panel, BufferedImage image, Graphics2D g2);
 	}
 
 	/**

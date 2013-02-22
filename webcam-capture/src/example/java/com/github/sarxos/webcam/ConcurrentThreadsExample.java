@@ -58,7 +58,7 @@ public class ConcurrentThreadsExample {
 			new Capture().start();
 		}
 
-		Thread.sleep(10000);
+		Thread.sleep(5 * 60 * 1000); // 5 minutes
 
 		System.exit(1);
 	}

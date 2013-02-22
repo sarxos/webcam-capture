@@ -2,6 +2,7 @@ package com.github.sarxos.webcam;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 
 
 /**
@@ -10,6 +11,25 @@ import java.awt.image.BufferedImage;
  * @author Bartosz Firyn (SarXos)
  */
 public interface WebcamDevice {
+
+	/**
+	 * This interface should be implemented by all webcam devices supporting
+	 * possibility to access raw bytes or direct bytes buffer from native webcam
+	 * device.
+	 * 
+	 * @author Bartosz Firyn (SarXos)
+	 */
+	public static interface BufferAccess {
+
+		/**
+		 * Get image in form of raw bytes. Do <b>not</b> use this buffer to set
+		 * bytes value, it should be used only for read purpose!
+		 * 
+		 * @return Bytes buffer
+		 */
+		ByteBuffer getImageBytes();
+
+	}
 
 	/**
 	 * Get device name.

@@ -2,6 +2,7 @@ package com.github.sarxos.webcam;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,12 +14,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.sarxos.webcam.WebcamDevice.BufferAccess;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
 import com.github.sarxos.webcam.ds.cgt.WebcamCloseTask;
 import com.github.sarxos.webcam.ds.cgt.WebcamDisposeTask;
 import com.github.sarxos.webcam.ds.cgt.WebcamOpenTask;
 import com.github.sarxos.webcam.ds.cgt.WebcamReadBufferTask;
+import com.github.sarxos.webcam.ds.cgt.WebcamReadImageTask;
+import com.github.sarxos.webcam.util.ImageUtils;
 
 
 /**
@@ -331,21 +335,65 @@ public class Webcam {
 	 */
 	public BufferedImage getImage() {
 
+		if (!isReady()) {
+			return null;
+		}
+
+		return new WebcamReadImageTask(driver, device).getImage();
+	}
+
+	/**
+	 * Get RAW image ByteBuffer. It will always return buffer with 3 x 1 bytes
+	 * per each pixel, where RGB components are on (0, 1, 2) offsets with color
+	 * space sRGB.<br>
+	 * <br>
+	 * 
+	 * <b>IMPORTANT!</b><br>
+	 * Some drivers can return direct ByteBuffer, so there is no guarantee that
+	 * underlying bytes will not be released in next read image operation.
+	 * Therefore, to avoid potential bugs you should convert this ByteBuffer to
+	 * bytes array before you fetch next image.
+	 * 
+	 * @return Byte buffer
+	 */
+	public ByteBuffer getImageBytes() {
+
+		if (!isReady()) {
+			return null;
+		}
+
+		// some devices can support direct image buffers, and for those call
+		// processor task, and for those which does not support direct image
+		// buffers, just convert image to RGB byte array
+
+		if (device instanceof BufferAccess) {
+			return new WebcamReadBufferTask(driver, device).getBuffer();
+		} else {
+			return ByteBuffer.wrap(ImageUtils.toRawByteArray(getImage()));
+		}
+	}
+
+	/**
+	 * Is webcam ready to be read.
+	 * 
+	 * @return True if ready, false otherwise
+	 */
+	private boolean isReady() {
+
 		if (disposed.get()) {
 			LOG.warn("Cannot get image, webcam has been already disposed");
-			return null;
+			return false;
 		}
 
 		if (!open.get()) {
 			if (autoOpen) {
 				open();
 			} else {
-				return null;
+				return false;
 			}
 		}
 
-		WebcamReadBufferTask task = new WebcamReadBufferTask(driver, device);
-		return task.getImage();
+		return true;
 	}
 
 	/**

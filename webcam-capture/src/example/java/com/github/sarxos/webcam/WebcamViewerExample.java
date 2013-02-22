@@ -103,5 +103,4 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 		System.out.println("webcam viewer paused");
 		viewer.pause();
 	}
-
 }

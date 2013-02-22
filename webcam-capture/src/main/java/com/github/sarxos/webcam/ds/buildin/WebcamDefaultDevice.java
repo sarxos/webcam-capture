@@ -11,6 +11,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bridj.Pointer;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamDevice.BufferAccess;
 import com.github.sarxos.webcam.WebcamException;
 import com.github.sarxos.webcam.WebcamResolution;
 import com.github.sarxos.webcam.ds.buildin.natives.Device;
@@ -25,7 +27,7 @@ import com.github.sarxos.webcam.ds.buildin.natives.DeviceList;
 import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
 
 
-public class WebcamDefaultDevice implements WebcamDevice {
+public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 
 	static {
 		if (!"true".equals(System.getProperty("webcam.debug"))) {
@@ -92,6 +94,9 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	private String id = null;
 	private String fullname = null;
 
+	private byte[] bytes = null;
+	private byte[][] data = null;
+
 	protected WebcamDefaultDevice(Device device) {
 		this.device = device;
 		this.name = device.getNameStr();
@@ -123,7 +128,7 @@ public class WebcamDefaultDevice implements WebcamDevice {
 	}
 
 	@Override
-	public BufferedImage getImage() {
+	public ByteBuffer getImageBytes() {
 
 		if (disposed.get()) {
 			LOG.debug("Webcam is disposed, image will be null");
@@ -147,18 +152,25 @@ public class WebcamDefaultDevice implements WebcamDevice {
 
 		int length = size.width * size.height * 3;
 
-		LOG.trace("Webcam device get image (transfer buffer) {} bytes", length);
+		LOG.trace("Webcam device get buffer, read {} bytes", length);
 
-		byte[] bytes = image.getBytes(length);
-		byte[][] data = new byte[][] { bytes };
+		return image.getByteBuffer(length);
+	}
 
-		if (bytes == null) {
-			LOG.error("Images byte array is null!");
+	@Override
+	public BufferedImage getImage() {
+
+		ByteBuffer buffer = getImageBytes();
+
+		if (buffer == null) {
+			LOG.error("Images bytes buffer is null!");
 			return null;
 		}
 
-		DataBufferByte buffer = new DataBufferByte(data, bytes.length, OFFSET);
-		WritableRaster raster = Raster.createWritableRaster(smodel, buffer, null);
+		buffer.get(bytes);
+
+		DataBufferByte dbuf = new DataBufferByte(data, bytes.length, OFFSET);
+		WritableRaster raster = Raster.createWritableRaster(smodel, dbuf, null);
 
 		BufferedImage bi = new BufferedImage(cmodel, raster, false, null);
 		bi.flush();
@@ -238,6 +250,9 @@ public class WebcamDefaultDevice implements WebcamDevice {
 		} while (++i < 3);
 
 		LOG.debug("Webcam device is now open");
+
+		bytes = new byte[size.width * size.height * 3];
+		data = new byte[][] { bytes };
 
 		open.set(true);
 	}
