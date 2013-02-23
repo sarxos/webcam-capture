@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.sarxos</groupId>
+		<artifactId>webcam-capture-examples</artifactId>
+		<version>0.3.10-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>webcam-capture-example-record-video</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Webcam Capture - Record Video Example</name>
+	<description>Example how to record video from your Webcam using Xuggler (video only, no audio)</description>
+
+	<repositories>
+		<repository>
+			<id>xuggle repo</id>
+			<url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.github.sarxos</groupId>
+			<artifactId>webcam-capture</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>xuggle</groupId>
+			<artifactId>xuggle-xuggler</artifactId>
+			<version>5.4</version>
+		</dependency>
+	</dependencies>
+
+</project>
