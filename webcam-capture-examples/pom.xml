@@ -22,7 +22,7 @@
 		<module>webcam-capture-painter</module>
 		<module>webcam-capture-qrcode</module>
 		<module>webcam-capture-manycams</module>
-		<module>webcam-capture-record-video</module>
+		<module>webcam-capture-video-recording</module>
 	</modules>
 
 	<build>

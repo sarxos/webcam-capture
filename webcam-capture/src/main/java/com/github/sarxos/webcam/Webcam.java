@@ -55,32 +55,6 @@ public class Webcam {
 	private static final List<WebcamDiscoveryListener> DISCOVERY_LISTENERS = Collections.synchronizedList(new ArrayList<WebcamDiscoveryListener>());
 
 	/**
-	 * Shutdown hook to be executed when JVM exits gracefully.
-	 * 
-	 * @author Bartosz Firyn (sarxos)
-	 */
-	private static final class ShutdownHook extends Thread {
-
-		private static int number = 0;
-
-		/**
-		 * Webcam instance to be disposed / closed.
-		 */
-		private Webcam webcam = null;
-
-		public ShutdownHook(Webcam webcam) {
-			super("shutdown-hook-" + (++number));
-			this.webcam = webcam;
-		}
-
-		@Override
-		public void run() {
-			LOG.info("Automatic {} deallocation", webcam.getName());
-			webcam.dispose();
-		}
-	}
-
-	/**
 	 * Webcam driver (LtiCivil, JMF, FMJ, JQT, OpenCV, VLCj, etc).
 	 */
 	private static WebcamDriver driver = null;
@@ -95,6 +69,9 @@ public class Webcam {
 	 */
 	private static boolean deallocOnTermSignal = false;
 
+	/**
+	 * Is auto-open feature enabled?
+	 */
 	private static boolean autoOpen = false;
 
 	/**
@@ -110,7 +87,7 @@ public class Webcam {
 	/**
 	 * Shutdown hook.
 	 */
-	private ShutdownHook hook = null;
+	private WebcamShutdownHook hook = null;
 
 	/**
 	 * Underlying webcam device.
@@ -128,10 +105,15 @@ public class Webcam {
 	private AtomicBoolean disposed = new AtomicBoolean(false);
 
 	/**
+	 * Is non-blocking (asynchronous) access enabled?
+	 */
+	private AtomicBoolean asynchronous = new AtomicBoolean(false);
+
+	/**
 	 * Webcam class.
 	 * 
 	 * @param device - device to be used as webcam
-	 * @throws IllegalArgumentException when argument is null
+	 * @throws IllegalArgumentException when device argument is null
 	 */
 	protected Webcam(WebcamDevice device) {
 		if (device == null) {
@@ -141,9 +123,41 @@ public class Webcam {
 	}
 
 	/**
-	 * Open the webcam.
+	 * Open the webcam in blocking (synchronous) mode.
+	 * 
+	 * @see #open(boolean)
 	 */
 	public void open() {
+		open(false);
+	}
+
+	/**
+	 * Open the webcam in either blocking (synchronous) or non-blocking
+	 * (asynchronous) mode.The difference between those two modes lies in the
+	 * image acquisition mechanism.<br>
+	 * <br>
+	 * In blocking mode, when user calls {@link #getImage()} method, device is
+	 * being queried for new image buffer and user have to wait for it to be
+	 * available.<br>
+	 * <br>
+	 * In non-blocking mode, there is a special thread running in the background
+	 * which constantly fetch new images and cache them internally for further
+	 * use. This cached instance is returned every time when user request new
+	 * image. Because of that it can be used when timeing is very important,
+	 * because all users calls for new image do not have to wait on device
+	 * response. By using this mode user should be aware of the fact that in
+	 * some cases, when two consecutive calls to get new image are executed more
+	 * often than webcam device can serve them, the same image instance will be
+	 * returned. User should use {@link #isImageNew()} method to distinguish if
+	 * returned image is not the same as the previous one.
+	 * 
+	 * @param asynchronous true for non-blocking mode, false for blocking
+	 */
+	public void open(boolean async) {
+
+		if (asynchronous.compareAndSet(false, true)) {
+			// TODO: start async thread
+		}
 
 		if (open.compareAndSet(false, true)) {
 
@@ -154,7 +168,7 @@ public class Webcam {
 
 			// install shutdown hook
 
-			Runtime.getRuntime().addShutdownHook(hook = new ShutdownHook(this));
+			Runtime.getRuntime().addShutdownHook(hook = new WebcamShutdownHook(this));
 
 			// notify listeners
 
@@ -394,6 +408,16 @@ public class Webcam {
 		}
 
 		return true;
+	}
+
+	public boolean isImageNew() {
+		if (!asynchronous.get()) {
+			// TODO: for dshow this is not true, need to add special check
+			return true;
+		} else {
+			// TODO: implement
+			return false;
+		}
 	}
 
 	/**
