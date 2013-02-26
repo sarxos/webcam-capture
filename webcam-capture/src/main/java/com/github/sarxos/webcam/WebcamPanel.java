@@ -9,6 +9,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JPanel;
@@ -148,77 +151,93 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	/**
 	 * Maximum FPS frequency.
 	 */
-	private static final double MAX_FREQUENCY = 25; // 25 frames per second
+	private static final double MAX_FREQUENCY = 50; // 50 frames per second
+
+	private Timer timer = new Timer();
 
 	/**
-	 * Repainter reads images from camera and forces panel repainting.
+	 * Repainter updates panel when it is being started.
 	 * 
-	 * @author Bartosz Firyn (SarXos)
+	 * @author Bartosz Firyn (sarxos)
 	 */
 	private class Repainter extends Thread {
 
 		public Repainter() {
 			setDaemon(true);
+			setName(String.format("%s-repainter", webcam.getName()));
 		}
 
 		@Override
 		public void run() {
 
+			repaint();
+
 			while (starting) {
-				repaint();
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {
-					LOG.error("Nasty interrupted exception");
+					throw new RuntimeException(e);
 				}
 			}
+
+			if (isFPSLimited()) {
+				timer.scheduleAtFixedRate(updater, new Date(), (long) (1000 / frequency));
+			} else {
+				timer.schedule(updater, new Date(), 1);
+			}
+		}
+
+	}
+
+	/**
+	 * Image updater reads images from camera and force panel to be repainted.
+	 * 
+	 * @author Bartosz Firyn (SarXos)
+	 */
+	private class ImageUpdater extends TimerTask {
+
+		public ImageUpdater() {
+		}
+
+		public void start() {
+			new Repainter().start();
+		}
+
+		@Override
+		public void run() {
 
 			if (!webcam.isOpen()) {
-				webcam.open();
+				return;
 			}
 
-			while (webcam.isOpen()) {
-
-				BufferedImage tmp = webcam.getImage();
-
-				try {
-
-					if (tmp == null) {
-
-						if (webcam.isOpen()) {
-							break;
-						}
-
-						LOG.error("Image is null");
-
-					} else {
-
-						image = tmp;
-
-						while (paused) {
-							synchronized (this) {
-								this.wait(250);
-							}
-						}
-					}
-
-					Thread.sleep((long) (1000 / frequency));
-
-				} catch (InterruptedException e) {
-					LOG.error("Nasty interrupted exception");
-				}
-
-				repaint();
+			if (paused) {
+				return;
 			}
+
+			BufferedImage tmp = webcam.getImage();
+			if (tmp == null) {
+				LOG.error("Image is null");
+			} else {
+				image = tmp;
+			}
+
+			repaint();
 		}
 	}
 
 	private boolean fillArea = false;
 
 	/**
-	 * Painting frequency.
+	 * Frames requesting frequency.
 	 */
 	private double frequency = 5; // FPS
+
+	/**
+	 * Is frames requesting frequency limited? If true, images will be fetched
+	 * in configured time intervals. If false, images will be fetched as fast as
+	 * camera can serve them.
+	 */
+	private boolean frequencyLimit = false;
 
 	/**
 	 * Webcam object used to fetch images.
@@ -234,7 +253,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	 * Repainter is used to fetch images from camera and force panel repaint
 	 * when image is ready.
 	 */
-	private Repainter repainter = new Repainter();
+	private volatile ImageUpdater updater = new ImageUpdater();
 
 	/**
 	 * Webcam is currently starting.
@@ -300,8 +319,6 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		this.webcam = webcam;
 		this.webcam.addWebcamListener(this);
 
-		repainter.setName(String.format("%s-repainter", webcam.getName()));
-
 		if (size == null) {
 			Dimension r = webcam.getViewSize();
 			if (r == null) {
@@ -316,7 +333,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			if (!webcam.isOpen()) {
 				webcam.open();
 			}
-			repainter.start();
+			updater.start();
 		}
 	}
 
@@ -350,24 +367,18 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 	@Override
 	public void webcamOpen(WebcamEvent we) {
-		if (repainter == null) {
-			repainter = new Repainter();
-			repainter.start();
+		if (updater == null) {
+			updater = new ImageUpdater();
+			updater.start();
 		}
 		setPreferredSize(webcam.getViewSize());
 	}
 
 	@Override
 	public void webcamClosed(WebcamEvent we) {
-		if (repainter != null) {
-			if (repainter.isAlive()) {
-				try {
-					repainter.join(1000);
-				} catch (InterruptedException e) {
-					throw new WebcamException("Thread interrupted", e);
-				}
-			}
-			repainter = null;
+		if (updater != null) {
+			updater.cancel();
+			updater = null;
 		}
 	}
 
@@ -380,18 +391,24 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	 * Open webcam and start rendering.
 	 */
 	public void start() {
-		if (started.compareAndSet(false, true)) {
 
-			starting = true;
+		if (!started.compareAndSet(false, true)) {
+			return;
+		}
 
-			if (repainter == null) {
-				repainter = new Repainter();
-			}
+		starting = true;
 
-			repainter.start();
+		if (updater == null) {
+			updater = new ImageUpdater();
+		}
+
+		try {
+			updater.start();
 			webcam.open();
+		} finally {
 			starting = false;
 		}
+
 	}
 
 	/**
@@ -422,9 +439,30 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			return;
 		}
 		paused = false;
-		synchronized (repainter) {
-			repainter.notifyAll();
+		synchronized (updater) {
+			updater.notifyAll();
 		}
+	}
+
+	/**
+	 * Is frequency limit enabled?
+	 * 
+	 * @return True or false
+	 */
+	public boolean isFPSLimited() {
+		return frequencyLimit;
+	}
+
+	/**
+	 * Enable or disable frequency limit. Frequency limit should be used for
+	 * <b>all IP cameras working in pull mode</b> (to save number of HTTP
+	 * requests). If true, images will be fetched in configured time intervals.
+	 * If false, images will be fetched as fast as camera can serve them.
+	 * 
+	 * @param frequencyLimit
+	 */
+	public void setFPSLimited(boolean frequencyLimit) {
+		this.frequencyLimit = frequencyLimit;
 	}
 
 	/**
@@ -432,7 +470,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	 * 
 	 * @return Rendering frequency
 	 */
-	public double getFrequency() {
+	public double getFPS() {
 		return frequency;
 	}
 

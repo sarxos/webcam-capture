@@ -52,7 +52,6 @@ public class DetectMotionExample extends JFrame implements Runnable {
 		webcam.setViewSize(new Dimension(320, 240));
 
 		WebcamPanel panel = new WebcamPanel(webcam);
-		panel.setFPS(4);
 
 		add(panel);
 		add(label);
