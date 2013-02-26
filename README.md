@@ -36,6 +36,26 @@ Complete documentation, API, examples, tutorials and many more can be found here
 If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.9/webcam-capture-0.3.9-dist.zip)**
 you can download ZIP containing all required 3rd-party JARs.
 
+You can also use the newest SNAPSHOT version, but please be aware - 
+sometimes it can be unstable. Please add the following repository into 
+your POM, and replace dependency if you decide to take the risk.
+
+```xml
+<repository>
+	<id>Sonatype OSS Snapshot Repository</id>
+	<url>http://oss.sonatype.org/content/repositories/snapshots</url>
+</repository> 
+```
+
+```xml
+<dependency>
+	<groupId>com.github.sarxos</groupId>
+	<artifactId>webcam-capture</artifactId>
+	<version>0.3.10-SNAPSHOT</version>
+</dependency>
+
+```
+
 ## Contribution
 
 If you have spare time, knownledge or some small amount of money you 
