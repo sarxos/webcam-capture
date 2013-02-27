@@ -20,6 +20,7 @@
 	</properties>
 
 	<modules>
+		<module>webcam-capture-driver-ffmpeg-cli</module>
 		<module>webcam-capture-driver-lti-civil</module>
 		<module>webcam-capture-driver-ipcam</module>
 		<module>webcam-capture-driver-javacv</module>
