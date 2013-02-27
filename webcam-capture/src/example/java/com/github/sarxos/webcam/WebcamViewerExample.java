@@ -36,6 +36,7 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 		webcam.addWebcamListener(WebcamViewerExample.this);
 
 		viewer = new WebcamPanel(webcam, false);
+		viewer.setFPSDisplayed(true);
 
 		setContentPane(viewer);
 		pack();
