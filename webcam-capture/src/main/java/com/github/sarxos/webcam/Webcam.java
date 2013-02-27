@@ -38,20 +38,18 @@ public class Webcam {
 	private static final Logger LOG = LoggerFactory.getLogger(Webcam.class);
 
 	/**
-	 * List of default drivers to search in classpath.
+	 * List of driver classes names to search for.
 	 */
-	// @formatter:off
-	private static final String[] DRIVERS_DEFAULT = new String[] {
-		"com.github.sarxos.webcam.ds.openimaj.OpenImajDriver",
-		"com.github.sarxos.webcam.ds.civil.LtiCivilDriver",
-		"com.github.sarxos.webcam.ds.jmf.JmfDriver",
-	};
-	// @formatter:on
+	private static final List<String> DRIVERS_LIST = new ArrayList<String>();
 
-	private static final List<String> DRIVERS_LIST = new ArrayList<String>(Arrays.asList(DRIVERS_DEFAULT));
-
+	/**
+	 * List of driver classes to search for.
+	 */
 	private static final List<Class<?>> DRIVERS_CLASS_LIST = new ArrayList<Class<?>>();
 
+	/**
+	 * Discovery listeners.
+	 */
 	private static final List<WebcamDiscoveryListener> DISCOVERY_LISTENERS = Collections.synchronizedList(new ArrayList<WebcamDiscoveryListener>());
 
 	/**
@@ -597,9 +595,10 @@ public class Webcam {
 		}
 
 		if (driver == null) {
-			LOG.info("Webcam driver has not been found, default one will be used!");
 			driver = new WebcamDefaultDriver();
 		}
+
+		LOG.info("{} capture driver will be used", driver.getClass().getSimpleName());
 
 		return driver;
 	}
@@ -658,7 +657,6 @@ public class Webcam {
 	public static synchronized void resetDriver() {
 
 		DRIVERS_LIST.clear();
-		DRIVERS_LIST.addAll(Arrays.asList(DRIVERS_DEFAULT));
 
 		if (discovery != null) {
 			discovery.shutdown();
