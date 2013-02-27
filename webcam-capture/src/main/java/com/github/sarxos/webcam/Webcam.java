@@ -105,7 +105,17 @@ public class Webcam {
 	/**
 	 * Is non-blocking (asynchronous) access enabled?
 	 */
-	private AtomicBoolean asynchronous = new AtomicBoolean(false);
+	private volatile boolean asynchronous = false;
+
+	/**
+	 * Current FPS.
+	 */
+	private volatile double fps = 0;
+
+	/**
+	 * Webcam image updater.
+	 */
+	private WebcamUpdater updater = null;
 
 	/**
 	 * Webcam class.
@@ -153,16 +163,23 @@ public class Webcam {
 	 */
 	public void open(boolean async) {
 
-		if (asynchronous.compareAndSet(false, true)) {
-			// TODO: start async thread
-		}
-
 		if (open.compareAndSet(false, true)) {
 
 			WebcamOpenTask task = new WebcamOpenTask(driver, device);
 			task.open();
 
 			LOG.debug("Webcam is now open {}", getName());
+
+			// setup non-blocking configuration
+
+			asynchronous = async;
+
+			if (async) {
+				if (updater == null) {
+					updater = new WebcamUpdater(this);
+				}
+				updater.start();
+			}
 
 			// install shutdown hook
 
@@ -196,6 +213,12 @@ public class Webcam {
 
 			WebcamCloseTask task = new WebcamCloseTask(driver, device);
 			task.close();
+
+			// stop updater
+
+			if (asynchronous) {
+				updater.stop();
+			}
 
 			// remove shutdown hook (it's not more necessary)
 
@@ -351,13 +374,30 @@ public class Webcam {
 			return null;
 		}
 
-		return new WebcamReadImageTask(driver, device).getImage();
+		if (asynchronous) {
+			return updater.getImage();
+		} else {
+
+			long time = System.currentTimeMillis();
+			BufferedImage image = new WebcamReadImageTask(driver, device).getImage();
+			fps = (4 * fps + 1000 / (double) (System.currentTimeMillis() - time)) / 5;
+
+			return image;
+		}
+	}
+
+	protected double getFPS() {
+		if (asynchronous) {
+			return updater.getFPS();
+		} else {
+			return fps;
+		}
 	}
 
 	/**
 	 * Get RAW image ByteBuffer. It will always return buffer with 3 x 1 bytes
-	 * per each pixel, where RGB components are on (0, 1, 2) offsets with color
-	 * space sRGB.<br>
+	 * per each pixel, where RGB components are on (0, 1, 2) and color space is
+	 * sRGB.<br>
 	 * <br>
 	 * 
 	 * <b>IMPORTANT!</b><br>
@@ -406,16 +446,6 @@ public class Webcam {
 		}
 
 		return true;
-	}
-
-	public boolean isImageNew() {
-		if (!asynchronous.get()) {
-			// TODO: for dshow this is not true, need to add special check
-			return true;
-		} else {
-			// TODO: implement
-			return false;
-		}
 	}
 
 	/**

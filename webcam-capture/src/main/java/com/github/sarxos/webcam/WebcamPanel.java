@@ -133,7 +133,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 			if (isFPSDisplayed()) {
 				g2.setColor(Color.WHITE);
-				g2.drawString(String.format("FPS: %.2f", fps), 5, getHeight() - 5);
+				g2.drawString(String.format("FPS: %.1f", webcam.getFPS()), 5, getHeight() - 5);
 			}
 		}
 	}
@@ -162,10 +162,6 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	 * Yep, this is timer.
 	 */
 	private Timer timer = new Timer();
-
-	private long timing = 0;
-
-	private volatile double fps = 0;
 
 	/**
 	 * Repainter updates panel when it is being started.
@@ -226,14 +222,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 				return;
 			}
 
-			if (!isFPSLimited()) {
-				timing = System.currentTimeMillis();
-			}
-
 			BufferedImage tmp = webcam.getImage();
-
-			timing = System.currentTimeMillis() - timing;
-			fps = (4 * fps + 1000 / (double) timing) / 5;
 
 			if (tmp == null) {
 				LOG.error("Image is null");
