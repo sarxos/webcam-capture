@@ -11,7 +11,7 @@ Complete documentation, API, examples, tutorials and many more can be found here
 
 ## Features
 
-* Simple and thread-safe API,
+* Simple, thread-safe and non-blocking API,
 * No additional software required,
 * Supports multiple platforms (Windows, Linux, Mac OS, etc) and various architectures (32-bit, 64-bit, ARM),
 * Stream images from build-in or USB-connected PC webcams, 
@@ -37,8 +37,8 @@ If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/g
 you can download ZIP containing all required 3rd-party JARs.
 
 You can also use the newest SNAPSHOT version, but please be aware - 
-sometimes it can be unstable. Please add the following repository into 
-your POM, and replace dependency if you decide to take the risk.
+sometimes it can be unstable. Add the following repository into 
+your POM, and replace dependency if you decide to take that risk.
 
 ```xml
 <repository>
@@ -153,7 +153,7 @@ yourself.
 
 ## License
 
-Copyright (C) 2012 Bartosz Firyn
+Copyright (C) 2012 - 2013 Bartosz Firyn
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
