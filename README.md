@@ -23,6 +23,15 @@ Complete documentation, API, examples, tutorials and many more can be found here
 * Supports additional video grabbing drivers (such as OpenIMAJ, LTI-CIVIL, JMF, FMJ, OpenCV, VLC, IP Camera),
 * Ready to use Swing component designed to display image from webcam / IP / network camera,
 
+## Download
+
+Below you can find links to the ZIP files containing Webcam Capture 
+JAR with all required 3rd-party dependencies.
+
+* Latest stable version: [webcam-capture-0.3.9-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.9/webcam-capture-0.3.9-dist.zip)
+* Latest SNAPSHOT version: [webcam-capture-0.3.10-SNAPSHOT-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.10-SNAPSHOT/webcam-capture-0.3.10-SNAPSHOT-dist.zip)
+* Other releases: [list of all releases ever made](http://www.sarxos.pl/repo/maven2/index.php?dir=com%2Fgithub%2Fsarxos%2Fwebcam-capture%2F)
+
 ## Maven
 
 ```xml
@@ -33,18 +42,15 @@ Complete documentation, API, examples, tutorials and many more can be found here
 </dependency>
 ```
 
-If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.9/webcam-capture-0.3.9-dist.zip)**
-you can download ZIP containing all required 3rd-party JARs.
-
 You can also use the newest SNAPSHOT version, but please be aware - 
 sometimes it can be unstable. Add the following repository into 
-your POM, and replace dependency if you decide to take that risk.
+your POM, and replace used dependency if you decide to take that risk.
 
 ```xml
 <repository>
 	<id>Sonatype OSS Snapshot Repository</id>
 	<url>http://oss.sonatype.org/content/repositories/snapshots</url>
-</repository> 
+</repository>
 ```
 
 ```xml
@@ -94,7 +100,10 @@ ImageIO.write(webcam.getImage(), "PNG", new File("hello-world.png"));
 
 ## More Examples
 
-Below is the list of pretty basic examples. All can be found in the source code.
+Below is the list of pretty basic examples. All can be found in the 
+project source code. Please note that some of those examples are using 
+the newest API which possibly has not yet been released. In such a case
+please make sure you are using the newest Webcam Capture SNAPSHOT version.
 
 * [How to detect webcam](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/DetectWebcamExample.java)
 * [How to take picture and save to file](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/TakePictureExample.java)
