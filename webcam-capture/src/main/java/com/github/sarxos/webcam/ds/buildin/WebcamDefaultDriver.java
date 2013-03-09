@@ -26,6 +26,12 @@ import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
  */
 public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport {
 
+	static {
+		if (!"true".equals(System.getProperty("webcam.debug"))) {
+			System.setProperty("bridj.quiet", "true");
+		}
+	}
+
 	private static class WebcamNewGrabberTask extends WebcamTask {
 
 		private AtomicReference<OpenIMAJGrabber> grabber = new AtomicReference<OpenIMAJGrabber>();

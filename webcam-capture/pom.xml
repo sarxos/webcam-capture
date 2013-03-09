@@ -14,11 +14,20 @@
 	<name>Webcam Capture</name>
 	<description>This library allows you to use your PC webcam, IP or network cameras directly from Java. It's compatible with most operating systems (Windows, Linux, MacOS).</description>
 
+	<!-- remove when BridJ v0.6.3 is released -->
+	<repositories>
+		<repository>
+			<id>sonatype</id>
+			<name>Sonatype OSS Snapshots Repository</name>
+			<url>http://oss.sonatype.org/content/groups/public</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.nativelibs4java</groupId>
 			<artifactId>bridj</artifactId>
-			<version>0.6.2</version>
+			<version>0.6.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

@@ -29,12 +29,6 @@ import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
 
 public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 
-	static {
-		if (!"true".equals(System.getProperty("webcam.debug"))) {
-			System.setProperty("bridj.quiet", "true");
-		}
-	}
-
 	/**
 	 * Logger.
 	 */
