@@ -2,7 +2,8 @@
 
 	<id>dist</id>
 	<formats>
-		<!-- <format>tar.gz</format> <format>tar.bz2</format> -->
+		<!--<format>tar.gz</format>
+		 <format>tar.bz2</format> -->
 		<format>zip</format>
 	</formats>
 
@@ -59,7 +60,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>${project.build.directory}/apidocs</directory>
+			<directory>${project.build.directory}/site/apidocs</directory>
 			<outputDirectory>docs</outputDirectory>
 		</fileSet>
 		<fileSet>

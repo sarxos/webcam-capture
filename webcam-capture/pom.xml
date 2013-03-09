@@ -48,6 +48,36 @@
 		</dependency>
 	</dependencies>
 
+	<!-- 
+	<profiles>
+		<profile>
+			<id>deploy-snapshot</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-deploy-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>upload-jar</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy-file</goal>
+								</goals>
+								<configuration>
+									<file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
+									<repositoryId>sarxos-ftp-repo</repositoryId>
+									<url>ftp://repo.sarxos.pl/maven2</url>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	-->
+	 
 	<build>
 		<plugins>
 			<plugin>

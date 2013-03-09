@@ -179,7 +179,7 @@
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-assembly-plugin</artifactId>
-							<version>2.3</version>
+							<version>2.4</version>
 							<configuration>
 								<descriptors>
 									<descriptor>${project.assembly.descriptor}</descriptor>
@@ -237,19 +237,6 @@
 							<simpleHTMLChangeLogFilename>CHANGELOG.htm</simpleHTMLChangeLogFilename>
 							<generateHTMLTableOnlyChangeLog>false</generateHTMLTableOnlyChangeLog>
 						</configuration>
-					</plugin>		
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<version>2.2.1</version>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -257,9 +244,10 @@
 						<version>2.9</version>
 						<executions>
 							<execution>
-								<id>attach-javadocs</id>
+								<id>generate-javadocs</id>
+								<phase>prepare-package</phase>
 								<goals>
-									<goal>jar</goal>
+									<goal>javadoc</goal>
 								</goals>
 							</execution>
 						</executions>
