@@ -3,7 +3,7 @@
 This is a proof-of-concept, experimental capture driver. It uses FFmpeg to 
 stream MJPEG-encoded video from webcam device into named pipe. 
 This pipe is later read by Java process which converts MJPEG-stream to the set of
-```BufferedImage``` objects returned one after another from ```Webcam.getImage()``` 
+```BufferedImage``` objects returned one after the other from ```Webcam.getImage()``` 
 method invokation. 
 
 This driver works **only** on Linux, and you **have** to have
