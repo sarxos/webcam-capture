@@ -2,6 +2,8 @@
 
 This example presents how to create Java Applet using Webcam Capture project.
 
+You can check working example [here](http://webcam-capture.sarxos.pl/examples/applet).
+
 ## Generate Java Keystore
 
 Since our Applet will be using users hardware, we have to either sign it, or 
