@@ -135,8 +135,8 @@ public class Webcam {
 	 * 
 	 * @see #open(boolean)
 	 */
-	public void open() {
-		open(false);
+	public boolean open() {
+		return open(false);
 	}
 
 	/**
@@ -161,12 +161,21 @@ public class Webcam {
 	 * 
 	 * @param asynchronous true for non-blocking mode, false for blocking
 	 */
-	public void open(boolean async) {
+	public boolean open(boolean async) {
 
 		if (open.compareAndSet(false, true)) {
 
 			WebcamOpenTask task = new WebcamOpenTask(driver, device);
-			task.open();
+			try {
+				task.open();
+			} catch (InterruptedException e) {
+				open.set(false);
+				LOG.error("Processor has been interrupted before webcam was open!", e);
+				return false;
+			} catch (WebcamException e) {
+				open.set(false);
+				throw e;
+			}
 
 			LOG.debug("Webcam is now open {}", getName());
 
@@ -196,23 +205,33 @@ public class Webcam {
 				}
 			}
 
-			return;
+		} else {
+			LOG.debug("Webcam is already open {}", getName());
 		}
 
-		LOG.debug("Webcam is already open {}", getName());
+		return true;
 	}
 
 	/**
 	 * Close the webcam.
 	 */
-	public void close() {
+	public boolean close() {
 
 		if (open.compareAndSet(true, false)) {
 
 			// close webcam
 
 			WebcamCloseTask task = new WebcamCloseTask(driver, device);
-			task.close();
+			try {
+				task.close();
+			} catch (InterruptedException e) {
+				open.set(true);
+				LOG.error("Processor has been interrupted before webcam was closed!", e);
+				return false;
+			} catch (WebcamException e) {
+				open.set(false);
+				throw e;
+			}
 
 			// stop updater
 
@@ -235,10 +254,11 @@ public class Webcam {
 				}
 			}
 
-			return;
+		} else {
+			LOG.debug("Webcam is already closed {}", getName());
 		}
 
-		LOG.debug("Webcam is already closed {}", getName());
+		return true;
 	}
 
 	/**
@@ -749,7 +769,12 @@ public class Webcam {
 		LOG.info("Disposing webcam {}", getName());
 
 		WebcamDisposeTask task = new WebcamDisposeTask(driver, device);
-		task.dispose();
+		try {
+			task.dispose();
+		} catch (InterruptedException e) {
+			LOG.error("Processor has been interrupted before webcam was disposed!", e);
+			return;
+		}
 
 		WebcamEvent we = new WebcamEvent(this);
 		for (WebcamListener l : listeners) {

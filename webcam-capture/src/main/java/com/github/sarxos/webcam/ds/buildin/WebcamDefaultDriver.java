@@ -1,6 +1,7 @@
 package com.github.sarxos.webcam.ds.buildin;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,7 +42,12 @@ public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport
 		}
 
 		public OpenIMAJGrabber newGrabber() {
-			process();
+			try {
+				process();
+			} catch (InterruptedException e) {
+				LOG.error("Processor has been interrupted");
+				return null;
+			}
 			return grabber.get();
 		}
 
@@ -60,9 +66,23 @@ public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport
 			super(driver, null);
 		}
 
+		/**
+		 * Return camera devices.
+		 * 
+		 * @param grabber the native grabber to use for search
+		 * @return Camera devices.
+		 */
 		public List<WebcamDevice> getDevices(OpenIMAJGrabber grabber) {
+
 			this.grabber = grabber;
-			process();
+
+			try {
+				process();
+			} catch (InterruptedException e) {
+				LOG.error("Processor has been interrupted");
+				return Collections.emptyList();
+			}
+
 			return devices;
 		}
 
@@ -93,8 +113,13 @@ public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport
 		LOG.debug("Searching devices");
 
 		if (grabber == null) {
+
 			WebcamNewGrabberTask task = new WebcamNewGrabberTask(this);
 			grabber = task.newGrabber();
+
+			if (grabber == null) {
+				return Collections.emptyList();
+			}
 		}
 
 		List<WebcamDevice> devices = new GetDevicesTask(this).getDevices(grabber);

@@ -5,7 +5,7 @@ public abstract class WebcamTask {
 	private boolean sync = true;
 	private WebcamProcessor processor = null;
 	private WebcamDevice device = null;
-	private WebcamException exception = null;
+	private Throwable throwable = null;
 
 	public WebcamTask(WebcamDriver driver, WebcamDevice device) {
 
@@ -26,8 +26,9 @@ public abstract class WebcamTask {
 	 * Process task by processor thread.
 	 * 
 	 * @param processor the processor to be used to process this task
+	 * @throws InterruptedException when thread has been interrupted
 	 */
-	public void process() {
+	public void process() throws InterruptedException {
 		if (sync) {
 			if (processor == null) {
 				throw new RuntimeException("Driver should be synchronized, but processor is null");
@@ -38,12 +39,12 @@ public abstract class WebcamTask {
 		}
 	}
 
-	public WebcamException getException() {
-		return exception;
+	public Throwable getThrowable() {
+		return throwable;
 	}
 
-	public void setException(WebcamException exception) {
-		this.exception = exception;
+	public void setThrowable(Throwable t) {
+		this.throwable = t;
 	}
 
 	protected abstract void handle();

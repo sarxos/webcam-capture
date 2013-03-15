@@ -43,9 +43,14 @@ public class WebcamProcessor {
 		 * @return Processed task
 		 * @throws InterruptedException when thread has been interrupted
 		 */
-		public WebcamTask process(WebcamTask task) throws InterruptedException {
+		public void process(WebcamTask task) throws InterruptedException {
+
 			inbound.put(task);
-			return outbound.take();
+
+			Throwable t = outbound.take().getThrowable();
+			if (t != null) {
+				throw new WebcamException("Cannot execute task", t);
+			}
 		}
 
 		@Override
@@ -56,6 +61,8 @@ public class WebcamProcessor {
 					(t = inbound.take()).handle();
 				} catch (InterruptedException e) {
 					break;
+				} catch (Throwable e) {
+					t.setThrowable(e);
 				} finally {
 					try {
 						if (t != null) {
@@ -96,16 +103,13 @@ public class WebcamProcessor {
 	 * Process single webcam task.
 	 * 
 	 * @param task the task to be processed
+	 * @throws InterruptedException when thread has been interrupted
 	 */
-	public void process(WebcamTask task) {
+	public void process(WebcamTask task) throws InterruptedException {
 		if (started.compareAndSet(false, true)) {
 			runner.execute(processor);
 		}
-		try {
-			processor.process(task);
-		} catch (InterruptedException e) {
-			throw new WebcamException("Processing interrupted", e);
-		}
+		processor.process(task);
 	}
 
 	public static synchronized WebcamProcessor getInstance() {

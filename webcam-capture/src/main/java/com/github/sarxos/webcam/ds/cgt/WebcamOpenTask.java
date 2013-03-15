@@ -16,7 +16,7 @@ public class WebcamOpenTask extends WebcamTask {
 		super(driver, device);
 	}
 
-	public void open() {
+	public void open() throws InterruptedException {
 		process();
 	}
 

@@ -9,9 +9,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JPanel;
@@ -88,7 +88,14 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			g2.drawLine(0, 0, getWidth(), getHeight());
 			g2.drawLine(0, getHeight(), getWidth(), 0);
 
-			String str = starting ? "Initializing" : "No Image";
+			String str = null;
+
+			if (!errored) {
+				str = starting ? "Initializing Device" : "No Image";
+			} else {
+				str = "Device Error";
+			}
+
 			FontMetrics metrics = g2.getFontMetrics(getFont());
 			int w = metrics.stringWidth(str);
 			int h = metrics.getHeight();
@@ -159,9 +166,9 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	private static final double MAX_FREQUENCY = 50; // 50 frames per second
 
 	/**
-	 * Yep, this is timer.
+	 * Scheduled executor acting as timer.
 	 */
-	private Timer timer = new Timer();
+	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
 	/**
 	 * Repainter updates panel when it is being started.
@@ -188,10 +195,14 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 				}
 			}
 
-			if (isFPSLimited()) {
-				timer.scheduleAtFixedRate(updater, new Date(), (long) (1000 / frequency));
+			if (webcam.isOpen()) {
+				if (isFPSLimited()) {
+					executor.scheduleAtFixedRate(updater, 0, (long) (1000 / frequency), TimeUnit.MILLISECONDS);
+				} else {
+					executor.schedule(updater, 0, TimeUnit.MILLISECONDS);
+				}
 			} else {
-				timer.schedule(updater, new Date(), 1);
+				executor.schedule(this, 500, TimeUnit.MILLISECONDS);
 			}
 		}
 
@@ -202,7 +213,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	 * 
 	 * @author Bartosz Firyn (SarXos)
 	 */
-	private class ImageUpdater extends TimerTask {
+	private class ImageUpdater implements Runnable {
 
 		public ImageUpdater() {
 		}
@@ -277,6 +288,11 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	private volatile boolean paused = false;
 
 	/**
+	 * Is there any problem with webcam?
+	 */
+	private volatile boolean errored = false;
+
+	/**
 	 * Webcam has been started.
 	 */
 	private AtomicBoolean started = new AtomicBoolean(false);
@@ -341,10 +357,13 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		}
 
 		if (start) {
-			if (!webcam.isOpen()) {
-				webcam.open();
-			}
 			updater.start();
+			try {
+				errored = !webcam.open();
+			} catch (WebcamException e) {
+				errored = true;
+				throw e;
+			}
 		}
 	}
 
@@ -388,7 +407,6 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	@Override
 	public void webcamClosed(WebcamEvent we) {
 		if (updater != null) {
-			updater.cancel();
 			updater = null;
 		}
 	}
@@ -413,13 +431,16 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			updater = new ImageUpdater();
 		}
 
+		updater.start();
+
 		try {
-			updater.start();
-			webcam.open();
+			errored = !webcam.open();
+		} catch (WebcamException e) {
+			errored = true;
+			throw e;
 		} finally {
 			starting = false;
 		}
-
 	}
 
 	/**
@@ -428,7 +449,12 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	public void stop() {
 		if (started.compareAndSet(true, false)) {
 			image = null;
-			webcam.close();
+			try {
+				errored = !webcam.close();
+			} catch (WebcamException e) {
+				errored = true;
+				throw e;
+			}
 		}
 	}
 

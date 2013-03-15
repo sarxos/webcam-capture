@@ -16,7 +16,7 @@ public class WebcamDisposeTask extends WebcamTask {
 		super(driver, device);
 	}
 
-	public void dispose() {
+	public void dispose() throws InterruptedException {
 		process();
 	}
 

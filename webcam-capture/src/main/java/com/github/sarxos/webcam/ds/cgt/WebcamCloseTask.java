@@ -16,7 +16,7 @@ public class WebcamCloseTask extends WebcamTask {
 		super(driver, device);
 	}
 
-	public void close() {
+	public void close() throws InterruptedException {
 		process();
 	}
 
