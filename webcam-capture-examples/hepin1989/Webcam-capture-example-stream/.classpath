@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="libs/bridj-0.6.2.jar"/>
+	<classpathentry kind="lib" path="libs/dx-1.7.jar"/>
+	<classpathentry kind="lib" path="libs/filters-2.0.235-1.jar"/>
+	<classpathentry kind="lib" path="libs/slf4j-api-1.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/slf4j-jdk14-1.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/webcam-capture-0.3.9.jar"/>
+	<classpathentry kind="lib" path="libs/xuggle-xuggler-5.4.jar"/>
+	<classpathentry kind="lib" path="libs/thumbnailator-0.4.3-all.jar"/>
+	<classpathentry kind="lib" path="libs/netty-3.6.3.Final.jar" sourcepath="/home/kerr/.m2/repository/io/netty/netty/3.6.3.Final/netty-3.6.3.Final-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
