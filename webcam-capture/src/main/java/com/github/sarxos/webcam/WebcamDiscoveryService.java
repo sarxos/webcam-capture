@@ -286,7 +286,7 @@ public class WebcamDiscoveryService implements Runnable {
 
 		running = false;
 
-		if (runner != null) {
+		if (runner == null) {
 			return;
 		}
 
