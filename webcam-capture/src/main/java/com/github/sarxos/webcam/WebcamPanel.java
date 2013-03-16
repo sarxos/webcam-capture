@@ -199,7 +199,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 				if (isFPSLimited()) {
 					executor.scheduleAtFixedRate(updater, 0, (long) (1000 / frequency), TimeUnit.MILLISECONDS);
 				} else {
-					executor.schedule(updater, 0, TimeUnit.MILLISECONDS);
+					executor.scheduleWithFixedDelay(updater, 0, 1, TimeUnit.MILLISECONDS);
 				}
 			} else {
 				executor.schedule(this, 500, TimeUnit.MILLISECONDS);
