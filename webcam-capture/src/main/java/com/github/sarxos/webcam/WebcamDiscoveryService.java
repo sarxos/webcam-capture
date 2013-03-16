@@ -83,6 +83,7 @@ public class WebcamDiscoveryService implements Runnable {
 		if (timeout < 0) {
 			throw new IllegalArgumentException("Timeout cannot be negative");
 		}
+
 		if (tunit == null) {
 			throw new IllegalArgumentException("Time unit cannot be null!");
 		}
@@ -303,9 +304,19 @@ public class WebcamDiscoveryService implements Runnable {
 	 */
 	public synchronized void start() {
 
+		// discovery service has been already started
+
 		if (runner != null) {
 			return;
 		}
+
+		// capture driver does not support discovery - nothing to do
+
+		if (support == null) {
+			return;
+		}
+
+		// start discovery service runner
 
 		runner = new Thread(this, "webcam-discovery-service");
 		runner.setDaemon(true);
@@ -328,11 +339,15 @@ public class WebcamDiscoveryService implements Runnable {
 
 		stop();
 
+		// dispose all webcams
+
 		for (Webcam webcam : webcams) {
 			webcam.dispose();
 		}
 
 		webcams.clear();
+
+		// unassign webcams from deallocator
 
 		if (Webcam.isHandleTermSignal()) {
 			WebcamDeallocator.unstore();
