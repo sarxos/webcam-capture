@@ -19,22 +19,30 @@ public class WebcamEvent extends EventObject {
 	private BufferedImage image = null;
 
 	/**
+	 * Event type.
+	 */
+	private WebcamEventType type = null;
+
+	/**
 	 * Webcam event.
 	 * 
+	 * @param type the event type
 	 * @param w the webcam object
 	 */
-	public WebcamEvent(Webcam w) {
-		this(w, null);
+	public WebcamEvent(WebcamEventType type, Webcam w) {
+		this(type, w, null);
 	}
 
 	/**
 	 * Webcam event.
 	 * 
+	 * @param type the event type
 	 * @param w the webcam object
 	 * @param image the image acquired from webcam
 	 */
-	public WebcamEvent(Webcam w, BufferedImage image) {
+	public WebcamEvent(WebcamEventType type, Webcam w, BufferedImage image) {
 		super(w);
+		this.type = type;
 		this.image = image;
 	}
 
@@ -52,5 +60,15 @@ public class WebcamEvent extends EventObject {
 	 */
 	public BufferedImage getImage() {
 		return image;
+	}
+
+	/**
+	 * Return event type.
+	 * 
+	 * @return Event type
+	 * @see WebcamEventType
+	 */
+	public WebcamEventType getType() {
+		return type;
 	}
 }

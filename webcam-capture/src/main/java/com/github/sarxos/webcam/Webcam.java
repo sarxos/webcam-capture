@@ -193,7 +193,7 @@ public class Webcam {
 
 			// notify listeners
 
-			WebcamEvent we = new WebcamEvent(this);
+			WebcamEvent we = new WebcamEvent(WebcamEventType.OPEN, this);
 			for (WebcamListener l : getWebcamListeners()) {
 				try {
 					l.webcamOpen(we);
@@ -242,7 +242,7 @@ public class Webcam {
 
 			// notify listeners
 
-			WebcamEvent we = new WebcamEvent(this);
+			WebcamEvent we = new WebcamEvent(WebcamEventType.CLOSED, this);
 			for (WebcamListener l : getWebcamListeners()) {
 				try {
 					l.webcamClosed(we);
@@ -406,7 +406,7 @@ public class Webcam {
 
 			// notify webcam listeners about new image available
 
-			updater.notifyWebcamImageAcquired(this, image);
+			updater.notifyWebcamImageObtained(this, image);
 
 			return image;
 		}
@@ -789,7 +789,7 @@ public class Webcam {
 			return;
 		}
 
-		WebcamEvent we = new WebcamEvent(this);
+		WebcamEvent we = new WebcamEvent(WebcamEventType.DISPOSED, this);
 		for (WebcamListener l : listeners) {
 			try {
 				l.webcamClosed(we);

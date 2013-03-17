@@ -3,6 +3,9 @@ package com.github.sarxos.webcam;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Locale;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 
@@ -52,8 +55,25 @@ public class WebcamUtils {
 		return ImageUtils.toByteArray(webcam.getImage(), format);
 	}
 
+	/**
+	 * Capture image as BYteBuffer.
+	 * 
+	 * @param webcam the webcam from which image should be obtained
+	 * @param format the file format
+	 * @return Byte buffer
+	 */
 	public static final ByteBuffer getImageByteBuffer(Webcam webcam, String format) {
 		return ByteBuffer.wrap(getImageBytes(webcam, format));
 	}
 
+	/**
+	 * Get resource bundle for specific class.
+	 * 
+	 * @param clazz the class for which resource bundle should be found
+	 * @return Resource bundle
+	 */
+	public static final ResourceBundle loadRB(Class<?> clazz, Locale locale) {
+		String pkg = WebcamUtils.class.getPackage().getName().replaceAll("\\.", "/");
+		return PropertyResourceBundle.getBundle(String.format("%s/i18n/%s", pkg, clazz.getSimpleName()));
+	}
 }

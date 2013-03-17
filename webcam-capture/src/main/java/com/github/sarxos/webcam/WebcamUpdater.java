@@ -56,7 +56,7 @@ public class WebcamUpdater implements Runnable, ThreadFactory {
 		@Override
 		public void run() {
 			if (image != null) {
-				WebcamEvent we = new WebcamEvent(webcam, image);
+				WebcamEvent we = new WebcamEvent(WebcamEventType.NEW_IMAGE, webcam, image);
 				for (WebcamListener l : webcam.getWebcamListeners()) {
 					try {
 						l.webcamImageObtained(we);
@@ -169,14 +169,14 @@ public class WebcamUpdater implements Runnable, ThreadFactory {
 
 		// notify webcam listeners about the new image available
 
-		notifyWebcamImageAcquired(webcam, image.get());
+		notifyWebcamImageObtained(webcam, image.get());
 	}
 
 	/**
 	 * Asynchronously start new thread which will notify all webcam listeners
 	 * about the new image available.
 	 */
-	protected void notifyWebcamImageAcquired(Webcam webcam, BufferedImage image) {
+	protected void notifyWebcamImageObtained(Webcam webcam, BufferedImage image) {
 
 		// notify webcam listeners of new image available, do that only if there
 		// are any webcam listeners available because there is no sense to start

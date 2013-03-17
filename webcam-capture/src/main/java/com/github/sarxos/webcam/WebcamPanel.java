@@ -9,6 +9,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Bartosz Firyn (SarXos)
  */
-public class WebcamPanel extends JPanel implements WebcamListener {
+public class WebcamPanel extends JPanel implements WebcamListener, PropertyChangeListener {
 
 	/**
 	 * Interface of the painter used to draw image in panel.
@@ -90,10 +94,14 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 			String str = null;
 
+			final String strInitDevice = rb.getString("INITIALIZING_DEVICE");
+			final String strNoImage = rb.getString("NO_IMAGE");
+			final String strDeviceError = rb.getString("DEVICE_ERROR");
+
 			if (!errored) {
-				str = starting ? "Initializing Device" : "No Image";
+				str = starting ? strInitDevice : strNoImage;
 			} else {
-				str = "Device Error";
+				str = strDeviceError;
 			}
 
 			FontMetrics metrics = g2.getFontMetrics(getFont());
@@ -109,6 +117,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			}
 
 			str = name;
+
 			w = metrics.stringWidth(str);
 			h = metrics.getHeight();
 
@@ -245,6 +254,14 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		}
 	}
 
+	/**
+	 * Resource bundle.
+	 */
+	private ResourceBundle rb = null;
+
+	/**
+	 * Fit image into panel area.
+	 */
 	private boolean fillArea = false;
 
 	/**
@@ -259,6 +276,9 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	 */
 	private boolean frequencyLimit = false;
 
+	/**
+	 * Display FPS.
+	 */
 	private boolean frequencyDisplayed = false;
 
 	/**
@@ -325,12 +345,12 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		this(webcam, null, start);
 	}
 
-/**
+	/**
 	 * Creates new webcam panel which display image from camera in you your
 	 * Swing application. If panel size argument is null, then image size will
-	 * be used. If you would like to fill panel area with image even if its size 
-	 * is different, then you can use {@link #setFillArea(boolean)) method to 
-	 * configure this.
+	 * be used. If you would like to fill panel area with image even if its size
+	 * is different, then you can use {@link WebcamPanel#setFillArea(boolean)}
+	 * method to configure this.
 	 * 
 	 * @param webcam the webcam to be used to fetch images
 	 * @param size the size of panel
@@ -345,6 +365,10 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 		this.webcam = webcam;
 		this.webcam.addWebcamListener(this);
+
+		rb = WebcamUtils.loadRB(WebcamPanel.class, getLocale());
+
+		addPropertyChangeListener("locale", this);
 
 		if (size == null) {
 			Dimension r = webcam.getViewSize();
@@ -568,5 +592,13 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	 */
 	public boolean isFillArea() {
 		return fillArea;
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		Locale lc = (Locale) evt.getNewValue();
+		if (lc != null) {
+			rb = WebcamUtils.loadRB(WebcamPanel.class, lc);
+		}
 	}
 }
