@@ -179,7 +179,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 		public Repainter() {
 			setDaemon(true);
-			setName(String.format("%s-repainter", webcam.getName()));
+			setName(String.format("repainter-%s", webcam.getName()));
 		}
 
 		@Override
@@ -414,6 +414,11 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	@Override
 	public void webcamDisposed(WebcamEvent we) {
 		webcamClosed(we);
+	}
+
+	@Override
+	public void webcamImageObtained(WebcamEvent we) {
+		// do nothing
 	}
 
 	/**

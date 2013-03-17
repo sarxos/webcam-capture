@@ -258,10 +258,15 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 
 	@Override
 	public void webcamClosed(WebcamEvent we) {
+		// TODO: shutdown executor?
 	}
 
 	@Override
 	public void webcamDisposed(WebcamEvent we) {
+	}
+
+	@Override
+	public void webcamImageObtained(WebcamEvent we) {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -270,5 +275,4 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 			Thread.sleep(1000);
 		} while (true);
 	}
-
 }

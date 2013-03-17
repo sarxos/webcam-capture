@@ -73,6 +73,11 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 	}
 
 	@Override
+	public void webcamImageObtained(WebcamEvent we) {
+		// do nothing
+	}
+
+	@Override
 	public void windowActivated(WindowEvent e) {
 	}
 

@@ -12,19 +12,26 @@ public interface WebcamListener {
 	 * 
 	 * @param we a webcam event
 	 */
-	public void webcamOpen(WebcamEvent we);
+	void webcamOpen(WebcamEvent we);
 
 	/**
 	 * Webcam has been closed
 	 * 
 	 * @param we a webcam event
 	 */
-	public void webcamClosed(WebcamEvent we);
+	void webcamClosed(WebcamEvent we);
 
 	/**
 	 * Webcam has been disposed
 	 * 
 	 * @param we a webcam event
 	 */
-	public void webcamDisposed(WebcamEvent we);
+	void webcamDisposed(WebcamEvent we);
+
+	/**
+	 * Webcam image has been obtained.
+	 * 
+	 * @param we a webcam event
+	 */
+	void webcamImageObtained(WebcamEvent we);
 }

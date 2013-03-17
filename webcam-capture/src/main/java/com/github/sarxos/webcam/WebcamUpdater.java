@@ -1,9 +1,12 @@
 package com.github.sarxos.webcam;
 
 import java.awt.image.BufferedImage;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
@@ -19,12 +22,61 @@ import com.github.sarxos.webcam.ds.cgt.WebcamReadImageTask;
  * 
  * @author Bartosz Firyn (sarxos)
  */
-public class WebcamUpdater implements Runnable {
+public class WebcamUpdater implements Runnable, ThreadFactory {
+
+	/**
+	 * Class used to asynchronously notify all webcam listeners about new image
+	 * available.
+	 * 
+	 * @author Bartosz Firyn (sarxos)
+	 */
+	private static class ImageNotification implements Runnable {
+
+		/**
+		 * Camera.
+		 */
+		private final Webcam webcam;
+
+		/**
+		 * Acquired image.
+		 */
+		private final BufferedImage image;
+
+		/**
+		 * Create new notification.
+		 * 
+		 * @param webcam the webcam from which image has been acquired
+		 * @param image the acquired image
+		 */
+		public ImageNotification(Webcam webcam, BufferedImage image) {
+			this.webcam = webcam;
+			this.image = image;
+		}
+
+		@Override
+		public void run() {
+			if (image != null) {
+				WebcamEvent we = new WebcamEvent(webcam, image);
+				for (WebcamListener l : webcam.getWebcamListeners()) {
+					try {
+						l.webcamImageObtained(we);
+					} catch (Exception e) {
+						LOG.error(String.format("Notify image acquired, exception when calling listener %s", l.getClass()), e);
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * Logger.
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamUpdater.class);
+
+	/**
+	 * Used to count thread in the executor pool.
+	 */
+	private static final AtomicInteger number = new AtomicInteger(0);
 
 	/**
 	 * Target FPS.
@@ -34,7 +86,12 @@ public class WebcamUpdater implements Runnable {
 	/**
 	 * Executor service.
 	 */
-	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();;
+	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(this);
+
+	/**
+	 * Executor service for image notifications.
+	 */
+	private final ExecutorService notificator = Executors.newSingleThreadExecutor(this);
 
 	/**
 	 * Cached image.
@@ -106,7 +163,28 @@ public class WebcamUpdater implements Runnable {
 
 		fps = (4 * fps + 1000 / (double) time) / 5;
 
+		// reschedule task
+
 		executor.schedule(this, delay, TimeUnit.MILLISECONDS);
+
+		// notify webcam listeners about the new image available
+
+		notifyWebcamImageAcquired(webcam, image.get());
+	}
+
+	/**
+	 * Asynchronously start new thread which will notify all webcam listeners
+	 * about the new image available.
+	 */
+	protected void notifyWebcamImageAcquired(Webcam webcam, BufferedImage image) {
+
+		// notify webcam listeners of new image available, do that only if there
+		// are any webcam listeners available because there is no sense to start
+		// additional threads for no purpose
+
+		if (webcam.getWebcamListenersCount() > 0) {
+			notificator.execute(new ImageNotification(webcam, image));
+		}
 	}
 
 	/**
@@ -152,5 +230,12 @@ public class WebcamUpdater implements Runnable {
 	 */
 	public double getFPS() {
 		return fps;
+	}
+
+	@Override
+	public Thread newThread(Runnable r) {
+		Thread t = new Thread(r, String.format("webcam-updater-thread-%d", number.incrementAndGet()));
+		t.setDaemon(true);
+		return t;
 	}
 }

@@ -115,7 +115,7 @@ public class Webcam {
 	/**
 	 * Webcam image updater.
 	 */
-	private WebcamUpdater updater = null;
+	private WebcamUpdater updater = new WebcamUpdater(this);
 
 	/**
 	 * Webcam class.
@@ -184,9 +184,6 @@ public class Webcam {
 			asynchronous = async;
 
 			if (async) {
-				if (updater == null) {
-					updater = new WebcamUpdater(this);
-				}
 				updater.start();
 			}
 
@@ -398,9 +395,18 @@ public class Webcam {
 			return updater.getImage();
 		} else {
 
+			// get image
+
 			long time = System.currentTimeMillis();
 			BufferedImage image = new WebcamReadImageTask(driver, device).getImage();
+
+			// calculate FPS
+
 			fps = (4 * fps + 1000 / (double) (System.currentTimeMillis() - time)) / 5;
+
+			// notify webcam listeners about new image available
+
+			updater.notifyWebcamImageAcquired(this, image);
 
 			return image;
 		}
@@ -619,6 +625,13 @@ public class Webcam {
 	 */
 	public WebcamListener[] getWebcamListeners() {
 		return listeners.toArray(new WebcamListener[listeners.size()]);
+	}
+
+	/**
+	 * @return Number of webcam listeners
+	 */
+	public int getWebcamListenersCount() {
+		return listeners.size();
 	}
 
 	/**
