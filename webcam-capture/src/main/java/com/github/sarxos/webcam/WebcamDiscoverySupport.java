@@ -23,7 +23,7 @@ public interface WebcamDiscoverySupport {
 	 * devices registry not responding, etc). In general this method should
 	 * return true.
 	 * 
-	 * @return
+	 * @return True if scan possible, false otherwise
 	 */
 	boolean isScanPossible();
 }

@@ -592,7 +592,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	/**
 	 * Is webcam starting.
 	 * 
-	 * @return
+	 * @return True if panel is starting
 	 */
 	public boolean isStarting() {
 		return starting;

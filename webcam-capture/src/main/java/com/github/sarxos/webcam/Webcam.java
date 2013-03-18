@@ -159,7 +159,7 @@ public class Webcam {
 	 * returned. User should use {@link #isImageNew()} method to distinguish if
 	 * returned image is not the same as the previous one.
 	 * 
-	 * @param asynchronous true for non-blocking mode, false for blocking
+	 * @param async true for non-blocking mode, false for blocking
 	 */
 	public boolean open(boolean async) {
 
@@ -280,7 +280,7 @@ public class Webcam {
 	 * Return list of supported view sizes. It can differ between vary webcam
 	 * data sources.
 	 * 
-	 * @return
+	 * @return Array of supported dimensions
 	 */
 	public Dimension[] getViewSizes() {
 		return device.getResolutions();
@@ -419,6 +419,13 @@ public class Webcam {
 
 			return image;
 		}
+	}
+
+	public boolean isImageNew() {
+		if (asynchronous) {
+			return updater.isImageNew();
+		}
+		return true;
 	}
 
 	protected double getFPS() {
@@ -701,7 +708,7 @@ public class Webcam {
 	 * <br>
 	 * <b>This method is not thread-safe!</b>
 	 * 
-	 * @param driver new video driver class to use
+	 * @param driverClass new video driver class to use
 	 * @throws IllegalArgumentException when argument is null
 	 */
 	public static synchronized void setDriver(Class<? extends WebcamDriver> driverClass) {

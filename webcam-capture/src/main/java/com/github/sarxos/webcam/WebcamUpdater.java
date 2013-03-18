@@ -113,6 +113,8 @@ public class WebcamUpdater implements Runnable, ThreadFactory {
 	 */
 	private volatile boolean running = false;
 
+	private volatile boolean imageNew = false;
+
 	/**
 	 * Construct new webcam updater.
 	 * 
@@ -157,6 +159,8 @@ public class WebcamUpdater implements Runnable, ThreadFactory {
 		image.set(new WebcamReadImageTask(Webcam.getDriver(), webcam.getDevice()).getImage());
 		t2 = System.currentTimeMillis();
 
+		imageNew = true;
+
 		// Calculate delay required to achieve target FPS. In some cases it can
 		// be less than 0 because camera is not able to serve images as fast as
 		// we would like to. In such case just run with no delay, so maximum FPS
@@ -199,7 +203,7 @@ public class WebcamUpdater implements Runnable, ThreadFactory {
 	 * method will block until webcam return first image. Maximum blocking time
 	 * will be 10 seconds, after this time method will return null.
 	 * 
-	 * @return
+	 * @return Image stored in cache
 	 */
 	public BufferedImage getImage() {
 
@@ -223,7 +227,13 @@ public class WebcamUpdater implements Runnable, ThreadFactory {
 			}
 		}
 
+		imageNew = false;
+
 		return image.get();
+	}
+
+	protected boolean isImageNew() {
+		return imageNew;
 	}
 
 	/**

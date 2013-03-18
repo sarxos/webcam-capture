@@ -25,7 +25,6 @@ public abstract class WebcamTask {
 	/**
 	 * Process task by processor thread.
 	 * 
-	 * @param processor the processor to be used to process this task
 	 * @throws InterruptedException when thread has been interrupted
 	 */
 	public void process() throws InterruptedException {
