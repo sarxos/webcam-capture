@@ -108,9 +108,13 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			int w = metrics.stringWidth(str);
 			int h = metrics.getHeight();
 
-			g2.setColor(Color.WHITE);
+			int x = (getWidth() - w) / 2;
+			int y = cy - h;
+
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-			g2.drawString(str, (getWidth() - w) / 2, cy - h);
+			g2.setFont(getFont());
+			g2.setColor(Color.WHITE);
+			g2.drawString(str, x, y);
 
 			if (name == null) {
 				name = webcam.getName();
@@ -148,8 +152,17 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			g2.drawImage(image, 0, 0, null);
 
 			if (isFPSDisplayed()) {
+
+				String str = String.format("FPS: %.1f", webcam.getFPS());
+
+				int x = 5;
+				int y = getHeight() - 5;
+
+				g2.setFont(getFont());
+				g2.setColor(Color.BLACK);
+				g2.drawString(str, x + 1, y + 1);
 				g2.setColor(Color.WHITE);
-				g2.drawString(String.format("FPS: %.1f", webcam.getFPS()), 5, getHeight() - 5);
+				g2.drawString(str, x, y);
 			}
 		}
 	}
@@ -208,7 +221,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 				if (isFPSLimited()) {
 					executor.scheduleAtFixedRate(updater, 0, (long) (1000 / frequency), TimeUnit.MILLISECONDS);
 				} else {
-					executor.scheduleWithFixedDelay(updater, 0, 1, TimeUnit.MILLISECONDS);
+					executor.scheduleWithFixedDelay(updater, 100, 1, TimeUnit.MILLISECONDS);
 				}
 			} else {
 				executor.schedule(this, 500, TimeUnit.MILLISECONDS);
@@ -242,11 +255,14 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 				return;
 			}
 
-			BufferedImage tmp = webcam.getImage();
+			BufferedImage tmp = null;
+			try {
+				tmp = webcam.getImage();
+			} catch (Throwable t) {
+				LOG.error("Exception when getting image", t);
+			}
 
-			if (tmp == null) {
-				LOG.error("Image is null");
-			} else {
+			if (tmp != null) {
 				image = tmp;
 			}
 
@@ -325,6 +341,8 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 */
 	private Painter painter = new DefaultPainter();
 
+	private Dimension size = null;
+
 	/**
 	 * Creates webcam panel and automatically start webcam.
 	 * 
@@ -363,6 +381,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			throw new IllegalArgumentException(String.format("Webcam argument in %s constructor cannot be null!", getClass().getSimpleName()));
 		}
 
+		this.size = size;
 		this.webcam = webcam;
 		this.webcam.addWebcamListener(this);
 
@@ -421,11 +440,17 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 
 	@Override
 	public void webcamOpen(WebcamEvent we) {
+
+		// start image updater (i.e. start panel repainting)
 		if (updater == null) {
 			updater = new ImageUpdater();
 			updater.start();
 		}
-		setPreferredSize(webcam.getViewSize());
+
+		// copy size from webcam only if default size has not been provided
+		if (size == null) {
+			setPreferredSize(webcam.getViewSize());
+		}
 	}
 
 	@Override

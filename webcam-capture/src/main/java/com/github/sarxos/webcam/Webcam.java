@@ -391,18 +391,27 @@ public class Webcam {
 			return null;
 		}
 
+		long t1 = 0;
+		long t2 = 0;
+
 		if (asynchronous) {
 			return updater.getImage();
 		} else {
 
 			// get image
 
-			long time = System.currentTimeMillis();
+			t1 = System.currentTimeMillis();
 			BufferedImage image = new WebcamReadImageTask(driver, device).getImage();
+			t2 = System.currentTimeMillis();
+
+			if (image == null) {
+				return null;
+			}
 
 			// calculate FPS
 
-			fps = (4 * fps + 1000 / (double) (System.currentTimeMillis() - time)) / 5;
+			// +1 to avoid division by zero
+			fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
 
 			// notify webcam listeners about new image available
 

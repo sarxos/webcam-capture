@@ -148,20 +148,24 @@ public class WebcamUpdater implements Runnable, ThreadFactory {
 			return;
 		}
 
+		long t1 = 0;
+		long t2 = 0;
+
 		// Calculate time required to fetch 1 picture.
 
-		long time = System.currentTimeMillis();
+		t1 = System.currentTimeMillis();
 		image.set(new WebcamReadImageTask(Webcam.getDriver(), webcam.getDevice()).getImage());
-		time = System.currentTimeMillis() - time;
+		t2 = System.currentTimeMillis();
 
 		// Calculate delay required to achieve target FPS. In some cases it can
 		// be less than 0 because camera is not able to serve images as fast as
 		// we would like to. In such case just run with no delay, so maximum FPS
 		// will be the one supported by camera device in the moment.
 
-		long delay = Math.max((1000 / TARGET_FPS) - time, 0);
+		long delta = t2 - t1 + 1; // +1 to avoid division by zero
+		long delay = Math.max((1000 / TARGET_FPS) - delta, 0);
 
-		fps = (4 * fps + 1000 / (double) time) / 5;
+		fps = (4 * fps + 1000 / delta) / 5;
 
 		// reschedule task
 

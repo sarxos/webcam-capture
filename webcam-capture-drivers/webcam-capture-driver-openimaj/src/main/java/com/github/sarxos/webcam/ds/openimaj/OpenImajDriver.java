@@ -47,6 +47,7 @@ public class OpenImajDriver implements WebcamDriver {
 			try {
 				process();
 			} catch (InterruptedException e) {
+				LOG.debug("Interrupted", e);
 				return Collections.emptyList();
 			}
 			return devices;
