@@ -74,6 +74,8 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 	 */
 	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 
+	private int timeout = 5000;
+
 	private OpenIMAJGrabber grabber = null;
 	private Device device = null;
 	private Dimension size = null;
@@ -136,7 +138,22 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 
 		LOG.trace("Webcam device get image (next frame)");
 
-		grabber.nextFrame();
+		// set image acquisition timeout
+
+		grabber.setTimeout(timeout);
+
+		// grab next frame
+
+		int flag = grabber.nextFrame();
+		if (flag == -1) {
+			LOG.error("Timeout when requesting image!");
+			return null;
+		} else if (flag < -1) {
+			LOG.error("Error requesting new frame!");
+			return null;
+		}
+
+		// get image buffer
 
 		Pointer<Byte> image = grabber.getImage();
 		if (image == null) {
@@ -288,5 +305,23 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 	@Override
 	public boolean isOpen() {
 		return open.get();
+	}
+
+	/**
+	 * Get timeout for image acquisition.
+	 * 
+	 * @return Value in milliseconds
+	 */
+	public int getTimeout() {
+		return timeout;
+	}
+
+	/**
+	 * Set timeout for image acquisition.
+	 * 
+	 * @param timeout the timeout value in milliseconds
+	 */
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
 	}
 }
