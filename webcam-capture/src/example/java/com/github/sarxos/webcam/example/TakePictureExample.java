@@ -1,10 +1,12 @@
-package com.github.sarxos.webcam;
+package com.github.sarxos.webcam.example;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import com.github.sarxos.webcam.Webcam;
 
 
 /**

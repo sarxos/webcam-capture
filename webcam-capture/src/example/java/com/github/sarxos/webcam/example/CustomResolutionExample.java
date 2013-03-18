@@ -1,7 +1,10 @@
-package com.github.sarxos.webcam;
+package com.github.sarxos.webcam.example;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamResolution;
 
 
 public class CustomResolutionExample {

@@ -1,8 +1,9 @@
-package com.github.sarxos.webcam;
+package com.github.sarxos.webcam.example;
 
 import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.log.WebcamLogConfigurator;
 
 

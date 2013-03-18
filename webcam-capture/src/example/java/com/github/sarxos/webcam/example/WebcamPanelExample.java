@@ -1,6 +1,9 @@
-package com.github.sarxos.webcam;
+package com.github.sarxos.webcam.example;
 
 import javax.swing.JFrame;
+
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamPanel;
 
 
 public class WebcamPanelExample {

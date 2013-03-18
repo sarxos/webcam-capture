@@ -1,4 +1,6 @@
-package com.github.sarxos.webcam;
+package com.github.sarxos.webcam.example;
+
+import com.github.sarxos.webcam.Webcam;
 
 public class DetectWebcamExample {
 

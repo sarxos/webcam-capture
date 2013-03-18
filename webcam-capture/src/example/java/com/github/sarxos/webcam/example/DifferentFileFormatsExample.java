@@ -1,7 +1,9 @@
-package com.github.sarxos.webcam;
+package com.github.sarxos.webcam.example;
 
 import java.nio.ByteBuffer;
 
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamUtils;
 import com.github.sarxos.webcam.util.ImageUtils;
 
 

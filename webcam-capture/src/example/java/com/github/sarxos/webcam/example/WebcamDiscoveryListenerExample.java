@@ -1,4 +1,8 @@
-package com.github.sarxos.webcam;
+package com.github.sarxos.webcam.example;
+
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamDiscoveryEvent;
+import com.github.sarxos.webcam.WebcamDiscoveryListener;
 
 public class WebcamDiscoveryListenerExample implements WebcamDiscoveryListener {
 

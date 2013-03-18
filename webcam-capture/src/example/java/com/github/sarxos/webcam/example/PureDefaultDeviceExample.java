@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam;
+package com.github.sarxos.webcam.example;
 
 import org.bridj.Pointer;
 

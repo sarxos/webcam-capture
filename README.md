@@ -69,6 +69,8 @@ can help developing
 awesome Webcam Capture API and make it even better! Several kinds of 
 contributions are very welcome:
 
+* **Star Project** - star the project and become a stargazer. This will make project
+more popular.
 * **Report bug or feature** - If you've found a bug or you've came-up with some fantastic feature which 
 can make Webcam Capture a better API to use, don't hesitate to 
 [create new issue](https://github.com/sarxos/webcam-capture/issues/new) 
@@ -105,17 +107,17 @@ project source code. Please note that some of those examples are using
 the newest API which possibly has not yet been released. In such a case
 please make sure you are using the newest Webcam Capture SNAPSHOT version.
 
-* [How to detect webcam](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/DetectWebcamExample.java)
-* [How to take picture and save to file](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/TakePictureExample.java)
-* [How to take pictures from two cameras and save to files](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/TakePictureFromTwoCamsExample.java)
-* [How to display image from webcam in Swing panel (basic)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/WebcamPanelExample.java)
-* [How to display image from webcam in Swing panel (more advanced)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/WebcamViewerExample.java)
-* [How to listen on camera connection / disconnection events](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/WebcamDiscoveryListenerExample.java)
-* [How to configure capture resolution](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/TakePictureDifferentSizeExample.java)
-* [How to configure non-standard capture resolutionj (e.g. HD720)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/CustomResolutionExample.java)
-* [How to save captured image in PNG / JPG / GIF / BMP etc](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/DifferentFileFormatsExample.java)
-* [How to capture with many parrallel threads](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/ConcurrentThreadsExample.java)
-* [How to detect motion (text mode only)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/DetectMotionExample.java)
+* [How to detect webcam](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/example/DetectWebcamExample.java)
+* [How to take picture and save to file](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/example/TakePictureExample.java)
+* [How to take pictures from two cameras and save to files](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/example/TakePictureFromTwoCamsExample.java)
+* [How to display image from webcam in Swing panel (basic)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/example/WebcamPanelExample.java)
+* [How to display image from webcam in Swing panel (more advanced)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/example/WebcamViewerExample.java)
+* [How to listen on camera connection / disconnection events](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/example/WebcamDiscoveryListenerExample.java)
+* [How to configure capture resolution](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/example/TakePictureDifferentSizeExample.java)
+* [How to configure non-standard capture resolutionj (e.g. HD720)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/example/CustomResolutionExample.java)
+* [How to save captured image in PNG / JPG / GIF / BMP etc](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/example/DifferentFileFormatsExample.java)
+* [How to capture with many parrallel threads](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/example/ConcurrentThreadsExample.java)
+* [How to detect motion (text mode only)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/com/github/sarxos/webcam/example/DetectMotionExample.java)
 
 And here are some more advanced examples, few with quite fancy GUI.
 
@@ -124,6 +126,7 @@ And here are some more advanced examples, few with quite fancy GUI.
 * [How to paint custom effects in WebcamPanel displaying image from camera](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-painter)
 * [How to read QR / DataMatrix and Bar codes](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-qrcode)
 * [How to record video from webcam](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-record-video)
+* [How to transcode webcam images into live h264 stream](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-live-streaming)
 
 
 ## Capture Drivers
@@ -136,14 +139,18 @@ However there are more ready-to-use drivers which can be used as a replacement
 or addition to the default one. By utilizing those drivers Webcam Capture can 
 be extended with various new features (e.g. IP camera support).
 
-List of additional drivers includes:
+List of additional drivers includes (stable):
 
 * [IP Camera Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam) - available in Maven Central, adds IP / network cameras support
 * [JMF Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf) - available in Maven Central, JMF replacement for default driver
+* [LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-lti-civil) - available in Maven Central, Windows, Linux, Mac OS, LTI-CIVIL replacement for default driver
 * [OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-openimaj) - **not** available in Maven Central, OpenIMAJ replacement for default driver
-* [LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-lti-civil) - **not** available in Maven Central, Windows only, LTI-CIVIL replacement for default driver
+
+And (unstable, experimental):
+
 * [OpenCV Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv) - **unstable**, OpenCV replacement for default driver
 * [VLC Driver](https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj) - **unstable**, Linux only, VLC replacement for default driver
+* [FFmpeg Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ffmpeg-cli) - **experimental**, Linux only, FFmpeg replacement for default driver
 
 ## History
 
