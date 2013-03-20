@@ -156,10 +156,19 @@ public class WebcamUpdater implements Runnable, ThreadFactory, UncaughtException
 
 		// Calculate time required to fetch 1 picture.
 
+		WebcamDriver driver = Webcam.getDriver();
+		WebcamDevice device = webcam.getDevice();
+
+		assert driver != null;
+		assert device != null;
+
+		BufferedImage img = null;
+
 		t1 = System.currentTimeMillis();
-		image.set(new WebcamReadImageTask(Webcam.getDriver(), webcam.getDevice()).getImage());
+		img = webcam.transform(new WebcamReadImageTask(driver, device).getImage());
 		t2 = System.currentTimeMillis();
 
+		image.set(img);
 		imageNew = true;
 
 		// Calculate delay required to achieve target FPS. In some cases it can

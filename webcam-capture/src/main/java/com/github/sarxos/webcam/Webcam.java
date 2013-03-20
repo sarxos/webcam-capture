@@ -118,6 +118,11 @@ public class Webcam {
 	private WebcamUpdater updater = new WebcamUpdater(this);
 
 	/**
+	 * IMage transformer.
+	 */
+	private volatile WebcamImageTransformer transformer = null;
+
+	/**
 	 * Webcam class.
 	 * 
 	 * @param device - device to be used as webcam
@@ -260,6 +265,87 @@ public class Webcam {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Return underlying webcam device. Depending on the driver used to discover
+	 * devices, this method can return instances of different class. By default
+	 * {@link WebcamDefaultDevice} is returned when no external driver is used.
+	 * 
+	 * @return Underlying webcam device instance
+	 */
+	public WebcamDevice getDevice() {
+		assert device != null;
+		return device;
+	}
+
+	/**
+	 * Completely dispose capture device. After this operation webcam cannot be
+	 * used any more and full reinstantiation is required.
+	 */
+	protected void dispose() {
+
+		assert disposed != null;
+		assert open != null;
+		assert driver != null;
+		assert device != null;
+		assert listeners != null;
+
+		if (!disposed.compareAndSet(false, true)) {
+			return;
+		}
+
+		open.set(false);
+
+		LOG.info("Disposing webcam {}", getName());
+
+		WebcamDisposeTask task = new WebcamDisposeTask(driver, device);
+		try {
+			task.dispose();
+		} catch (InterruptedException e) {
+			LOG.error("Processor has been interrupted before webcam was disposed!", e);
+			return;
+		}
+
+		WebcamEvent we = new WebcamEvent(WebcamEventType.DISPOSED, this);
+		for (WebcamListener l : listeners) {
+			try {
+				l.webcamClosed(we);
+				l.webcamDisposed(we);
+			} catch (Exception e) {
+				LOG.error(String.format("Notify webcam disposed, exception when calling %s listener", l.getClass()), e);
+			}
+		}
+
+		// hook can be null because there is a possibility that webcam has never
+		// been open and therefore hook was not created
+		if (hook != null) {
+			try {
+				Runtime.getRuntime().removeShutdownHook(hook);
+			} catch (IllegalStateException e) {
+				LOG.trace("Shutdown in progress, cannot remove hook");
+			}
+		}
+
+		LOG.debug("Webcam disposed {}", getName());
+	}
+
+	/**
+	 * TRansform image using image transformer. If image transformer has not
+	 * been set, this method return instance passed in the argument, without any
+	 * modifications.
+	 * 
+	 * @param image the image to be transformed
+	 * @return Transformed image (if transformer is set)
+	 */
+	protected BufferedImage transform(BufferedImage image) {
+		if (image != null) {
+			WebcamImageTransformer tr = getImageTransformer();
+			if (tr != null) {
+				return tr.transform(image);
+			}
+		}
+		return image;
 	}
 
 	/**
@@ -412,7 +498,7 @@ public class Webcam {
 			// get image
 
 			t1 = System.currentTimeMillis();
-			BufferedImage image = new WebcamReadImageTask(driver, device).getImage();
+			BufferedImage image = transform(new WebcamReadImageTask(driver, device).getImage());
 			t2 = System.currentTimeMillis();
 
 			if (image == null) {
@@ -823,69 +909,6 @@ public class Webcam {
 	}
 
 	/**
-	 * Return underlying webcam device. Depending on the driver used to discover
-	 * devices, this method can return instances of different class. By default
-	 * {@link WebcamDefaultDevice} is returned when no external driver is used.
-	 * 
-	 * @return Underlying webcam device instance
-	 */
-	public WebcamDevice getDevice() {
-		assert device != null;
-		return device;
-	}
-
-	/**
-	 * Completely dispose capture device. After this operation webcam cannot be
-	 * used any more and full reinstantiation is required.
-	 */
-	protected void dispose() {
-
-		assert disposed != null;
-		assert open != null;
-		assert driver != null;
-		assert device != null;
-		assert listeners != null;
-
-		if (!disposed.compareAndSet(false, true)) {
-			return;
-		}
-
-		open.set(false);
-
-		LOG.info("Disposing webcam {}", getName());
-
-		WebcamDisposeTask task = new WebcamDisposeTask(driver, device);
-		try {
-			task.dispose();
-		} catch (InterruptedException e) {
-			LOG.error("Processor has been interrupted before webcam was disposed!", e);
-			return;
-		}
-
-		WebcamEvent we = new WebcamEvent(WebcamEventType.DISPOSED, this);
-		for (WebcamListener l : listeners) {
-			try {
-				l.webcamClosed(we);
-				l.webcamDisposed(we);
-			} catch (Exception e) {
-				LOG.error(String.format("Notify webcam disposed, exception when calling %s listener", l.getClass()), e);
-			}
-		}
-
-		// hook can be null because there is a possibility that webcam has never
-		// been open and therefore hook was not created
-		if (hook != null) {
-			try {
-				Runtime.getRuntime().removeShutdownHook(hook);
-			} catch (IllegalStateException e) {
-				LOG.trace("Shutdown in progress, cannot remove hook");
-			}
-		}
-
-		LOG.debug("Webcam disposed {}", getName());
-	}
-
-	/**
 	 * <b>CAUTION!!!</b><br>
 	 * <br>
 	 * This is experimental feature to be used mostly in in development phase.
@@ -978,5 +1001,23 @@ public class Webcam {
 			discovery = new WebcamDiscoveryService(getDriver());
 		}
 		return discovery;
+	}
+
+	/**
+	 * Return image transformer.
+	 * 
+	 * @return Transformer instance
+	 */
+	public WebcamImageTransformer getImageTransformer() {
+		return transformer;
+	}
+
+	/**
+	 * Set image transformer.
+	 * 
+	 * @param transformer the transformer to be set
+	 */
+	public void setImageTransformer(WebcamImageTransformer transformer) {
+		this.transformer = transformer;
 	}
 }
