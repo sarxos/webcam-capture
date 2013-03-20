@@ -165,6 +165,8 @@ public class Webcam {
 
 		if (open.compareAndSet(false, true)) {
 
+			assert updater != null;
+
 			WebcamOpenTask task = new WebcamOpenTask(driver, device);
 			try {
 				task.open();
@@ -215,6 +217,8 @@ public class Webcam {
 	public boolean close() {
 
 		if (open.compareAndSet(true, false)) {
+
+			assert updater != null;
 
 			// close webcam
 
@@ -293,6 +297,7 @@ public class Webcam {
 	 * @param sizes the array of custom resolutions to be supported by webcam
 	 */
 	public void setCustomViewSizes(Dimension[] sizes) {
+		assert customSizes != null;
 		if (sizes == null) {
 			customSizes.clear();
 			return;
@@ -301,6 +306,7 @@ public class Webcam {
 	}
 
 	public Dimension[] getCustomViewSizes() {
+		assert customSizes != null;
 		return customSizes.toArray(new Dimension[customSizes.size()]);
 	}
 
@@ -333,6 +339,9 @@ public class Webcam {
 
 		Dimension[] predefined = getViewSizes();
 		Dimension[] custom = getCustomViewSizes();
+
+		assert predefined != null;
+		assert custom != null;
 
 		boolean ok = false;
 		for (Dimension d : predefined) {
@@ -394,6 +403,8 @@ public class Webcam {
 		long t1 = 0;
 		long t2 = 0;
 
+		assert updater != null;
+
 		if (asynchronous) {
 			return updater.getImage();
 		} else {
@@ -422,6 +433,7 @@ public class Webcam {
 	}
 
 	public boolean isImageNew() {
+		assert updater != null;
 		if (asynchronous) {
 			return updater.isImageNew();
 		}
@@ -429,6 +441,7 @@ public class Webcam {
 	}
 
 	protected double getFPS() {
+		assert updater != null;
 		if (asynchronous) {
 			return updater.getFPS();
 		} else {
@@ -456,6 +469,9 @@ public class Webcam {
 			return null;
 		}
 
+		assert driver != null;
+		assert device != null;
+
 		// some devices can support direct image buffers, and for those call
 		// processor task, and for those which does not support direct image
 		// buffers, just convert image to RGB byte array
@@ -463,7 +479,12 @@ public class Webcam {
 		if (device instanceof BufferAccess) {
 			return new WebcamReadBufferTask(driver, device).getBuffer();
 		} else {
-			return ByteBuffer.wrap(ImageUtils.toRawByteArray(getImage()));
+			BufferedImage image = getImage();
+			if (image != null) {
+				return ByteBuffer.wrap(ImageUtils.toRawByteArray(image));
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -473,6 +494,9 @@ public class Webcam {
 	 * @return True if ready, false otherwise
 	 */
 	private boolean isReady() {
+
+		assert disposed != null;
+		assert open != null;
 
 		if (disposed.get()) {
 			LOG.warn("Cannot get image, webcam has been already disposed");
@@ -495,7 +519,7 @@ public class Webcam {
 	 * interval for webcam devices to be discovered. By default this time is set
 	 * to 1 minute.
 	 * 
-	 * @return List of webcams existing in the ssytem
+	 * @return List of webcams existing in the system
 	 * @throws WebcamException when something is wrong
 	 * @see Webcam#getWebcams(long, TimeUnit)
 	 */
@@ -518,9 +542,13 @@ public class Webcam {
 	 * @param timeout the time to wait for webcam devices to be discovered
 	 * @return List of webcams existing in the ssytem
 	 * @throws WebcamException when something is wrong
+	 * @throws IllegalArgumentException when timeout is negative
 	 * @see Webcam#getWebcams(long, TimeUnit)
 	 */
 	public static List<Webcam> getWebcams(long timeout) throws TimeoutException, WebcamException {
+		if (timeout < 0) {
+			throw new IllegalArgumentException(String.format("Timeout cannot be negative (%d)", timeout));
+		}
 		return getWebcams(timeout, TimeUnit.MILLISECONDS);
 	}
 
@@ -533,12 +561,22 @@ public class Webcam {
 	 * @return List of webcams
 	 * @throws TimeoutException when timeout has been exceeded
 	 * @throws WebcamException when something is wrong
+	 * @throws IllegalArgumentException when timeout is negative or tunit null
 	 */
 	public static synchronized List<Webcam> getWebcams(long timeout, TimeUnit tunit) throws TimeoutException, WebcamException {
 
-		WebcamDiscoveryService discovery = getDiscoveryService();
-		List<Webcam> webcams = discovery.getWebcams(timeout, tunit);
+		if (timeout < 0) {
+			throw new IllegalArgumentException(String.format("Timeout cannot be negative (%d)", timeout));
+		}
+		if (tunit == null) {
+			throw new IllegalArgumentException("Time unit cannot be null!");
+		}
 
+		WebcamDiscoveryService discovery = getDiscoveryService();
+
+		assert discovery != null;
+
+		List<Webcam> webcams = discovery.getWebcams(timeout, tunit);
 		if (!discovery.isRunning()) {
 			discovery.start();
 		}
@@ -571,9 +609,13 @@ public class Webcam {
 	 * @return Default webcam (first from the list)
 	 * @throws TimeoutException when discovery timeout has been exceeded
 	 * @throws WebcamException if something is really wrong
+	 * @throws IllegalArgumentException when timeout is negative
 	 * @see Webcam#getWebcams(long)
 	 */
 	public static Webcam getDefault(long timeout) throws TimeoutException, WebcamException {
+		if (timeout < 0) {
+			throw new IllegalArgumentException(String.format("Timeout cannot be negative (%d)", timeout));
+		}
 		return getDefault(timeout, TimeUnit.MILLISECONDS);
 	}
 
@@ -585,18 +627,21 @@ public class Webcam {
 	 * @return Default webcam (first from the list)
 	 * @throws TimeoutException when discovery timeout has been exceeded
 	 * @throws WebcamException if something is really wrong
+	 * @throws IllegalArgumentException when timeout is negative or tunit null
 	 * @see Webcam#getWebcams(long, TimeUnit)
 	 */
 	public static Webcam getDefault(long timeout, TimeUnit tunit) throws TimeoutException, WebcamException {
 
 		if (timeout < 0) {
-			throw new IllegalArgumentException("Timeout cannot be negative");
+			throw new IllegalArgumentException(String.format("Timeout cannot be negative (%d)", timeout));
 		}
 		if (tunit == null) {
 			throw new IllegalArgumentException("Time unit cannot be null!");
 		}
 
 		List<Webcam> webcams = getWebcams(timeout, tunit);
+
+		assert webcams != null;
 
 		if (!webcams.isEmpty()) {
 			return webcams.get(0);
@@ -615,6 +660,7 @@ public class Webcam {
 	 * @return Name
 	 */
 	public String getName() {
+		assert device != null;
 		return device.getName();
 	}
 
@@ -633,6 +679,7 @@ public class Webcam {
 		if (l == null) {
 			throw new IllegalArgumentException("Webcam listener cannot be null!");
 		}
+		assert listeners != null;
 		return listeners.add(l);
 	}
 
@@ -640,6 +687,7 @@ public class Webcam {
 	 * @return All webcam listeners
 	 */
 	public WebcamListener[] getWebcamListeners() {
+		assert listeners != null;
 		return listeners.toArray(new WebcamListener[listeners.size()]);
 	}
 
@@ -647,6 +695,7 @@ public class Webcam {
 	 * @return Number of webcam listeners
 	 */
 	public int getWebcamListenersCount() {
+		assert listeners != null;
 		return listeners.size();
 	}
 
@@ -657,6 +706,7 @@ public class Webcam {
 	 * @return True if listener has been removed, false otherwise
 	 */
 	public boolean removeWebcamListener(WebcamListener l) {
+		assert listeners != null;
 		return listeners.remove(l);
 	}
 
@@ -713,11 +763,11 @@ public class Webcam {
 	 */
 	public static synchronized void setDriver(Class<? extends WebcamDriver> driverClass) {
 
-		resetDriver();
-
 		if (driverClass == null) {
 			throw new IllegalArgumentException("Webcam driver class cannot be null!");
 		}
+
+		resetDriver();
 
 		try {
 			driver = driverClass.newInstance();
@@ -780,6 +830,7 @@ public class Webcam {
 	 * @return Underlying webcam device instance
 	 */
 	public WebcamDevice getDevice() {
+		assert device != null;
 		return device;
 	}
 
@@ -788,6 +839,12 @@ public class Webcam {
 	 * used any more and full reinstantiation is required.
 	 */
 	protected void dispose() {
+
+		assert disposed != null;
+		assert open != null;
+		assert driver != null;
+		assert device != null;
+		assert listeners != null;
 
 		if (!disposed.compareAndSet(false, true)) {
 			return;

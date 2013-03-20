@@ -66,6 +66,9 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		@Override
 		public void paintPanel(WebcamPanel owner, Graphics2D g2) {
 
+			assert owner != null;
+			assert g2 != null;
+
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.setBackground(Color.BLACK);
 			g2.fillRect(0, 0, getWidth(), getHeight());

@@ -1,6 +1,7 @@
 package com.github.sarxos.webcam;
 
 import java.awt.image.BufferedImage;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -22,7 +23,7 @@ import com.github.sarxos.webcam.ds.cgt.WebcamReadImageTask;
  * 
  * @author Bartosz Firyn (sarxos)
  */
-public class WebcamUpdater implements Runnable, ThreadFactory {
+public class WebcamUpdater implements Runnable, ThreadFactory, UncaughtExceptionHandler {
 
 	/**
 	 * Class used to asynchronously notify all webcam listeners about new image
@@ -250,6 +251,12 @@ public class WebcamUpdater implements Runnable, ThreadFactory {
 	public Thread newThread(Runnable r) {
 		Thread t = new Thread(r, String.format("webcam-updater-thread-%d", number.incrementAndGet()));
 		t.setDaemon(true);
+		t.setUncaughtExceptionHandler(this);
 		return t;
+	}
+
+	@Override
+	public void uncaughtException(Thread t, Throwable e) {
+		LOG.error(String.format("Exception in thread %s", t.getName()), e);
 	}
 }

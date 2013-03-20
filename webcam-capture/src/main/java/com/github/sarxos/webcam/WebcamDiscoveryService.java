@@ -1,5 +1,6 @@
 package com.github.sarxos.webcam;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,11 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class WebcamDiscoveryService implements Runnable {
+public class WebcamDiscoveryService implements Runnable, UncaughtExceptionHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamDiscoveryService.class);
 
-	private static final class WebcamsDiscovery implements Callable<List<Webcam>>, ThreadFactory {
+	private static final class WebcamsDiscovery implements Callable<List<Webcam>>, ThreadFactory, UncaughtExceptionHandler {
 
 		private final WebcamDriver driver;
 
@@ -39,7 +40,13 @@ public class WebcamDiscoveryService implements Runnable {
 		public Thread newThread(Runnable r) {
 			Thread t = new Thread(r, "webcam-discovery-service");
 			t.setDaemon(true);
+			t.setUncaughtExceptionHandler(this);
 			return t;
+		}
+
+		@Override
+		public void uncaughtException(Thread t, Throwable e) {
+			LOG.error(String.format("Exception in thread %s", t.getName()), e);
 		}
 	}
 
@@ -53,6 +60,11 @@ public class WebcamDiscoveryService implements Runnable {
 	private Thread runner = null;
 
 	protected WebcamDiscoveryService(WebcamDriver driver) {
+
+		if (driver == null) {
+			throw new IllegalArgumentException("Driver cannot be null!");
+		}
+
 		this.driver = driver;
 		this.support = (WebcamDiscoverySupport) (driver instanceof WebcamDiscoverySupport ? driver : null);
 	}
@@ -320,6 +332,7 @@ public class WebcamDiscoveryService implements Runnable {
 
 		runner = new Thread(this, "webcam-discovery-service");
 		runner.setDaemon(true);
+		runner.setUncaughtExceptionHandler(this);
 		runner.start();
 	}
 
@@ -352,5 +365,10 @@ public class WebcamDiscoveryService implements Runnable {
 		if (Webcam.isHandleTermSignal()) {
 			WebcamDeallocator.unstore();
 		}
+	}
+
+	@Override
+	public void uncaughtException(Thread t, Throwable e) {
+		LOG.error(String.format("Exception in thread %s", t.getName()), e);
 	}
 }
