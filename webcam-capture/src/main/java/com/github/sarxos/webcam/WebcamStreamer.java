@@ -244,6 +244,7 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 	@Override
 	public Thread newThread(Runnable r) {
 		Thread thread = new Thread(r, String.format("streamer-thread-%s", number++));
+		thread.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 		thread.setDaemon(true);
 		return thread;
 	}

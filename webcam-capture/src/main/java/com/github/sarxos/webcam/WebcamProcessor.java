@@ -19,6 +19,7 @@ public class WebcamProcessor {
 		@Override
 		public Thread newThread(Runnable r) {
 			Thread t = new Thread(r, "atomic-processor");
+			t.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 			t.setDaemon(true);
 			return t;
 		}

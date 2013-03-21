@@ -37,6 +37,7 @@ public class WebcamMotionDetector {
 		@Override
 		public Thread newThread(Runnable runnable) {
 			Thread t = new Thread(runnable, "motion-detector-" + (++number));
+			t.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 			t.setDaemon(true);
 			return t;
 		}

@@ -35,6 +35,7 @@ public final class WebcamShutdownHook extends Thread {
 	protected WebcamShutdownHook(Webcam webcam) {
 		super("shutdown-hook-" + (++number));
 		this.webcam = webcam;
+		this.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 	}
 
 	@Override

@@ -15,8 +15,10 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JPanel;
 
@@ -170,6 +172,20 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		}
 	}
 
+	private static final class PanelThreadFactory implements ThreadFactory {
+
+		private static final AtomicInteger number = new AtomicInteger(0);
+
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = new Thread(r, String.format("webcam-panel-scheduled-executor-%d", number.incrementAndGet()));
+			t.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
+			t.setDaemon(true);
+			return t;
+		}
+
+	}
+
 	/**
 	 * S/N used by Java to serialize beans.
 	 */
@@ -190,10 +206,12 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 */
 	private static final double MAX_FREQUENCY = 50; // 50 frames per second
 
+	private static final PanelThreadFactory THREAD_FACTORY = new PanelThreadFactory();
+
 	/**
 	 * Scheduled executor acting as timer.
 	 */
-	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1, THREAD_FACTORY);
 
 	/**
 	 * Repainter updates panel when it is being started.
@@ -203,8 +221,9 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	private class Repainter extends Thread {
 
 		public Repainter() {
-			setDaemon(true);
+			setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 			setName(String.format("repainter-%s", webcam.getName()));
+			setDaemon(true);
 		}
 
 		@Override
@@ -344,6 +363,9 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 */
 	private Painter painter = new DefaultPainter();
 
+	/**
+	 * Preferred panel size.
+	 */
 	private Dimension size = null;
 
 	/**

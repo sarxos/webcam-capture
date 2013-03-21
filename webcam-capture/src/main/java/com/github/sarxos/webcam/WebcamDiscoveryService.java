@@ -1,6 +1,5 @@
 package com.github.sarxos.webcam;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -19,11 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class WebcamDiscoveryService implements Runnable, UncaughtExceptionHandler {
+public class WebcamDiscoveryService implements Runnable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamDiscoveryService.class);
 
-	private static final class WebcamsDiscovery implements Callable<List<Webcam>>, ThreadFactory, UncaughtExceptionHandler {
+	private static final class WebcamsDiscovery implements Callable<List<Webcam>>, ThreadFactory {
 
 		private final WebcamDriver driver;
 
@@ -40,13 +39,8 @@ public class WebcamDiscoveryService implements Runnable, UncaughtExceptionHandle
 		public Thread newThread(Runnable r) {
 			Thread t = new Thread(r, "webcam-discovery-service");
 			t.setDaemon(true);
-			t.setUncaughtExceptionHandler(this);
+			t.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 			return t;
-		}
-
-		@Override
-		public void uncaughtException(Thread t, Throwable e) {
-			LOG.error(String.format("Exception in thread %s", t.getName()), e);
 		}
 	}
 
@@ -331,8 +325,8 @@ public class WebcamDiscoveryService implements Runnable, UncaughtExceptionHandle
 		// start discovery service runner
 
 		runner = new Thread(this, "webcam-discovery-service");
+		runner.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 		runner.setDaemon(true);
-		runner.setUncaughtExceptionHandler(this);
 		runner.start();
 	}
 
@@ -365,10 +359,5 @@ public class WebcamDiscoveryService implements Runnable, UncaughtExceptionHandle
 		if (Webcam.isHandleTermSignal()) {
 			WebcamDeallocator.unstore();
 		}
-	}
-
-	@Override
-	public void uncaughtException(Thread t, Throwable e) {
-		LOG.error(String.format("Exception in thread %s", t.getName()), e);
 	}
 }

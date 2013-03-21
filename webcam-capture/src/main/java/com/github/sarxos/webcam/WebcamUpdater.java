@@ -1,7 +1,6 @@
 package com.github.sarxos.webcam;
 
 import java.awt.image.BufferedImage;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,7 +22,26 @@ import com.github.sarxos.webcam.ds.cgt.WebcamReadImageTask;
  * 
  * @author Bartosz Firyn (sarxos)
  */
-public class WebcamUpdater implements Runnable, ThreadFactory, UncaughtExceptionHandler {
+public class WebcamUpdater implements Runnable {
+
+	/**
+	 * Thread factory for executors used within updater class.
+	 * 
+	 * @author Bartosz Firyn (sarxos)
+	 */
+	private static final class UpdaterThreadFactory implements ThreadFactory {
+
+		private static final AtomicInteger number = new AtomicInteger(0);
+
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = new Thread(r, String.format("webcam-updater-thread-%d", number.incrementAndGet()));
+			t.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
+			t.setDaemon(true);
+			return t;
+		}
+
+	}
 
 	/**
 	 * Class used to asynchronously notify all webcam listeners about new image
@@ -31,7 +49,7 @@ public class WebcamUpdater implements Runnable, ThreadFactory, UncaughtException
 	 * 
 	 * @author Bartosz Firyn (sarxos)
 	 */
-	private static class ImageNotification implements Runnable {
+	private static final class ImageNotification implements Runnable {
 
 		/**
 		 * Camera.
@@ -75,24 +93,21 @@ public class WebcamUpdater implements Runnable, ThreadFactory, UncaughtException
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamUpdater.class);
 
 	/**
-	 * Used to count thread in the executor pool.
-	 */
-	private static final AtomicInteger number = new AtomicInteger(0);
-
-	/**
 	 * Target FPS.
 	 */
 	private static final int TARGET_FPS = 50;
 
+	private static final UpdaterThreadFactory THREAD_FACTORY = new UpdaterThreadFactory();
+
 	/**
 	 * Executor service.
 	 */
-	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(this);
+	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(THREAD_FACTORY);
 
 	/**
 	 * Executor service for image notifications.
 	 */
-	private final ExecutorService notificator = Executors.newSingleThreadExecutor(this);
+	private final ExecutorService notificator = Executors.newSingleThreadExecutor(THREAD_FACTORY);
 
 	/**
 	 * Cached image.
@@ -233,6 +248,7 @@ public class WebcamUpdater implements Runnable, ThreadFactory, UncaughtException
 			// Return null if more than 10 seconds passed (timeout).
 
 			if (i++ > 100) {
+				LOG.error("Image has not been found for more than 10 seconds");
 				return null;
 			}
 		}
@@ -254,18 +270,5 @@ public class WebcamUpdater implements Runnable, ThreadFactory, UncaughtException
 	 */
 	public double getFPS() {
 		return fps;
-	}
-
-	@Override
-	public Thread newThread(Runnable r) {
-		Thread t = new Thread(r, String.format("webcam-updater-thread-%d", number.incrementAndGet()));
-		t.setDaemon(true);
-		t.setUncaughtExceptionHandler(this);
-		return t;
-	}
-
-	@Override
-	public void uncaughtException(Thread t, Throwable e) {
-		LOG.error(String.format("Exception in thread %s", t.getName()), e);
 	}
 }

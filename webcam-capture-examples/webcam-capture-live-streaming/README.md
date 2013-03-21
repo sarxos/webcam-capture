@@ -8,5 +8,5 @@ Example provided by [hepin1989](https://github.com/hepin1989). Thank you!
 
 ### How To Use
 
-TODO
+1. Start 
 

@@ -2,6 +2,7 @@ package com.github.sarxos.webcam.example;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -18,7 +19,7 @@ import com.github.sarxos.webcam.WebcamResolution;
  * 
  * @author Bartosz Firyn (SarXos)
  */
-public class WebcamViewerExample extends JFrame implements Runnable, WebcamListener, WindowListener {
+public class WebcamViewerExample extends JFrame implements Runnable, WebcamListener, WindowListener, UncaughtExceptionHandler {
 
 	private static final long serialVersionUID = -2831291292491395695L;
 
@@ -56,6 +57,7 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 			}
 		};
 		t.setDaemon(true);
+		t.setUncaughtExceptionHandler(this);
 		t.start();
 	}
 
@@ -114,5 +116,11 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 	public void windowIconified(WindowEvent e) {
 		System.out.println("webcam viewer paused");
 		viewer.pause();
+	}
+
+	@Override
+	public void uncaughtException(Thread t, Throwable e) {
+		System.err.println(String.format("Exception in thread %s", t.getName()));
+		e.printStackTrace();
 	}
 }
