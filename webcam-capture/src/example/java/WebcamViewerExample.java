@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.example;
+
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;

@@ -61,7 +61,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>${project.build.directory}/site/apidocs</directory>
-			<outputDirectory>docs</outputDirectory>
+			<outputDirectory>docs/javadoc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>${project.basedir}/src/main/java</directory>

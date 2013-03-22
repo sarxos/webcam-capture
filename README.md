@@ -2,11 +2,6 @@
 
 This library allows you to use your build-in or external webcam directly from Java.
 
-Complete documentation, API, examples, tutorials and many more can be found here:
-
-[http://webcam-capture.sarxos.pl/](http://webcam-capture.sarxos.pl/)
-
-
 [![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 
 ## Features

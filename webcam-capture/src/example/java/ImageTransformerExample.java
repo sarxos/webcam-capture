@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.example;
+
 
 import java.awt.image.BufferedImage;
 
