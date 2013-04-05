@@ -1,5 +1,4 @@
 
-
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
@@ -25,8 +24,10 @@ public class CustomResolutionExample {
 		};
 		//@formatter:on
 
+		// your camera have to support HD720p to run this code
 		Webcam webcam = Webcam.getDefault();
 		webcam.setCustomViewSizes(nonStandardResolutions);
+		webcam.setViewSize(WebcamResolution.HD720.getSize());
 		webcam.open();
 
 		BufferedImage image = webcam.getImage();
