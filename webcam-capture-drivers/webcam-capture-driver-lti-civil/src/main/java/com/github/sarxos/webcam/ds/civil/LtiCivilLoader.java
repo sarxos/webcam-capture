@@ -32,9 +32,10 @@ public class LtiCivilLoader {
 		@Override
 		public void run() {
 			super.run();
-			boolean removed = file.delete();
-			if (!removed) {
-				file.deleteOnExit();
+			if (file.exists()) {
+				if (!file.delete()) {
+					LOG.warn(String.format("JVM was nopt able to remove file %s", file));
+				}
 			}
 		}
 	}
