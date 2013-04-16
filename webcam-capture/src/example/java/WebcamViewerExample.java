@@ -1,5 +1,6 @@
-
-
+import java.awt.BorderLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -11,7 +12,9 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.WebcamPanel;
+import com.github.sarxos.webcam.WebcamPicker;
 import com.github.sarxos.webcam.WebcamResolution;
+import com.github.sarxos.webcam.log.WebcamLogConfigurator;
 
 
 /**
@@ -19,21 +22,30 @@ import com.github.sarxos.webcam.WebcamResolution;
  * 
  * @author Bartosz Firyn (SarXos)
  */
-public class WebcamViewerExample extends JFrame implements Runnable, WebcamListener, WindowListener, UncaughtExceptionHandler {
+public class WebcamViewerExample extends JFrame implements Runnable, WebcamListener, WindowListener, UncaughtExceptionHandler, ItemListener {
 
-	private static final long serialVersionUID = -2831291292491395695L;
+	private static final long serialVersionUID = 1L;
 
 	private Webcam webcam = null;
-	private WebcamPanel viewer = null;
+	private WebcamPanel panel = null;
+	private WebcamPicker picker = null;
 
 	@Override
 	public void run() {
 
+		WebcamLogConfigurator.configure("src/example/resources/logback.xml");
+
 		setTitle("Java Webcam Capture POC");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLayout(new BorderLayout());
+
 		addWindowListener(this);
 
-		webcam = Webcam.getDefault();
+		picker = new WebcamPicker();
+		picker.addItemListener(this);
+
+		webcam = picker.getSelectedWebcam();
+
 		if (webcam == null) {
 			System.out.println("No webcams found...");
 			System.exit(1);
@@ -42,10 +54,12 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 		webcam.setViewSize(WebcamResolution.VGA.getSize());
 		webcam.addWebcamListener(WebcamViewerExample.this);
 
-		viewer = new WebcamPanel(webcam, false);
-		viewer.setFPSDisplayed(true);
+		panel = new WebcamPanel(webcam, false);
+		panel.setFPSDisplayed(true);
 
-		setContentPane(viewer);
+		add(picker, BorderLayout.NORTH);
+		add(panel, BorderLayout.CENTER);
+
 		pack();
 		setVisible(true);
 
@@ -53,7 +67,7 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 
 			@Override
 			public void run() {
-				viewer.start();
+				panel.start();
 			}
 		};
 		t.setDaemon(true);
@@ -109,18 +123,54 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 	@Override
 	public void windowDeiconified(WindowEvent e) {
 		System.out.println("webcam viewer resumed");
-		viewer.resume();
+		panel.resume();
 	}
 
 	@Override
 	public void windowIconified(WindowEvent e) {
 		System.out.println("webcam viewer paused");
-		viewer.pause();
+		panel.pause();
 	}
 
 	@Override
 	public void uncaughtException(Thread t, Throwable e) {
 		System.err.println(String.format("Exception in thread %s", t.getName()));
 		e.printStackTrace();
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		if (e.getItem() != webcam) {
+			if (webcam != null) {
+
+				final WebcamPanel tmp = panel;
+
+				remove(panel);
+
+				webcam.removeWebcamListener(this);
+
+				webcam = (Webcam) e.getItem();
+				webcam.setViewSize(WebcamResolution.VGA.getSize());
+				webcam.addWebcamListener(this);
+
+				System.out.println("selected " + webcam.getName());
+
+				panel = new WebcamPanel(webcam, false);
+
+				add(panel, BorderLayout.CENTER);
+
+				Thread t = new Thread() {
+
+					@Override
+					public void run() {
+						tmp.stop();
+						panel.start();
+					}
+				};
+				t.setDaemon(true);
+				t.setUncaughtExceptionHandler(this);
+				t.start();
+			}
+		}
 	}
 }
