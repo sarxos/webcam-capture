@@ -77,13 +77,4 @@ public class LtiCivilDriver implements WebcamDriver {
 	public boolean isThreadSafe() {
 		return false;
 	}
-
-	public static void main(String[] args) {
-
-		List<WebcamDevice> devices = new LtiCivilDriver().getDevices();
-		for (WebcamDevice device : devices) {
-			System.out.println(device.getResolutions());
-		}
-	}
-
 }

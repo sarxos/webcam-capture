@@ -31,6 +31,17 @@ public interface WebcamDevice {
 
 	}
 
+	public static interface FPSSource {
+
+		/**
+		 * Get current device FPS.
+		 * 
+		 * @return FPS
+		 */
+		double getFPS();
+
+	}
+
 	/**
 	 * Get device name.
 	 * 
@@ -87,5 +98,4 @@ public interface WebcamDevice {
 	 * @return True if webcam device is open, false otherwise
 	 */
 	boolean isOpen();
-
 }

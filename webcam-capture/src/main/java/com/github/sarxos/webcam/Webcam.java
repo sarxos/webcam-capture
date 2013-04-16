@@ -505,10 +505,14 @@ public class Webcam {
 				return null;
 			}
 
-			// calculate FPS
+			// get FPS
 
-			// +1 to avoid division by zero
-			fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+			if (device instanceof WebcamDevice.FPSSource) {
+				fps = ((WebcamDevice.FPSSource) device).getFPS();
+			} else {
+				// +1 to avoid division by zero
+				fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+			}
 
 			// notify webcam listeners about new image available
 

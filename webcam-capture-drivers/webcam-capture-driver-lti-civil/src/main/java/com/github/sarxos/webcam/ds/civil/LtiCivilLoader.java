@@ -25,7 +25,7 @@ public class LtiCivilLoader {
 		private File file = null;
 
 		public Deleter(File file) {
-			super();
+			super("lti-civil-binary-deleter");
 			this.file = file;
 		}
 
@@ -34,7 +34,7 @@ public class LtiCivilLoader {
 			super.run();
 			if (file.exists()) {
 				if (!file.delete()) {
-					LOG.warn(String.format("JVM was nopt able to remove file %s", file));
+					LOG.warn(String.format("JVM was not able to remove file %s", file));
 				}
 			}
 		}

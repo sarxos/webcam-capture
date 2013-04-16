@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ import com.lti.civil.awt.AWTImageConverter;
  * 
  * @author Bartosz Firyn (SarXos)
  */
-public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
+public class LtiCivilDevice implements WebcamDevice, CaptureObserver, WebcamDevice.FPSSource {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LtiCivilDevice.class);
 
@@ -38,9 +39,15 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 	private Image image = null;
 	private CaptureStream stream = null;
 
-	private volatile boolean open = false;
+	private AtomicBoolean open = new AtomicBoolean(false);
+
 	private volatile boolean capturing = false;
 	private volatile boolean disposed = false;
+
+	private long t1 = -1;
+	private long t2 = -1;
+
+	private volatile double fps = 0;
 
 	protected LtiCivilDevice(CaptureDeviceInfo cdi) {
 		this.cdi = cdi;
@@ -113,25 +120,40 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 
 	@Override
 	public void onNewImage(CaptureStream stream, Image image) {
+
+		if (t1 == -1 || t2 == -1) {
+			t1 = System.currentTimeMillis();
+			t2 = System.currentTimeMillis();
+		}
+
 		this.image = image;
 		this.capturing = true;
+
+		t1 = t2;
+		t2 = System.currentTimeMillis();
+
+		fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
 	}
 
 	@Override
 	public void open() {
 
-		if (open || disposed) {
+		if (disposed) {
 			return;
 		}
 
-		try {
-			stream = LtiCivilDriver.getCaptureSystem().openCaptureDeviceStream(cdi.getDeviceID());
-			stream.setVideoFormat(findFormat());
-			stream.setObserver(this);
-			stream.start();
-		} catch (CaptureException e) {
-			LOG.error("Capture exception when opening Civil device", e);
+		if (open.compareAndSet(false, true)) {
+
+			try {
+				stream = LtiCivilDriver.getCaptureSystem().openCaptureDeviceStream(cdi.getDeviceID());
+				stream.setVideoFormat(findFormat());
+				stream.setObserver(this);
+				stream.start();
+			} catch (CaptureException e) {
+				LOG.error("Capture exception when opening Civil device", e);
+			}
 		}
+
 		while (true) {
 			if (capturing) {
 				break;
@@ -139,6 +161,7 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
+				return;
 			}
 		}
 	}
@@ -168,14 +191,13 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 
 	@Override
 	public void close() {
-		if (!open) {
-			return;
-		}
-		try {
-			stream.stop();
-			stream.dispose();
-		} catch (CaptureException e) {
-			LOG.error("Capture exception when closing Civil device", e);
+		if (open.compareAndSet(true, false)) {
+			try {
+				stream.stop();
+				stream.dispose();
+			} catch (CaptureException e) {
+				LOG.error("Capture exception when closing Civil device", e);
+			}
 		}
 	}
 
@@ -196,6 +218,11 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver {
 
 	@Override
 	public boolean isOpen() {
-		return open;
+		return open.get();
+	}
+
+	@Override
+	public double getFPS() {
+		return fps;
 	}
 }
