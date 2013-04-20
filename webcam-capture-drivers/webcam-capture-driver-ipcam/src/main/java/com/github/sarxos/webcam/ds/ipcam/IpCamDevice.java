@@ -161,14 +161,16 @@ public class IpCamDevice implements WebcamDevice {
 			if (exception != null) {
 				throw exception;
 			}
-			try {
-				if (image == null) {
+			if (image == null) {
+				try {
 					synchronized (lock) {
 						lock.wait();
 					}
+				} catch (InterruptedException e) {
+					throw new WebcamException("Reader thread interrupted", e);
+				} catch (Exception e) {
+					throw new RuntimeException("Problem waiting on lock", e);
 				}
-			} catch (InterruptedException e) {
-				throw new WebcamException("Reader thread interrupted", e);
 			}
 			return image;
 		}

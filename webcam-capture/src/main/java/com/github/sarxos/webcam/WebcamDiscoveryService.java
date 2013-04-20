@@ -161,6 +161,8 @@ public class WebcamDiscoveryService implements Runnable {
 						LOG.error("Interrupted", e);
 					}
 					break;
+				} catch (Exception e) {
+					throw new RuntimeException("Problem waiting on monitor", e);
 				}
 			}
 

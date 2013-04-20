@@ -228,6 +228,8 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 					lock.wait();
 				} catch (InterruptedException e) {
 					LOG.error("Nasty interrupted exception", e);
+				} catch (Exception e) {
+					throw new RuntimeException("Problem waiting on lock", e);
 				}
 			}
 		}

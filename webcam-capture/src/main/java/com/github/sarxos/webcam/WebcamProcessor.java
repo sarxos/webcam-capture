@@ -2,9 +2,11 @@ package com.github.sarxos.webcam;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class WebcamProcessor {
@@ -16,9 +18,11 @@ public class WebcamProcessor {
 	 */
 	private static final class ProcessorThreadFactory implements ThreadFactory {
 
+		private static final AtomicInteger N = new AtomicInteger(0);
+
 		@Override
 		public Thread newThread(Runnable r) {
-			Thread t = new Thread(r, "atomic-processor");
+			Thread t = new Thread(r, String.format("atomic-processor-%d", N.incrementAndGet()));
 			t.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 			t.setDaemon(true);
 			return t;
@@ -65,12 +69,14 @@ public class WebcamProcessor {
 				} catch (Throwable e) {
 					t.setThrowable(e);
 				} finally {
-					try {
-						if (t != null) {
+					if (t != null) {
+						try {
 							outbound.put(t);
+						} catch (InterruptedException e) {
+							break;
+						} catch (Exception e) {
+							throw new RuntimeException("Cannot put task into outbound queue", e);
 						}
-					} catch (InterruptedException e) {
-						break;
 					}
 				}
 			}
@@ -95,7 +101,7 @@ public class WebcamProcessor {
 	/**
 	 * Singleton instance.
 	 */
-	private static WebcamProcessor instance = null;
+	private static final WebcamProcessor INSTANCE = new WebcamProcessor();;
 
 	private WebcamProcessor() {
 	}
@@ -110,13 +116,14 @@ public class WebcamProcessor {
 		if (started.compareAndSet(false, true)) {
 			runner.execute(processor);
 		}
-		processor.process(task);
+		if (!runner.isShutdown()) {
+			processor.process(task);
+		} else {
+			throw new RejectedExecutionException("Cannot process because processor runner has been already shut down");
+		}
 	}
 
 	public static synchronized WebcamProcessor getInstance() {
-		if (instance == null) {
-			instance = new WebcamProcessor();
-		}
-		return instance;
+		return INSTANCE;
 	}
 }
