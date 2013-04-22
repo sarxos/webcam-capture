@@ -26,7 +26,7 @@ public class Encoder {
 
 		Webcam webcam = Webcam.getDefault();
 		webcam.setViewSize(size);
-		webcam.open();
+		webcam.open(true);
 
 		long start = System.currentTimeMillis();
 
@@ -43,6 +43,7 @@ public class Encoder {
 
 			writer.encodeVideo(0, frame);
 
+			// 10 FPS
 			Thread.sleep(100);
 		}
 
