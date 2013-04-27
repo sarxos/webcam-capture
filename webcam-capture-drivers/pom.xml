@@ -21,10 +21,11 @@
 
 	<modules>
 		<module>webcam-capture-driver-ffmpeg-cli</module>
-		<module>webcam-capture-driver-lti-civil</module>
+		<module>webcam-capture-driver-gstreamer</module>
 		<module>webcam-capture-driver-ipcam</module>
 		<module>webcam-capture-driver-javacv</module>
 		<module>webcam-capture-driver-jmf</module>
+		<module>webcam-capture-driver-lti-civil</module>
 		<module>webcam-capture-driver-openimaj</module>
 		<module>webcam-capture-driver-vlcj</module>
 	</modules>
