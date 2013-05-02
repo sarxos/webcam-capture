@@ -211,46 +211,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	/**
 	 * Scheduled executor acting as timer.
 	 */
-	private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1, THREAD_FACTORY);
-
-	/**
-	 * Repainter updates panel when it is being started.
-	 * 
-	 * @author Bartosz Firyn (sarxos)
-	 */
-	private class Repainter extends Thread {
-
-		public Repainter() {
-			setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
-			setName(String.format("repainter-%s", webcam.getName()));
-			setDaemon(true);
-		}
-
-		@Override
-		public void run() {
-
-			repaint();
-
-			while (starting) {
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
-			}
-
-			if (webcam.isOpen()) {
-				if (isFPSLimited()) {
-					executor.scheduleAtFixedRate(updater, 0, (long) (1000 / frequency), TimeUnit.MILLISECONDS);
-				} else {
-					executor.scheduleWithFixedDelay(updater, 100, 1, TimeUnit.MILLISECONDS);
-				}
-			} else {
-				executor.schedule(this, 500, TimeUnit.MILLISECONDS);
-			}
-		}
-
-	}
+	private ScheduledExecutorService executor = null;
 
 	/**
 	 * Image updater reads images from camera and force panel to be repainted.
@@ -259,15 +220,72 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 */
 	private class ImageUpdater implements Runnable {
 
-		public ImageUpdater() {
+		/**
+		 * Repainter updates panel when it is being started.
+		 * 
+		 * @author Bartosz Firyn (sarxos)
+		 */
+		private class RepaintScheduler extends Thread {
+
+			public RepaintScheduler() {
+				setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
+				setName(String.format("repaint-scheduler-%s", webcam.getName()));
+				setDaemon(true);
+			}
+
+			@Override
+			public void run() {
+
+				if (!running.get()) {
+					return;
+				}
+
+				repaint();
+
+				while (starting) {
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
+				}
+
+				if (webcam.isOpen()) {
+					if (isFPSLimited()) {
+						executor.scheduleAtFixedRate(updater, 0, (long) (1000 / frequency), TimeUnit.MILLISECONDS);
+					} else {
+						executor.scheduleWithFixedDelay(updater, 100, 1, TimeUnit.MILLISECONDS);
+					}
+				} else {
+					executor.schedule(this, 500, TimeUnit.MILLISECONDS);
+				}
+			}
+
 		}
 
+		private Thread scheduler = new RepaintScheduler();
+
+		private AtomicBoolean running = new AtomicBoolean(false);
+
 		public void start() {
-			new Repainter().start();
+			if (running.compareAndSet(false, true)) {
+				executor = Executors.newScheduledThreadPool(1, THREAD_FACTORY);
+				scheduler.start();
+			}
+		}
+
+		public void stop() {
+			if (running.compareAndSet(true, false)) {
+				executor.shutdown();
+			}
 		}
 
 		@Override
 		public void run() {
+
+			if (!running.get()) {
+				return;
+			}
 
 			if (!webcam.isOpen()) {
 				return;
@@ -333,7 +351,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * Repainter is used to fetch images from camera and force panel repaint
 	 * when image is ready.
 	 */
-	private volatile ImageUpdater updater = new ImageUpdater();
+	private volatile ImageUpdater updater = null;
 
 	/**
 	 * Webcam is currently starting.
@@ -425,13 +443,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		}
 
 		if (start) {
-			updater.start();
-			try {
-				errored = !webcam.open();
-			} catch (WebcamException e) {
-				errored = true;
-				throw e;
-			}
+			start();
 		}
 	}
 
@@ -480,9 +492,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 
 	@Override
 	public void webcamClosed(WebcamEvent we) {
-		if (updater != null) {
-			updater = null;
-		}
+		stop();
 	}
 
 	@Override
@@ -503,6 +513,8 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		if (!started.compareAndSet(false, true)) {
 			return;
 		}
+
+		LOG.debug("Starting panel rendering and trying to open attached webcam");
 
 		starting = true;
 
@@ -526,14 +538,22 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * Stop rendering and close webcam.
 	 */
 	public void stop() {
-		if (started.compareAndSet(true, false)) {
-			image = null;
-			try {
-				errored = !webcam.close();
-			} catch (WebcamException e) {
-				errored = true;
-				throw e;
-			}
+		if (!started.compareAndSet(true, false)) {
+			return;
+		}
+
+		LOG.debug("Stopping panel rendering and closing attached webcam");
+
+		updater.stop();
+		updater = null;
+
+		image = null;
+
+		try {
+			errored = !webcam.close();
+		} catch (WebcamException e) {
+			errored = true;
+			throw e;
 		}
 	}
 
@@ -544,6 +564,9 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		if (paused) {
 			return;
 		}
+
+		LOG.debug("Pausing panel rendering");
+
 		paused = true;
 	}
 
@@ -551,13 +574,14 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * Resume rendering.
 	 */
 	public void resume() {
+
 		if (!paused) {
 			return;
 		}
+
+		LOG.debug("Resuming panel rendering");
+
 		paused = false;
-		synchronized (updater) {
-			updater.notifyAll();
-		}
 	}
 
 	/**

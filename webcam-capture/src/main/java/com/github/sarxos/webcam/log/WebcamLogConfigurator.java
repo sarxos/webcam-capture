@@ -33,6 +33,13 @@ public class WebcamLogConfigurator {
 	 */
 	public static void configure(InputStream is) {
 
+		try {
+			Class.forName("ch.qos.logback.classic.LoggerContext");
+		} catch (ClassNotFoundException e1) {
+			LOG.error("Cannot configure logger because logback LoggerContext is not available in classpath");
+			return;
+		}
+
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 		JoranConfigurator configurator = new JoranConfigurator();
 		configurator.setContext(context);
