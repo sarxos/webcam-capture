@@ -10,7 +10,7 @@ This library allows you to use your build-in or external webcam directly from Ja
 * No additional software required,
 * Supports multiple platforms (Windows, Linux, Mac OS, etc) and various architectures (32-bit, 64-bit, ARM),
 * Stream images from build-in or USB-connected PC webcams, 
-* Stream images from IP / network cameras,
+* Stream images from IP / network cameras (as MJPEG or JPEG),
 * Detect motion,
 * All required JARs Available in Maven Central,
 * Can re-stream images as MJPEG,
@@ -140,6 +140,9 @@ please make sure you are using the newest Webcam Capture SNAPSHOT version.
 * [How to save captured image in PNG / JPG / GIF / BMP etc](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/DifferentFileFormatsExample.java)
 * [How to capture with many parrallel threads](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/ConcurrentThreadsExample.java)
 * [How to detect motion (text mode only)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/DetectMotionExample.java)
+* [How to display images from multiple IP cameras exposing pictures in JPG format](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/webcam-capture-driver-ipcam/src/examples/java/JpegDasdingStudioExample.java)
+* [How to display image from IP camera exposing MJPEG stream](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/webcam-capture-driver-ipcam/src/examples/java/MjpegLignanoBeachExample.java)
+* [How to use composite driver to display both, build-in and IP camera images](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/webcam-capture-driver-ipcam/src/examples/java/DualNativeAndMjpegWebcamExample.java)
 
 And here are some more advanced examples, few with quite fancy GUI.
 
