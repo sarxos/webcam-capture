@@ -1,5 +1,6 @@
 package com.github.sarxos.webcam.ds.ipcam;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +27,7 @@ public class IpCamDeviceRegistry {
 	 * 
 	 * @param ipcam the IP camera to be register
 	 */
-	public static void register(IpCamDevice ipcam) {
+	public static IpCamDevice register(IpCamDevice ipcam) {
 		for (WebcamDevice d : DEVICES) {
 			String name = ipcam.getName();
 			if (d.getName().equals(name)) {
@@ -34,14 +35,23 @@ public class IpCamDeviceRegistry {
 			}
 		}
 		DEVICES.add(ipcam);
+		return ipcam;
 	}
 
-	public static void register(String name, URL url, IpCamMode mode) {
-		register(new IpCamDevice(name, url, mode));
+	public static IpCamDevice register(String name, String url, IpCamMode mode) throws MalformedURLException {
+		return register(new IpCamDevice(name, url, mode));
 	}
 
-	public static void register(String name, URL url, IpCamMode mode, IpCamAuth auth) {
-		register(new IpCamDevice(name, url, mode, auth));
+	public static IpCamDevice register(String name, URL url, IpCamMode mode) {
+		return register(new IpCamDevice(name, url, mode));
+	}
+
+	public static IpCamDevice register(String name, String url, IpCamMode mode, IpCamAuth auth) throws MalformedURLException {
+		return register(new IpCamDevice(name, url, mode, auth));
+	}
+
+	public static IpCamDevice register(String name, URL url, IpCamMode mode, IpCamAuth auth) {
+		return register(new IpCamDevice(name, url, mode, auth));
 	}
 
 	public static boolean isRegistered(IpCamDevice ipcam) {

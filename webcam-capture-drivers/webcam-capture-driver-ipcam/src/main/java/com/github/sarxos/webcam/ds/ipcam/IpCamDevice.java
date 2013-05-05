@@ -202,6 +202,10 @@ public class IpCamDevice implements WebcamDevice {
 		this(name, url, mode, null);
 	}
 
+	public IpCamDevice(String name, String url, IpCamMode mode, IpCamAuth auth) throws MalformedURLException {
+		this(name, new URL(url), mode, auth);
+	}
+
 	public IpCamDevice(String name, URL url, IpCamMode mode, IpCamAuth auth) {
 
 		if (name == null) {
