@@ -21,18 +21,34 @@ model, provide demo URL and API if available. You can also create your own IP ca
 a case please use provided models as a reference. In case of any issues don't hesitate to ask for
 help :) Later, when your class is ready, I will be happy to merge it with official distribution.
 
+
+## Download
+
+Below is the newest stable version ZIP containing main project
+JAR with additional documents, examples and all required 3rd-party
+dependencies:
+
+* **Latest stable version** - [webcam-capture-driver-ipcam-0.3.10-RC2-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.10-RC2/webcam-capture-driver-ipcam-0.3.10-RC2-dist.zip)
+* Previous stable version - [webcam-capture-driver-ipcam-0.3.9-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.9/webcam-capture-driver-ipcam-0.3.9-dist.zip)
+
+
 ## Maven
 
+Latest stable version:
+
+```xml
+<repository>
+	<id>SarXos Repository</id>
+	<url>http://www.sarxos.pl/repo/maven2</url>
+</repository>
+```
 ```xml
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-ipcam</artifactId>
-	<version>0.3.9</version>
+	<version>0.3.10-RC2</version>
 </parent>
 ```
-
-If you are not using Maven, then **[here](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.6/webcam-capture-driver-ipcam-0.3.6-dist.zip)**
-you can download ZIP containing all required 3rd-party JARs.
 
 ## Examples
 
