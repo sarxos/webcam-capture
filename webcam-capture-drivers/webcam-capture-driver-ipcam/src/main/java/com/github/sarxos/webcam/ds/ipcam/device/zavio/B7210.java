@@ -35,7 +35,7 @@ public class B7210 extends IpCamDevice {
 	}
 
 	public B7210(String name, URL base) {
-		super(name, null, IpCamMode.PULL);
+		super(name, (URL) null, IpCamMode.PULL);
 		this.base = base;
 	}
 

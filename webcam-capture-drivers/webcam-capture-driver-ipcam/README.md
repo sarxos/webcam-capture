@@ -39,93 +39,104 @@ you can download ZIP containing all required 3rd-party JARs.
 Few real live examples of how to use Webcam Capture together with IP camera driver.
 Please note that some URLs can be out-of-date when you test this code, however you
 can find some usable IP camera demos googling _"ip camera demo"_ or accessing 
-[this page](http://www.axis.com/solutions/video/gallery.htm).  
+[this page](http://www.axis.com/solutions/video/gallery.htm).
 
 ### Example 1
 
-Example of  how to display image from B7210 bullet IP camera by [Zavio](http://www.zavio.com/product.php?id=45)
-in ```JPanel``` inside ```JFrame``` window ([QVGA](http://en.wikipedia.org/wiki/Graphics_display_resolution#QVGA_.28320.C3.97240.29) 
-image size is used).
+Example of how to display image from IP camera device which expose pictures 
+as MJPEG stream (this is refered as PUSH mode, because camera push new images 
+to the client as soon as new one is available).
 
 ```java
-IpCamDevice ipcam = new B7210("B7210", "114.32.216.24");
-ipcam.setAuth(new IpCamAuth("demo", "demo"));
-ipcam.setSize(B7210.SIZE_QVGA);
-		
-IpCamDriver driver = new IpCamDriver();
-driver.register(ipcam);
+/**
+ * Remember to add IP camera driver JAR to the application classpath!
+ * Otherwise you will not be able to use IP camera driver features. Driver
+ * has to be set at the very beginning, before any webcam-capture related
+ * method is being invoked.
+ */
+static {
+	Webcam.setDriver(new IpCamDriver());
+}
 
-Webcam.setDriver(driver);
+public static void main(String[] args) throws MalformedURLException {
 
-WebcamPanel panel = new WebcamPanel(Webcam.getDefault());
-panel.setFPS(0.5); // 1 frame per 2 seconds
+	IpCamDeviceRegistry.register(new IpCamDevice("Lignano", "http://88.37.116.138/mjpg/video.mjpg", IpCamMode.PUSH));
 
-JFrame f = new JFrame("Night Tree Somewhere");
-f.add(panel);
-f.pack();
-f.setVisible(true);
-f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-```
+	WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(0));
+	panel.setFPS(1);
 
-![Night Tree Somewhere](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-drivers/webcam-capture-driver-ipcam/src/etc/resources/night-tree.png "Night Tree Somewhere")
-
-### Example 2
-
-Example of how to handle image from **any** IP camera supporting JPEG compression:
-
-```java
-String address = "http://www.dasding.de/ext/webcam/webcam770.php?cam=1";
-IpCamDevice livecam = new IpCamDevice("dasding", new URL(address), IpCamMode.PULL);
-
-IpCamDriver driver = new IpCamDriver();
-driver.register(livecam);
-
-Webcam.setDriver(driver);
-
-WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(0));
-panel.setFPS(5);
-
-JFrame f = new JFrame("Dasding Studio Live IP Camera");
-f.add(panel);
-f.pack();
-f.setVisible(true);
-f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-```
-
-![Dasding Studio Live IP Camera](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-drivers/webcam-capture-driver-ipcam/src/etc/resources/dasding-live.png "Dasding Studio Live IP Camera")
-
-### Example 3
-
-Example of how to handle image from **any** IP camera supporting MJPEG compression. 
-Here we are handling stream from the beach of Lignano (Italy) from an AXIS 213 
-PTZ Network Camera.
-
-```java
-String address = "http://88.37.116.138/mjpg/video.mjpg ";
-IpCamDevice livecam = new IpCamDevice("Lignano Beach", new URL(address), IpCamMode.PUSH);
-
-IpCamDriver driver = new IpCamDriver();
-driver.register(livecam);
-
-Webcam.setDriver(driver);
-
-WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(0));
-panel.setFPS(1);
-
-JFrame f = new JFrame("Live Views From Lignano Beach (Italy)");
-f.add(panel);
-f.pack();
-f.setVisible(true);
-f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	JFrame f = new JFrame("Live Views From Lignano Beach");
+	f.add(panel);
+	f.pack();
+	f.setVisible(true);
+	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+}
 ```
 
 ![Lignano Beach](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-drivers/webcam-capture-driver-ipcam/src/etc/resources/lignano-beach.png "Lignano Beach")
 
-### Need More Examples ???
+### Example 2
 
-Using Webcam Capture you can save images in files, display in Swing components, upload to
-3rd-party servers, etc. Actually, having ```BufferedImage``` in your hand you can do with
-it whatever you want. Please don't hesitate to contact me if you will need more examples.
+Example of how to display image from multiple IP camera devices which expose 
+it as JPG pictures. In this example we are using IP camera storage feature which
+use XML file to define all available cameras.
+
+```java
+/**
+ * Here we are additionally using cameras storage which is based on simple
+ * XML file where all cameras which will be used are listed. By using
+ * cameras storage you do not have to register devices neither thru the
+ * registry nor driver instance. It's the simplest to deal with multiple
+ * cameras when you do not have to add/remove cameras in runtime.
+ */
+static {
+	Webcam.setDriver(new IpCamDriver(new IpCamStorage("src/examples/resources/cameras.xml")));
+}
+
+public static void main(String[] args) throws MalformedURLException {
+
+	JFrame f = new JFrame("Dasding Studio Live IP Cameras Demo");
+	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	f.setLayout(new GridLayout(0, 3, 1, 1));
+
+	List<WebcamPanel> panels = new ArrayList<WebcamPanel>();
+
+	for (Webcam webcam : Webcam.getWebcams()) {
+
+		WebcamPanel panel = new WebcamPanel(webcam, new Dimension(256, 144), false);
+		panel.setFillArea(true);
+		panel.setFPSLimited(true);
+		panel.setFPS(0.2); // 0.2 FPS = 1 frame per 5 seconds
+		panel.setBorder(BorderFactory.createEmptyBorder());
+
+		f.add(panel);
+		panels.add(panel);
+	}
+
+	f.pack();
+	f.setVisible(true);
+
+	for (WebcamPanel panel : panels) {
+		panel.start();
+	}
+}
+```
+
+And here is the cameras.xml file used in the above example:
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?> 
+<storage>
+	<ipcam name="Dasding 01" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=1" />
+	<ipcam name="Dasding 02" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=2" />
+	<ipcam name="Dasding 04" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=4" />
+	<ipcam name="Dasding 06" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=6" />
+	<ipcam name="Dasding 07" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=7" />
+	<ipcam name="Dasding 10" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=10" />
+</storage>
+```
+
+![Dasding Studio Live IP Camera](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture-drivers/webcam-capture-driver-ipcam/src/etc/resources/dasding-live.png "Dasding Studio Live IP Camera")
 
 ## License
 

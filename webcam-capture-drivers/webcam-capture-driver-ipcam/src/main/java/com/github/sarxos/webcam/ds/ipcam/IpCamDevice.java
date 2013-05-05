@@ -194,6 +194,10 @@ public class IpCamDevice implements WebcamDevice {
 	private Dimension[] sizes = null;
 	private Dimension size = null;
 
+	public IpCamDevice(String name, String url, IpCamMode mode) throws MalformedURLException {
+		this(name, new URL(url), mode, null);
+	}
+
 	public IpCamDevice(String name, URL url, IpCamMode mode) {
 		this(name, url, mode, null);
 	}
@@ -283,7 +287,7 @@ public class IpCamDevice implements WebcamDevice {
 	}
 
 	@Override
-	public BufferedImage getImage() {
+	public synchronized BufferedImage getImage() {
 
 		if (!open) {
 			throw new WebcamException("IpCam device not open");
@@ -303,29 +307,27 @@ public class IpCamDevice implements WebcamDevice {
 
 		if (pushReader == null) {
 
-			synchronized (this) {
-
-				URI uri = null;
-				try {
-					uri = getURL().toURI();
-				} catch (URISyntaxException e) {
-					throw new WebcamException(String.format("Incorrect URI syntax '%s'", uri), e);
-				}
-
-				pushReader = new PushImageReader(uri);
-
-				// TODO: change to executor
-
-				Thread thread = new Thread(pushReader, String.format("%s-reader", getName()));
-				thread.setDaemon(true);
-				thread.start();
+			URI uri = null;
+			try {
+				uri = getURL().toURI();
+			} catch (URISyntaxException e) {
+				throw new WebcamException(String.format("Incorrect URI syntax '%s'", uri), e);
 			}
+
+			pushReader = new PushImageReader(uri);
+
+			// TODO: change to executor
+
+			Thread thread = new Thread(pushReader, String.format("%s-reader", getName()));
+			thread.setDaemon(true);
+			thread.start();
 		}
 
 		return pushReader.getImage();
 	}
 
 	private BufferedImage getImagePullMode() {
+
 		synchronized (this) {
 
 			HttpGet get = null;

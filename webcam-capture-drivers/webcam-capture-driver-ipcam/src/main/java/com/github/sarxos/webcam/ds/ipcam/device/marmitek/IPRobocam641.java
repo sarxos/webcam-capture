@@ -17,7 +17,7 @@ public class IPRobocam641 extends IpCamDevice {
 	}
 
 	public IPRobocam641(String name, URL base) {
-		super(name, null, IpCamMode.PUSH);
+		super(name, (URL) null, IpCamMode.PUSH);
 		this.base = base;
 	}
 

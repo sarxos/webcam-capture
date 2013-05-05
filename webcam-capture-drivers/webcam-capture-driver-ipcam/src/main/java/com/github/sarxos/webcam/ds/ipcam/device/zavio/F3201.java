@@ -35,7 +35,7 @@ public class F3201 extends IpCamDevice {
 	}
 
 	public F3201(String name, URL base) {
-		super(name, null, IpCamMode.PULL);
+		super(name, (URL) null, IpCamMode.PULL);
 		this.base = base;
 	}
 

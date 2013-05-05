@@ -37,7 +37,7 @@ public class X104S extends IpCamDevice {
 	}
 
 	public X104S(String name, URL base) {
-		super(name, null, IpCamMode.PUSH);
+		super(name, (URL) null, IpCamMode.PUSH);
 		this.base = base;
 	}
 
