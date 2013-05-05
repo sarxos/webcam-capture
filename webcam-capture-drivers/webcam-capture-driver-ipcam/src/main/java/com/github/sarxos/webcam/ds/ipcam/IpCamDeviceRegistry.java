@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.github.sarxos.webcam.WebcamDevice;
@@ -31,7 +32,7 @@ public class IpCamDeviceRegistry {
 		for (WebcamDevice d : DEVICES) {
 			String name = ipcam.getName();
 			if (d.getName().equals(name)) {
-				throw new WebcamException(String.format("Name '%s' is already in use", name));
+				throw new WebcamException(String.format("Webcam with name '%s' is already registered", name));
 			}
 		}
 		DEVICES.add(ipcam);
@@ -55,8 +56,9 @@ public class IpCamDeviceRegistry {
 	}
 
 	public static boolean isRegistered(IpCamDevice ipcam) {
-		for (IpCamDevice d : DEVICES) {
-			if (d.getName().equals(ipcam.getName())) {
+		Iterator<IpCamDevice> di = DEVICES.iterator();
+		while (di.hasNext()) {
+			if (di.next().getName().equals(ipcam.getName())) {
 				return true;
 			}
 		}
@@ -64,8 +66,9 @@ public class IpCamDeviceRegistry {
 	}
 
 	public static boolean isRegistered(String name) {
-		for (IpCamDevice d : DEVICES) {
-			if (d.getName().equals(name)) {
+		Iterator<IpCamDevice> di = DEVICES.iterator();
+		while (di.hasNext()) {
+			if (di.next().equals(name)) {
 				return true;
 			}
 		}
@@ -86,8 +89,25 @@ public class IpCamDeviceRegistry {
 	 * 
 	 * @param ipcam the IP camera to be unregister
 	 */
-	public static void unregister(IpCamDevice ipcam) {
-		DEVICES.remove(ipcam);
+	public static boolean unregister(IpCamDevice ipcam) {
+		return DEVICES.remove(ipcam);
+	}
+
+	/**
+	 * Unregister IP camera with given name.
+	 * 
+	 * @param ipcam the IP camera to be unregister
+	 */
+	public static boolean unregister(String name) {
+		Iterator<IpCamDevice> di = DEVICES.iterator();
+		while (di.hasNext()) {
+			IpCamDevice d = di.next();
+			if (d.getName().equals(name)) {
+				di.remove();
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
