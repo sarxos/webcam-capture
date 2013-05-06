@@ -135,6 +135,94 @@ public class WebcamDiscoveryService implements Runnable {
 		return Collections.unmodifiableList(webcams);
 	}
 
+	/**
+	 * Scan for newly added or already removed webcams.
+	 */
+	public void scan() {
+
+		WebcamDiscoveryListener[] listeners = Webcam.getDiscoveryListeners();
+
+		List<WebcamDevice> tmpnew = driver.getDevices();
+		List<WebcamDevice> tmpold = null;
+
+		try {
+			tmpold = getDevices(getWebcams(Long.MAX_VALUE, TimeUnit.MILLISECONDS));
+		} catch (TimeoutException e) {
+			throw new WebcamException(e);
+		}
+
+		// convert to linked list due to O(1) on remove operation on
+		// iterator versus O(n) for the same operation in array list
+
+		List<WebcamDevice> oldones = new LinkedList<WebcamDevice>(tmpold);
+		List<WebcamDevice> newones = new LinkedList<WebcamDevice>(tmpnew);
+
+		Iterator<WebcamDevice> oi = oldones.iterator();
+		Iterator<WebcamDevice> ni = null;
+
+		WebcamDevice od = null; // old device
+		WebcamDevice nd = null; // new device
+
+		// reduce lists
+
+		while (oi.hasNext()) {
+
+			od = oi.next();
+			ni = newones.iterator();
+
+			while (ni.hasNext()) {
+
+				nd = ni.next();
+
+				// remove both elements, if device name is the same, which
+				// actually means that device is exactly the same
+
+				if (nd.getName().equals(od.getName())) {
+					ni.remove();
+					oi.remove();
+					break;
+				}
+			}
+		}
+
+		// if any left in old ones it means that devices has been removed
+		if (oldones.size() > 0) {
+
+			List<Webcam> notified = new ArrayList<Webcam>();
+
+			for (WebcamDevice device : oldones) {
+				for (Webcam webcam : webcams) {
+					if (webcam.getDevice().getName().equals(device.getName())) {
+						notified.add(webcam);
+						break;
+					}
+				}
+			}
+
+			setCurrentWebcams(tmpnew);
+
+			for (Webcam webcam : notified) {
+				notifyWebcamGone(webcam, listeners);
+				webcam.dispose();
+			}
+		}
+
+		// if any left in new ones it means that devices has been added
+		if (newones.size() > 0) {
+
+			setCurrentWebcams(tmpnew);
+
+			for (WebcamDevice device : newones) {
+				for (Webcam webcam : webcams) {
+					if (webcam.getDevice().getName().equals(device.getName())) {
+						notifyWebcamFound(webcam, listeners);
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	@Override
 	public void run() {
 
@@ -166,93 +254,7 @@ public class WebcamDiscoveryService implements Runnable {
 				}
 			}
 
-			WebcamDiscoveryListener[] listeners = Webcam.getDiscoveryListeners();
-
-			// do nothing when there are no listeners to be notified
-
-			if (listeners.length == 0) {
-				continue;
-			}
-
-			List<WebcamDevice> tmpnew = driver.getDevices();
-			List<WebcamDevice> tmpold = null;
-
-			try {
-				tmpold = getDevices(getWebcams(Long.MAX_VALUE, TimeUnit.MILLISECONDS));
-			} catch (TimeoutException e) {
-				throw new WebcamException(e);
-			}
-
-			// convert to linked list due to O(1) on remove operation on
-			// iterator versus O(n) for the same operation in array list
-
-			List<WebcamDevice> oldones = new LinkedList<WebcamDevice>(tmpold);
-			List<WebcamDevice> newones = new LinkedList<WebcamDevice>(tmpnew);
-
-			Iterator<WebcamDevice> oi = oldones.iterator();
-			Iterator<WebcamDevice> ni = null;
-
-			WebcamDevice od = null; // old device
-			WebcamDevice nd = null; // new device
-
-			// reduce lists
-
-			while (oi.hasNext()) {
-
-				od = oi.next();
-				ni = newones.iterator();
-
-				while (ni.hasNext()) {
-
-					nd = ni.next();
-
-					// remove both elements, if device name is the same, which
-					// actually means that device is exactly the same
-
-					if (nd.getName().equals(od.getName())) {
-						ni.remove();
-						oi.remove();
-						break;
-					}
-				}
-			}
-
-			// if any left in old ones it means that devices has been removed
-			if (oldones.size() > 0) {
-
-				List<Webcam> notified = new ArrayList<Webcam>();
-
-				for (WebcamDevice device : oldones) {
-					for (Webcam webcam : webcams) {
-						if (webcam.getDevice().getName().equals(device.getName())) {
-							notified.add(webcam);
-							break;
-						}
-					}
-				}
-
-				setCurrentWebcams(tmpnew);
-
-				for (Webcam webcam : notified) {
-					notifyWebcamGone(webcam, listeners);
-					webcam.dispose();
-				}
-			}
-
-			// if any left in new ones it means that devices has been added
-			if (newones.size() > 0) {
-
-				setCurrentWebcams(tmpnew);
-
-				for (WebcamDevice device : newones) {
-					for (Webcam webcam : webcams) {
-						if (webcam.getDevice().getName().equals(device.getName())) {
-							notifyWebcamFound(webcam, listeners);
-							break;
-						}
-					}
-				}
-			}
+			scan();
 
 		} while (running);
 	}

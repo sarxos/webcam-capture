@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
 
@@ -29,13 +30,21 @@ public class IpCamDeviceRegistry {
 	 * @param ipcam the IP camera to be register
 	 */
 	public static IpCamDevice register(IpCamDevice ipcam) {
+
 		for (WebcamDevice d : DEVICES) {
 			String name = ipcam.getName();
 			if (d.getName().equals(name)) {
 				throw new WebcamException(String.format("Webcam with name '%s' is already registered", name));
 			}
 		}
+
 		DEVICES.add(ipcam);
+
+		// run discovery service once to trigger new webcam discovery event
+		// and keep webcams list up-to-date
+
+		Webcam.getDiscoveryService().scan();
+
 		return ipcam;
 	}
 
@@ -90,7 +99,17 @@ public class IpCamDeviceRegistry {
 	 * @param ipcam the IP camera to be unregister
 	 */
 	public static boolean unregister(IpCamDevice ipcam) {
-		return DEVICES.remove(ipcam);
+		boolean removed = DEVICES.remove(ipcam);
+
+		// run discovery service once if device has been removed to
+		// trigger disconnected webcam discovery event and keep webcams
+		// list up-to-date
+
+		if (removed) {
+			Webcam.getDiscoveryService().scan();
+		}
+
+		return removed;
 	}
 
 	/**
@@ -104,6 +123,7 @@ public class IpCamDeviceRegistry {
 			IpCamDevice d = di.next();
 			if (d.getName().equals(name)) {
 				di.remove();
+				Webcam.getDiscoveryService().scan();
 				return true;
 			}
 		}
