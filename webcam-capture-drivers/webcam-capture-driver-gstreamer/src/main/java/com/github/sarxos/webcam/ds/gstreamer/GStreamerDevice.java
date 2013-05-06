@@ -135,9 +135,9 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 
 		if (caps != null) {
 			caps.dispose();
-		} else {
-			caps = Caps.fromString(String.format("%s,width=%d,height=%d", FORMAT, size.width, size.height));
 		}
+
+		caps = Caps.fromString(String.format("%s,width=%d,height=%d", FORMAT, size.width, size.height));
 
 		filter.setCaps(caps);
 
