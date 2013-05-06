@@ -1,24 +1,31 @@
 package com.github.sarxos.webcam.ds.gstreamer;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JFrame;
 
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
-import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.interfaces.PropertyProbe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
+import com.github.sarxos.webcam.WebcamPanel;
 import com.sun.jna.NativeLibrary;
 
 
 public class GStreamerDriver implements WebcamDriver {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GStreamerDriver.class);
+
+	static {
+		init();
+	}
 
 	private static final class GStreamerShutdownHook extends Thread {
 
@@ -28,40 +35,33 @@ public class GStreamerDriver implements WebcamDriver {
 
 		@Override
 		public void run() {
+			LOG.debug("GStreamer deinitialization");
 			Gst.deinit();
 		}
 	}
 
-	static {
+	private static final void init() {
+		LOG.debug("GStreamer initialization");
 		NativeLibrary.addSearchPath("gstreamer-0.10", "C:\\Program Files\\OSSBuild\\GStreamer\\v0.10.6\\bin");
 		Gst.init(GStreamerDriver.class.getSimpleName(), new String[0]);
 		Runtime.getRuntime().addShutdownHook(new GStreamerShutdownHook());
 	}
 
-	private static final Pipeline pipe = new Pipeline(GStreamerDriver.class.getSimpleName());
-
 	@Override
 	public List<WebcamDevice> getDevices() {
 
-		Element dshowsrc = ElementFactory.make("dshowvideosrc", "source");
-		dshowsrc.setState(State.READY);
+		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
 
+		Element dshowsrc = ElementFactory.make("dshowvideosrc", "source");
 		PropertyProbe probe = PropertyProbe.wrap(dshowsrc);
-		for (Object device : probe.getValues("device-name")) {
-			System.out.println(device);
+
+		for (Object name : probe.getValues("device-name")) {
+			devices.add(new GStreamerDevice(name.toString()));
 		}
 
-		dshowsrc.setState(State.NULL);
+		dshowsrc.dispose();
 
-		// final Element videosrc = ElementFactory.make("videotestsrc",
-		// "source");
-		// final Element videofilter = ElementFactory.make("capsfilter",
-		// "filter");
-		// videofilter.setCaps(Caps.fromString("video/x-raw-yuv, width=720, height=576"
-		// + ", bpp=32, depth=32, framerate=25/1"));
-
-		// TODO Auto-generated method stub
-		return null;
+		return devices;
 	}
 
 	@Override
@@ -70,6 +70,19 @@ public class GStreamerDriver implements WebcamDriver {
 	}
 
 	public static void main(String[] args) {
-		new GStreamerDriver().getDevices();
+		// WebcamDriver driver = new GStreamerDriver();
+		// for (WebcamDevice device : driver.getDevices()) {
+		// System.out.println(device.getName());
+		// for (Dimension d : device.getResolutions()) {
+		// System.out.println(d);
+		// }
+		// }
+
+		Webcam.setDriver(new GStreamerDriver());
+		JFrame frame = new JFrame();
+		frame.add(new WebcamPanel(Webcam.getWebcams().get(1)));
+		frame.pack();
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 }
