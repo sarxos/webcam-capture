@@ -21,6 +21,7 @@
 
 	<modules>
 		<module>webcam-capture</module>
+		<module>webcam-capture-addons</module>
 		<module>webcam-capture-drivers</module>
 		<module>webcam-capture-examples</module>
 		<module>webcam-capture-pages</module>
