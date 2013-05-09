@@ -17,6 +17,25 @@ dependencies:
 
 * **Latest stable version** - [nothing here yet]
 
+## Example
+
+```java
+static {
+	Webcam.setDriver(new GStreamerDriver());
+}
+
+public static void main(String[] args) {
+
+	WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(1));
+	panel.setFPSDisplayed(true);
+
+	JFrame frame = new JFrame("GStreamer Webcam Capture Driver Demo");
+	frame.add(panel);
+	frame.pack();
+	frame.setVisible(true);
+	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+}
+```
 
 ## License
 

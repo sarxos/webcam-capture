@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.swing.JFrame;
-
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
@@ -13,11 +11,9 @@ import org.gstreamer.interfaces.PropertyProbe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.WebcamException;
-import com.github.sarxos.webcam.WebcamPanel;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
 
@@ -99,26 +95,5 @@ public class GStreamerDriver implements WebcamDriver {
 	@Override
 	public boolean isThreadSafe() {
 		return false;
-	}
-
-	public static void main(String[] args) {
-
-		// WebcamDriver driver = new GStreamerDriver();
-		// for (WebcamDevice device : driver.getDevices()) {
-		// System.out.println(device.getName());
-		// for (Dimension d : device.getResolutions()) {
-		// System.out.println(d);
-		// }
-		// }
-
-		Webcam.setDriver(new GStreamerDriver());
-		JFrame frame = new JFrame();
-		WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(1));
-		panel.setFPSDisplayed(true);
-		frame.add(panel);
-		frame.pack();
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 	}
 }

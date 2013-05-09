@@ -17,12 +17,16 @@ import org.gstreamer.Pipeline;
 import org.gstreamer.State;
 import org.gstreamer.Structure;
 import org.gstreamer.elements.RGBDataSink;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamResolution;
 
 
-public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
+public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, WebcamDevice.FPSSource {
+
+	private static final Logger LOG = LoggerFactory.getLogger(GStreamerDevice.class);
 
 	/**
 	 * Limit the lateness of frames to no more than 20ms (half a frame at 25fps)
@@ -61,6 +65,13 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 	private Dimension resolution = WebcamResolution.VGA.getSize();
 	private BufferedImage image = null;
 
+	/* used to calculate fps */
+
+	private long t1 = -1;
+	private long t2 = -1;
+
+	private volatile double fps = 0;
+
 	/**
 	 * Create GStreamer webcam device.
 	 * 
@@ -78,6 +89,8 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 		if (!initialized.compareAndSet(false, true)) {
 			return;
 		}
+
+		LOG.debug("GStreamer webcam device initialization");
 
 		pipe = new Pipeline(name);
 
@@ -118,6 +131,9 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 		do {
 
 			structure = caps.getStructure(i++);
+
+			LOG.debug("Found format structure {}", structure);
+
 			format = structure.getName();
 
 			if (format.equals(FORMAT)) {
@@ -164,6 +180,8 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 			return;
 		}
 
+		LOG.debug("Opening GStreamer device");
+
 		init();
 
 		starting.set(true);
@@ -182,12 +200,15 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 
 		filter.setCaps(caps);
 
+		LOG.debug("Link elements");
+
 		pipe.addMany(source, filter, sink);
 		Element.linkMany(source, filter, sink);
 		pipe.setState(State.PLAYING);
 
 		// wait max 20s for image to appear
 		synchronized (this) {
+			LOG.debug("Wait for device to be ready");
 			try {
 				this.wait(20000);
 			} catch (InterruptedException e) {
@@ -203,7 +224,11 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 			return;
 		}
 
+		LOG.debug("Closing GStreamer device");
+
 		image = null;
+
+		LOG.debug("Unlink elements");
 
 		pipe.setState(State.NULL);
 		Element.unlinkMany(source, filter, sink);
@@ -216,6 +241,8 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 		if (!disposed.compareAndSet(false, true)) {
 			return;
 		}
+
+		LOG.debug("Disposing GStreamer device");
 
 		close();
 
@@ -234,6 +261,13 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 	@Override
 	public void rgbFrame(boolean preroll, int width, int height, IntBuffer rgb) {
 
+		LOG.trace("New RGB frame");
+
+		if (t1 == -1 || t2 == -1) {
+			t1 = System.currentTimeMillis();
+			t2 = System.currentTimeMillis();
+		}
+
 		BufferedImage tmp = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		tmp.setAccelerationPriority(0);
 		tmp.flush();
@@ -243,9 +277,22 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 		image = tmp;
 
 		if (starting.compareAndSet(true, false)) {
+
 			synchronized (this) {
 				this.notifyAll();
 			}
+
+			LOG.debug("GStreamer device ready");
 		}
+
+		t1 = t2;
+		t2 = System.currentTimeMillis();
+
+		fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+	}
+
+	@Override
+	public double getFPS() {
+		return fps;
 	}
 }
