@@ -29,41 +29,77 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 	 */
 	private static final long LATENESS = 20; // ms
 
+	/**
+	 * Video format to capture.
+	 */
 	private static final String FORMAT = "video/x-raw-yuv";
 
+	/**
+	 * All possible resolutions - populated while initialization phase.
+	 */
+	private Dimension[] resolutions = null;
+
+	/**
+	 * Device name, immutable.
+	 */
 	private final String name;
-	private final Dimension[] resolutions;
+
+	/* gstreamer stuff */
 
 	private Pipeline pipe = null;
 	private Element source = null;
 	private Element filter = null;
 	private RGBDataSink sink = null;
-	private BufferedImage image = null;
 	private Caps caps = null;
+
+	/* logic */
 
 	private AtomicBoolean open = new AtomicBoolean(false);
 	private AtomicBoolean disposed = new AtomicBoolean(false);
+	private AtomicBoolean starting = new AtomicBoolean(false);
+	private AtomicBoolean initialized = new AtomicBoolean(false);
 	private Dimension resolution = WebcamResolution.VGA.getSize();
+	private BufferedImage image = null;
 
+	/**
+	 * Create GStreamer webcam device.
+	 * 
+	 * @param name the name of webcam device
+	 */
 	protected GStreamerDevice(String name) {
-
 		this.name = name;
+	}
+
+	/**
+	 * Initialize webcam device.
+	 */
+	private synchronized void init() {
+
+		if (!initialized.compareAndSet(false, true)) {
+			return;
+		}
 
 		pipe = new Pipeline(name);
+
+		source = ElementFactory.make("dshowvideosrc", "source");
+		source.set("device-name", name);
 
 		sink = new RGBDataSink(name, this);
 		sink.setPassDirectBuffer(true);
 		sink.getSinkElement().setMaximumLateness(LATENESS, TimeUnit.MILLISECONDS);
 		sink.getSinkElement().setQOSEnabled(true);
 
-		source = ElementFactory.make("dshowvideosrc", "source");
-		source.set("device-name", name);
-
 		filter = ElementFactory.make("capsfilter", "filter");
 
 		resolutions = parseResolutions(source.getPads().get(0));
 	}
 
+	/**
+	 * Use GStreamer to get all possible resolutions.
+	 * 
+	 * @param pad the pad to get resolutions from
+	 * @return Array of resolutions supported by device connected with pad
+	 */
 	private static final Dimension[] parseResolutions(Pad pad) {
 
 		List<Dimension> dimensions = new ArrayList<Dimension>();
@@ -102,6 +138,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 
 	@Override
 	public Dimension[] getResolutions() {
+		init();
 		return resolutions;
 	}
 
@@ -127,6 +164,10 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 			return;
 		}
 
+		init();
+
+		starting.set(true);
+
 		Dimension size = getResolution();
 
 		image = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
@@ -144,6 +185,15 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 		pipe.addMany(source, filter, sink);
 		Element.linkMany(source, filter, sink);
 		pipe.setState(State.PLAYING);
+
+		// wait max 20s for image to appear
+		synchronized (this) {
+			try {
+				this.wait(20000);
+			} catch (InterruptedException e) {
+				return;
+			}
+		}
 	}
 
 	@Override
@@ -152,6 +202,8 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 		if (!open.compareAndSet(true, false)) {
 			return;
 		}
+
+		image = null;
 
 		pipe.setState(State.NULL);
 		Element.unlinkMany(source, filter, sink);
@@ -189,5 +241,11 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener {
 		rgb.get(((DataBufferInt) tmp.getRaster().getDataBuffer()).getData(), 0, width * height);
 
 		image = tmp;
+
+		if (starting.compareAndSet(true, false)) {
+			synchronized (this) {
+				this.notifyAll();
+			}
+		}
 	}
 }

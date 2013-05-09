@@ -2,6 +2,7 @@ package com.github.sarxos.webcam.ds.gstreamer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JFrame;
 
@@ -15,17 +16,15 @@ import org.slf4j.LoggerFactory;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
+import com.github.sarxos.webcam.WebcamException;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.sun.jna.NativeLibrary;
+import com.sun.jna.Platform;
 
 
 public class GStreamerDriver implements WebcamDriver {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GStreamerDriver.class);
-
-	static {
-		init();
-	}
 
 	private static final class GStreamerShutdownHook extends Thread {
 
@@ -40,9 +39,39 @@ public class GStreamerDriver implements WebcamDriver {
 		}
 	}
 
+	private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
+
+	public GStreamerDriver() {
+		if (INITIALIZED.compareAndSet(false, true)) {
+			init();
+		}
+	}
+
 	private static final void init() {
+
+		if (!Platform.isWindows()) {
+			throw new WebcamException(String.format("%s has been designed to work only on Windows platforms", GStreamerDriver.class.getSimpleName()));
+		}
+
 		LOG.debug("GStreamer initialization");
-		NativeLibrary.addSearchPath("gstreamer-0.10", "C:\\Program Files\\OSSBuild\\GStreamer\\v0.10.6\\bin");
+
+		String gpath = null;
+
+		for (String path : System.getenv("PATH").split(";")) {
+			LOG.trace("Search %PATH% for gstreamer bin {}", path);
+			if (path.indexOf("GStreamer\\v0.10.") != -1) {
+				gpath = path;
+				break;
+			}
+		}
+
+		if (gpath != null) {
+			LOG.debug("Add bin directory to JNA search paths {}", gpath);
+			NativeLibrary.addSearchPath("gstreamer-0.10", gpath);
+		} else {
+			throw new WebcamException("GStreamer has not been installed or not in %PATH%");
+		}
+
 		Gst.init(GStreamerDriver.class.getSimpleName(), new String[0]);
 		Runtime.getRuntime().addShutdownHook(new GStreamerShutdownHook());
 	}
@@ -53,13 +82,16 @@ public class GStreamerDriver implements WebcamDriver {
 		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
 
 		Element dshowsrc = ElementFactory.make("dshowvideosrc", "source");
-		PropertyProbe probe = PropertyProbe.wrap(dshowsrc);
-
-		for (Object name : probe.getValues("device-name")) {
-			devices.add(new GStreamerDevice(name.toString()));
+		try {
+			PropertyProbe probe = PropertyProbe.wrap(dshowsrc);
+			for (Object name : probe.getValues("device-name")) {
+				devices.add(new GStreamerDevice(name.toString()));
+			}
+		} finally {
+			if (dshowsrc != null) {
+				dshowsrc.dispose();
+			}
 		}
-
-		dshowsrc.dispose();
 
 		return devices;
 	}
@@ -70,6 +102,7 @@ public class GStreamerDriver implements WebcamDriver {
 	}
 
 	public static void main(String[] args) {
+
 		// WebcamDriver driver = new GStreamerDriver();
 		// for (WebcamDevice device : driver.getDevices()) {
 		// System.out.println(device.getName());
@@ -80,9 +113,12 @@ public class GStreamerDriver implements WebcamDriver {
 
 		Webcam.setDriver(new GStreamerDriver());
 		JFrame frame = new JFrame();
-		frame.add(new WebcamPanel(Webcam.getWebcams().get(1)));
+		WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(1));
+		panel.setFPSDisplayed(true);
+		frame.add(panel);
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 	}
 }
