@@ -2,21 +2,25 @@ import javax.swing.JFrame;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
-import com.github.sarxos.webcam.ds.gstreamer.GStreamerDriver;
+import com.github.sarxos.webcam.WebcamResolution;
+import com.github.sarxos.webcam.ds.civil.LtiCivilDriver;
 
 
 public class GStreamerDriverExample {
 
 	static {
-		Webcam.setDriver(new GStreamerDriver());
+		Webcam.setDriver(new LtiCivilDriver());
 	}
 
 	public static void main(String[] args) {
 
-		WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(0));
+		Webcam webcam = Webcam.getWebcams().get(0);
+		webcam.setViewSize(WebcamResolution.VGA.getSize());
+
+		WebcamPanel panel = new WebcamPanel(webcam);
 		panel.setFPSDisplayed(true);
 
-		JFrame frame = new JFrame("GStreamer Webcam Capture Driver Demo");
+		JFrame frame = new JFrame("LTI-CIVIL Webcam Capture Driver Demo");
 		frame.add(panel);
 		frame.pack();
 		frame.setVisible(true);
