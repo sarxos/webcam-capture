@@ -247,7 +247,7 @@ public class Webcam {
 
 			// remove shutdown hook (it's not more necessary)
 
-			Runtime.getRuntime().removeShutdownHook(hook);
+			removeShutdownHook();
 
 			// notify listeners
 
@@ -317,8 +317,16 @@ public class Webcam {
 			}
 		}
 
+		removeShutdownHook();
+
+		LOG.debug("Webcam disposed {}", getName());
+	}
+
+	private void removeShutdownHook() {
+
 		// hook can be null because there is a possibility that webcam has never
 		// been open and therefore hook was not created
+
 		if (hook != null) {
 			try {
 				Runtime.getRuntime().removeShutdownHook(hook);
@@ -326,8 +334,6 @@ public class Webcam {
 				LOG.trace("Shutdown in progress, cannot remove hook");
 			}
 		}
-
-		LOG.debug("Webcam disposed {}", getName());
 	}
 
 	/**
