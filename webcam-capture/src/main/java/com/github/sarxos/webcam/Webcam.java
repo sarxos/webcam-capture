@@ -809,10 +809,13 @@ public class Webcam {
 	 */
 	public static synchronized WebcamDriver getDriver() {
 
+		if (driver != null) {
+			return driver;
+		}
+
 		if (driver == null) {
 			driver = WebcamDriverUtils.findDriver(DRIVERS_LIST, DRIVERS_CLASS_LIST);
 		}
-
 		if (driver == null) {
 			driver = new WebcamDefaultDriver();
 		}
