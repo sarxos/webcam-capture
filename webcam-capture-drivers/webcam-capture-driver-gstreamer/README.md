@@ -15,7 +15,7 @@ Below is the newest stable version ZIP containing main project
 JAR with additional documents, examples and all required 3rd-party
 dependencies:
 
-* **Latest stable version** - [nothing here yet]
+* **Latest stable version** - [webcam-capture-driver-gstreamer-0.3.10-RC3-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-gstreamer/0.3.10-RC3/webcam-capture-driver-gstreamer-0.3.10-RC3-dist.zip)
 
 ## Example
 
@@ -26,7 +26,7 @@ static {
 
 public static void main(String[] args) {
 
-	WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(1));
+	WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(0));
 	panel.setFPSDisplayed(true);
 
 	JFrame frame = new JFrame("GStreamer Webcam Capture Driver Demo");
