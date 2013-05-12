@@ -1,5 +1,6 @@
 package com.github.sarxos.webcam.ds.gstreamer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.WebcamException;
+import com.github.sarxos.webcam.ds.gstreamer.impl.VideoDeviceFilenameFilter;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
 
@@ -45,30 +47,41 @@ public class GStreamerDriver implements WebcamDriver {
 
 	private static final void init() {
 
-		if (!Platform.isWindows()) {
-			throw new WebcamException(String.format("%s has been designed to work only on Windows platforms", GStreamerDriver.class.getSimpleName()));
-		}
+		// if (!Platform.isWindows()) {
+		// throw new
+		// WebcamException(String.format("%s has been designed to work only on Windows platforms",
+		// GStreamerDriver.class.getSimpleName()));
+		// }
 
 		LOG.debug("GStreamer initialization");
 
 		String gpath = null;
 
-		for (String path : System.getenv("PATH").split(";")) {
-			LOG.trace("Search %PATH% for gstreamer bin {}", path);
-			if (path.indexOf("GStreamer\\v0.10.") != -1) {
-				gpath = path;
-				break;
+		if (Platform.isWindows()) {
+			for (String path : System.getenv("PATH").split(";")) {
+				LOG.trace("Search %PATH% for gstreamer bin {}", path);
+				if (path.indexOf("GStreamer\\v0.10.") != -1) {
+					gpath = path;
+					break;
+				}
+			}
+
+			if (gpath != null) {
+				LOG.debug("Add bin directory to JNA search paths {}", gpath);
+				NativeLibrary.addSearchPath("gstreamer-0.10", gpath);
+			} else {
+				throw new WebcamException("GStreamer has not been installed or not in %PATH%");
 			}
 		}
 
-		if (gpath != null) {
-			LOG.debug("Add bin directory to JNA search paths {}", gpath);
-			NativeLibrary.addSearchPath("gstreamer-0.10", gpath);
-		} else {
-			throw new WebcamException("GStreamer has not been installed or not in %PATH%");
-		}
+		//@formatter:off
+		String[] args = new String[] {
+			//"--gst-plugin-path", new File(".").getAbsolutePath(),
+		};
+		//@formatter:on
 
-		Gst.init(GStreamerDriver.class.getSimpleName(), new String[0]);
+		Gst.init(GStreamerDriver.class.getSimpleName(), args);
+
 		Runtime.getRuntime().addShutdownHook(new GStreamerShutdownHook());
 	}
 
@@ -77,11 +90,28 @@ public class GStreamerDriver implements WebcamDriver {
 
 		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
 
-		Element dshowsrc = ElementFactory.make("dshowvideosrc", "source");
+		String srcname = null;
+		if (Platform.isWindows()) {
+			srcname = "dshowvideosrc";
+		} else {
+			srcname = "v4l2src";
+		}
+
+		Element dshowsrc = ElementFactory.make(srcname, "source");
+
 		try {
-			PropertyProbe probe = PropertyProbe.wrap(dshowsrc);
-			for (Object name : probe.getValues("device-name")) {
-				devices.add(new GStreamerDevice(name.toString()));
+			if (Platform.isWindows()) {
+				PropertyProbe probe = PropertyProbe.wrap(dshowsrc);
+				for (Object name : probe.getValues("device-name")) {
+					devices.add(new GStreamerDevice(name.toString()));
+				}
+			} else if (Platform.isLinux()) {
+				VideoDeviceFilenameFilter vfilter = new VideoDeviceFilenameFilter();
+				for (File vfile : vfilter.getVideoFiles()) {
+					devices.add(new GStreamerDevice(vfile));
+				}
+			} else {
+				throw new RuntimeException("Platform unsupported by GStreamer capture driver");
 			}
 		} finally {
 			if (dshowsrc != null) {

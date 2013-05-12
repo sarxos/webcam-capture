@@ -3,12 +3,14 @@ package com.github.sarxos.webcam.ds.gstreamer;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.File;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.bridj.Platform;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
@@ -36,7 +38,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	/**
 	 * Video format to capture.
 	 */
-	private static final String FORMAT = "video/x-raw-yuv";
+	private static final String FORMAT_MIME = "video/x-raw-yuv";
 
 	/**
 	 * All possible resolutions - populated while initialization phase.
@@ -44,9 +46,13 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	private Dimension[] resolutions = null;
 
 	/**
-	 * Device name, immutable.
+	 * Device name, immutable. Used only on Windows platform.
 	 */
 	private final String name;
+	/**
+	 * Device name, immutable. Used only on Linux platform.
+	 */
+	private final File vfile;
 
 	/* gstreamer stuff */
 
@@ -79,6 +85,12 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	 */
 	protected GStreamerDevice(String name) {
 		this.name = name;
+		this.vfile = null;
+	}
+
+	protected GStreamerDevice(File vfile) {
+		this.name = null;
+		this.vfile = vfile;
 	}
 
 	/**
@@ -94,8 +106,13 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 		pipe = new Pipeline(name);
 
-		source = ElementFactory.make("dshowvideosrc", "source");
-		source.set("device-name", name);
+		if (Platform.isWindows()) {
+			source = ElementFactory.make("dshowvideosrc", "source");
+			source.set("device-name", name);
+		} else if (Platform.isLinux()) {
+			source = ElementFactory.make("v4l2src", "source");
+			source.set("device", vfile.getAbsolutePath());
+		}
 
 		sink = new RGBDataSink(name, this);
 		sink.setPassDirectBuffer(true);
@@ -104,7 +121,19 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 		filter = ElementFactory.make("capsfilter", "filter");
 
+		if (Platform.isLinux()) {
+			pipe.addMany(source, filter, sink);
+			Element.linkMany(source, filter, sink);
+			pipe.setState(State.READY);
+		}
+
 		resolutions = parseResolutions(source.getPads().get(0));
+
+		if (Platform.isLinux()) {
+			pipe.setState(State.NULL);
+			Element.unlinkMany(source, filter, sink);
+			pipe.removeMany(source, filter, sink);
+		}
 	}
 
 	/**
@@ -120,7 +149,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 		Caps caps = pad.getCaps();
 
 		Structure structure = null;
-		String format = null;
+		String mime = null;
 
 		int n = caps.size();
 		int i = 0;
@@ -134,12 +163,20 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 			LOG.debug("Found format structure {}", structure);
 
-			format = structure.getName();
+			mime = structure.getName();
 
-			if (format.equals(FORMAT)) {
-				w = structure.getRange("width").getMinInt();
-				h = structure.getRange("height").getMinInt();
-				dimensions.add(new Dimension(w, h));
+			if (mime.equals(FORMAT_MIME)) {
+				if (Platform.isWindows()) {
+					w = structure.getRange("width").getMinInt();
+					h = structure.getRange("height").getMinInt();
+					dimensions.add(new Dimension(w, h));
+				} else if (Platform.isLinux()) {
+					if ("YUY2".equals(structure.getFourccString("format"))) {
+						w = structure.getInteger("width");
+						h = structure.getInteger("height");
+						dimensions.add(new Dimension(w, h));
+					}
+				}
 			}
 
 		} while (i < n);
@@ -149,7 +186,13 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 	@Override
 	public String getName() {
-		return name;
+		if (Platform.isWindows()) {
+			return name;
+		} else if (Platform.isLinux()) {
+			return vfile.getAbsolutePath();
+		} else {
+			throw new RuntimeException("Platform not supported by GStreamer capture driver");
+		}
 	}
 
 	@Override
@@ -196,7 +239,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 			caps.dispose();
 		}
 
-		caps = Caps.fromString(String.format("%s,width=%d,height=%d", FORMAT, size.width, size.height));
+		caps = Caps.fromString(String.format("%s,width=%d,height=%d", FORMAT_MIME, size.width, size.height));
 
 		filter.setCaps(caps);
 

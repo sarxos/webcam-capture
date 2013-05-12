@@ -25,6 +25,15 @@
 			<artifactId>gstreamer-java</artifactId>
 			<version>1.5</version>
 		</dependency>
+		<!-- uncomment if you would like debug prints to be visible -->
+		<!-- 
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.9</version>
+		</dependency>
+		-->
+		<!-- end uncomment -->
 	</dependencies>
 
 	<build>

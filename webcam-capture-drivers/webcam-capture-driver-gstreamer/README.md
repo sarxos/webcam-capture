@@ -2,8 +2,9 @@
 
 This is GStreamer driver for Webcam Capture project. It allows Webcam Capture to
 handle pictures from build-in or USB-connected webcams. It has been designed to 
-work with Windows **only**. To make use of it user have to 
-[download](http://code.google.com/p/ossbuild/) and install GStreamer application.
+work with Windows and Linux **only**. To make use of it user have to 
+[download](http://code.google.com/p/ossbuild/) and install GStreamer application 
+on Windows or use _apt-get_, _yum_ or other packages manager to install it on Linux.
 
 Currently supported GStreamer version is 0.10.x, so make sure you are installing
 the correct one! It is **not** compatible with GStreamer 1.0 and above!
