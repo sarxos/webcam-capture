@@ -42,10 +42,7 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
 		WebcamResolution.QQVGA.getSize(),
 		WebcamResolution.QVGA.getSize(),
-		WebcamResolution.CIF.getSize(),
-		WebcamResolution.HVGA.getSize(),
 		WebcamResolution.VGA.getSize(),
-		WebcamResolution.XGA.getSize(),
 	};
 	// @formatter:on
 
