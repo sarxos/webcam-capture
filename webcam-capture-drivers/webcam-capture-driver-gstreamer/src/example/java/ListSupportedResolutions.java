@@ -17,11 +17,10 @@ public class ListSupportedResolutions {
 	}
 
 	public static void main(String[] args) {
-
 		for (Webcam webcam : Webcam.getWebcams()) {
 			System.out.println("webcam --- " + webcam.getName());
-			for (Dimension d : webcam.getViewSizes()) {
-				System.out.println("supported resolution: " + d.width + "x" + d.height);
+			for (Dimension size : webcam.getViewSizes()) {
+				System.out.println("supported resolution: " + size.width + "x" + size.height);
 			}
 		}
 	}

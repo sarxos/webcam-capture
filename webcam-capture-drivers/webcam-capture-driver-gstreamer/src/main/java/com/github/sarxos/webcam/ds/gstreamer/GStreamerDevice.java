@@ -28,6 +28,9 @@ import com.github.sarxos.webcam.WebcamResolution;
 
 public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, WebcamDevice.FPSSource {
 
+	/**
+	 * Logger.
+	 */
 	private static final Logger LOG = LoggerFactory.getLogger(GStreamerDevice.class);
 
 	/**
@@ -60,6 +63,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	private Element source = null;
 	private Element filter = null;
 	private RGBDataSink sink = null;
+
 	private Caps caps = null;
 
 	/* logic */
@@ -337,5 +341,25 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	@Override
 	public double getFPS() {
 		return fps;
+	}
+
+	public Pipeline getPipe() {
+		return pipe;
+	}
+
+	public Element getSource() {
+		return source;
+	}
+
+	public Element getFilter() {
+		return filter;
+	}
+
+	public RGBDataSink getSink() {
+		return sink;
+	}
+
+	public Caps getCaps() {
+		return caps;
 	}
 }

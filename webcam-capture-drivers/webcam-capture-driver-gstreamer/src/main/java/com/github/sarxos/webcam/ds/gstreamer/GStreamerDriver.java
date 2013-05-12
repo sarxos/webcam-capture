@@ -20,6 +20,11 @@ import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
 
 
+/**
+ * GStreamer capture driver.
+ * 
+ * @author Bartosz Firyn (sarxos)
+ */
 public class GStreamerDriver implements WebcamDriver {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GStreamerDriver.class);
@@ -47,21 +52,22 @@ public class GStreamerDriver implements WebcamDriver {
 
 	private static final void init() {
 
-		// if (!Platform.isWindows()) {
-		// throw new
-		// WebcamException(String.format("%s has been designed to work only on Windows platforms",
-		// GStreamerDriver.class.getSimpleName()));
-		// }
+		if (!Platform.isWindows() && !Platform.isLinux()) {
+			throw new WebcamException(String.format("%s has been designed to work only on Windows and Linux platforms", GStreamerDriver.class.getSimpleName()));
+		}
 
 		LOG.debug("GStreamer initialization");
 
 		String gpath = null;
 
 		if (Platform.isWindows()) {
-			for (String path : System.getenv("PATH").split(";")) {
-				LOG.trace("Search %PATH% for gstreamer bin {}", path);
-				if (path.indexOf("GStreamer\\v0.10.") != -1) {
-					gpath = path;
+
+			String path = System.getenv("PATH");
+
+			for (String p : path.split(";")) {
+				LOG.trace("Search %PATH% for gstreamer bin {}", p);
+				if (p.indexOf("GStreamer\\v0.10.") != -1) {
+					gpath = p;
 					break;
 				}
 			}
@@ -70,13 +76,14 @@ public class GStreamerDriver implements WebcamDriver {
 				LOG.debug("Add bin directory to JNA search paths {}", gpath);
 				NativeLibrary.addSearchPath("gstreamer-0.10", gpath);
 			} else {
-				throw new WebcamException("GStreamer has not been installed or not in %PATH%");
+				throw new WebcamException(String.format("GStreamer has not been installed or not in %PATH%: %s", path));
 			}
 		}
 
 		//@formatter:off
 		String[] args = new String[] {
-			//"--gst-plugin-path", new File(".").getAbsolutePath(),
+			// "--gst-plugin-path", new File(".").getAbsolutePath(),
+			// "--gst-debug-level=3",
 		};
 		//@formatter:on
 
