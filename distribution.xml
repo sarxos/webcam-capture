@@ -47,14 +47,14 @@
 		</fileSet>
 		<fileSet>
 			<directory>${project.basedir}/src/etc/licenses</directory>
-			<outputDirectory>libs</outputDirectory>
+			<outputDirectory>license</outputDirectory>
 			<includes>
 				<include>*.LICENSE</include>
 			</includes>
 		</fileSet>
 		<fileSet>
 			<directory>${project.basedir}/../../webcam-capture/src/etc/licenses</directory>
-			<outputDirectory>libs</outputDirectory>
+			<outputDirectory>license</outputDirectory>
 			<includes>
 				<include>*.LICENSE</include>
 			</includes>
@@ -65,6 +65,10 @@
 		</fileSet>
 		<fileSet>
 			<directory>${project.basedir}/src/main/java</directory>
+			<outputDirectory>src</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/src/main/resources</directory>
 			<outputDirectory>src</outputDirectory>
 		</fileSet>
 		<fileSet>

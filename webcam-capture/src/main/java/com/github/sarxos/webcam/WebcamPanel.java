@@ -528,6 +528,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			errored = !webcam.open();
 		} catch (WebcamException e) {
 			errored = true;
+			repaint();
 			throw e;
 		} finally {
 			starting = false;
@@ -538,6 +539,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * Stop rendering and close webcam.
 	 */
 	public void stop() {
+
 		if (!started.compareAndSet(true, false)) {
 			return;
 		}
@@ -553,6 +555,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			errored = !webcam.close();
 		} catch (WebcamException e) {
 			errored = true;
+			repaint();
 			throw e;
 		}
 	}
@@ -639,12 +642,21 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	}
 
 	/**
-	 * Is webcam starting.
+	 * Is webcam panel repainting starting.
 	 * 
 	 * @return True if panel is starting
 	 */
 	public boolean isStarting() {
 		return starting;
+	}
+
+	/**
+	 * Is webcam panel repainting started.
+	 * 
+	 * @return True if panel repainting has been started
+	 */
+	public boolean isStarted() {
+		return started.get();
 	}
 
 	/**
