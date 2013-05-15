@@ -6,6 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * Used internally.
+ * 
+ * @author Bartosz Firyn (sarxos)
+ */
 public class WebcamExceptionHandler implements UncaughtExceptionHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamExceptionHandler.class);
@@ -23,7 +28,7 @@ public class WebcamExceptionHandler implements UncaughtExceptionHandler {
 		e.printStackTrace();
 	}
 
-	protected static final WebcamExceptionHandler getInstance() {
+	public static final WebcamExceptionHandler getInstance() {
 		return INSTANCE;
 	}
 }

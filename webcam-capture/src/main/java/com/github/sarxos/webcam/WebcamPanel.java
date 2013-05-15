@@ -189,7 +189,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	/**
 	 * S/N used by Java to serialize beans.
 	 */
-	private static final long serialVersionUID = 5792962512394656227L;
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Logger.
@@ -206,7 +206,10 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 */
 	private static final double MAX_FREQUENCY = 50; // 50 frames per second
 
-	private static final PanelThreadFactory THREAD_FACTORY = new PanelThreadFactory();
+	/**
+	 * Thread factory used by execution service.
+	 */
+	private static final ThreadFactory THREAD_FACTORY = new PanelThreadFactory();
 
 	/**
 	 * Scheduled executor acting as timer.
