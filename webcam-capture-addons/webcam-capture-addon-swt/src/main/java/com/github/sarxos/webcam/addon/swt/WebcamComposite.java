@@ -101,7 +101,13 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 					return;
 				}
 
-				redraw();
+				Display.getDefault().syncExec(new Runnable() {
+
+					@Override
+					public void run() {
+						redraw();
+					}
+				});
 
 				while (starting) {
 					try {
@@ -190,7 +196,13 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 				}
 			}
 
-			redraw();
+			Display.getDefault().syncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					redraw();
+				}
+			});
 		}
 	}
 
@@ -376,8 +388,17 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 		try {
 			errored = !webcam.open();
 		} catch (WebcamException e) {
+
 			errored = true;
-			redraw();
+
+			Display.getDefault().syncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					redraw();
+				}
+			});
+
 			throw e;
 		} finally {
 			starting = false;
@@ -403,8 +424,17 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 		try {
 			errored = !webcam.close();
 		} catch (WebcamException e) {
+
 			errored = true;
-			redraw();
+
+			Display.getDefault().syncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					redraw();
+				}
+			});
+
 			throw e;
 		}
 	}
