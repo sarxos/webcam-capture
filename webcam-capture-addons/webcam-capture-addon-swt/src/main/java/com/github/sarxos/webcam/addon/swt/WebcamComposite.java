@@ -2,7 +2,7 @@ package com.github.sarxos.webcam.addon.swt;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.awt.image.DirectColorModel;
+import java.awt.image.ComponentColorModel;
 import java.awt.image.WritableRaster;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
@@ -15,6 +15,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
@@ -134,6 +136,8 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 
 		private AtomicBoolean running = new AtomicBoolean(false);
 
+		private GC gc = null;
+
 		public void start() {
 			if (running.compareAndSet(false, true)) {
 				executor = Executors.newScheduledThreadPool(1, THREAD_FACTORY);
@@ -169,37 +173,54 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 				LOG.error("Exception when getting image", t);
 			}
 
-			if (bi != null) {
+			if (bi == null) {
+				LOG.debug("Image is null, ignore");
+				return;
+			}
 
-				DirectColorModel model = (DirectColorModel) bi.getColorModel();
-				PaletteData palette = new PaletteData(model.getRedMask(), model.getGreenMask(), model.getBlueMask());
-				ImageData data = new ImageData(bi.getWidth(), bi.getHeight(), model.getPixelSize(), palette);
-				WritableRaster raster = bi.getRaster();
+			ComponentColorModel model = (ComponentColorModel) bi.getColorModel();
+			PaletteData palette = new PaletteData(0x0000FF, 0x00FF00, 0xFF0000);
+			ImageData data = new ImageData(bi.getWidth(), bi.getHeight(), model.getPixelSize(), palette);
 
-				int[] pixelArray = new int[3];
+			// this is valid because we are using a 3-byte data model without
+			// transparent pixels
+			data.transparentPixel = -1;
 
-				for (int y = 0; y < data.height; y++) {
-					for (int x = 0; x < data.width; x++) {
-						raster.getPixel(x, y, pixelArray);
-						int pixel = palette.getPixel(new RGB(pixelArray[0], pixelArray[1], pixelArray[2]));
-						data.setPixel(x, y, pixel);
-					}
-				}
+			WritableRaster raster = bi.getRaster();
 
-				Image previous = image;
-				try {
-					image = new Image(Display.getDefault(), data);
-				} finally {
-					if (previous != null) {
-						previous.dispose();
-					}
+			int[] rgb = new int[3];
+
+			int x = 0;
+			int y = 0;
+
+			for (x = 0; x < data.width; x++) {
+				for (y = 0; y < data.height; y++) {
+					raster.getPixel(x, y, rgb);
+					data.setPixel(x, y, palette.getPixel(new RGB(rgb[0], rgb[1], rgb[2])));
 				}
 			}
+
+			Image previous = image;
+
+			try {
+				image = new Image(Display.getDefault(), data);
+			} finally {
+				if (previous != null) {
+					previous.dispose();
+				}
+			}
+
+			setBackgroundImage(image);
 
 			Display.getDefault().syncExec(new Runnable() {
 
 				@Override
 				public void run() {
+					if (image == null) {
+						System.out.println("image is null");
+						return;
+					}
+
 					redraw();
 				}
 			});
@@ -284,7 +305,10 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 
 	public WebcamComposite(Composite parent, int style) {
 		super(parent, style);
-		// setLayout(new FillLayout(SWT.HORIZONTAL));
+		setLayout(new FillLayout(SWT.HORIZONTAL));
+		setSize(640, 480);
+		setVisible(true);
+		setBackground(new Color(Display.getDefault(), new RGB(124, 23, 56)));
 	}
 
 	public void setWebcam(Webcam webcam) {
@@ -307,9 +331,10 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display);
 
-		shell.setLayout(new FillLayout(SWT.HORIZONTAL));
+		shell.setLayout(new FillLayout());
 		shell.setText("Test");
 		shell.setSize(640, 480);
+		shell.setBackground(new Color(Display.getDefault(), new RGB(65, 120, 45)));
 
 		WebcamComposite wc = new WebcamComposite(shell, SWT.EMBEDDED);
 		wc.setWebcam(Webcam.getDefault());
@@ -319,12 +344,11 @@ public class WebcamComposite extends Composite implements WebcamListener, PaintL
 
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
-				// System.out.println("uuu");
 				display.sleep();
 			}
 		}
 
-		System.out.println("pp");
+		System.out.println("done");
 
 		wc.dispose();
 		display.dispose();
