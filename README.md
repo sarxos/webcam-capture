@@ -164,9 +164,10 @@ However there are more ready-to-use drivers which can be used as a replacement
 or addition to the default one. By utilizing those drivers Webcam Capture can 
 be extended with various new features (e.g. IP camera support).
 
-List of additional drivers includes (stable):
+List of additional capture drivers includes (stable):
 
 * [IP Camera Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam) - available in Maven Central, adds IP / network cameras support
+* [GStreamer Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-gstreamer) - **not** available in Maven Central, GStreamer replacement for default driver
 * [JMF Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf) - available in Maven Central, JMF replacement for default driver
 * [LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-lti-civil) - available in Maven Central, Windows, Linux, Mac OS, LTI-CIVIL replacement for default driver
 * [OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-openimaj) - **not** available in Maven Central, OpenIMAJ replacement for default driver
