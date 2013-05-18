@@ -1,10 +1,8 @@
 
-
 import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.log.WebcamLogConfigurator;
 
 
 public class ConcurrentThreadsExample {
@@ -45,8 +43,6 @@ public class ConcurrentThreadsExample {
 	}
 
 	public static void main(String[] args) throws Throwable {
-
-		WebcamLogConfigurator.configure("src/example/resources/logback.xml");
 
 		/**
 		 * This example will start several concurrent threads which use single

@@ -14,7 +14,6 @@ import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamPicker;
 import com.github.sarxos.webcam.WebcamResolution;
-import com.github.sarxos.webcam.log.WebcamLogConfigurator;
 
 
 /**
@@ -32,8 +31,6 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 
 	@Override
 	public void run() {
-
-		WebcamLogConfigurator.configure("src/example/resources/logback.xml");
 
 		setTitle("Java Webcam Capture POC");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -1,5 +1,4 @@
 
-
 import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;

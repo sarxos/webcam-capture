@@ -2,14 +2,11 @@ import javax.swing.JFrame;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
-import com.github.sarxos.webcam.log.WebcamLogConfigurator;
 
 
 public class WebcamPanelExample {
 
 	public static void main(String[] args) throws InterruptedException {
-
-		WebcamLogConfigurator.configure("src/example/resources/logback.xml");
 
 		JFrame window = new JFrame("Test webcam panel");
 

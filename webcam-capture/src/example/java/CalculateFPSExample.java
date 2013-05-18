@@ -1,14 +1,10 @@
 
-
 import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.log.WebcamLogConfigurator;
 
 
 public class CalculateFPSExample {
 
 	public static void main(String[] args) {
-
-		WebcamLogConfigurator.configure("src/example/resources/logback.xml");
 
 		long t1 = 0;
 		long t2 = 0;
