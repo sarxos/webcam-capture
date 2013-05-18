@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamDiscoveryService;
 import com.github.sarxos.webcam.WebcamException;
 
 
@@ -40,10 +41,7 @@ public class IpCamDeviceRegistry {
 
 		DEVICES.add(ipcam);
 
-		// run discovery service once to trigger new webcam discovery event
-		// and keep webcams list up-to-date
-
-		Webcam.getDiscoveryService().scan();
+		rescan();
 
 		return ipcam;
 	}
@@ -99,17 +97,22 @@ public class IpCamDeviceRegistry {
 	 * @param ipcam the IP camera to be unregister
 	 */
 	public static boolean unregister(IpCamDevice ipcam) {
-		boolean removed = DEVICES.remove(ipcam);
-
-		// run discovery service once if device has been removed to
-		// trigger disconnected webcam discovery event and keep webcams
-		// list up-to-date
-
-		if (removed) {
-			Webcam.getDiscoveryService().scan();
+		try {
+			return DEVICES.remove(ipcam);
+		} finally {
+			rescan();
 		}
+	}
 
-		return removed;
+	/**
+	 * Run discovery service once if device has been removed to trigger
+	 * disconnected webcam discovery event and keep webcams list up-to-date.
+	 */
+	private static void rescan() {
+		WebcamDiscoveryService discovery = Webcam.getDiscoveryServiceRef();
+		if (discovery != null) {
+			discovery.scan();
+		}
 	}
 
 	/**
@@ -123,7 +126,7 @@ public class IpCamDeviceRegistry {
 			IpCamDevice d = di.next();
 			if (d.getName().equals(name)) {
 				di.remove();
-				Webcam.getDiscoveryService().scan();
+				rescan();
 				return true;
 			}
 		}

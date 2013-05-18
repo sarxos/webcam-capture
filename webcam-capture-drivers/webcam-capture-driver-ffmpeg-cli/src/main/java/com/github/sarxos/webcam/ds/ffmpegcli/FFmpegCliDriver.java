@@ -124,4 +124,8 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

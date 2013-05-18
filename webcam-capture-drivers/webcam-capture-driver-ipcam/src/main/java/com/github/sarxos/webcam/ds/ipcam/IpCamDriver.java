@@ -41,4 +41,9 @@ public class IpCamDriver implements WebcamDriver {
 	public boolean isThreadSafe() {
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

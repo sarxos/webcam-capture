@@ -41,4 +41,9 @@ public class JmfDriver implements WebcamDriver {
 	public boolean isThreadSafe() {
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

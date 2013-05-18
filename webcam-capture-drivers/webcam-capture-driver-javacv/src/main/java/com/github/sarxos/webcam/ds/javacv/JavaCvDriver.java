@@ -56,4 +56,8 @@ public class JavaCvDriver implements WebcamDriver {
 		return false;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

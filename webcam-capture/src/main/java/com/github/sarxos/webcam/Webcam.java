@@ -836,18 +836,20 @@ public class Webcam {
 	 * <br>
 	 * <b>This method is not thread-safe!</b>
 	 * 
-	 * @param driver new webcam driver to be used (e.g. LtiCivil, JFM, FMJ, QTJ)
+	 * @param wd new webcam driver to be used (e.g. LtiCivil, JFM, FMJ, QTJ)
 	 * @throws IllegalArgumentException when argument is null
 	 */
-	public static synchronized void setDriver(WebcamDriver driver) {
+	public static synchronized void setDriver(WebcamDriver wd) {
 
-		if (driver == null) {
+		if (wd == null) {
 			throw new IllegalArgumentException("Webcam driver cannot be null!");
 		}
 
+		LOG.debug("Setting new capture driver {}", wd);
+
 		resetDriver();
 
-		Webcam.driver = driver;
+		driver = wd;
 	}
 
 	/**
@@ -1013,6 +1015,15 @@ public class Webcam {
 		if (discovery == null) {
 			discovery = new WebcamDiscoveryService(getDriver());
 		}
+		return discovery;
+	}
+
+	/**
+	 * Return discovery service without creating it if not exists.
+	 * 
+	 * @return Discovery service or null if not yet created
+	 */
+	public static synchronized WebcamDiscoveryService getDiscoveryServiceRef() {
 		return discovery;
 	}
 

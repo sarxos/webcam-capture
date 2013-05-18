@@ -77,4 +77,9 @@ public class LtiCivilDriver implements WebcamDriver {
 	public boolean isThreadSafe() {
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

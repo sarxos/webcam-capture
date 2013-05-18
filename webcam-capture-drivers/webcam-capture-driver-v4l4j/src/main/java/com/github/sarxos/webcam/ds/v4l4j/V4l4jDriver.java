@@ -67,4 +67,9 @@ public class V4l4jDriver implements WebcamDriver {
 	public boolean isThreadSafe() {
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }
