@@ -71,6 +71,7 @@ public class WebcamViewer extends JFrame implements Runnable, WebcamListener, Wi
 				panel.start();
 			}
 		};
+		t.setName("webcam-viewer-starter");
 		t.setDaemon(true);
 		t.setUncaughtExceptionHandler(this);
 		t.start();
@@ -131,6 +132,7 @@ public class WebcamViewer extends JFrame implements Runnable, WebcamListener, Wi
 
 	@Override
 	public void uncaughtException(Thread t, Throwable e) {
+		e.printStackTrace();
 		LOG.error(String.format("Exception in thread %s", t.getName()), e);
 	}
 
