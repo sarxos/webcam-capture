@@ -171,6 +171,7 @@ List of additional capture drivers includes (stable):
 * [JMF Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf) - available in Maven Central, JMF replacement for default driver
 * [LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-lti-civil) - available in Maven Central, Windows, Linux, Mac OS, LTI-CIVIL replacement for default driver
 * [OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-openimaj) - **not** available in Maven Central, OpenIMAJ replacement for default driver
+* [V4L4j Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-v4l4j) - **not** available in Maven Central, V4L4j replacement for default driver
 
 And (unstable, experimental):
 
