@@ -86,13 +86,16 @@ into your ```pom.xml```.
 
 ## Contribution
 
-If you have spare time, knownledge or some small amount of money you 
-can help developing 
+If you have strong will, spare time, knownledge or even some small amount of
+money you would like to spent for good purpose you can help developing this 
 awesome Webcam Capture API and make it even better! Several kinds of 
 contributions are very welcome:
 
-* **Star Project** - star the project and become a stargazer. This will make project
-more popular.
+* **Star Project** - if you think this project is great, you would like
+to help, but you don't know how - you can become project's stargazer.
+By starring you're making project more popular. Visit [this](https://github.com/blog/1204-notifications-stars)
+link if you would like to learn more about how notifications and stars 
+works on Github.
 * **Report bug or feature** - If you've found a bug or you've came-up with some fantastic feature which 
 can make Webcam Capture a better API to use, don't hesitate to 
 [create new issue](https://github.com/sarxos/webcam-capture/issues/new) 
@@ -104,7 +107,8 @@ on 64-bit Ubuntu Linux, Windows XP and Vista (both 32-bit), but I
 have no possibility to test on Raspberry Pi, Mac OS and 32-bit Linux.
 Please help and test on those systems if you have such possibility. 
 * **Write code** - If you know Java or C++ you can help developing Webcam Capture by 
-forking repository and sending pull requests.
+forking repository and sending pull requests. Please visit [this](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github)
+link if you don't know how to contribute to other's code at Github. 
 * **Donate** - People have expressed a wish to donate a little money. Donating won't 
 get you anything special, other than a warm feeling inside, and possibly 
 urge me to produce more freely available material for Webcam Capture 
@@ -122,7 +126,7 @@ webcam.open();
 ImageIO.write(webcam.getImage(), "PNG", new File("hello-world.png"));
 ```
 
-## More Examples
+## More Examples!
 
 Below is the list of pretty basic examples. All can be found in the 
 project source code. Please note that some of those examples are using 
@@ -156,8 +160,20 @@ And here are some more advanced examples, few with quite fancy GUI.
 
 ## Capture Drivers
 
-By default Webcam Capture use default driver which consists of small, refined
-part of awesome [OpenIMAJ](http://sourceforge.net/p/openimaj/home/OpenIMAJ/) 
+Imagine situation when you depend on some framework, but suddenly have to 
+drop it and use different one (e.g. replace archaic JMF with newest GStreamer).
+By doing this one have to rewrite significant piece of code because new framework is 
+completely incompatible with previous one. Here Webcam Capture API comes to help 
+you! This library has been created to remove the burden of situation when you
+would like to write your application with intention to replace capturing framework
+somewhere in the future.
+
+Webcam Capture API defined ```WebcamDriver``` interface which has been already 
+implemented in several _capturing drivers_ build on top of well-known frameworks
+used to work with multimedia and cameras. Complete list can be found below.
+
+By default, Webcam Capture library uses default driver which consists of small,
+refined part of awesome [OpenIMAJ](http://sourceforge.net/p/openimaj/home/OpenIMAJ/) 
 framework wrapped in thread-safe container which allows it to be used in 
 multithreaded applications. 
 However there are more ready-to-use drivers which can be used as a replacement 
@@ -173,7 +189,7 @@ List of additional capture drivers includes (stable):
 * [OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-openimaj) - **not** available in Maven Central, OpenIMAJ replacement for default driver
 * [V4L4j Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-v4l4j) - **not** available in Maven Central, V4L4j replacement for default driver
 
-And (unstable, experimental):
+And (unstable or experimental):
 
 * [OpenCV Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv) - **unstable**, OpenCV replacement for default driver
 * [VLC Driver](https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj) - **unstable**, Linux only, VLC replacement for default driver
