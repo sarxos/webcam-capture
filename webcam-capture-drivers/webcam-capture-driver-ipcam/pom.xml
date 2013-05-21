@@ -15,6 +15,12 @@
 	<description>Webcam Capture driver to be used for IP cameras</description>
 
 	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
 		<!-- uncomment to debug wire log from httpclient -->
 		<!-- 
 		<dependency>
