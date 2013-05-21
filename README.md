@@ -91,29 +91,48 @@ money you would like to spent for good purpose you can help developing this
 awesome Webcam Capture API and make it even better! Several kinds of 
 contributions are very welcome:
 
-* **Star Project** - if you think this project is great, you would like
+##### Star Project
+
+If you think this project is great, you would like
 to help, but you don't know how - you can become project's stargazer.
 By starring you're making project more popular. Visit [this](https://github.com/blog/1204-notifications-stars)
 link if you would like to learn more about how notifications and stars 
 works on Github.
-* **Report bug or feature** - If you've found a bug or you've came-up with some fantastic feature which 
+
+##### Report Bug or Feature
+
+If you've found a bug or you've came-up with some fantastic feature which 
 can make Webcam Capture a better API to use, don't hesitate to 
 [create new issue](https://github.com/sarxos/webcam-capture/issues/new) 
 where you can describe in details what the problem is, or what would you
 like to improve.
-* **Perform tests** - Since Webcam Capture use some part of native code, it's very 
+
+##### Perform Tests
+
+Since Webcam Capture use some part of native code, it's very 
 hard to cover all supported operating systems. I'm always testing it
 on 64-bit Ubuntu Linux, Windows XP and Vista (both 32-bit), but I
 have no possibility to test on Raspberry Pi, Mac OS and 32-bit Linux.
 Please help and test on those systems if you have such possibility. 
-* **Write code** - If you know Java or C++ you can help developing Webcam Capture by 
+
+##### Write Code
+
+If you know Java or C++ you can help developing Webcam Capture by 
 forking repository and sending pull requests. Please visit [this](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github)
 link if you don't know how to contribute to other's code at Github. 
-* **Donate** - People have expressed a wish to donate a little money. Donating won't 
+
+##### Donate
+
+People have expressed a wish to donate a little money. Donating won't 
 get you anything special, other than a warm feeling inside, and possibly 
 urge me to produce more freely available material for Webcam Capture 
-project. You can donate via PayPal, find _donate_ button available 
-[here](http://webcam-capture.sarxos.pl/#contribute) on the project page.
+project. You can donate via [PayPal](https://www.paypal.com), just click 
+[donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UYMENK76CSYZU)
+button available below - it will redirect you to the secured 
+PayPal page where you can provide donation amount (there is no minimal 
+value).
+
+[![Donate via PayPal](https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UYMENK76CSYZU)
 
 
 ## Hello World
