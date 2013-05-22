@@ -11,6 +11,7 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.ds.ipcam.IpCamDriver;
 import com.github.sarxos.webcam.ds.ipcam.IpCamStorage;
+import com.github.sarxos.webcam.log.WebcamLogConfigurator;
 
 
 /**
@@ -39,6 +40,8 @@ public class JpegDasdingStudioExample {
 	}
 
 	public static void main(String[] args) throws MalformedURLException {
+
+		WebcamLogConfigurator.configure("src/examples/resources/cameras.xml");
 
 		JFrame f = new JFrame("Dasding Studio Live IP Cameras Demo");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -5,13 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
 
 
 /**
@@ -33,23 +30,38 @@ public class WebcamLogConfigurator {
 	 */
 	public static void configure(InputStream is) {
 
-		try {
-			Class.forName("ch.qos.logback.classic.LoggerContext");
-		} catch (ClassNotFoundException e1) {
-			LOG.error("Cannot configure logger because logback LoggerContext is not available in classpath");
-			return;
-		}
-
-		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-		JoranConfigurator configurator = new JoranConfigurator();
-		configurator.setContext(context);
-		context.reset();
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
 		try {
-			configurator.doConfigure(is);
-		} catch (JoranException e) {
+
+			String[] names = {
+			"ch.qos.logback.classic.LoggerContext",
+			"ch.qos.logback.classic.joran.JoranConfigurator",
+			"ch.qos.logback.core.Context"
+			};
+
+			for (String name : names) {
+				Class.forName(name, false, cl);
+			}
+
+			Object context = LoggerFactory.getILoggerFactory();
+
+			Class<?> cfgc = Class.forName("ch.qos.logback.classic.joran.JoranConfigurator");
+			Object configurator = cfgc.newInstance();
+
+			Method setContext = cfgc.getMethod("setContext");
+			setContext.invoke(configurator, context);
+
+			Method reset = context.getClass().getMethod("reset");
+			reset.invoke(context, new Object[0]);
+
+			Method doConfigure = cfgc.getMethod("doConfigure");
+			doConfigure.invoke(configurator, is);
+
+		} catch (ClassNotFoundException e) {
+			System.err.println("WLogC: Logback JAR is missing inc lasspath");
+		} catch (Exception e) {
 			LOG.error("Joran configuration exception", e);
-			e.printStackTrace();
 		}
 	}
 
