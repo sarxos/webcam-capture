@@ -201,31 +201,41 @@ be extended with various new features (e.g. IP camera support).
 
 List of additional capture drivers includes:
 
-| Driver Name     | Stable | Central | Description                    |
-|-----------------|--------|---------|--------------------------------|
-| [IP Camera][1]  | yes    | yes     | IP / network camera driver     |
-| [GStreamer][2]  | yes    | no      | Driver for GStreamer framework |
-| [OpenIMAJ][3]   | yes    | no      | Driver for OpenIMAJ framework  |
-| [V4L4j][4]      | yes    | no      | Driver for V4L4j library       |
-| [JMF][5]        | yes    | yes     | Driver for JMF / FMJ framework |
-| [LTI-CIVIL][6]  | yes    | yes     | Driver for LTI-CIVIL library   |
-| [OpenCV][7]     | no     | no      | Driver for OpenCV framework    |
-| [VLCj][8]       | no     | no      | Driver for VLCj library        |
-| [FFmpeg CLI][9] | exp    | no      | Driver for FFmpeg CLI tool     |
+| Driver Name     | Stable | Central | Description                             |
+|-----------------|--------|---------|-----------------------------------------|
+| [ipcam][]       | yes    | yes     | IP / network camera driver              |
+| [gstreamer][]  | yes    | no      | Driver for [GStreamer][] framework      |
+| [openimaj][]   | yes    | no      | Driver for [OpenIMAJ][] framework       |
+| [v4l4j][]      | yes    | no      | Driver for [V4L4j][] project            |
+| [jmf][]        | yes    | yes     | Driver for [JMF][] / [FMJ][] frameworks |
+| [lti-civil][]  | yes    | yes     | Driver for [LTI-CIVIL][] library        |
+| [javacv][]     | no     | no      | Driver for [JavaCV][] library           |
+| [vlcj][]       | no     | no      | Driver for [VLCj][] library             |
+| [ffmpeg-cli][] | exp    | no      | Driver for [FFmpeg][] [CLI][] tool      |
 
-* _exp_ = experimental
 * Central = Maven Central Repository
+* _exp_ = experimental
 
+[GStreamer]:  http://gstreamer.freedesktop.org/
+[OpenIMAJ]:   http://www.openimaj.org/
+[V4L4j]:      http://code.google.com/p/v4l4j/
+[JMF]:        http://www.oracle.com/technetwork/java/javase/download-142937.html
+[FMJ]:        http://fmj-sf.net/
+[LTI-CIVIL]:  http://lti-civil.org/
+[JavaCV]:     http://code.google.com/p/javacv/
+[VLCj]:       http://code.google.com/p/vlcj/
+[FFmpeg]:     http://www.ffmpeg.org/
+[CLI]:        http://en.wikipedia.org/wiki/Command-line_interface
 
-[1]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam
-[2]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-gstreamer
-[3]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-openimaj
-[4]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-v4l4j
-[5]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf
-[6]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-lti-civil
-[7]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv
-[8]: https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj
-[9]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ffmpeg-cli
+[ipcam]:      https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam
+[gstreamer]:  https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-gstreamer
+[openimaj]:   https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-openimaj
+[v4l4j]:      https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-v4l4j
+[jmf]:        https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf
+[lti-civil]:  https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-lti-civil
+[javacv]:     https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv
+[vlcj]:       https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj
+[ffmpeg-cli]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ffmpeg-cli
 
 ## History
 
