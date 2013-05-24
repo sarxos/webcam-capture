@@ -199,20 +199,33 @@ However there are more ready-to-use drivers which can be used as a replacement
 or addition to the default one. By utilizing those drivers Webcam Capture can 
 be extended with various new features (e.g. IP camera support).
 
-List of additional capture drivers includes (stable):
+List of additional capture drivers includes:
 
-* [IP Camera Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam) - available in Maven Central, adds IP / network cameras support
-* [GStreamer Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-gstreamer) - **not** available in Maven Central, GStreamer replacement for default driver
-* [JMF Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf) - available in Maven Central, JMF replacement for default driver
-* [LTI-CIVIL Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-lti-civil) - available in Maven Central, Windows, Linux, Mac OS, LTI-CIVIL replacement for default driver
-* [OpenIMAJ Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-openimaj) - **not** available in Maven Central, OpenIMAJ replacement for default driver
-* [V4L4j Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-v4l4j) - **not** available in Maven Central, V4L4j replacement for default driver
+| Driver Name     | Stable | Central | Description                    |
+|-----------------|--------|---------|--------------------------------|
+| [IP Camera][1]  | yes    | yes     | IP / network camera driver     |
+| [GStreamer][2]  | yes    | no      | Driver for GStreamer framework |
+| [OpenIMAJ][3]   | yes    | no      | Driver for OpenIMAJ framework  |
+| [V4L4j][4]      | yes    | no      | Driver for V4L4j library       |
+| [JMF][5]        | yes    | yes     | Driver for JMF / FMJ framework |
+| [LTI-CIVIL][6]  | yes    | yes     | Driver for LTI-CIVIL library   |
+| [OpenCV][7]     | no     | no      | Driver for OpenCV framework    |
+| [VLCj][8]       | no     | no      | Driver for VLCj library        |
+| [FFmpeg CLI][9] | exp    | no      | Driver for FFmpeg CLI tool     |
 
-And (unstable or experimental):
+* _exp_ = experimental
+* Central = Maven Central Repository
 
-* [OpenCV Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv) - **unstable**, OpenCV replacement for default driver
-* [VLC Driver](https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj) - **unstable**, Linux only, VLC replacement for default driver
-* [FFmpeg Driver](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ffmpeg-cli) - **experimental**, Linux only, FFmpeg replacement for default driver
+
+[1]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam
+[2]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-gstreamer
+[3]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-openimaj
+[4]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-v4l4j
+[5]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf
+[6]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-lti-civil
+[7]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv
+[8]: https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj
+[9]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ffmpeg-cli
 
 ## History
 
@@ -240,5 +253,3 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ![SarXos](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture/src/etc/resources/sarxos.png "SarXos")
-
-
