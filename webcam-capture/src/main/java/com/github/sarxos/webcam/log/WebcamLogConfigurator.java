@@ -37,7 +37,6 @@ public class WebcamLogConfigurator {
 			String[] names = {
 			"ch.qos.logback.classic.LoggerContext",
 			"ch.qos.logback.classic.joran.JoranConfigurator",
-			"ch.qos.logback.core.Context"
 			};
 
 			for (String name : names) {
@@ -59,7 +58,7 @@ public class WebcamLogConfigurator {
 			doConfigure.invoke(configurator, is);
 
 		} catch (ClassNotFoundException e) {
-			System.err.println("WLogC: Logback JAR is missing inc lasspath");
+			System.err.println("WLogC: Logback JARs are missing in classpath");
 		} catch (Exception e) {
 			LOG.error("Joran configuration exception", e);
 		}
