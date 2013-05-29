@@ -122,6 +122,8 @@ public class Webcam {
 	 */
 	private volatile WebcamImageTransformer transformer = null;
 
+	private WebcamLock lock = new WebcamLock(this);
+
 	/**
 	 * Webcam class.
 	 * 
@@ -171,15 +173,24 @@ public class Webcam {
 		if (open.compareAndSet(false, true)) {
 
 			assert updater != null;
+			assert lock != null;
+
+			// lock webcam for other Java (only) processes
+
+			lock.lock();
+
+			// open webcam device
 
 			WebcamOpenTask task = new WebcamOpenTask(driver, device);
 			try {
 				task.open();
 			} catch (InterruptedException e) {
+				lock.unlock();
 				open.set(false);
-				LOG.error("Processor has been interrupted before webcam was open!", e);
+				LOG.debug("Thread has been interrupted in the middle of webcam opening process!", e);
 				return false;
 			} catch (WebcamException e) {
+				lock.unlock();
 				open.set(false);
 				throw e;
 			}
@@ -224,6 +235,7 @@ public class Webcam {
 		if (open.compareAndSet(true, false)) {
 
 			assert updater != null;
+			assert lock != null;
 
 			// close webcam
 
@@ -232,12 +244,16 @@ public class Webcam {
 				task.close();
 			} catch (InterruptedException e) {
 				open.set(true);
-				LOG.error("Processor has been interrupted before webcam was closed!", e);
+				LOG.debug("Thread has been interrupted before webcam was closed!", e);
 				return false;
 			} catch (WebcamException e) {
-				open.set(false);
+				open.set(true);
 				throw e;
 			}
+
+			// unlock webcam so other Java processes can start using it
+
+			lock.unlock();
 
 			// stop updater
 
@@ -1043,5 +1059,14 @@ public class Webcam {
 	 */
 	public void setImageTransformer(WebcamImageTransformer transformer) {
 		this.transformer = transformer;
+	}
+
+	/**
+	 * Return webcam lock.
+	 * 
+	 * @return Webcam lock
+	 */
+	public WebcamLock getLock() {
+		return lock;
 	}
 }

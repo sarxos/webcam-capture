@@ -67,6 +67,7 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 				panel.start();
 			}
 		};
+		t.setName("example-starter");
 		t.setDaemon(true);
 		t.setUncaughtExceptionHandler(this);
 		t.start();
@@ -164,6 +165,7 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 						panel.start();
 					}
 				};
+				t.setName("example-stoper");
 				t.setDaemon(true);
 				t.setUncaughtExceptionHandler(this);
 				t.start();
