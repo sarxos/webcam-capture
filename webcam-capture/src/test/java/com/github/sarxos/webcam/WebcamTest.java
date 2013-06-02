@@ -29,6 +29,9 @@ public class WebcamTest {
 	@After
 	public void cleanup() {
 		System.out.println(Thread.currentThread().getName() + ": Reset driver");
+		for (Webcam webcam : Webcam.getWebcams()) {
+			webcam.close();
+		}
 		Webcam.resetDriver();
 	}
 
