@@ -122,7 +122,7 @@ public class Webcam {
 	 */
 	private volatile WebcamImageTransformer transformer = null;
 
-	private WebcamLock lock = new WebcamLock(this);
+	private WebcamLock lock = null;
 
 	/**
 	 * Webcam class.
@@ -135,6 +135,7 @@ public class Webcam {
 			throw new IllegalArgumentException("Webcam device cannot be null");
 		}
 		this.device = device;
+		this.lock = new WebcamLock(this);
 	}
 
 	/**

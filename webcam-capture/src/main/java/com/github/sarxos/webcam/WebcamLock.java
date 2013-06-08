@@ -1,8 +1,12 @@
 package com.github.sarxos.webcam;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +24,6 @@ public class WebcamLock {
 	 * Logger.
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamLock.class);
-
-	/**
-	 * The preferences instance used to store global variables.
-	 */
-	private static final Preferences PREFS = Preferences.userNodeForPackage(WebcamLock.class);
 
 	/**
 	 * Update interval (ms).
@@ -69,6 +68,8 @@ public class WebcamLock {
 
 	private AtomicBoolean locked = new AtomicBoolean(false);
 
+	private File lock = null;
+
 	/**
 	 * Creates global webcam lock.
 	 * 
@@ -77,15 +78,67 @@ public class WebcamLock {
 	protected WebcamLock(Webcam webcam) {
 		super();
 		this.webcam = webcam;
+		this.lock = new File(System.getProperty("java.io.tmpdir"), getLockName());
+	}
+
+	private String getLockName() {
+		return String.format(".webcam-lock-%d", Math.abs(webcam.getName().hashCode()));
+	}
+
+	private void write(long value) {
+
+		String name = getLockName();
+
+		File tmp = null;
+		DataOutputStream dos = null;
+
+		try {
+			tmp = File.createTempFile(name, "");
+
+			dos = new DataOutputStream(new FileOutputStream(tmp));
+			dos.writeLong(value);
+			dos.flush();
+
+		} catch (IOException e) {
+			throw new WebcamException(e);
+		} finally {
+			if (dos != null) {
+				try {
+					dos.close();
+				} catch (IOException e) {
+					throw new WebcamException(e);
+				}
+			}
+		}
+
+		if (!locked.get()) {
+			return;
+		}
+
+		if (!tmp.renameTo(lock)) {
+			LOG.warn("Ooops, system was not able to rename lock file from {} to {}", tmp, lock);
+		}
+	}
+
+	private long read() {
+		DataInputStream dis = null;
+		try {
+			return (dis = new DataInputStream(new FileInputStream(lock))).readLong();
+		} catch (IOException e) {
+			throw new WebcamException(e);
+		} finally {
+			if (dis != null) {
+				try {
+					dis.close();
+				} catch (IOException e) {
+					throw new WebcamException(e);
+				}
+			}
+		}
 	}
 
 	private void update() {
-		PREFS.putLong(webcam.getName(), System.currentTimeMillis());
-		try {
-			PREFS.flush();
-		} catch (BackingStoreException e) {
-			LOG.warn("Cannot flush lock preferences", e);
-		}
+		write(System.currentTimeMillis());
 	}
 
 	/**
@@ -94,7 +147,7 @@ public class WebcamLock {
 	public void lock() {
 
 		if (isLocked()) {
-			throw new WebcamException(String.format("Webcam %s has been locked and cannot be open", webcam.getName()));
+			throw new WebcamLockException(String.format("Webcam %s has already been locked", webcam.getName()));
 		}
 
 		if (!locked.compareAndSet(false, true)) {
@@ -122,7 +175,11 @@ public class WebcamLock {
 
 		updater.interrupt();
 
-		PREFS.putLong(webcam.getName(), -1);
+		write(-1);
+
+		if (!lock.delete()) {
+			lock.deleteOnExit();
+		}
 	}
 
 	/**
@@ -140,23 +197,19 @@ public class WebcamLock {
 
 		// check if locked by other process
 
-		long tsp = PREFS.getLong(webcam.getName(), -1);
-		long now = System.currentTimeMillis();
+		if (!lock.exists()) {
+			return false;
+		}
 
-		LOG.trace("Lock timestamp {} now {} for ", tsp, now, webcam);
+		long now = System.currentTimeMillis();
+		long tsp = read();
+
+		LOG.trace("Lock timestamp {} now {} for {}", tsp, now, webcam);
 
 		if (tsp > now - INTERVAL * 2) {
 			return true;
 		}
 
 		return false;
-	}
-
-	public static void main(String[] args) {
-		Webcam w = Webcam.getDefault();
-		WebcamLock wl = new WebcamLock(w);
-
-		wl.lock();
-		wl.isLocked();
 	}
 }
