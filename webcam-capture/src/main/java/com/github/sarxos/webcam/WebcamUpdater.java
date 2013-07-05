@@ -194,7 +194,11 @@ public class WebcamUpdater implements Runnable {
 		long delta = t2 - t1 + 1; // +1 to avoid division by zero
 		long delay = Math.max((1000 / TARGET_FPS) - delta, 0);
 
-		fps = (4 * fps + 1000 / delta) / 5;
+		if (device instanceof WebcamDevice.FPSSource) {
+			fps = ((WebcamDevice.FPSSource) device).getFPS();
+		} else {
+			fps = (4 * fps + 1000 / delta) / 5;
+		}
 
 		// reschedule task
 
