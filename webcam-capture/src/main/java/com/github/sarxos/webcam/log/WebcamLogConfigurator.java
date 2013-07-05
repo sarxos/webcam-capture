@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,32 +34,25 @@ public class WebcamLogConfigurator {
 		try {
 
 			String[] names = {
-			"ch.qos.logback.classic.LoggerContext",
-			"ch.qos.logback.classic.joran.JoranConfigurator",
+				"ch.qos.logback.classic.LoggerContext",
+				"ch.qos.logback.classic.joran.JoranConfigurator",
 			};
-
 			for (String name : names) {
 				Class.forName(name, false, cl);
 			}
 
-			Object context = LoggerFactory.getILoggerFactory();
-
-			Class<?> cfgc = Class.forName("ch.qos.logback.classic.joran.JoranConfigurator");
-			Object configurator = cfgc.newInstance();
-
-			Method setContext = cfgc.getMethod("setContext");
-			setContext.invoke(configurator, context);
-
-			Method reset = context.getClass().getMethod("reset");
-			reset.invoke(context, new Object[0]);
-
-			Method doConfigure = cfgc.getMethod("doConfigure");
-			doConfigure.invoke(configurator, is);
+			ch.qos.logback.classic.LoggerContext context = (ch.qos.logback.classic.LoggerContext) LoggerFactory.getILoggerFactory();
+			ch.qos.logback.classic.joran.JoranConfigurator configurator = new ch.qos.logback.classic.joran.JoranConfigurator();
+			configurator.setContext(context);
+			context.reset();
+			configurator.doConfigure(is);
 
 		} catch (ClassNotFoundException e) {
 			System.err.println("WLogC: Logback JARs are missing in classpath");
-		} catch (Exception e) {
-			LOG.error("Joran configuration exception", e);
+		} catch (NoClassDefFoundError e) {
+			System.err.println("WLogC: Logback JARs are missing in classpath");
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 	}
 

@@ -10,7 +10,9 @@ public class WebcamPanelExample {
 
 		JFrame window = new JFrame("Test webcam panel");
 
-		final WebcamPanel panel = new WebcamPanel(Webcam.getDefault());
+		Webcam webcam = Webcam.getDefault();
+
+		WebcamPanel panel = new WebcamPanel(webcam);
 		panel.setFPSDisplayed(true); // display FPS on screen
 		panel.setFPSLimited(false); // no FPS limit
 		panel.setFillArea(true); // image will be resized with window
@@ -19,15 +21,5 @@ public class WebcamPanelExample {
 		window.pack();
 		window.setVisible(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		Thread.sleep(5000);
-		panel.stop();
-		Thread.sleep(5000);
-		panel.start();
-		Thread.sleep(5000);
-		panel.pause();
-		Thread.sleep(5000);
-		panel.resume();
-
 	}
 }

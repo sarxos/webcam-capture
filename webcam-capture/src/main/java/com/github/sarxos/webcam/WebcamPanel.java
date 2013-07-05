@@ -285,27 +285,23 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 
 		@Override
 		public void run() {
-
-			if (!running.get()) {
-				return;
-			}
-
-			if (!webcam.isOpen()) {
-				return;
-			}
-
-			if (paused) {
-				return;
-			}
-
-			BufferedImage tmp = null;
 			try {
-				tmp = webcam.getImage();
+				update();
 			} catch (Throwable t) {
-				LOG.error("Exception when getting image", t);
+				errored = true;
+				WebcamExceptionHandler.handle(t);
+			}
+		}
+
+		private void update() {
+
+			if (!running.get() || !webcam.isOpen() || paused) {
+				return;
 			}
 
+			BufferedImage tmp = webcam.getImage();
 			if (tmp != null) {
+				errored = false;
 				image = tmp;
 			}
 

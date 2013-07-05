@@ -166,6 +166,16 @@ public class WebcamUpdater implements Runnable {
 			return;
 		}
 
+		try {
+			tick();
+		} catch (Throwable t) {
+			WebcamExceptionHandler.handle(t);
+		}
+
+	}
+
+	private void tick() {
+
 		long t1 = 0;
 		long t2 = 0;
 

@@ -4,6 +4,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.NOPLoggerFactory;
 
 
 /**
@@ -23,9 +24,17 @@ public class WebcamExceptionHandler implements UncaughtExceptionHandler {
 
 	@Override
 	public void uncaughtException(Thread t, Throwable e) {
-		LOG.error(String.format("Exception in thread %s", t.getName()), e);
-		System.err.println(String.format("Exception in thread %s", t.getName()));
-		e.printStackTrace();
+		Object context = LoggerFactory.getILoggerFactory();
+		if (context instanceof NOPLoggerFactory) {
+			System.err.println(String.format("Exception in thread %s", t.getName()));
+			e.printStackTrace();
+		} else {
+			LOG.error(String.format("Exception in thread %s", t.getName()), e);
+		}
+	}
+
+	public static void handle(Throwable e) {
+		INSTANCE.uncaughtException(Thread.currentThread(), e);
 	}
 
 	public static final WebcamExceptionHandler getInstance() {
