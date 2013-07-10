@@ -169,6 +169,7 @@ please make sure you are using the newest Webcam Capture SNAPSHOT version.
 
 And here are some more advanced examples, few with quite fancy GUI.
 
+* [How to detect and mark human faces](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-detect-face)
 * [How to detect motion and display effect in JFrame](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-examples/webcam-capture-motiondetector)
 * [How to use webcam capture in Java Applet](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-applet)
 * [How to paint custom effects in WebcamPanel displaying image from camera](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-painter)
