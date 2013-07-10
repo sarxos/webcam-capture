@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.sarxos</groupId>
+		<artifactId>webcam-capture-examples</artifactId>
+		<version>0.3.10-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>webcam-capture-example-detect-face</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Webcam Capture - Detect Face Example</name>
+	<description>Example of how to use painter interface to mark detected face</description>
+
+	<repositories>
+		<repository>
+			<id>sarxos-repo</id>
+			<url>http://repo.sarxos.pl/maven2</url>
+		</repository>
+		<repository>
+			<id>OpenIMAJ maven repository</id>
+			<url>http://maven.openimaj.org/</url>
+		</repository>
+		<repository>
+			<id>OpenIMAJ snapshots maven repository</id>
+			<url>http://snapshots.openimaj.org</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.github.sarxos</groupId>
+			<artifactId>webcam-capture</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openimaj</groupId>
+			<artifactId>faces</artifactId>
+			<version>1.1</version>
+		</dependency>
+	</dependencies>
+
+</project>
