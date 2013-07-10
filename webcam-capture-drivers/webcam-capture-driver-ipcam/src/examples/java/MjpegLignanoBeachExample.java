@@ -31,7 +31,7 @@ public class MjpegLignanoBeachExample {
 		IpCamDeviceRegistry.register("Lignano", "http://88.37.116.138/mjpg/video.mjpg", IpCamMode.PUSH);
 
 		WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(0));
-		panel.setFPS(1);
+		panel.setFPSLimit(1);
 
 		JFrame f = new JFrame("Live Views From Lignano Beach");
 		f.add(panel);

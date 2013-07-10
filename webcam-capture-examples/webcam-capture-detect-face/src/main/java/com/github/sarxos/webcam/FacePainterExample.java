@@ -53,7 +53,7 @@ public class FacePainterExample extends JFrame implements Runnable, WebcamPanel.
 		panel.setPainter(this);
 		panel.setFPSDisplayed(true);
 		panel.setFPSLimited(true);
-		panel.setFPS(20);
+		panel.setFPSLimit(20);
 		panel.setPainter(this);
 		panel.start();
 

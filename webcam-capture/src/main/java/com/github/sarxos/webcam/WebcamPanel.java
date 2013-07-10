@@ -372,13 +372,15 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 */
 	private AtomicBoolean started = new AtomicBoolean(false);
 
+	private Painter defaultPainter = new DefaultPainter();
+
 	/**
 	 * Painter used to draw image in panel.
 	 * 
 	 * @see #setPainter(Painter)
 	 * @see #getPainter()
 	 */
-	private Painter painter = new DefaultPainter();
+	private Painter painter = defaultPainter;
 
 	/**
 	 * Preferred panel size.
@@ -612,7 +614,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * 
 	 * @return Rendering frequency
 	 */
-	public double getFPS() {
+	public double getFPSLimit() {
 		return frequency;
 	}
 
@@ -620,16 +622,16 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * Set rendering frequency (in Hz or FPS). Minimum frequency is 0.016 (1
 	 * frame per minute) and maximum is 25 (25 frames per second).
 	 * 
-	 * @param frequency the frequency
+	 * @param fps the frequency
 	 */
-	public void setFPS(double frequency) {
-		if (frequency > MAX_FREQUENCY) {
-			frequency = MAX_FREQUENCY;
+	public void setFPSLimit(double fps) {
+		if (fps > MAX_FREQUENCY) {
+			fps = MAX_FREQUENCY;
 		}
-		if (frequency < MIN_FREQUENCY) {
-			frequency = MIN_FREQUENCY;
+		if (fps < MIN_FREQUENCY) {
+			fps = MIN_FREQUENCY;
 		}
-		this.frequency = frequency;
+		this.frequency = fps;
 	}
 
 	public boolean isFPSDisplayed() {
@@ -685,5 +687,9 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		if (lc != null) {
 			rb = WebcamUtils.loadRB(WebcamPanel.class, lc);
 		}
+	}
+
+	public Painter getDefaultPainter() {
+		return defaultPainter;
 	}
 }

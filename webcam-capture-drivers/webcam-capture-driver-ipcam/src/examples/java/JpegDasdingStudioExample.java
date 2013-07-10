@@ -54,7 +54,7 @@ public class JpegDasdingStudioExample {
 			WebcamPanel panel = new WebcamPanel(webcam, new Dimension(256, 144), false);
 			panel.setFillArea(true);
 			panel.setFPSLimited(true);
-			panel.setFPS(0.2); // 0.2 FPS = 1 frame per 5 seconds
+			panel.setFPSLimit(0.2); // 0.2 FPS = 1 frame per 5 seconds
 			panel.setBorder(BorderFactory.createEmptyBorder());
 
 			f.add(panel);
