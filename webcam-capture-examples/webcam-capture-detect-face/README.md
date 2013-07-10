@@ -11,8 +11,6 @@ image displayed in `WebcamPanel` component.
 
 In this example I used Haar Cascade from [OpenIMAJ](http://www.openimaj.org/) to detect faces.
 
-![OpenIMAJ](http://openimaj.org/images/OpenImaj-sq.png "OpenIMAJ")
-
 
 ### Screenshoots:
 
