@@ -25,6 +25,8 @@ public class WebcamLock {
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamLock.class);
 
+	private static final Object MUTEX = new Object();
+
 	/**
 	 * Update interval (ms).
 	 */
@@ -100,13 +102,13 @@ public class WebcamLock {
 			dos.flush();
 
 		} catch (IOException e) {
-			throw new WebcamException(e);
+			throw new RuntimeException(e);
 		} finally {
 			if (dos != null) {
 				try {
 					dos.close();
 				} catch (IOException e) {
-					throw new WebcamException(e);
+					throw new RuntimeException(e);
 				}
 			}
 		}
@@ -115,9 +117,81 @@ public class WebcamLock {
 			return;
 		}
 
-		if (!tmp.renameTo(lock)) {
-			LOG.warn("Ooops, system was not able to rename lock file from {} to {}", tmp, lock);
+		if (tmp.renameTo(lock)) {
+
+			// rename operation can fail (mostly on Windows), so we simply jump
+			// out the method if it succeed, or try to rewrite content using
+			// streams if it fail
+
+			return;
+		} else {
+
+			// create lock file if not exist
+
+			if (!lock.exists()) {
+				try {
+					if (!lock.createNewFile()) {
+						throw new RuntimeException("Not able to create file " + lock);
+					}
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+			FileOutputStream fos = null;
+			FileInputStream fis = null;
+
+			int k = 0;
+			int n = -1;
+			byte[] buffer = new byte[8];
+			boolean rewritten = false;
+
+			// rewrite temporary file content to lock, try max 5 times
+
+			synchronized (MUTEX) {
+				do {
+					try {
+						fos = new FileOutputStream(lock);
+						fis = new FileInputStream(tmp);
+						while ((n = fis.read(buffer)) != -1) {
+							fos.write(buffer, 0, n);
+						}
+						rewritten = true;
+					} catch (IOException e) {
+						LOG.debug("Not able to rewrite lock file", e);
+					} finally {
+						if (fos != null) {
+							try {
+								fos.close();
+							} catch (IOException e) {
+								throw new RuntimeException(e);
+							}
+						}
+						if (fis != null) {
+							try {
+								fis.close();
+							} catch (IOException e) {
+								throw new RuntimeException(e);
+							}
+						}
+					}
+					if (rewritten) {
+						break;
+					}
+				} while (k++ < 5);
+			}
+
+			if (!rewritten) {
+				throw new WebcamException("Not able to write lock file");
+			}
+
+			// remove temporary file
+
+			if (!tmp.delete()) {
+				tmp.deleteOnExit();
+			}
 		}
+
 	}
 
 	private long read() {
@@ -125,13 +199,13 @@ public class WebcamLock {
 		try {
 			return (dis = new DataInputStream(new FileInputStream(lock))).readLong();
 		} catch (IOException e) {
-			throw new WebcamException(e);
+			throw new RuntimeException(e);
 		} finally {
 			if (dis != null) {
 				try {
 					dis.close();
 				} catch (IOException e) {
-					throw new WebcamException(e);
+					throw new RuntimeException(e);
 				}
 			}
 		}
