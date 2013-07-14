@@ -16,7 +16,7 @@ Below is the newest stable version ZIP containing main project
 JAR with additional documents, examples and all required 3rd-party
 dependencies:
 
-* **Latest stable version** - [webcam-capture-driver-gstreamer-0.3.10-RC3-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-gstreamer/0.3.10-RC3/webcam-capture-driver-gstreamer-0.3.10-RC3-dist.zip)
+* **Latest stable version** - [webcam-capture-driver-gstreamer-0.3.10-RC4-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-gstreamer/0.3.10-RC4/webcam-capture-driver-gstreamer-0.3.10-RC4-dist.zip)
 
 ## Example
 
