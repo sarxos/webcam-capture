@@ -141,11 +141,12 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 		if (e.getItem() != webcam) {
 			if (webcam != null) {
 
-				final WebcamPanel tmp = panel;
+				panel.stop();
 
 				remove(panel);
 
 				webcam.removeWebcamListener(this);
+				webcam.close();
 
 				webcam = (Webcam) e.getItem();
 				webcam.setViewSize(WebcamResolution.VGA.getSize());
@@ -156,12 +157,12 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 				panel = new WebcamPanel(webcam, false);
 
 				add(panel, BorderLayout.CENTER);
+				pack();
 
 				Thread t = new Thread() {
 
 					@Override
 					public void run() {
-						tmp.stop();
 						panel.start();
 					}
 				};
