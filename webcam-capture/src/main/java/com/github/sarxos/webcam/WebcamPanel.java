@@ -224,12 +224,15 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	private class ImageUpdater implements Runnable {
 
 		/**
-		 * Repainter updates panel when it is being started.
+		 * Repaint scheduler schedule panel updates.
 		 * 
 		 * @author Bartosz Firyn (sarxos)
 		 */
 		private class RepaintScheduler extends Thread {
 
+			/**
+			 * Repaint scheduler schedule panel updates.
+			 */
 			public RepaintScheduler() {
 				setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 				setName(String.format("repaint-scheduler-%s", webcam.getName()));
@@ -239,12 +242,14 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			@Override
 			public void run() {
 
+				// do nothing when not running
 				if (!running.get()) {
 					return;
 				}
 
 				repaint();
 
+				// loop when starting, to wait for images
 				while (starting) {
 					try {
 						Thread.sleep(50);
@@ -253,7 +258,17 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 					}
 				}
 
+				// schedule update when webcam is open, otherwise schedule
+				// second scheduler execution
+
 				if (webcam.isOpen()) {
+
+					// FPS limit means that panel rendering frequency is limited
+					// to the specific value and panel will not be rendered more
+					// often then specific value
+
+					// TODO: rename FPS value in panel to rendering frequency
+
 					if (isFPSLimited()) {
 						executor.scheduleAtFixedRate(updater, 0, (long) (1000 / frequency), TimeUnit.MILLISECONDS);
 					} else {
@@ -266,10 +281,20 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 
 		}
 
+		/**
+		 * Update scheduler thread.
+		 */
 		private Thread scheduler = new RepaintScheduler();
 
+		/**
+		 * Is repainter running?
+		 */
 		private AtomicBoolean running = new AtomicBoolean(false);
 
+		/**
+		 * Start repainter. Can be invoked many times, but only first call will
+		 * take effect.
+		 */
 		public void start() {
 			if (running.compareAndSet(false, true)) {
 				executor = Executors.newScheduledThreadPool(1, THREAD_FACTORY);
@@ -277,9 +302,17 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			}
 		}
 
-		public void stop() {
+		/**
+		 * Stop repainter. Can be invoked many times, but only first call will
+		 * take effect.
+		 * 
+		 * @throws InterruptedException
+		 */
+		public void stop() throws InterruptedException {
 			if (running.compareAndSet(true, false)) {
 				executor.shutdown();
+				executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
+				scheduler.join();
 			}
 		}
 
@@ -293,17 +326,27 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			}
 		}
 
+		/**
+		 * Perform single panel area update (repaint newly obtained image).
+		 */
 		private void update() {
+
+			// do nothing when updater not running, when webcam is closed, or
+			// panel repainting is paused
 
 			if (!running.get() || !webcam.isOpen() || paused) {
 				return;
 			}
+
+			// get new image from webcam
 
 			BufferedImage tmp = webcam.getImage();
 			if (tmp != null) {
 				errored = false;
 				image = tmp;
 			}
+
+			// and repaint it
 
 			repaint();
 		}
@@ -339,18 +382,18 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	/**
 	 * Webcam object used to fetch images.
 	 */
-	private Webcam webcam = null;
-
-	/**
-	 * Image currently being displayed.
-	 */
-	private BufferedImage image = null;
+	private final Webcam webcam;
 
 	/**
 	 * Repainter is used to fetch images from camera and force panel repaint
 	 * when image is ready.
 	 */
-	private volatile ImageUpdater updater = null;
+	private final ImageUpdater updater;
+
+	/**
+	 * Image currently being displayed.
+	 */
+	private BufferedImage image = null;
 
 	/**
 	 * Webcam is currently starting.
@@ -370,9 +413,12 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	/**
 	 * Webcam has been started.
 	 */
-	private AtomicBoolean started = new AtomicBoolean(false);
+	private final AtomicBoolean started = new AtomicBoolean(false);
 
-	private Painter defaultPainter = new DefaultPainter();
+	/**
+	 * Default painter.
+	 */
+	private final Painter defaultPainter = new DefaultPainter();
 
 	/**
 	 * Painter used to draw image in panel.
@@ -385,7 +431,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	/**
 	 * Preferred panel size.
 	 */
-	private Dimension size = null;
+	private Dimension defaultSize = null;
 
 	/**
 	 * Creates webcam panel and automatically start webcam.
@@ -425,11 +471,10 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			throw new IllegalArgumentException(String.format("Webcam argument in %s constructor cannot be null!", getClass().getSimpleName()));
 		}
 
-		this.size = size;
+		this.defaultSize = size;
 		this.webcam = webcam;
-		this.webcam.addWebcamListener(this);
-
-		rb = WebcamUtils.loadRB(WebcamPanel.class, getLocale());
+		this.updater = new ImageUpdater();
+		this.rb = WebcamUtils.loadRB(WebcamPanel.class, getLocale());
 
 		addPropertyChangeListener("locale", this);
 
@@ -476,36 +521,6 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		}
 	}
 
-	@Override
-	public void webcamOpen(WebcamEvent we) {
-
-		// start image updater (i.e. start panel repainting)
-		if (updater == null) {
-			updater = new ImageUpdater();
-			updater.start();
-		}
-
-		// copy size from webcam only if default size has not been provided
-		if (size == null) {
-			setPreferredSize(webcam.getViewSize());
-		}
-	}
-
-	@Override
-	public void webcamClosed(WebcamEvent we) {
-		stop();
-	}
-
-	@Override
-	public void webcamDisposed(WebcamEvent we) {
-		webcamClosed(we);
-	}
-
-	@Override
-	public void webcamImageObtained(WebcamEvent we) {
-		// do nothing
-	}
-
 	/**
 	 * Open webcam and start rendering.
 	 */
@@ -515,25 +530,26 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			return;
 		}
 
+		webcam.addWebcamListener(this);
+
 		LOG.debug("Starting panel rendering and trying to open attached webcam");
-
-		starting = true;
-
-		if (updater == null) {
-			updater = new ImageUpdater();
-		}
 
 		updater.start();
 
+		starting = true;
+
 		try {
-			errored = !webcam.open();
+			if (!webcam.isOpen()) {
+				errored = !webcam.open();
+			}
 		} catch (WebcamException e) {
 			errored = true;
-			repaint();
 			throw e;
 		} finally {
+			repaint();
 			starting = false;
 		}
+
 	}
 
 	/**
@@ -545,19 +561,27 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			return;
 		}
 
+		webcam.removeWebcamListener(this);
+
 		LOG.debug("Stopping panel rendering and closing attached webcam");
 
-		updater.stop();
-		updater = null;
+		try {
+			updater.stop();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 
 		image = null;
 
 		try {
-			errored = !webcam.close();
+			if (webcam.isOpen()) {
+				errored = !webcam.close();
+			}
 		} catch (WebcamException e) {
 			errored = true;
-			repaint();
 			throw e;
+		} finally {
+			repaint();
 		}
 	}
 
@@ -681,6 +705,10 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		return fillArea;
 	}
 
+	public Painter getDefaultPainter() {
+		return defaultPainter;
+	}
+
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		Locale lc = (Locale) evt.getNewValue();
@@ -689,7 +717,29 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		}
 	}
 
-	public Painter getDefaultPainter() {
-		return defaultPainter;
+	@Override
+	public void webcamOpen(WebcamEvent we) {
+
+		// if default size has not been provided, then use the one from webcam
+		// device (this will be current webcam resolution)
+
+		if (defaultSize == null) {
+			setPreferredSize(webcam.getViewSize());
+		}
+	}
+
+	@Override
+	public void webcamClosed(WebcamEvent we) {
+		stop();
+	}
+
+	@Override
+	public void webcamDisposed(WebcamEvent we) {
+		stop();
+	}
+
+	@Override
+	public void webcamImageObtained(WebcamEvent we) {
+		// do nothing
 	}
 }
