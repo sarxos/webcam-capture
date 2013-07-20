@@ -6,7 +6,9 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -75,7 +77,7 @@ public class Webcam {
 	/**
 	 * Webcam listeners.
 	 */
-	private List<WebcamListener> listeners = Collections.synchronizedList(new ArrayList<WebcamListener>());
+	private List<WebcamListener> listeners = new CopyOnWriteArrayList<WebcamListener>();
 
 	/**
 	 * List of custom resolution sizes supported by webcam instance.
@@ -213,7 +215,11 @@ public class Webcam {
 			// notify listeners
 
 			WebcamEvent we = new WebcamEvent(WebcamEventType.OPEN, this);
-			for (WebcamListener l : getWebcamListeners()) {
+			Iterator<WebcamListener> wli = listeners.iterator();
+			WebcamListener l = null;
+
+			while (wli.hasNext()) {
+				l = wli.next();
 				try {
 					l.webcamOpen(we);
 				} catch (Exception e) {
@@ -269,7 +275,11 @@ public class Webcam {
 			// notify listeners
 
 			WebcamEvent we = new WebcamEvent(WebcamEventType.CLOSED, this);
-			for (WebcamListener l : getWebcamListeners()) {
+			Iterator<WebcamListener> wli = listeners.iterator();
+			WebcamListener l = null;
+
+			while (wli.hasNext()) {
+				l = wli.next();
 				try {
 					l.webcamClosed(we);
 				} catch (Exception e) {
@@ -325,7 +335,11 @@ public class Webcam {
 		}
 
 		WebcamEvent we = new WebcamEvent(WebcamEventType.DISPOSED, this);
-		for (WebcamListener l : listeners) {
+		Iterator<WebcamListener> wli = listeners.iterator();
+		WebcamListener l = null;
+
+		while (wli.hasNext()) {
+			l = wli.next();
 			try {
 				l.webcamClosed(we);
 				l.webcamDisposed(we);
