@@ -39,33 +39,29 @@ public class VlcjDriver implements WebcamDriver {
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 	}
 
-	private static List<WebcamDevice> devices = null;
-
-	private static boolean loaded = false;
-
-	private static MediaPlayerFactory mediaPlayerFactory = null;
-	private static MediaDiscoverer videoMediaDiscoverer = null;
-	private static MediaList videoDeviceList = null;
+	public VlcjDriver() {
+		if (OS.getOS() == OS.WIN) {
+			System.err.println(String.format("WARNING: %s does not support Windows platform", getClass().getSimpleName()));
+		}
+	}
 
 	@Override
 	public List<WebcamDevice> getDevices() {
 
-		if (!loaded) {
-			mediaPlayerFactory = new MediaPlayerFactory();
-			videoMediaDiscoverer = mediaPlayerFactory.newVideoMediaDiscoverer();
-			videoDeviceList = videoMediaDiscoverer.getMediaList();
-			loaded = true;
+		MediaPlayerFactory mediaPlayerFactory = new MediaPlayerFactory();
+		MediaDiscoverer videoMediaDiscoverer = mediaPlayerFactory.newVideoMediaDiscoverer();
+		MediaList videoDeviceList = videoMediaDiscoverer.getMediaList();
+
+		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
+
+		List<MediaListItem> videoDevices = videoDeviceList.items();
+		for (MediaListItem item : videoDevices) {
+			devices.add(new VlcjDevice(item));
 		}
 
-		if (devices == null) {
-
-			devices = new ArrayList<WebcamDevice>();
-
-			List<MediaListItem> videoDevices = videoDeviceList.items();
-			for (MediaListItem item : videoDevices) {
-				devices.add(new VlcjDevice(item));
-			}
-		}
+		videoDeviceList.release();
+		videoMediaDiscoverer.release();
+		mediaPlayerFactory.release();
 
 		return devices;
 	}

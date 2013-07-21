@@ -2,6 +2,7 @@ package com.github.sarxos.webcam.ds.vlcj;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,56 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
+import com.github.sarxos.webcam.WebcamResolution;
 
+
+/**
+ * Just a simple enumeration with supported (not yet confirmed) operating
+ * systems.
+ * 
+ * @author Bartosz Firyn (sarxos)
+ */
+enum OS {
+
+	/**
+	 * Microsoft Windows
+	 */
+	WIN,
+
+	/**
+	 * Linux or UNIX.
+	 */
+	NIX,
+
+	/**
+	 * Mac OS X
+	 */
+	OSX;
+
+	private static OS os = null;
+
+	/**
+	 * Get operating system.
+	 * 
+	 * @return OS
+	 */
+	public static final OS getOS() {
+		if (os == null) {
+			String osp = System.getProperty("os.name").toLowerCase();
+			if (osp.indexOf("win") >= 0) {
+				return WIN;
+			} else if (osp.indexOf("mac") >= 0) {
+				return OSX;
+			} else if (osp.indexOf("nix") >= 0 || osp.indexOf("nux") >= 0) {
+				return NIX;
+			} else {
+				throw new RuntimeException(osp + " is not supported");
+			}
+		}
+		return os;
+	}
+
+}
 
 /**
  * NOT STABLE, EXPERIMENTAL STUFF!!!
@@ -28,7 +78,9 @@ public class VlcjDevice implements WebcamDevice {
 	 */
 	//@formatter:off
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
-		new Dimension(320, 240),
+		WebcamResolution.QQVGA.getSize(),
+		WebcamResolution.QVGA.getSize(),
+		WebcamResolution.VGA.getSize(),
 	};
 	//@formatter:on
 
@@ -75,34 +127,66 @@ public class VlcjDevice implements WebcamDevice {
 
 	private Dimension size = null;
 	private MediaListItem item = null;
+	private MediaListItem sub = null;
 	private MediaPlayerFactory factory = null;
 	private MediaPlayer player = null;
 
 	private volatile boolean open = false;
 	private volatile boolean disposed = false;
 
-	public VlcjDevice(MediaListItem item) {
+	protected VlcjDevice(MediaListItem item) {
+
+		if (item == null) {
+			throw new IllegalArgumentException("Media list item cannot be null!");
+		}
+
+		List<MediaListItem> subs = item.subItems();
+
+		if (subs.isEmpty()) {
+			throw new RuntimeException("Implementation does not support media list items which are empty!");
+		}
+
 		this.item = item;
+		this.sub = subs.get(0);
 	}
 
-	private String getCapDevice() {
-
-		String os = System.getProperty("os.name").toLowerCase();
-
-		if (os.indexOf("win") >= 0) {
-			return "dshow://";
-		} else if (os.indexOf("mac") >= 0) {
-			return "qtcapture://";
-		} else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0) {
-			return "v4l2://";
-		} else {
-			throw new RuntimeException("Not implemented");
+	public String getCaptureDevice() {
+		switch (OS.getOS()) {
+			case WIN:
+				return "dshow://";
+			case OSX:
+				return "qtcapture://";
+			case NIX:
+				return "v4l2://";
+			default:
+				throw new RuntimeException("Capture device not supported on " + OS.getOS());
 		}
+	}
+
+	public MediaListItem getMediaListItem() {
+		return item;
+	}
+
+	public MediaListItem getMediaListItemSub() {
+		return sub;
 	}
 
 	@Override
 	public String getName() {
-		return item.name();
+		return sub.name();
+	}
+
+	public String getMRL() {
+		return sub.mrl();
+	}
+
+	public String getVDevice() {
+		return getMRL().replace(getCaptureDevice(), "");
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s[%s (%s)]", getClass().getSimpleName(), getName(), getMRL());
 	}
 
 	@Override
@@ -123,7 +207,7 @@ public class VlcjDevice implements WebcamDevice {
 	@Override
 	public BufferedImage getImage() {
 		if (!open) {
-			throw new WebcamException("Cannot get image, player is not open");
+			throw new WebcamException("Cannot get image, webcam device is not open");
 		}
 		return player.getSnapshot();
 	}
@@ -147,13 +231,37 @@ public class VlcjDevice implements WebcamDevice {
 
 		// for nix systems this should be changed dshow -> ... !!
 
-		String[] options = {
-		":dshow-vdev=" + item.name(),
-		":dshow-size=" + size.width + "x" + size.height,
-		":dshow-adev=none", // no audio device
-		};
+		String[] options = null;
 
-		player.startMedia(getCapDevice(), options);
+		switch (OS.getOS()) {
+			case WIN:
+				options = new String[] {
+					":dshow-vdev=" + getName(),
+					":dshow-size=" + size.width + "x" + size.height,
+					":dshow-adev=none", // no audio device
+				};
+				break;
+			case NIX:
+				options = new String[] {
+					":v4l-vdev=" + getVDevice(),
+					":v4l-width=" + size.width,
+					":v4l-height=" + size.height,
+					":v4l-fps=30",
+					":v4l-quality=20",
+					":v4l-adev=none", // no audio device
+				};
+				break;
+			case OSX:
+				options = new String[] {
+					":qtcapture-vdev=" + getVDevice(),
+					":qtcapture-width=" + size.width,
+					":qtcapture-height=" + size.height,
+					":qtcapture-adev=none", // no audio device
+				};
+				break;
+		}
+
+		player.startMedia(getMRL(), options);
 
 		// wait for images
 
@@ -203,5 +311,13 @@ public class VlcjDevice implements WebcamDevice {
 	@Override
 	public boolean isOpen() {
 		return open;
+	}
+
+	public MediaPlayer getPlayer() {
+		return player;
+	}
+
+	public MediaPlayerFactory getFactory() {
+		return factory;
 	}
 }
