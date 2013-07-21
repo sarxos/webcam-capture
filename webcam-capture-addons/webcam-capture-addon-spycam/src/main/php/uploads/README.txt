@@ -1,0 +1,1 @@
+This directory will store pictures from spy camera.

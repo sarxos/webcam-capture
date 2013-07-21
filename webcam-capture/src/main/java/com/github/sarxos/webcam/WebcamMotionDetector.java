@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +23,25 @@ import com.github.sarxos.webcam.util.jh.JHGrayFilter;
  */
 public class WebcamMotionDetector {
 
+	/**
+	 * Logger.
+	 */
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamMotionDetector.class);
+
+	/**
+	 * Thread number in pool.
+	 */
+	private static final AtomicInteger NT = new AtomicInteger(0);
+
+	/**
+	 * Thread factory.
+	 */
+	private static final ThreadFactory THREAD_FACTORY = new DetectorThreadFactory();
+
+	/**
+	 * Executor.
+	 */
+	private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(THREAD_FACTORY);
 
 	public static final int DEFAULT_THREASHOLD = 25;
 
@@ -32,11 +52,9 @@ public class WebcamMotionDetector {
 	 */
 	private static final class DetectorThreadFactory implements ThreadFactory {
 
-		private static int number = 0;
-
 		@Override
 		public Thread newThread(Runnable runnable) {
-			Thread t = new Thread(runnable, "motion-detector-" + (++number));
+			Thread t = new Thread(runnable, String.format("motion-detector-%d", NT.incrementAndGet()));
 			t.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 			t.setDaemon(true);
 			return t;
@@ -53,8 +71,8 @@ public class WebcamMotionDetector {
 
 		@Override
 		public void run() {
-			running = true;
-			while (running && webcam.isOpen()) {
+			running.set(true);
+			while (running.get() && webcam.isOpen()) {
 				detect();
 				try {
 					Thread.sleep(interval);
@@ -70,33 +88,33 @@ public class WebcamMotionDetector {
 	 * 
 	 * @author Bartosz Firyn (SarXos)
 	 */
-	private class Changer implements Runnable {
+	private class Revert implements Runnable {
 
 		@Override
 		public void run() {
-			int time = inertia == 0 ? interval + interval / 2 : inertia;
+
+			int time = inertia <= 0 ? (int) (0.5 * interval) : inertia;
+
 			LOG.debug("Motion change has been sheduled in " + time + "ms");
+
 			try {
 				Thread.sleep(time);
 			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
+				return;
 			}
-			synchronized (mutex) {
-				motion = false;
-			}
+
+			motion.set(false);
 		}
 	}
 
-	private List<WebcamMotionListener> listeners = new ArrayList<WebcamMotionListener>();
+	private final List<WebcamMotionListener> listeners = new ArrayList<WebcamMotionListener>();
 
-	private Object mutex = new Object();
-
-	private boolean running = false;
+	private final AtomicBoolean running = new AtomicBoolean(false);
 
 	/**
 	 * Is motion?
 	 */
-	private boolean motion = false;
+	private final AtomicBoolean motion = new AtomicBoolean(false);
 
 	/**
 	 * Previously captured image.
@@ -111,17 +129,17 @@ public class WebcamMotionDetector {
 	/**
 	 * Motion check interval (1000 ms by default).
 	 */
-	private int interval = 1000;
+	private volatile int interval = 1000;
 
 	/**
 	 * Pixel intensity threshold (0 - 255).
 	 */
-	private int threshold = 10;
+	private volatile int threshold = 10;
 
 	/**
 	 * How long motion is valid.
 	 */
-	private int inertia = 10000;
+	private volatile int inertia = 0;
 
 	/**
 	 * Motion strength (0 = no motion).
@@ -137,16 +155,6 @@ public class WebcamMotionDetector {
 	 * Grayscale filter instance.
 	 */
 	private JHGrayFilter gray = new JHGrayFilter();
-
-	/**
-	 * Thread factory.
-	 */
-	private ThreadFactory threadFactory = new DetectorThreadFactory();
-
-	/**
-	 * Executor.
-	 */
-	private ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
 
 	/**
 	 * Create motion detector. Will open webcam if it is closed.
@@ -182,16 +190,14 @@ public class WebcamMotionDetector {
 	}
 
 	public void start() {
-		if (!webcam.isOpen()) {
+		if (running.compareAndSet(false, true)) {
 			webcam.open();
+			EXECUTOR.submit(new Runner());
 		}
-		LOG.debug("Starting motion detector");
-		executor.submit(new Runner());
 	}
 
 	public void stop() {
-		running = false;
-		if (webcam.isOpen()) {
+		if (running.compareAndSet(true, false)) {
 			webcam.close();
 		}
 	}
@@ -202,7 +208,7 @@ public class WebcamMotionDetector {
 			LOG.debug(WebcamMotionDetector.class.getSimpleName() + ".detect()");
 		}
 
-		if (motion) {
+		if (motion.get()) {
 			LOG.debug("Motion detector still in inertia state, no need to check");
 			return;
 		}
@@ -219,39 +225,36 @@ public class WebcamMotionDetector {
 
 			int strength = 0;
 
-			synchronized (mutex) {
-				for (int i = 0; i < w; i++) {
-					for (int j = 0; j < h; j++) {
+			for (int i = 0; i < w; i++) {
+				for (int j = 0; j < h; j++) {
 
-						int c = current.getRGB(i, j);
-						int p = previous.getRGB(i, j);
+					int c = current.getRGB(i, j);
+					int p = previous.getRGB(i, j);
 
-						int rgb = combinePixels(c, p);
+					int rgb = combinePixels(c, p);
 
-						int cr = (rgb & 0x00ff0000) >> 16;
-						int cg = (rgb & 0x0000ff00) >> 8;
-						int cb = (rgb & 0x000000ff);
+					int cr = (rgb & 0x00ff0000) >> 16;
+					int cg = (rgb & 0x0000ff00) >> 8;
+					int cb = (rgb & 0x000000ff);
 
-						int max = Math.max(Math.max(cr, cg), cb);
+					int max = Math.max(Math.max(cr, cg), cb);
 
-						if (max > threshold) {
+					if (max > threshold) {
 
-							if (!motion) {
-								executor.submit(new Changer());
-								motion = true;
-							}
-
-							strength++; // unit = 1 / px^2
+						if (motion.compareAndSet(false, true)) {
+							EXECUTOR.submit(new Revert());
 						}
+
+						strength++; // unit = 1 / px^2
 					}
 				}
 
 				this.strength = strength;
-
-				if (motion) {
-					notifyMotionListeners();
-				}
 			}
+		}
+
+		if (motion.get()) {
+			notifyMotionListeners();
 		}
 
 		previous = current;
@@ -305,7 +308,12 @@ public class WebcamMotionDetector {
 		return interval;
 	}
 
-	public void setInterval(int interval) {
+	/**
+	 * Motion check interval in milliseconds.
+	 * 
+	 * @param interval the new motion check interval (ms)
+	 */
+	public void setCheckInterval(int interval) {
 		this.interval = interval;
 	}
 
@@ -314,10 +322,10 @@ public class WebcamMotionDetector {
 	}
 
 	public boolean isMotion() {
-		if (!running) {
+		if (!running.get()) {
 			LOG.warn("Motion cannot be detected when detector is not running!");
 		}
-		return motion;
+		return motion.get();
 	}
 
 	public int getMotionStrength() {
@@ -362,5 +370,16 @@ public class WebcamMotionDetector {
 			return 255;
 		}
 		return c;
+	}
+
+	/**
+	 * How long motion should be valid. Value is in milliseconds. If less than
+	 * 0, then inertia is calculated as 0.5 interval value, so motion is invalid
+	 * at the next detector tick.
+	 * 
+	 * @param inertia the new inertia value (milliseconds)
+	 */
+	public void setInertia(int inertia) {
+		this.inertia = inertia;
 	}
 }

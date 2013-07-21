@@ -17,6 +17,7 @@
 
 	<modules>
 		<module>webcam-capture-addon-swt</module>
+		<module>webcam-capture-addon-spycam</module>
 	</modules>
 
 	<build>

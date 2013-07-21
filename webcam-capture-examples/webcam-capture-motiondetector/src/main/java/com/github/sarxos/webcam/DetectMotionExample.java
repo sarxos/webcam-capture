@@ -68,7 +68,7 @@ public class DetectMotionExample extends JFrame implements Runnable {
 	public void run() {
 
 		WebcamMotionDetector detector = new WebcamMotionDetector(webcam, threshold, inertia);
-		detector.setInterval(INTERVAL);
+		detector.setCheckInterval(INTERVAL);
 		detector.start();
 
 		while (true) {
