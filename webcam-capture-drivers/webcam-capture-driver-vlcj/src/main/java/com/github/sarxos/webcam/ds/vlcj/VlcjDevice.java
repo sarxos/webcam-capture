@@ -65,7 +65,12 @@ enum OS {
 }
 
 /**
- * NOT STABLE, EXPERIMENTAL STUFF!!!
+ * Capture driver which use vlcj project API to fetch images from camera. It
+ * should not be used when you need performance since vlcj saves snapshot image
+ * to disk prior it is returned - this affects performance and drop FPS rate
+ * down. In my case (HP Elitebook 8460p, 4 cores, 4 GB RAM, fast SSD disk) it
+ * was about ~12 FPS, which is very low when you compare it to the other capture
+ * drivers.
  * 
  * @author Bartosz Firyn (SarXos)
  */
@@ -74,56 +79,49 @@ public class VlcjDevice implements WebcamDevice {
 	private static final Logger LOG = LoggerFactory.getLogger(VlcjDevice.class);
 
 	/**
-	 * Artificial view sizes. In future this should be read from media item.
+	 * Artificial view sizes. The vlcj is not able to detect resolutions
+	 * supported by the webcam. If you would like to detect resolutions and have
+	 * high-quality with good performance images streaming, you should rather
+	 * use gstreamer or v4lvj capture drivers.
 	 */
-	//@formatter:off
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
 		WebcamResolution.QQVGA.getSize(),
 		WebcamResolution.QVGA.getSize(),
 		WebcamResolution.VGA.getSize(),
 	};
-	//@formatter:on
 
-	//@formatter:off
 	private final static String[] VLC_ARGS = {
 
 		// VLC args by Andrew Davison:
 		// http://fivedots.coe.psu.ac.th/~ad/jg/nui025/snapsWithoutJMF.pdf
 
-		// ... have no idea what is this ...
-		"--intf",
-	
 		// no interface
-		"dummy",
-	
-		// ... have no idea what is this ...
-		"--vout",
-	
+		"--intf", "dummy",
+
 		// no video output
-		"dummy",
-	
+		"--vout", "dummy",
+
 		// no audio decoding
 		"--no-audio",
-	
+
 		// do not display title
 		"--no-video-title-show",
-	
+
 		// no stats
 		"--no-stats",
-	
+
 		// no subtitles
 		"--no-sub-autodetect-file",
-	
+
 		// no snapshot previews
 		"--no-snapshot-preview",
-	
+
 		// reduce capture lag/latency
 		"--live-caching=50",
-	
+
 		// turn off warnings
 		"--quiet",
 	};
-	//@formatter:on
 
 	private Dimension size = null;
 	private MediaListItem item = null;
