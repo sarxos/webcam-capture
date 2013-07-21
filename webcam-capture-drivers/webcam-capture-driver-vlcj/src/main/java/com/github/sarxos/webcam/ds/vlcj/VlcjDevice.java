@@ -50,11 +50,11 @@ enum OS {
 		if (os == null) {
 			String osp = System.getProperty("os.name").toLowerCase();
 			if (osp.indexOf("win") >= 0) {
-				return WIN;
+				os = WIN;
 			} else if (osp.indexOf("mac") >= 0) {
-				return OSX;
+				os = OSX;
 			} else if (osp.indexOf("nix") >= 0 || osp.indexOf("nux") >= 0) {
-				return NIX;
+				os = NIX;
 			} else {
 				throw new RuntimeException(osp + " is not supported");
 			}
