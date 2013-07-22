@@ -76,7 +76,7 @@ public class GStreamerDriver implements WebcamDriver {
 				LOG.debug("Add bin directory to JNA search paths {}", gpath);
 				NativeLibrary.addSearchPath("gstreamer-0.10", gpath);
 			} else {
-				throw new WebcamException(String.format("GStreamer has not been installed or not in %PATH%: %s", path));
+				throw new WebcamException(String.format("GStreamer has not been installed or not available in PATH: %s", path));
 			}
 		}
 
