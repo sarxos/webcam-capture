@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,6 +188,23 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	}
 
 	/**
+	 * This runnable will do nothing more than repaint panel.
+	 */
+	private static final class SwingRepainter implements Runnable {
+
+		private WebcamPanel panel = null;
+
+		public SwingRepainter(WebcamPanel panel) {
+			this.panel = panel;
+		}
+
+		@Override
+		public void run() {
+			panel.repaint();
+		}
+	}
+
+	/**
 	 * S/N used by Java to serialize beans.
 	 */
 	private static final long serialVersionUID = 1L;
@@ -210,6 +228,11 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * Thread factory used by execution service.
 	 */
 	private static final ThreadFactory THREAD_FACTORY = new PanelThreadFactory();
+
+	/**
+	 * This runnable will do nothing more than repaint panel.
+	 */
+	private final Runnable repaint = new SwingRepainter(this);
 
 	/**
 	 * Scheduled executor acting as timer.
@@ -247,7 +270,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 					return;
 				}
 
-				repaint();
+				repaintPanel();
 
 				// loop when starting, to wait for images
 				while (starting) {
@@ -348,7 +371,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 
 			// and repaint it
 
-			repaint();
+			repaintPanel();
 		}
 	}
 
@@ -546,8 +569,8 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			errored = true;
 			throw e;
 		} finally {
-			repaint();
 			starting = false;
+			repaintPanel();
 		}
 
 	}
@@ -581,8 +604,15 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			errored = true;
 			throw e;
 		} finally {
-			repaint();
+			repaintPanel();
 		}
+	}
+
+	/**
+	 * Repaint panel in Swing asynchronous manner.
+	 */
+	private void repaintPanel() {
+		SwingUtilities.invokeLater(repaint);
 	}
 
 	/**
