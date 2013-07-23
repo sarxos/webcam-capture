@@ -30,7 +30,7 @@ public class WebcamLock {
 	/**
 	 * Update interval (ms).
 	 */
-	private static final long INTERVAL = 2000;
+	public static final long INTERVAL = 2000;
 
 	/**
 	 * Used to update lock state.

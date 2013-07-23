@@ -1,0 +1,89 @@
+import java.awt.Dimension;
+
+import javax.swing.JApplet;
+
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamPanel;
+import com.github.sarxos.webcam.WebcamResolution;
+import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
+
+
+public class WebcamAppletExample extends JApplet {
+
+	private static final long serialVersionUID = 3517366452510566924L;
+
+	private Dimension size = WebcamResolution.QQVGA.getSize();
+	private Webcam webcam = null;
+	private WebcamPanel panel = null;
+
+	public WebcamAppletExample() {
+		super();
+		System.out.println("Construct");
+	}
+
+	@Override
+	public void start() {
+
+		System.out.println("Start");
+
+		super.start();
+
+		try {
+			Webcam.setDriver(new WebcamDefaultDriver());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		webcam = Webcam.getDefault();
+		webcam.setViewSize(size);
+
+		panel = new WebcamPanel(webcam, false);
+		panel.setFPSDisplayed(true);
+
+		add(panel);
+
+		if (webcam.isOpen()) {
+			webcam.close();
+		}
+
+		int i = 0;
+		do {
+			if (webcam.getLock().isLocked()) {
+				System.out.println("Waiting for lock to be released " + i);
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e1) {
+					return;
+				}
+			} else {
+				break;
+			}
+		} while (i++ < 3);
+
+		webcam.open();
+		panel.start();
+	}
+
+	@Override
+	public void destroy() {
+		System.out.println("Destroy");
+		super.destroy();
+		webcam.close();
+		webcam.close();
+	}
+
+	@Override
+	public void stop() {
+		System.out.println("Stop");
+		super.stop();
+		webcam.close();
+		webcam.getLock().unlock();
+		panel.stop();
+	}
+
+	@Override
+	public void init() {
+		System.out.println("Init");
+		super.init();
+	}
+}

@@ -870,7 +870,7 @@ public class Webcam {
 	 * @param wd new webcam driver to be used (e.g. LtiCivil, JFM, FMJ, QTJ)
 	 * @throws IllegalArgumentException when argument is null
 	 */
-	public static synchronized void setDriver(WebcamDriver wd) {
+	public static void setDriver(WebcamDriver wd) {
 
 		if (wd == null) {
 			throw new IllegalArgumentException("Webcam driver cannot be null!");
@@ -893,7 +893,7 @@ public class Webcam {
 	 * @param driverClass new video driver class to use
 	 * @throws IllegalArgumentException when argument is null
 	 */
-	public static synchronized void setDriver(Class<? extends WebcamDriver> driverClass) {
+	public static void setDriver(Class<? extends WebcamDriver> driverClass) {
 
 		if (driverClass == null) {
 			throw new IllegalArgumentException("Webcam driver class cannot be null!");
@@ -915,9 +915,11 @@ public class Webcam {
 	 * <br>
 	 * <b>This method is not thread-safe!</b>
 	 */
-	public static synchronized void resetDriver() {
+	public static void resetDriver() {
 
-		DRIVERS_LIST.clear();
+		synchronized (DRIVERS_LIST) {
+			DRIVERS_LIST.clear();
+		}
 
 		if (discovery != null) {
 			discovery.shutdown();

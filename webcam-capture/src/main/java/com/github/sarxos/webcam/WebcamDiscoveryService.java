@@ -84,7 +84,7 @@ public class WebcamDiscoveryService implements Runnable {
 		return devices;
 	}
 
-	public synchronized List<Webcam> getWebcams(long timeout, TimeUnit tunit) throws TimeoutException {
+	public List<Webcam> getWebcams(long timeout, TimeUnit tunit) throws TimeoutException {
 
 		if (timeout < 0) {
 			throw new IllegalArgumentException("Timeout cannot be negative");
@@ -238,10 +238,11 @@ public class WebcamDiscoveryService implements Runnable {
 		// discovered
 
 		Object monitor = new Object();
-
+		int i = 0;
 		do {
 
 			synchronized (monitor) {
+				System.out.println("in monitor wait " + i++);
 				try {
 					monitor.wait(support.getScanInterval());
 				} catch (InterruptedException e) {
@@ -257,6 +258,8 @@ public class WebcamDiscoveryService implements Runnable {
 			scan();
 
 		} while (running);
+
+		LOG.debug("Webcam discovery service loop has been stopped");
 	}
 
 	private void setCurrentWebcams(List<WebcamDevice> devices) {
@@ -305,6 +308,8 @@ public class WebcamDiscoveryService implements Runnable {
 		} catch (InterruptedException e) {
 			throw new WebcamException("Joint interrupted");
 		}
+
+		LOG.debug("Discovery service has been stopped");
 
 		runner = null;
 	}
