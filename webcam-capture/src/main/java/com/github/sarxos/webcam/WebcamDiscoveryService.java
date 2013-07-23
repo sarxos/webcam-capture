@@ -238,11 +238,9 @@ public class WebcamDiscoveryService implements Runnable {
 		// discovered
 
 		Object monitor = new Object();
-		int i = 0;
 		do {
 
 			synchronized (monitor) {
-				System.out.println("in monitor wait " + i++);
 				try {
 					monitor.wait(support.getScanInterval());
 				} catch (InterruptedException e) {
