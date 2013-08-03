@@ -14,7 +14,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class is used as a global (system) lock preventing other processes from
- * using the same camera while it's open.
+ * using the same camera while it's open. Whenever webcam is open there is a
+ * thread running in background which updates the lock once per 2 seconds. Lock
+ * is being released whenever webcam is either closed or completely disposed.
+ * Lock will remain for at least 2 seconds in case when JVM has not been
+ * gracefully terminated (due to SIGSEGV, SIGTERM, etc).
  * 
  * @author Bartosz Firyn (sarxos)
  */
@@ -24,8 +28,6 @@ public class WebcamLock {
 	 * Logger.
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamLock.class);
-
-	private static final Object MUTEX = new Object();
 
 	/**
 	 * Update interval (ms).
@@ -66,10 +68,19 @@ public class WebcamLock {
 	 */
 	private final Webcam webcam;
 
+	/**
+	 * Updater thread. It will update the lock value in fixed interval.
+	 */
 	private Thread updater = null;
 
+	/**
+	 * Is webcam locked (local, not cross-VM variable).
+	 */
 	private AtomicBoolean locked = new AtomicBoolean(false);
 
+	/**
+	 * Lock file.
+	 */
 	private File lock = null;
 
 	/**
@@ -148,7 +159,7 @@ public class WebcamLock {
 
 			// rewrite temporary file content to lock, try max 5 times
 
-			synchronized (MUTEX) {
+			synchronized (webcam) {
 				do {
 					try {
 						fos = new FileOutputStream(lock);
@@ -195,17 +206,21 @@ public class WebcamLock {
 	}
 
 	private long read() {
+
 		DataInputStream dis = null;
-		try {
-			return (dis = new DataInputStream(new FileInputStream(lock))).readLong();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (dis != null) {
-				try {
-					dis.close();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
+
+		synchronized (webcam) {
+			try {
+				return (dis = new DataInputStream(new FileInputStream(lock))).readLong();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			} finally {
+				if (dis != null) {
+					try {
+						dis.close();
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
 				}
 			}
 		}
