@@ -2,6 +2,7 @@ package com.github.sarxos.webcam;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -92,6 +93,7 @@ public class WebcamLock {
 		super();
 		this.webcam = webcam;
 		this.lock = new File(System.getProperty("java.io.tmpdir"), getLockName());
+		this.lock.deleteOnExit();
 	}
 
 	private String getLockName() {
@@ -106,7 +108,9 @@ public class WebcamLock {
 		DataOutputStream dos = null;
 
 		try {
-			tmp = File.createTempFile(name, "");
+
+			tmp = File.createTempFile(String.format("%s-tmp", name), "");
+			tmp.deleteOnExit();
 
 			dos = new DataOutputStream(new FileOutputStream(tmp));
 			dos.writeLong(value);
@@ -130,9 +134,9 @@ public class WebcamLock {
 
 		if (tmp.renameTo(lock)) {
 
-			// rename operation can fail (mostly on Windows), so we simply jump
-			// out the method if it succeed, or try to rewrite content using
-			// streams if it fail
+			// atomic rename operation can fail (mostly on Windows), so we
+			// simply jump out the method if it succeed, or try to rewrite
+			// content using streams if it fail
 
 			return;
 		} else {
@@ -141,7 +145,9 @@ public class WebcamLock {
 
 			if (!lock.exists()) {
 				try {
-					if (!lock.createNewFile()) {
+					if (lock.createNewFile()) {
+						LOG.info("Lock file {} for {} has been created", lock, webcam);
+					} else {
 						throw new RuntimeException("Not able to create file " + lock);
 					}
 				} catch (IOException e) {
@@ -162,12 +168,14 @@ public class WebcamLock {
 			synchronized (webcam) {
 				do {
 					try {
+
 						fos = new FileOutputStream(lock);
 						fis = new FileInputStream(tmp);
 						while ((n = fis.read(buffer)) != -1) {
 							fos.write(buffer, 0, n);
 						}
 						rewritten = true;
+
 					} catch (IOException e) {
 						LOG.debug("Not able to rewrite lock file", e);
 					} finally {
@@ -209,9 +217,16 @@ public class WebcamLock {
 
 		DataInputStream dis = null;
 
+		long value = -1;
+		boolean broken = false;
+
 		synchronized (webcam) {
+
 			try {
-				return (dis = new DataInputStream(new FileInputStream(lock))).readLong();
+				value = (dis = new DataInputStream(new FileInputStream(lock))).readLong();
+			} catch (EOFException e) {
+				LOG.debug("Webcam lock is broken - EOF when reading long variable from stream", e);
+				broken = true;
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			} finally {
@@ -223,7 +238,14 @@ public class WebcamLock {
 					}
 				}
 			}
+
+			if (broken) {
+				LOG.warn("Lock file {} for {} is broken - recreating it", lock, webcam);
+				write(-1);
+			}
 		}
+
+		return value;
 	}
 
 	private void update() {
