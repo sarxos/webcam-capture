@@ -52,6 +52,9 @@ public class WebcamLock {
 		@Override
 		public void run() {
 			do {
+				if (disabled.get()) {
+					return;
+				}
 				update();
 				try {
 					Thread.sleep(INTERVAL);
@@ -80,6 +83,11 @@ public class WebcamLock {
 	private AtomicBoolean locked = new AtomicBoolean(false);
 
 	/**
+	 * Is lock completely disabled.
+	 */
+	private AtomicBoolean disabled = new AtomicBoolean(false);
+
+	/**
 	 * Lock file.
 	 */
 	private File lock = null;
@@ -101,6 +109,10 @@ public class WebcamLock {
 	}
 
 	private void write(long value) {
+
+		if (disabled.get()) {
+			return;
+		}
 
 		String name = getLockName();
 
@@ -215,6 +227,10 @@ public class WebcamLock {
 
 	private long read() {
 
+		if (disabled.get()) {
+			return -1;
+		}
+
 		DataInputStream dis = null;
 
 		long value = -1;
@@ -249,6 +265,11 @@ public class WebcamLock {
 	}
 
 	private void update() {
+
+		if (disabled.get()) {
+			return;
+		}
+
 		write(System.currentTimeMillis());
 	}
 
@@ -256,6 +277,10 @@ public class WebcamLock {
 	 * Lock webcam.
 	 */
 	public void lock() {
+
+		if (disabled.get()) {
+			return;
+		}
 
 		if (isLocked()) {
 			throw new WebcamLockException(String.format("Webcam %s has already been locked", webcam.getName()));
@@ -274,9 +299,28 @@ public class WebcamLock {
 	}
 
 	/**
+	 * Completely disable locking mechanism. After this method is invoked, the
+	 * lock will not have any effect on the webcam runtime.
+	 */
+	public void disable() {
+		if (disabled.compareAndSet(false, true)) {
+			LOG.info("Locking mechanism has been disabled in {}", webcam);
+			if (updater != null) {
+				updater.interrupt();
+			}
+		}
+	}
+
+	/**
 	 * Unlock webcam.
 	 */
 	public void unlock() {
+
+		// do nothing when lock disabled
+
+		if (disabled.get()) {
+			return;
+		}
 
 		if (!locked.compareAndSet(true, false)) {
 			return;
@@ -299,6 +343,12 @@ public class WebcamLock {
 	 * @return True if webcam is locked, false otherwise
 	 */
 	public boolean isLocked() {
+
+		// always return false when lock is disabled
+
+		if (disabled.get()) {
+			return false;
+		}
 
 		// check if locked by current process
 
