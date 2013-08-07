@@ -7,15 +7,18 @@ public abstract class WebcamTask {
 	private WebcamDevice device = null;
 	private Throwable throwable = null;
 
-	public WebcamTask(WebcamDriver driver, WebcamDevice device) {
-
-		if (driver == null) {
-			throw new IllegalArgumentException("Webcam driver argument cannot be null");
-		}
-
-		this.sync = !driver.isThreadSafe();
+	public WebcamTask(boolean threadSafe, WebcamDevice device) {
+		this.sync = !threadSafe;
 		this.device = device;
 		this.processor = WebcamProcessor.getInstance();
+	}
+
+	public WebcamTask(WebcamDriver driver, WebcamDevice device) {
+		this(driver.isThreadSafe(), device);
+	}
+
+	public WebcamTask(WebcamDevice device) {
+		this(false, device);
 	}
 
 	public WebcamDevice getDevice() {

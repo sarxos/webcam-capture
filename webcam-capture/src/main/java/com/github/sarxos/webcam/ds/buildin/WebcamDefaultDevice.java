@@ -13,6 +13,8 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.bridj.Pointer;
 import org.slf4j.Logger;
@@ -21,13 +23,15 @@ import org.slf4j.LoggerFactory;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDevice.BufferAccess;
 import com.github.sarxos.webcam.WebcamException;
+import com.github.sarxos.webcam.WebcamExceptionHandler;
 import com.github.sarxos.webcam.WebcamResolution;
+import com.github.sarxos.webcam.WebcamTask;
 import com.github.sarxos.webcam.ds.buildin.natives.Device;
 import com.github.sarxos.webcam.ds.buildin.natives.DeviceList;
 import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
 
 
-public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
+public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable, WebcamDevice.FPSSource {
 
 	/**
 	 * Logger.
@@ -38,13 +42,41 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 	 * Artificial view sizes. I'm really not sure if will fit into other webcams
 	 * but hope that OpenIMAJ can handle this.
 	 */
-	// @formatter:off
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
 		WebcamResolution.QQVGA.getSize(),
 		WebcamResolution.QVGA.getSize(),
 		WebcamResolution.VGA.getSize(),
 	};
-	// @formatter:on
+
+	private class NextFrameTask extends WebcamTask {
+
+		private AtomicInteger result = new AtomicInteger(0);
+
+		public NextFrameTask(WebcamDevice device) {
+			super(device);
+		}
+
+		public int nextFrame() {
+			try {
+				process();
+			} catch (InterruptedException e) {
+				LOG.debug("Image buffer request interrupted", e);
+			}
+			return result.get();
+		}
+
+		@Override
+		protected void handle() {
+
+			WebcamDefaultDevice device = (WebcamDefaultDevice) getDevice();
+			if (!device.isOpen()) {
+				return;
+			}
+
+			grabber.setTimeout(timeout);
+			result.set(grabber.nextFrame());
+		}
+	}
 
 	/**
 	 * RGB offsets.
@@ -71,6 +103,9 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 	 */
 	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 
+	/**
+	 * Maximum image acquisition time (in milliseconds).
+	 */
 	private int timeout = 5000;
 
 	private OpenIMAJGrabber grabber = null;
@@ -83,12 +118,24 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 	private AtomicBoolean disposed = new AtomicBoolean(false);
 	private AtomicBoolean open = new AtomicBoolean(false);
 
+	/**
+	 * When last frame was requested.
+	 */
+	private AtomicLong timestamp = new AtomicLong(-1);
+
+	private Thread refresher = null;
+
 	private String name = null;
 	private String id = null;
 	private String fullname = null;
 
 	private byte[] bytes = null;
 	private byte[][] data = null;
+
+	private long t1 = -1;
+	private long t2 = -1;
+
+	private volatile double fps = 0;
 
 	protected WebcamDefaultDevice(Device device) {
 		this.device = device;
@@ -134,21 +181,6 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 		}
 
 		LOG.trace("Webcam device get image (next frame)");
-
-		// set image acquisition timeout
-
-		grabber.setTimeout(timeout);
-
-		// grab next frame
-
-		int flag = grabber.nextFrame();
-		if (flag == -1) {
-			LOG.error("Timeout when requesting image!");
-			return null;
-		} else if (flag < -1) {
-			LOG.error("Error requesting new frame!");
-			return null;
-		}
 
 		// get image buffer
 
@@ -257,12 +289,19 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 
 		} while (++i < 3);
 
-		LOG.debug("Webcam device is now open");
+		timestamp.set(System.currentTimeMillis());
+
+		LOG.debug("Webcam device {} is now open", this);
 
 		bytes = new byte[size.width * size.height * 3];
 		data = new byte[][] { bytes };
 
 		open.set(true);
+
+		refresher = new Thread(this, String.format("frames-refresher:%s", id));
+		refresher.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
+		refresher.setDaemon(true);
+		refresher.start();
 	}
 
 	@Override
@@ -320,5 +359,52 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess {
 	 */
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
+	}
+
+	@Override
+	public void run() {
+
+		int result = -1;
+
+		do {
+
+			if (Thread.interrupted()) {
+				LOG.debug("Refresher has been interrupted");
+				return;
+			}
+
+			if (!open.get()) {
+				LOG.debug("Cancelling refresher");
+				return;
+			}
+
+			LOG.trace("Next frame");
+
+			if (t1 == -1 || t2 == -1) {
+				t1 = System.currentTimeMillis();
+				t2 = System.currentTimeMillis();
+			}
+
+			result = new NextFrameTask(this).nextFrame();
+
+			t1 = t2;
+			t2 = System.currentTimeMillis();
+
+			fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+
+			if (result == -1) {
+				LOG.error("Timeout when requesting image!");
+			} else if (result < -1) {
+				LOG.error("Error requesting new frame!");
+			}
+
+			timestamp.set(System.currentTimeMillis());
+
+		} while (open.get());
+	}
+
+	@Override
+	public double getFPS() {
+		return fps;
 	}
 }
