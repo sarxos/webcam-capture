@@ -23,12 +23,12 @@ public class OpenImajDevice implements WebcamDevice {
 	 * but hope that OpenIMAJ can handle this.
 	 */
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
-	new Dimension(176, 144),
-	new Dimension(320, 240),
-	new Dimension(352, 288),
-	new Dimension(640, 400),
-	new Dimension(640, 480),
-	new Dimension(1280, 720),
+		new Dimension(176, 144),
+		new Dimension(320, 240),
+		new Dimension(352, 288),
+		new Dimension(640, 400),
+		new Dimension(640, 480),
+		new Dimension(1280, 720),
 	};
 
 	private Device device = null;
@@ -73,7 +73,7 @@ public class OpenImajDevice implements WebcamDevice {
 		}
 
 		// TODO scale to dimension if not equal
-		return ImageUtilities.createBufferedImage(capture.getNextFrame());
+		return ImageUtilities.createBufferedImageForDisplay(capture.getNextFrame());
 	}
 
 	@Override
