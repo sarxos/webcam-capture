@@ -13,6 +13,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class WebcamDiscoveryService implements Runnable {
 
 	private volatile List<Webcam> webcams = null;
 
-	private volatile boolean running = false;
+	private AtomicBoolean running = new AtomicBoolean(false);
 
 	private Thread runner = null;
 
@@ -94,41 +95,50 @@ public class WebcamDiscoveryService implements Runnable {
 			throw new IllegalArgumentException("Time unit cannot be null!");
 		}
 
-		if (webcams == null) {
+		List<Webcam> tmp = null;
 
-			WebcamsDiscovery discovery = new WebcamsDiscovery(driver);
-			ExecutorService executor = Executors.newSingleThreadExecutor(discovery);
-			Future<List<Webcam>> future = executor.submit(discovery);
-
-			executor.shutdown();
-
-			try {
-
-				executor.awaitTermination(timeout, tunit);
-
-				if (future.isDone()) {
-					webcams = future.get();
-				} else {
-					future.cancel(true);
-				}
-
-			} catch (InterruptedException e) {
-				throw new WebcamException(e);
-			} catch (ExecutionException e) {
-				throw new WebcamException(e);
-			}
+		synchronized (Webcam.class) {
 
 			if (webcams == null) {
-				throw new TimeoutException(String.format("Webcams discovery timeout (%d ms) has been exceeded", timeout));
-			}
 
+				WebcamsDiscovery discovery = new WebcamsDiscovery(driver);
+				ExecutorService executor = Executors.newSingleThreadExecutor(discovery);
+				Future<List<Webcam>> future = executor.submit(discovery);
+
+				executor.shutdown();
+
+				try {
+
+					executor.awaitTermination(timeout, tunit);
+
+					if (future.isDone()) {
+						webcams = future.get();
+					} else {
+						future.cancel(true);
+					}
+
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				} catch (ExecutionException e) {
+					throw new WebcamException(e);
+				}
+
+				if (webcams == null) {
+					throw new TimeoutException(String.format("Webcams discovery timeout (%d ms) has been exceeded", timeout));
+				}
+
+				tmp = new ArrayList<Webcam>(webcams);
+
+				if (Webcam.isHandleTermSignal()) {
+					WebcamDeallocator.store(webcams.toArray(new Webcam[webcams.size()]));
+				}
+			}
+		}
+
+		if (tmp != null) {
 			WebcamDiscoveryListener[] listeners = Webcam.getDiscoveryListeners();
-			for (Webcam webcam : webcams) {
+			for (Webcam webcam : tmp) {
 				notifyWebcamFound(webcam, listeners);
-			}
-
-			if (Webcam.isHandleTermSignal()) {
-				WebcamDeallocator.store(webcams.toArray(new Webcam[webcams.size()]));
 			}
 		}
 
@@ -232,8 +242,6 @@ public class WebcamDiscoveryService implements Runnable {
 			return;
 		}
 
-		running = true;
-
 		// wait initial time interval since devices has been initially
 		// discovered
 
@@ -255,7 +263,7 @@ public class WebcamDiscoveryService implements Runnable {
 
 			scan();
 
-		} while (running);
+		} while (running.get());
 
 		LOG.debug("Webcam discovery service loop has been stopped");
 	}
@@ -293,11 +301,11 @@ public class WebcamDiscoveryService implements Runnable {
 	/**
 	 * Stop discovery service.
 	 */
-	public synchronized void stop() {
+	public void stop() {
 
-		running = false;
+		// return if not running
 
-		if (runner == null) {
+		if (!running.compareAndSet(true, false)) {
 			return;
 		}
 
@@ -317,15 +325,16 @@ public class WebcamDiscoveryService implements Runnable {
 	 */
 	public synchronized void start() {
 
-		// discovery service has been already started
-
-		if (runner != null) {
-			return;
-		}
-
 		// capture driver does not support discovery - nothing to do
 
 		if (support == null) {
+			LOG.debug("Discovery will not run - driver {} does not support this feature", driver.getClass().getSimpleName());
+			return;
+		}
+
+		// return if already running
+
+		if (!running.compareAndSet(false, true)) {
 			return;
 		}
 
@@ -343,28 +352,35 @@ public class WebcamDiscoveryService implements Runnable {
 	 * @return True or false
 	 */
 	public boolean isRunning() {
-		return running;
+		return running.get();
 	}
 
 	/**
 	 * Cleanup.
 	 */
-	protected synchronized void shutdown() {
+	protected void shutdown() {
 
 		stop();
 
 		// dispose all webcams
 
-		for (Webcam webcam : webcams) {
+		Iterator<Webcam> wi = webcams.iterator();
+		while (wi.hasNext()) {
+			Webcam webcam = wi.next();
 			webcam.dispose();
 		}
 
-		webcams.clear();
+		synchronized (Webcam.class) {
 
-		// unassign webcams from deallocator
+			// clear webcams list
 
-		if (Webcam.isHandleTermSignal()) {
-			WebcamDeallocator.unstore();
+			webcams.clear();
+
+			// unassign webcams from deallocator
+
+			if (Webcam.isHandleTermSignal()) {
+				WebcamDeallocator.unstore();
+			}
 		}
 	}
 }

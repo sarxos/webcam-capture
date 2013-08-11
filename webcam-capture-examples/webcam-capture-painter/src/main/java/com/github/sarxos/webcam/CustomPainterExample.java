@@ -209,7 +209,7 @@ public class CustomPainterExample extends JFrame {
 		setLayout(new FlowLayout(FlowLayout.CENTER, 0, 5));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBackground(new Color(0, 0, 0, 0));
-		setPreferredSize(new Dimension(370, 497));
+		// setPreferredSize(new Dimension(370, 497));
 
 		menu = new JMenuBar();
 		menu.add(filterMenu);

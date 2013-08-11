@@ -1,5 +1,4 @@
 
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,11 +17,12 @@ public class TakePictureExample {
 
 	public static void main(String[] args) throws IOException {
 
-		// automatically open if webcam is closed
-		Webcam.setAutoOpenMode(true);
+		// get default webcam and open it
+		Webcam webcam = Webcam.getDefault();
+		webcam.open();
 
 		// get image
-		BufferedImage image = Webcam.getDefault().getImage();
+		BufferedImage image = webcam.getImage();
 
 		// save image to PNG file
 		ImageIO.write(image, "PNG", new File("test.png"));
