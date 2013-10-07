@@ -207,7 +207,7 @@ public class SpycamMain extends JFrame implements Runnable, WebcamListener, Wind
 		webcam.addWebcamListener(this);
 
 		detector = new WebcamMotionDetector(webcam);
-		detector.setCheckInterval(5000);
+		detector.setInterval(5000);
 		detector.addMotionListener(this);
 		detector.start();
 
@@ -241,7 +241,7 @@ public class SpycamMain extends JFrame implements Runnable, WebcamListener, Wind
 	@Override
 	public void motionDetected(WebcamMotionEvent wme) {
 
-		LOG.info("{}: motion {}", idnum.incrementAndGet(), wme.getStrength());
+		LOG.info("{}: motion {}", idnum.incrementAndGet(), wme.getArea());
 
 		BufferedImage image = webcam.getImage();
 		if (image == null) {

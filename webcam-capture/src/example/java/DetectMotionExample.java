@@ -1,5 +1,3 @@
-
-
 import java.io.IOException;
 
 import com.github.sarxos.webcam.Webcam;
@@ -9,7 +7,8 @@ import com.github.sarxos.webcam.WebcamMotionListener;
 
 
 /**
- * Detect motion.
+ * Detect motion. This example demonstrates how to use build-in motion detector
+ * and motion listener to fire motion events.
  * 
  * @author Bartosz Firyn (SarXos)
  */
@@ -17,7 +16,7 @@ public class DetectMotionExample implements WebcamMotionListener {
 
 	public DetectMotionExample() {
 		WebcamMotionDetector detector = new WebcamMotionDetector(Webcam.getDefault());
-		detector.setCheckInterval(100); // one check per 100 ms
+		detector.setInterval(500); // one check per 500 ms
 		detector.addMotionListener(this);
 		detector.start();
 	}

@@ -1,5 +1,6 @@
 package com.github.sarxos.webcam;
 
+import java.awt.Point;
 import java.util.EventObject;
 
 
@@ -12,7 +13,8 @@ public class WebcamMotionEvent extends EventObject {
 
 	private static final long serialVersionUID = -7245768099221999443L;
 
-	private int strength = 0;
+	private final double strength;
+	private final Point cog;
 
 	/**
 	 * Create detected motion event.
@@ -20,15 +22,25 @@ public class WebcamMotionEvent extends EventObject {
 	 * @param detector
 	 * @param strength
 	 */
-	public WebcamMotionEvent(WebcamMotionDetector detector, int strength) {
+	public WebcamMotionEvent(WebcamMotionDetector detector, double strength, Point cog) {
+
 		super(detector);
+
 		this.strength = strength;
+		this.cog = cog;
 	}
 
 	/**
-	 * @return Motion strength
+	 * Get percentage fraction of image covered by motion. 0 is no motion on
+	 * image, and 100 is full image covered by motion.
+	 * 
+	 * @return Motion area
 	 */
-	public int getStrength() {
+	public double getArea() {
 		return strength;
+	}
+
+	public Point getCog() {
+		return cog;
 	}
 }

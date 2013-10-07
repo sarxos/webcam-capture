@@ -50,7 +50,7 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 
 	private class NextFrameTask extends WebcamTask {
 
-		private AtomicInteger result = new AtomicInteger(0);
+		private final AtomicInteger result = new AtomicInteger(0);
 
 		public NextFrameTask(WebcamDevice device) {
 			super(device);
@@ -115,13 +115,13 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	private ColorModel cmodel = null;
 	private boolean failOnSizeMismatch = false;
 
-	private AtomicBoolean disposed = new AtomicBoolean(false);
-	private AtomicBoolean open = new AtomicBoolean(false);
+	private final AtomicBoolean disposed = new AtomicBoolean(false);
+	private final AtomicBoolean open = new AtomicBoolean(false);
 
 	/**
 	 * When last frame was requested.
 	 */
-	private AtomicLong timestamp = new AtomicLong(-1);
+	private final AtomicLong timestamp = new AtomicLong(-1);
 
 	private Thread refresher = null;
 
@@ -156,6 +156,9 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 
 	@Override
 	public Dimension getResolution() {
+		if (size == null) {
+			size = getResolutions()[0];
+		}
 		return size;
 	}
 
