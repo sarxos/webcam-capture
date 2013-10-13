@@ -67,7 +67,9 @@ public class WebcamProcessor {
 				} catch (InterruptedException e) {
 					break;
 				} catch (Throwable e) {
-					t.setThrowable(e);
+					if (t != null) {
+						t.setThrowable(e);
+					}
 				} finally {
 					if (t != null) {
 						try {

@@ -48,9 +48,9 @@
 
 <p>
 The goal of this project is to provide really simple webcam API allowing you to use your
-build-in, external (USB-connected) webcams or IP / network cameras directly from Java code. 
-It provides basic webcam 
-interface and a set of additional <i>drivers</i> which can be used to replace default build-in
+build-in or external (connected via USB) webcams or IP / network cameras directly from the 
+Java code. Project provides very basic webcam 
+interface and a set of additional <i>drivers</i> which can be used to replace default, build-in
 drivers to extend and/or replace default functionality.
 </p>
 
@@ -66,8 +66,9 @@ drivers to extend and/or replace default functionality.
 
 <p>
 <ul>
-<li>Java 6 (or higher) installed,</li>
+<li>Java 6 (or higher),</li>
 <li>Webcam connected and configured,</li>
+<li>On Linux system, the <i>libv4l</i> and <i>libv4lconvert</i> must be installed.
 <li>In case of IP / network cameras, Internet access is required,</li>
 </ul>
 </p>
@@ -77,15 +78,15 @@ drivers to extend and/or replace default functionality.
 
 <p>
 <ul>
-<li><b>Simple and thread-safe API</b> - write only few lines of code is enough to start capturing images.</li>
-<li><b>Standalone</b> - no additional software has to be installed to use it.</li>
-<li><b>System independent</b> - it will run without problems on most widely used operating systems - Windows (2k/XP/Vista/7, both 32- and 64-bit), Linux (x86, x64), ARM devices (e.g. Raspberry Pi at Arch Linux), and Mac OS X.</li>
-<li><b>Implementation independent</b> - write your code once and if you find better driver in future, just wrap it in WebcamDriver class and don't care about any code changes.</li>
-<li><b>Resources management</b> - you do not have to remember to deallocate resources used by your capturing device, library will always do that for you.</li>
-<li><b>Motion detector</b> - build in motion detector makes it easy to implement motion detecting features.</li>
-<li><b>Available from Maven Central</b> - it is available in Maven Central and therefore will not suddenly disappear.</li>
+<li><b>Simple and thread-safe API</b> - it's really enough to write only few lines of code to start capturing camera images.</li>
+<li><b>Standalone</b> - no additional software has to be installed to use it (except the <i>libv4l</i> and <i>libv4lconvert</i> which are required on Linux).</li>
+<li><b>System independent</b> - it will run without problems on most widely used operating systems. It was confirmed to work fine on Windows (2k/XP/Vista/7/8, both 32- and 64-bit), Linux (both 32- and 64-bit), ARM devices (both armel and armhf), and Mac OS X.</li>
+<li><b>Implementation independent</b> - write your code once and if you find better or more suitable capturing framework in the future, just replace the driver or wrap the framework through the WebcamDriver class and don't care about any code changes.</li>
+<li><b>Resources management</b> - you do not have to remember to deallocate resources used by your capturing device, the library core will always do that for you.</li>
+<li><b>Motion detector</b> - simple motion detector is delivered within the library.</li>
+<li><b>Available in Maven Central</b> - it is available in Maven Central and therefore will not suddenly disappear.</li>
 <li><b>Re-streamer</b> - simple JPEG/MJPEG re-streamer is build in, just run it and enjoy hosting your live stream.</li>
-<li><b>Swing ready</b> - contains Swing component to display images, together with painter API and thread-safe API which prevents Swing EDT from blocking issues when using camera.</li>
+<li><b>Swing ready</b> - contains Swing components used to display images, shipped together with painter API and thread-safe API, which prevents Swing EDT from experiencing blocking issues when using camera device.</li>
 </ul>
 </p>
 
@@ -94,14 +95,14 @@ drivers to extend and/or replace default functionality.
 <h2>Contribute</h2>
 
 <p>
-If you have spare time, knownledge or even some small money amount 
+If you have spare time, knowledge or even some small money amount 
 to spent, you can help developing awesome Webcam Capture API and make
 it even better! Several kinds of contributions are very welcome:
 </p>
 
 <p>
 <ul>
-<li><b>Report</b> - if you've found a bug or you've came-up with 
+<li><b>Report</b> - if you found a bug or you have came-up with 
 some fantastic feature which 
 can make Webcam Capture a better API to use, don't hesitate to 
 <a href="https://github.com/sarxos/webcam-capture/issues/new">create new issue</a> 
@@ -162,60 +163,68 @@ and all JARs under <i>libs</i> directory to your project's classpath:
 <h2>Additional Drivers</h2>
 
 <p>
-Currently <i>Webcam Capture</i> supports the following drivers:
+The driver is something that wraps the capturing framework and make it available 
+for the Webcam Capture API. Driver can be replaces and currently <i>Webcam Capture</i>
+supports the following ones:
 </p>
 
-<h3>IP / Network Camera Driver</h3>
+
+
+<h3>IP Camera Driver</h3>
 
 <p>
-This is IP camera driver for Webcam Capture project. It allows Webcam Capture to 
-handle pictures from IP cameras supporting JPEG and MJPEG (Motion JPEG) compression.
-For more information about supported models, how to extend, examples, use-cases, please
-follow to the Github project available <b><a href="https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-driver-ipcam">here</a></b>.
+The IP camera driver allows Webcam Capture API to 
+handle pictures from remote IP cameras supporting JPEG and/or MJPEG (Motion JPEG)
+compression. It contains generic IP camera device interface, but can be customized to 
+support more sophiscicated functions like tilt, angle, etc. For more information about
+already supported models, on info of how to extend the default IP camera device, to 
+find more detailed examples, use-cases, etc, please follow to the dedicated Github site
+available <b><a href="https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam">here</a></b>.
 </p>
 
 <p>
 This driver is available in Maven Central.
 </p>
 
-<h3>JMF / FMJ Driver</h3>
+
+
+<h3>JMF/FMJ Driver</h3>
 
 <p>
-This is driver containing video grabber for Webcam Capture project. It utilizes JMF
-capabilities to access PC webcam (those USB-connected too) and can be used as a replacement 
-for default build-in driver. Its advantage is the fact it's pretty fast, but unformtunately, 
+This driver utilizes JMF capabilities to access webcam and can be used as a replacement 
+for default, build-in driver. Its advantage is the fact it's pretty fast, but unfortunately, 
 from the other hand, it requires <a href="http://www.oracle.com/technetwork/java/javase/download-142937.html">JMF</a> 
 to be installed on your PC.
-</p>
-
-<p>
 If you do not want to use JMF (due to e.g. licensing issues), you can choose 
 <a href="http://fmj-sf.net/">FMJ</a>, which is a freeware replacement for JMF.
 </p>
 
 <p>
-<b>NOTE!</b> Be aware of the fact that both JMF and FMJ are not being maintained any more!
+<b>NOTE!</b> Please be aware of the fact that both JMF (from Oracle) and FMJ 
+(from Larson Technologies Inc.) are not being maintained any more!
 </p>
 
 <p>
 This driver is available in Maven Central.
 </p>
 
+
+
 <h3>OpenIMAJ Driver</h3>
 
 <p>
-This is driver containing video grabber for Webcam Capture project. It utilizes 
-<a href="http://sourceforge.net/p/openimaj/home/OpenIMAJ/">OpenIMAJ</a> framework
-capabilities to access PC webcam and can be used as a replacement 
-for default build-in driver. Its advantage is the fact it's pretty fast, supports 
-multiple platforms, but disadventage is the size of required 3<sup>rd</sup> party 
-JARs (around ~20MB). Default build-in driver uses OpenIMAJ natives to support video grabbing,
-but id does not require all those additional JARs.
+This driver utilizes the awesome <a href="http://sourceforge.net/p/openimaj/home/OpenIMAJ/">OpenIMAJ</a>
+framework capabilities to access webcam devices and can be used as a replacement 
+for default build-in driver (it's actually pretty the same). Its advantage is 
+the fact it's pretty fast, supports 
+multiple platforms, but disadvantage is the size of required 3<sup>rd</sup> party 
+JARs (around ~20MB). Default build-in driver uses OpenIMAJ natives to support 
+video grabbing, but id does not require all those additional JARs.
 </p>
 
 <p>
 This driver is <b>NOT</b> available in Maven Central, but it can be used in Maven build.
-In such a case user has to add those repositories to project's POM:
+In such a case one have to add those repositories to project's POM:
 </p>
 
 <pre class="prettyprint prettyprinted language-xml linenums">
@@ -236,11 +245,11 @@ In such a case user has to add those repositories to project's POM:
 </pre>
 
 
+
 <h3>LTI-CIVIL Driver</h3>
 
 <p>
-This is driver containing video grabber for Webcam Capture project. It utilizes 
-<a href="http://lti-civil.org/">LTI-CIVIL</a> project
+This driver utilizes  <a href="http://lti-civil.org/">LTI-CIVIL</a> project
 capabilities to access PC webcam and can be used as a replacement 
 for default build-in driver. LTI-CIVIL supports Windows, Linux and MAC OS platforms.
 For Mac OS it utilizes QTJ framework capabilities. For other ones it uses precompiled 
@@ -248,33 +257,24 @@ natives.
 </p>
 
 <p>
-This driver is <b>NOT</b> available in Maven Central, but it can be used in Maven build.
-In such a case user has to add those repositories to project's POM:
+<b>NOTE!</b> Be aware of the fact that LTI-CIVIL framework not being maintained any
+more by its owner, so all the issues found within this framework will <b>NOT</b> be fixed!
 </p>
-
-<pre class="prettyprint prettyprinted language-xml linenums">
-&lt;repositories&gt;
-    &lt;repository&gt;
-        &lt;id&gt;sarxos-repo&lt;/id&gt;
-        &lt;url&gt;http://repo.sarxos.pl/maven2&lt;/url&gt;
-    &lt;/repository&gt;
-&lt;/repositories&gt;
-</pre>
 
 <p>
-<b>NOTE!</b> Be aware of the fact that LTI-CIVIL not being maintained any more by its owner!
+This driver is available in Maven Central.
 </p>
+
+
 
 
 <h3>OpenCV Driver</h3>
 
-<p><b>EXPERIMENTAL STUFF!</b></p>
+<p><b>WARNING: EXPERIMENTAL STUFF!</b></p>
 
 <p>
-This is driver containing video grabber for Webcam Capture project. It utilizes 
-<a href="http://code.google.com/p/javacv/">JavaCV</a> Java wrapper for 
-<a href="http://opencv.willowgarage.com/wiki/">OpenCV</a> project
-capabilities to access PC webcam and can be used as a replacement 
+This driver utilizes <a href="http://code.google.com/p/javacv/">OpenCV Java bindings</a>
+to access webcam devices. It can be used as a replacement 
 for default build-in driver. Its advantage is quite stable interface, but unfortunately
 it requires quite huge (around ~100MB) pre-installed OpenCV bundle.
 </p>
@@ -297,67 +297,59 @@ In such a case user has to add those repositories to project's POM:
 &lt;/repositories&gt;
 </pre>
 
-<h3>VLCj Driver</h3>
-
-<p><b>EXPERIMENTAL STUFF!</b></p>
-
+<h3>VLC Driver</h3>
+]
 <p>
-This is driver containing video grabber for Webcam Capture project. It utilizes 
-<a href="https://github.com/caprica/vlcj">VLCj</a> Java wrapper for Videolan
-<a href="http://www.videolan.org/vlc/">VLC</a> project
-capabilities to access PC webcam and can be used as a replacement 
-for default build-in driver. Unfortunately it require VLC media player to be 
-pre-installed on the system where driver will be used.
+This driver utilizes Caprica <a href="https://github.com/caprica/vlcj">VLCj</a> 
+Java wrapper for Videolan <a href="http://www.videolan.org/vlc/">VLC</a> 
+media player to access PC webcam and can be used as a replacement 
+for default build-in driver. It requires VLC media player to be 
+pre-installed on the system where driver will be used. More informations on
+how to use this driver can be found on <a href="https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-vlcj">this</a> 
+dedicated Github page. Its disadvantage is very poor performance.
 </p>
 
 <p>
-This driver is <b>NOT</b> available in Maven Central, but it can be used in Maven build.
-In such a case user has to add those repositories to project's POM:
+This driver is <b>NOT YET</b> available in Maven Central (but it will be).
 </p>
 
-<pre class="prettyprint prettyprinted language-xml linenums">
-&lt;repositories&gt;
-    &lt;repository&gt;
-        &lt;id&gt;caprica&lt;/id&gt;
-        &lt;url&gt;http://www.capricasoftware.co.uk/repo&lt;/url&gt;
-    &lt;/repository&gt;
-&lt;/repositories&gt;
-</pre>
 
 
-
-
-
-
-
-<h1>Examples</h1>
+<h2>Compatibility</h2>
 
 <p>
-Confirmed to be perfectly running on the following systems (please
+API confirmed to be perfectly running on the following systems (please
 report at the project page if you tested it on other system, just 
 create new issue for that purpose):
 </p>
 
 <p>
 <ul>
-<li>Windows XP 32-bit</li>
-<li>Windows Vista 32-bit</li>
-<li>Windows 7 64-bit</li>
-<li>Ubuntu 12.04 64-bit</li>
+<li>Windows XP, 32-bit</li>
+<li>Windows Vista, 32-bit</li>
+<li>Windows 7, 32- and 64-bit</li>
+<li>Windows 8, 32- and 64-bit</li>
+<li>Ubuntu 12.04, 32- and 64-bit</li>
+<li>Ubuntu 12.10, 32- and 64-bit</li>
+<li>Ubuntu 13.04, 32- and 64-bit</li>
 <li>Mac OS Snow Leopard</li>
-<li>Raspberry Pi @ Arch Linux</li>
+<li>Raspberry Pi @ Arch Linux, both armel and armhf</li>
+<li>Raspberry Pi @ Raspbian, both armel and armhf</li>
 </ul>
 </p>
 
 <p>
-Problems detected on those configurations:
+However some problems has been detected on Raspberry Pi where API is not able
+to load OpenIMAJGrabber.so. To workaround this problem one must to extract 
+webcam-capture JAR, go to the directory com/github/sarxos/webcam/ds/buildin/lib 
+and get the file for the appropriate Linux and copy it to the path where system
+can Load it.
 </p>
 
-<p>
-<ul>
-<li>Raspberry Pi @ Wheezy</li>
-</ul>
-</p>
+
+<h1>Examples</h1>
+
+Just a bunch of small examples.
 
 
 <h3>Capture Image</h3>
@@ -378,6 +370,7 @@ Webcam laptop = Webcam.getWebcams().get(0);
 Webcam kitchen = Webcam.getWebcams().get(1);
 Webcam roof = Webcam.getWebcams().get(2);
 </pre>
+
 
 <h3>Detect Motion</h3>
 

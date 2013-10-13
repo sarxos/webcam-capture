@@ -323,7 +323,7 @@ public class WebcamDiscoveryService implements Runnable {
 	/**
 	 * Start discovery service.
 	 */
-	public synchronized void start() {
+	public void start() {
 
 		// capture driver does not support discovery - nothing to do
 
