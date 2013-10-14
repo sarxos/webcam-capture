@@ -26,6 +26,7 @@
 		<module>webcam-capture-qrcode</module>
 		<module>webcam-capture-swt-awt</module>
 		<module>webcam-capture-video-recording</module>
+		<module>webcam-capture-onejar</module>
 	</modules>
 
 	<build>
