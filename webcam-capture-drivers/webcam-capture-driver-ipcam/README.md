@@ -28,7 +28,7 @@ Below is the newest stable version ZIP containing main project
 JAR with additional documents, examples and all required 3rd-party
 dependencies:
 
-* **Latest stable version** - [webcam-capture-driver-ipcam-0.3.10-RC5-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.10-RC5/webcam-capture-driver-ipcam-0.3.10-RC5-dist.zip)
+* **Latest stable version** - [webcam-capture-driver-ipcam-0.3.10-RC6-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.10-RC6/webcam-capture-driver-ipcam-0.3.10-RC6-dist.zip)
 * Previous stable version - [webcam-capture-driver-ipcam-0.3.9-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.9/webcam-capture-driver-ipcam-0.3.9-dist.zip)
 
 
@@ -46,7 +46,7 @@ Latest stable version:
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-ipcam</artifactId>
-	<version>0.3.10-RC5</version>
+	<version>0.3.10-RC6</version>
 </parent>
 ```
 
