@@ -47,7 +47,7 @@ Latest stable version:
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-ipcam</artifactId>
 	<version>0.3.10-RC6</version>
-</parent>
+</dependency>
 ```
 
 ## Examples
