@@ -1,27 +1,26 @@
-
-
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamDiscoveryEvent;
 import com.github.sarxos.webcam.WebcamDiscoveryListener;
+
 
 public class WebcamDiscoveryListenerExample implements WebcamDiscoveryListener {
 
 	public WebcamDiscoveryListenerExample() {
 		for (Webcam webcam : Webcam.getWebcams()) {
-			System.out.println("This webcam has been found in the system: " + webcam.getName());
+			System.out.println("Webcam detected: " + webcam.getName());
 		}
 		Webcam.addDiscoveryListener(this);
-		System.out.println("Now, please connect additional webcam, or disconnect already connected one.");
+		System.out.println("\n\nPlease connect additional webcams, or disconnect already connected ones. Listening for events...");
 	}
 
 	@Override
 	public void webcamFound(WebcamDiscoveryEvent event) {
-		System.out.println("Oh! Thou, webcam has been connected! " + event.getWebcam().getName());
+		System.out.format("Webcam connected: %s \n", event.getWebcam().getName());
 	}
 
 	@Override
 	public void webcamGone(WebcamDiscoveryEvent event) {
-		System.out.println("Did I miss something? Webcam has been disconnected! " + event.getWebcam().getName());
+		System.out.format("Webcam disconnected: %s \n", event.getWebcam().getName());
 	}
 
 	public static void main(String[] args) throws Throwable {

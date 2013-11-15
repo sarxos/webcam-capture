@@ -3,6 +3,8 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -17,7 +19,7 @@ import com.github.sarxos.webcam.WebcamResolution;
 
 
 @SuppressWarnings("serial")
-public class TakeSnaphotFromVideoExample extends JFrame {
+public class TakeSnapshotFromVideoExample extends JFrame {
 
 	private class SnapMeAction extends AbstractAction {
 
@@ -28,9 +30,12 @@ public class TakeSnaphotFromVideoExample extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				File file = new File(String.format("test-%d.jpg", System.currentTimeMillis()));
-				ImageIO.write(webcam.getImage(), "JPG", file);
-				System.out.println("Image saved in " + file.getAbsolutePath());
+				for (int i = 0; i < webcams.size(); i++) {
+					Webcam webcam = webcams.get(i);
+					File file = new File(String.format("test-%d.jpg", i));
+					ImageIO.write(webcam.getImage(), "JPG", file);
+					System.out.format("Image for %s saved in %s \n", webcam.getName(), file);
+				}
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -59,29 +64,33 @@ public class TakeSnaphotFromVideoExample extends JFrame {
 
 		@Override
 		public void run() {
-			panel.start();
+			for (WebcamPanel panel : panels) {
+				panel.start();
+			}
 		}
 	}
 
 	private Executor executor = Executors.newSingleThreadExecutor();
 
-	private Dimension captureSize = WebcamResolution.VGA.getSize();
-	private Dimension displaySize = WebcamResolution.QQVGA.getSize();
+	private Dimension size = WebcamResolution.QQVGA.getSize();
 
-	private Webcam webcam = Webcam.getDefault();
-	private WebcamPanel panel = new WebcamPanel(webcam, displaySize, false);
+	private List<Webcam> webcams = Webcam.getWebcams();
+	private List<WebcamPanel> panels = new ArrayList<WebcamPanel>();
 
 	private JButton btSnapMe = new JButton(new SnapMeAction());
 	private JButton btStart = new JButton(new StartAction());
 
-	public TakeSnaphotFromVideoExample() {
+	public TakeSnapshotFromVideoExample() {
 
 		super("Test Snap Different Size");
 
-		webcam.setViewSize(captureSize);
-
-		panel.setFPSDisplayed(true);
-		panel.setFillArea(true);
+		for (Webcam webcam : webcams) {
+			webcam.setViewSize(size);
+			WebcamPanel panel = new WebcamPanel(webcam, size, false);
+			panel.setFPSDisplayed(true);
+			panel.setFillArea(true);
+			panels.add(panel);
+		}
 
 		// start application with disable snapshot button - we enable it when
 		// webcam is started
@@ -89,7 +98,11 @@ public class TakeSnaphotFromVideoExample extends JFrame {
 		btSnapMe.setEnabled(false);
 
 		setLayout(new FlowLayout());
-		add(panel);
+
+		for (WebcamPanel panel : panels) {
+			add(panel);
+		}
+
 		add(btSnapMe);
 		add(btStart);
 
@@ -99,6 +112,6 @@ public class TakeSnaphotFromVideoExample extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		new TakeSnaphotFromVideoExample();
+		new TakeSnapshotFromVideoExample();
 	}
 }
