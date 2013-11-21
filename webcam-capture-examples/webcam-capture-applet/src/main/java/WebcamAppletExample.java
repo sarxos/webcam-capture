@@ -5,14 +5,13 @@ import javax.swing.JApplet;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamResolution;
-import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
 
 
 public class WebcamAppletExample extends JApplet {
 
 	private static final long serialVersionUID = 3517366452510566924L;
 
-	private Dimension size = WebcamResolution.QQVGA.getSize();
+	private Dimension size = WebcamResolution.QVGA.getSize();
 	private Webcam webcam = null;
 	private WebcamPanel panel = null;
 
@@ -27,12 +26,6 @@ public class WebcamAppletExample extends JApplet {
 		System.out.println("Start");
 
 		super.start();
-
-		try {
-			Webcam.setDriver(new WebcamDefaultDriver());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
 		webcam = Webcam.getDefault();
 		webcam.setViewSize(size);
@@ -67,23 +60,20 @@ public class WebcamAppletExample extends JApplet {
 	@Override
 	public void destroy() {
 		System.out.println("Destroy");
-		super.destroy();
 		webcam.close();
-		webcam.close();
+		Webcam.shutdown();
+		System.out.println("Destroyed");
 	}
 
 	@Override
 	public void stop() {
 		System.out.println("Stop");
-		super.stop();
 		webcam.close();
-		webcam.getLock().unlock();
-		panel.stop();
+		System.out.println("Stopped");
 	}
 
 	@Override
 	public void init() {
 		System.out.println("Init");
-		super.init();
 	}
 }

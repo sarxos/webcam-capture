@@ -23,6 +23,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>applet</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

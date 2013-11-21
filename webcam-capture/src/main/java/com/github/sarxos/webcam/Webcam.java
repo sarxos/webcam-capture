@@ -241,6 +241,8 @@ public class Webcam {
 
 		if (open.compareAndSet(true, false)) {
 
+			LOG.debug("Closing webcam {}", getName());
+
 			assert updater != null;
 			assert lock != null;
 
@@ -258,19 +260,14 @@ public class Webcam {
 				throw e;
 			}
 
-			// unlock webcam so other Java processes can start using it
-
-			lock.unlock();
-
 			// stop updater
-
-			if (asynchronous) {
-				updater.stop();
-			}
+			updater.stop();
 
 			// remove shutdown hook (it's not more necessary)
-
 			removeShutdownHook();
+
+			// unlock webcam so other Java processes can start using it
+			lock.unlock();
 
 			// notify listeners
 
@@ -287,8 +284,10 @@ public class Webcam {
 				}
 			}
 
+			LOG.debug("Webcam {} has been closed", getName());
+
 		} else {
-			LOG.debug("Webcam is already closed {}", getName());
+			LOG.debug("Webcam {} is already closed", getName());
 		}
 
 		return true;
@@ -1085,5 +1084,18 @@ public class Webcam {
 	 */
 	public WebcamLock getLock() {
 		return lock;
+	}
+
+	public static void shutdown() {
+
+		// stop discovery service
+		WebcamDiscoveryService discovery = getDiscoveryServiceRef();
+		if (discovery != null) {
+			discovery.stop();
+		}
+
+		// stop processor
+		WebcamProcessor.getInstance().shutdown();
+
 	}
 }

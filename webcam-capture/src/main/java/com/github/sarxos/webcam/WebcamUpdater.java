@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -102,7 +103,7 @@ public class WebcamUpdater implements Runnable {
 	/**
 	 * Executor service.
 	 */
-	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(THREAD_FACTORY);
+	private ScheduledExecutorService executor = null;
 
 	/**
 	 * Executor service for image notifications.
@@ -127,7 +128,7 @@ public class WebcamUpdater implements Runnable {
 	/**
 	 * Is updater running.
 	 */
-	private volatile boolean running = false;
+	private AtomicBoolean running = new AtomicBoolean(false);
 
 	private volatile boolean imageNew = false;
 
@@ -144,25 +145,46 @@ public class WebcamUpdater implements Runnable {
 	 * Start updater.
 	 */
 	public void start() {
-		running = true;
-		image.set(new WebcamReadImageTask(Webcam.getDriver(), webcam.getDevice()).getImage());
-		executor.execute(this);
+		if (running.compareAndSet(false, true)) {
 
-		LOG.debug("Webcam updater has been started");
+			image.set(new WebcamReadImageTask(Webcam.getDriver(), webcam.getDevice()).getImage());
+
+			executor = Executors.newSingleThreadScheduledExecutor(THREAD_FACTORY);
+			executor.execute(this);
+
+			LOG.debug("Webcam updater has been started");
+		} else {
+			LOG.debug("Webcam updater is already started");
+		}
 	}
 
 	/**
 	 * Stop updater.
 	 */
 	public void stop() {
-		running = false;
-		LOG.debug("Webcam updater has been stopped");
+		if (running.compareAndSet(true, false)) {
+
+			executor.shutdown();
+
+			while (!executor.isTerminated()) {
+				try {
+					executor.awaitTermination(100, TimeUnit.MILLISECONDS);
+				} catch (InterruptedException e) {
+					LOG.trace(e.getMessage(), e);
+					return;
+				}
+			}
+
+			LOG.debug("Webcam updater has been stopped");
+		} else {
+			LOG.debug("Webcam updater is already stopped");
+		}
 	}
 
 	@Override
 	public void run() {
 
-		if (!running) {
+		if (!running.get()) {
 			return;
 		}
 

@@ -5,11 +5,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class WebcamProcessor {
+
+	private static final Logger LOG = LoggerFactory.getLogger(WebcamProcessor.class);
 
 	/**
 	 * Thread factory for processor.
@@ -49,7 +55,6 @@ public class WebcamProcessor {
 		 * @throws InterruptedException when thread has been interrupted
 		 */
 		public void process(WebcamTask task) throws InterruptedException {
-
 			inbound.put(task);
 
 			Throwable t = outbound.take().getThrowable();
@@ -93,7 +98,7 @@ public class WebcamProcessor {
 	/**
 	 * Execution service.
 	 */
-	private static final ExecutorService runner = Executors.newSingleThreadExecutor(new ProcessorThreadFactory());
+	private static ExecutorService runner = null;
 
 	/**
 	 * Static processor.
@@ -115,14 +120,42 @@ public class WebcamProcessor {
 	 * @throws InterruptedException when thread has been interrupted
 	 */
 	public void process(WebcamTask task) throws InterruptedException {
+
 		if (started.compareAndSet(false, true)) {
+			runner = Executors.newSingleThreadExecutor(new ProcessorThreadFactory());
 			runner.execute(processor);
 		}
+
 		if (!runner.isShutdown()) {
 			processor.process(task);
 		} else {
 			throw new RejectedExecutionException("Cannot process because processor runner has been already shut down");
 		}
+	}
+
+	public void shutdown() {
+		if (started.compareAndSet(true, false)) {
+
+			LOG.debug("Shutting down webcam processor");
+
+			runner.shutdown();
+
+			LOG.debug("Awaiting tasks termination");
+
+			while (runner.isTerminated()) {
+
+				try {
+					runner.awaitTermination(100, TimeUnit.MILLISECONDS);
+				} catch (InterruptedException e) {
+					return;
+				}
+
+				runner.shutdownNow();
+			}
+
+			LOG.debug("All tasks has been terminated");
+		}
+
 	}
 
 	public static synchronized WebcamProcessor getInstance() {

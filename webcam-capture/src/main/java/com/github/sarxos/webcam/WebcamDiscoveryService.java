@@ -252,9 +252,6 @@ public class WebcamDiscoveryService implements Runnable {
 				try {
 					monitor.wait(support.getScanInterval());
 				} catch (InterruptedException e) {
-					if (LOG.isTraceEnabled()) {
-						LOG.error("Interrupted", e);
-					}
 					break;
 				} catch (Exception e) {
 					throw new RuntimeException("Problem waiting on monitor", e);

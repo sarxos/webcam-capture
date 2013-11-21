@@ -4,10 +4,8 @@
 </head>
 <body>
 	<p>This is my page, below you see an Webcam Capture applet</p>
-	<applet codebase="."
-		archive="${project.artifactId}-${project.version}.jar"
-		code="WebcamAppletExample.class" 
-		width="176" height="144" alt="Applet">
+	<applet codebase="." archive="applet.jar" code="WebcamAppletExample.class" width="320" height="240" alt="Webcam Capture Applet">
+		<param name="separate_jvm" value="true" />
 	</applet>
 </body>
 </html>
