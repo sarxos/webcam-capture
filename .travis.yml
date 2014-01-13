@@ -11,6 +11,9 @@ before_install:
 script:
   - mvn test -X
 
+after_success:
+  - mvn clean cobertura:cobertura coveralls:cobertura -P ci
+
 branches:
   except:
     - gh-pages
