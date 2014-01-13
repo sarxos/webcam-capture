@@ -1,5 +1,17 @@
 language: java
+jdk:
+  - oraclejdk7
+  - oraclejdk8
+  - openjdk6
+  - openjdk7
+
 before_install:
   - mvn install -DskipTests=true -e
+
 script:
   - mvn test -X
+
+branches:
+  except:
+    - gh-pages
+
