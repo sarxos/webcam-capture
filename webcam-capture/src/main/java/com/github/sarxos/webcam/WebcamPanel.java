@@ -1,19 +1,22 @@
 package com.github.sarxos.webcam;
 
-import java.awt.AlphaComposite;
+import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_OFF;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +37,32 @@ import org.slf4j.LoggerFactory;
  * @author Bartosz Firyn (SarXos)
  */
 public class WebcamPanel extends JPanel implements WebcamListener, PropertyChangeListener {
+
+	/**
+	 * This enum is to control of how image will be drawn in the panel bounds.
+	 * 
+	 * @author Sylwia Kauczor
+	 */
+	public static enum DrawMode {
+
+		/**
+		 * Do not resize image - paint it as it is. This will make the image to
+		 * go off out the bounds if panel is smaller than image size.
+		 */
+		NONE,
+
+		/**
+		 * Will resize image to the panel bounds. This mode does not care of the
+		 * image scale, so the final image may be disrupted.
+		 */
+		FILL,
+
+		/**
+		 * Will fir image into the panel bounds. This will resize the image and
+		 * keep both x and y scale factor.
+		 */
+		FIT,
+	}
 
 	/**
 	 * Interface of the painter used to draw image in panel.
@@ -61,6 +90,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * Default painter used to draw image in panel.
 	 * 
 	 * @author Bartosz Firyn (SarXos)
+	 * @author Sylwia Kauczor
 	 */
 	public class DefaultPainter implements Painter {
 
@@ -72,7 +102,9 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			assert owner != null;
 			assert g2 != null;
 
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			Object antialiasing = g2.getRenderingHint(KEY_ANTIALIASING);
+
+			g2.setRenderingHint(KEY_ANTIALIASING, isAntialiasingEnabled() ? VALUE_ANTIALIAS_ON : VALUE_ANTIALIAS_OFF);
 			g2.setBackground(Color.BLACK);
 			g2.fillRect(0, 0, getWidth(), getHeight());
 
@@ -117,7 +149,6 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			int x = (getWidth() - w) / 2;
 			int y = cy - h;
 
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 			g2.setFont(getFont());
 			g2.setColor(Color.WHITE);
 			g2.drawString(str, x, y);
@@ -132,37 +163,54 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			h = metrics.getHeight();
 
 			g2.drawString(str, (getWidth() - w) / 2, cy - 2 * h);
+			g2.setRenderingHint(KEY_ANTIALIASING, antialiasing);
 		}
 
 		@Override
 		public void paintImage(WebcamPanel owner, BufferedImage image, Graphics2D g2) {
 
-			int w = getWidth();
-			int h = getHeight();
+			assert owner != null;
+			assert image != null;
+			assert g2 != null;
 
-			if (fillArea && image.getWidth() != w && image.getHeight() != h) {
+			Object antialiasing = g2.getRenderingHint(KEY_ANTIALIASING);
 
-				BufferedImage resized = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
-				Graphics2D gr = resized.createGraphics();
-				gr.setComposite(AlphaComposite.Src);
-				gr.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-				gr.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-				gr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				gr.drawImage(image, 0, 0, w, h, null);
-				gr.dispose();
-				resized.flush();
+			g2.setRenderingHint(KEY_ANTIALIASING, isAntialiasingEnabled() ? VALUE_ANTIALIAS_ON : VALUE_ANTIALIAS_OFF);
 
-				image = resized;
+			int pw = getWidth();
+			int ph = getHeight();
+			int iw = image.getWidth();
+			int ih = image.getHeight();
+
+			g2.setBackground(Color.BLACK);
+			g2.fillRect(0, 0, pw, ph);
+
+			switch (drawMode) {
+				case NONE:
+					g2.drawImage(image, 0, 0, null);
+					break;
+				case FILL:
+					g2.drawImage(image, 0, 0, pw, ph, null);
+					break;
+				case FIT:
+					double s = Math.max((double) iw / pw, (double) ih / ph);
+					double niw = iw / s;
+					double nih = ih / s;
+					double dx = (pw - niw) / 2;
+					double dy = (ph - nih) / 2;
+					g2.drawImage(image, (int) dx, (int) dy, (int) niw, (int) nih, null);
+					break;
+				default:
+					g2.setRenderingHint(KEY_ANTIALIASING, antialiasing);
+					throw new RuntimeException("Mode " + drawMode + " not supported");
 			}
-
-			g2.drawImage(image, 0, 0, null);
 
 			if (isFPSDisplayed()) {
 
 				String str = String.format("FPS: %.1f", webcam.getFPS());
 
 				int x = 5;
-				int y = getHeight() - 5;
+				int y = ph - 5;
 
 				g2.setFont(getFont());
 				g2.setColor(Color.BLACK);
@@ -170,6 +218,24 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 				g2.setColor(Color.WHITE);
 				g2.drawString(str, x, y);
 			}
+
+			if (isImageSizeDisplayed()) {
+
+				String res = String.format("%d\u2A2F%d px", iw, ih);
+
+				FontMetrics metrics = g2.getFontMetrics(getFont());
+				int sw = metrics.stringWidth(res);
+				int x = pw - sw - 5;
+				int y = ph - 5;
+
+				g2.setFont(getFont());
+				g2.setColor(Color.BLACK);
+				g2.drawString(res, x + 1, y + 1);
+				g2.setColor(Color.WHITE);
+				g2.drawString(res, x, y);
+			}
+
+			g2.setRenderingHint(KEY_ANTIALIASING, antialiasing);
 		}
 	}
 
@@ -284,30 +350,44 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 				// schedule update when webcam is open, otherwise schedule
 				// second scheduler execution
 
-				if (webcam.isOpen()) {
+				try {
+					if (webcam.isOpen()) {
 
-					// FPS limit means that panel rendering frequency is limited
-					// to the specific value and panel will not be rendered more
-					// often then specific value
+						// FPS limit means that panel rendering frequency is
+						// limited
+						// to the specific value and panel will not be rendered
+						// more
+						// often then specific value
 
-					// TODO: rename FPS value in panel to rendering frequency
+						// TODO: rename FPS value in panel to rendering
+						// frequency
 
-					if (isFPSLimited()) {
-						executor.scheduleAtFixedRate(updater, 0, (long) (1000 / frequency), TimeUnit.MILLISECONDS);
+						if (isFPSLimited()) {
+							executor.scheduleAtFixedRate(updater, 0, (long) (1000 / frequency), TimeUnit.MILLISECONDS);
+						} else {
+							executor.scheduleWithFixedDelay(updater, 100, 1, TimeUnit.MILLISECONDS);
+						}
 					} else {
-						executor.scheduleWithFixedDelay(updater, 100, 1, TimeUnit.MILLISECONDS);
+						executor.schedule(this, 500, TimeUnit.MILLISECONDS);
 					}
-				} else {
-					executor.schedule(this, 500, TimeUnit.MILLISECONDS);
+				} catch (RejectedExecutionException e) {
+
+					// executor has been shut down, which means that someone
+					// stopped panel / webcam device before it was actually
+					// completely started (it was in "starting" timeframe)
+
+					LOG.warn("Executor rejected paint update");
+					LOG.debug("Executor rejected paint update because of", e);
+
+					return;
 				}
 			}
-
 		}
 
 		/**
 		 * Update scheduler thread.
 		 */
-		private Thread scheduler = new RepaintScheduler();
+		private Thread scheduler = null;
 
 		/**
 		 * Is repainter running?
@@ -321,6 +401,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		public void start() {
 			if (running.compareAndSet(false, true)) {
 				executor = Executors.newScheduledThreadPool(1, THREAD_FACTORY);
+				scheduler = new RepaintScheduler();
 				scheduler.start();
 			}
 		}
@@ -364,14 +445,22 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			// get new image from webcam
 
 			BufferedImage tmp = webcam.getImage();
+			boolean repaint = true;
+
 			if (tmp != null) {
+
+				// ignore repaint if image is the same as before
+				if (image == tmp) {
+					repaint = false;
+				}
+
 				errored = false;
 				image = tmp;
 			}
 
-			// and repaint it
-
-			repaintPanel();
+			if (repaint) {
+				repaintPanel();
+			}
 		}
 	}
 
@@ -381,9 +470,12 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	private ResourceBundle rb = null;
 
 	/**
-	 * Fit image into panel area.
+	 * The mode of how the image will be resized to fit into panel bounds.
+	 * Default is {@link DrawMode#FIT}
+	 * 
+	 * @see DrawMode
 	 */
-	private boolean fillArea = false;
+	private DrawMode drawMode = DrawMode.FIT;
 
 	/**
 	 * Frames requesting frequency.
@@ -401,6 +493,16 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * Display FPS.
 	 */
 	private boolean frequencyDisplayed = false;
+
+	/**
+	 * Display image size.
+	 */
+	private boolean imageSizeDisplayed = false;
+
+	/**
+	 * Is antialiasing enabled (true by default).
+	 */
+	private boolean antialiasingEnabled = true;
 
 	/**
 	 * Webcam object used to fetch images.
@@ -499,6 +601,8 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		this.updater = new ImageUpdater();
 		this.rb = WebcamUtils.loadRB(WebcamPanel.class, getLocale());
 
+		setDoubleBuffered(true);
+
 		addPropertyChangeListener("locale", this);
 
 		if (size == null) {
@@ -572,7 +676,6 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			starting = false;
 			repaintPanel();
 		}
-
 	}
 
 	/**
@@ -696,6 +799,30 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		this.frequencyDisplayed = displayed;
 	}
 
+	public boolean isImageSizeDisplayed() {
+		return imageSizeDisplayed;
+	}
+
+	public void setImageSizeDisplayed(boolean imageSizeDisplayed) {
+		this.imageSizeDisplayed = imageSizeDisplayed;
+	}
+
+	/**
+	 * Turn on/off antialiasing.
+	 * 
+	 * @param antialiasing the true to enable, false to disable antialiasing
+	 */
+	public void setAntialiasingEnabled(boolean antialiasing) {
+		this.antialiasingEnabled = antialiasing;
+	}
+
+	/**
+	 * @return True is antialiasing is enabled, false otherwise
+	 */
+	public boolean isAntialiasingEnabled() {
+		return antialiasingEnabled;
+	}
+
 	/**
 	 * Is webcam panel repainting starting.
 	 * 
@@ -714,6 +841,22 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		return started.get();
 	}
 
+	public boolean isFitArea() {
+		return drawMode == DrawMode.FIT;
+	}
+
+	/**
+	 * This method will change the mode of panel area painting so the image will
+	 * be resized and will keep scale factor to fit into drawable panel bounds.
+	 * When set to false, the mode will be reset to {@link DrawMode#NONE} so
+	 * image will be drawn as it is.
+	 * 
+	 * @param fitArea the fit area mode enabled or disabled
+	 */
+	public void setFitArea(boolean fitArea) {
+		this.drawMode = fitArea ? DrawMode.FIT : DrawMode.NONE;
+	}
+
 	/**
 	 * Image will be resized to fill panel area if true. If false then image
 	 * will be rendered as it was obtained from webcam instance.
@@ -721,7 +864,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * @param fillArea shall image be resided to fill panel area
 	 */
 	public void setFillArea(boolean fillArea) {
-		this.fillArea = fillArea;
+		this.drawMode = fillArea ? DrawMode.FILL : DrawMode.NONE;
 	}
 
 	/**
@@ -732,9 +875,14 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * @return True if image is being resized, false otherwise
 	 */
 	public boolean isFillArea() {
-		return fillArea;
+		return drawMode == DrawMode.FILL;
 	}
 
+	/**
+	 * Get default painter used to draw panel.
+	 * 
+	 * @return Default painter
+	 */
 	public Painter getDefaultPainter() {
 		return defaultPainter;
 	}

@@ -51,6 +51,7 @@ public class WebcamDiscoveryService implements Runnable {
 	private volatile List<Webcam> webcams = null;
 
 	private AtomicBoolean running = new AtomicBoolean(false);
+	private AtomicBoolean enabled = new AtomicBoolean(false);
 
 	private Thread runner = null;
 
@@ -322,10 +323,17 @@ public class WebcamDiscoveryService implements Runnable {
 	 */
 	public void start() {
 
+		// if configured to not start, then simply return
+
+		if (!enabled.get()) {
+			LOG.info("Discovery service has been disabled and thus it will not be started");
+			return;
+		}
+
 		// capture driver does not support discovery - nothing to do
 
 		if (support == null) {
-			LOG.debug("Discovery will not run - driver {} does not support this feature", driver.getClass().getSimpleName());
+			LOG.info("Discovery will not run - driver {} does not support this feature", driver.getClass().getSimpleName());
 			return;
 		}
 
@@ -350,6 +358,17 @@ public class WebcamDiscoveryService implements Runnable {
 	 */
 	public boolean isRunning() {
 		return running.get();
+	}
+
+	/**
+	 * Webcam discovery service will be automatically started if it's enabled,
+	 * otherwise, when set to disabled, it will never start, even when user try
+	 * to run it.
+	 * 
+	 * @param enabled the parameter controlling if discovery shall be started
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled.set(enabled);
 	}
 
 	/**
