@@ -34,229 +34,213 @@ import us.sosia.video.stream.handler.StreamServerListener;
 import com.github.sarxos.webcam.Webcam;
 
 public class StreamServerAgent implements IStreamServerAgent{
-	protected final static Logger logger = LoggerFactory.getLogger(StreamServer.class);
-	protected final Webcam webcam;
-	protected final Dimension dimension;
-	protected final static ChannelGroup channelGroup = new DefaultChannelGroup();
-	protected final ServerBootstrap serverBootstrap;
-	//I just move the stream encoder out of the channel pipeline for the performance
-	protected final H264StreamEncoder h264StreamEncoder;
-	protected final H264StreamEncoder secondEncoder;
-	protected volatile boolean isStreaming;
-	protected ScheduledExecutorService timeWorker;
-	protected ExecutorService encodeWorker;
-	protected int FPS = 25;
-	protected ScheduledFuture<?> imageGrabTaskFuture;
-	protected TargetDataLine line;
-	public StreamServerAgent(Webcam webcam, Dimension dimension) {
-		super();
-		this.webcam = webcam;
-		this.dimension = dimension;
-		//this.h264StreamEncoder = new H264StreamEncoder(dimension,false);
-		this.serverBootstrap = new ServerBootstrap();
-		this.serverBootstrap.setFactory(new NioServerSocketChannelFactory(
-				Executors.newCachedThreadPool(),
-				Executors.newCachedThreadPool()));
-		this.serverBootstrap.setPipelineFactory(new StreamServerChannelPipelineFactory(
-				new StreamServerListenerIMPL(),
-				dimension));
-		this.timeWorker = new ScheduledThreadPoolExecutor(1);
-		this.encodeWorker = Executors.newSingleThreadExecutor();
-		this.h264StreamEncoder = new H264StreamEncoder(dimension, false);
-		this.secondEncoder = new H264StreamEncoder(dimension, false);
-		
-		AudioFormat format = new AudioFormat(
-				AudioFormat.Encoding.PCM_SIGNED,
-				44100.0F, 16, 2, 4, 44100, false);
-		
-		this.line = null;
-		DataLine.Info info = new DataLine.Info(TargetDataLine.class, 
+		protected final static Logger logger = LoggerFactory.getLogger(StreamServer.class);
+		protected final Webcam webcam;
+		protected final Dimension dimension;
+		protected final static ChannelGroup channelGroup = new DefaultChannelGroup();
+		protected final ServerBootstrap serverBootstrap;
+		//I just move the stream encoder out of the channel pipeline for the performance
+		protected final H264StreamEncoder h264StreamEncoder;
+		protected final H264StreamEncoder secondEncoder;
+		protected volatile boolean isStreaming;
+		protected ScheduledExecutorService timeWorker;
+		protected ExecutorService encodeWorker;
+		protected int FPS = 25;
+		protected ScheduledFuture<?> imageGrabTaskFuture;
+		protected TargetDataLine line;
+		public StreamServerAgent(Webcam webcam, Dimension dimension) {
+				super();
+				this.webcam = webcam;
+				this.dimension = dimension;
+				//this.h264StreamEncoder = new H264StreamEncoder(dimension,false);
+				this.serverBootstrap = new ServerBootstrap();
+				this.serverBootstrap.setFactory(new NioServerSocketChannelFactory(
+						Executors.newCachedThreadPool(),
+						Executors.newCachedThreadPool()));
+				this.serverBootstrap.setPipelineFactory(new StreamServerChannelPipelineFactory(
+						new StreamServerListenerIMPL(),
+						dimension));
+				this.timeWorker = new ScheduledThreadPoolExecutor(1);
+				this.encodeWorker = Executors.newSingleThreadExecutor();
+				this.h264StreamEncoder = new H264StreamEncoder(dimension, false);
+				this.secondEncoder = new H264StreamEncoder(dimension, false);
 
-		    format); // format is an AudioFormat object
-		if (!AudioSystem.isLineSupported(info)) {
-		    // Handle the error ... 
+				AudioFormat format = new AudioFormat(
+						AudioFormat.Encoding.PCM_SIGNED,
+						44100.0F, 16, 2, 4, 44100, false);
+
+				this.line = null;
+
+				// format is an AudioFormat object
+				DataLine.Info info = new DataLine.Info(TargetDataLine.class,
+																							 format);
+				if (!AudioSystem.isLineSupported(info)) {
+						System.out.println("Error, line not supported");
+				}
+				// Obtain and open the line.
+				try {
+
+						this.line = (TargetDataLine) AudioSystem.getLine(info);
+						this.line.open(format);
+				} catch (LineUnavailableException ex) {
+						ex.printStackTrace();
+				}
+
+				this.line.start();
 		}
-		// Obtain and open the line.
-		try {
 
-		    this.line = (TargetDataLine) AudioSystem.getLine(info);
-		    this.line.open(format);
-		} catch (LineUnavailableException ex) {
-		    // Handle the error ... 
+
+
+		public int getFPS() {
+				return FPS;
 		}
-		
-		this.line.start();
-	}	
-	
-	
-	
-	public int getFPS() {
-		return FPS;
-	}
 
-	public void setFPS(int fPS) {
-		FPS = fPS;
-	}
-
-	@Override
-	public void start(SocketAddress streamAddress) {
-		logger.info("Server started :{}",streamAddress);
-		Channel channel = serverBootstrap.bind(streamAddress);
-		channelGroup.add(channel);
-	}
-	
-	@Override
-	public void stop() {
-		logger.info("server is stoping");
-		channelGroup.close();
-		timeWorker.shutdown();
-		encodeWorker.shutdown();
-		serverBootstrap.releaseExternalResources();
-	}
-	
-	private static void writeData( Object data) {
-		channelGroup.write(data);
-		/*
-		try {
-			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-	}
-	
-	
-	private class StreamServerListenerIMPL implements StreamServerListener{
-
-		@Override
-		public void onClientConnectedIn(Channel channel) {
-			//here we just start to stream when the first client connected in
-			//
-			channelGroup.add(channel);
-			if (!isStreaming) {
-				//do some thing
-				Runnable imageGrabTask = new ImageGrabTask();
-				ScheduledFuture<?> imageGrabFuture = 
-						timeWorker.scheduleWithFixedDelay(imageGrabTask,
-						0,
-						1000/FPS,
-						TimeUnit.MILLISECONDS);
-				imageGrabTaskFuture = imageGrabFuture;
-				AudioGrabTask at = new AudioGrabTask();
-				at.start();
-				isStreaming = true;
-			}
-			logger.info("current connected clients :{}",channelGroup.size());
+		public void setFPS(int fPS) {
+				FPS = fPS;
 		}
 
 		@Override
-		public void onClientDisconnected(Channel channel) {
-			channelGroup.remove(channel);
-			int size = channelGroup.size();
-			logger.info("current connected clients :{}",size);
-			if (size == 1) {
-				//cancel the task
-				imageGrabTaskFuture.cancel(false);
-				webcam.close();
-				isStreaming = false;
-			}
+				public void start(SocketAddress streamAddress) {
+				logger.info("Server started :{}",streamAddress);
+				Channel channel = serverBootstrap.bind(streamAddress);
+				channelGroup.add(channel);
 		}
 
 		@Override
-		public void onExcaption(Channel channel, Throwable t) {
-			channelGroup.remove(channel);
-			channel.close();
-			int size = channelGroup.size();
-			logger.info("current connected clients :{}",size);
-			if (size == 1) {
-				//cancel the task
-				imageGrabTaskFuture.cancel(false);
-				webcam.close();
-				isStreaming = false;
-			
+				public void stop() {
+				logger.info("server is stoping");
+				channelGroup.close();
+				timeWorker.shutdown();
+				encodeWorker.shutdown();
+				serverBootstrap.releaseExternalResources();
 		}
-		
-	}
-	
-	protected volatile long frameCount = 0;
-	
-	private class ImageGrabTask implements Runnable{
 
-		@Override
-		public void run() {
-			logger.info("image grabed ,count :{}",frameCount++);
-			BufferedImage bufferedImage = webcam.getImage();
-			/**
-			 * using this when the h264 encoder is added to the pipeline
-			 * */
-			//channelGroup.write(bufferedImage);
-			/**
-			 * using this when the h264 encoder is inside this class
-			 * */
-			encodeWorker.execute(new EncodeTask(bufferedImage));
+		private static void writeData( Object data) {
+				channelGroup.write(data);
 		}
-		
-	}
-	
-	public class AudioGrabTask extends Thread {
-		public void run() {
-			int numBytesRead;
-			byte[] data = new byte [4096];
-			while (true) {
-				if (data.length > 0 ){
-					System.out.println("start read: " + System.currentTimeMillis());
-					numBytesRead =  line.read(data, 0, 4096);
-					System.out.println("end read: " + System.currentTimeMillis());
-					Object msg2 = null;
-					try {
-						if ( numBytesRead > 0 ) {
-							msg2 = secondEncoder.encode(data,numBytesRead);
+
+
+		private class StreamServerListenerIMPL implements StreamServerListener{
+
+				@Override
+						public void onClientConnectedIn(Channel channel) {
+						//here we just start to stream when the first client connected in
+						channelGroup.add(channel);
+						if (!isStreaming) {
+								//do some thing
+								Runnable imageGrabTask = new ImageGrabTask();
+								ScheduledFuture<?> imageGrabFuture =
+										timeWorker.scheduleWithFixedDelay(imageGrabTask,
+																											0,
+																											1000/FPS,
+																											TimeUnit.MILLISECONDS);
+								imageGrabTaskFuture = imageGrabFuture;
+								AudioGrabTask at = new AudioGrabTask();
+								at.start();
+								isStreaming = true;
 						}
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} 
-					if ( msg2 != null ) {
-						System.out.println("writing audio");
-						writeData(msg2);
-					}
-					Thread.yield();
+						logger.info("current connected clients :{}",channelGroup.size());
 				}
-			}
-		}
-	}
-	
-	
-	private class EncodeTask implements Runnable{
-		private final BufferedImage image;
-		
-		public EncodeTask(BufferedImage image) {
-			super();
-			this.image = image;
-		}
 
-		@Override
-		public void run() {
-			try {				
-				Object msg = h264StreamEncoder.encode(image);
-				if (msg != null) {
-					writeData(msg);
+				@Override
+						public void onClientDisconnected(Channel channel) {
+						channelGroup.remove(channel);
+						int size = channelGroup.size();
+						logger.info("current connected clients :{}",size);
+						if (size == 1) {
+								//cancel the task
+								imageGrabTaskFuture.cancel(false);
+								webcam.close();
+								isStreaming = false;
+						}
 				}
-			
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+				@Override
+						public void onExcaption(Channel channel, Throwable t) {
+						channelGroup.remove(channel);
+						channel.close();
+						int size = channelGroup.size();
+						logger.info("current connected clients :{}",size);
+						if (size == 1) {
+								//cancel the task
+								imageGrabTaskFuture.cancel(false);
+								webcam.close();
+								isStreaming = false;
+
+						}
+
+				}
+
+				protected volatile long frameCount = 0;
+
+				private class ImageGrabTask implements Runnable{
+
+						@Override
+								public void run() {
+								logger.info("image grabed ,count :{}",frameCount++);
+								BufferedImage bufferedImage = webcam.getImage();
+								/**
+								 * using this when the h264 encoder is added to the pipeline
+								 * */
+								//channelGroup.write(bufferedImage);
+								/**
+								 * using this when the h264 encoder is inside this class
+								 * */
+								encodeWorker.execute(new EncodeTask(bufferedImage));
+						}
+
+				}
+
+				public class AudioGrabTask extends Thread {
+						public void run() {
+								int numBytesRead;
+								byte[] data = new byte [4096];
+								while (true) {
+										if (data.length > 0 ){
+												System.out.println("start read: " + System.currentTimeMillis());
+												numBytesRead =	line.read(data, 0, 4096);
+												System.out.println("end read: " + System.currentTimeMillis());
+												Object msg2 = null;
+												try {
+														if ( numBytesRead > 0 ) {
+																msg2 = secondEncoder.encode(data,numBytesRead);
+														}
+												} catch (Exception e) {
+														// TODO Auto-generated catch block
+														e.printStackTrace();
+												}
+												if ( msg2 != null ) {
+														System.out.println("writing audio");
+														writeData(msg2);
+												}
+												Thread.yield();
+										}
+								}
+						}
+				}
+
+
+				private class EncodeTask implements Runnable{
+						private final BufferedImage image;
+
+						public EncodeTask(BufferedImage image) {
+								super();
+								this.image = image;
+						}
+
+						@Override
+								public void run() {
+								try {
+										Object msg = h264StreamEncoder.encode(image);
+										if (msg != null) {
+												writeData(msg);
+										}
+
+								} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+								}
+						}
+				}
 		}
-		
-	}
-
-	
-	}
-	
-	
-	
-	
-
 }
