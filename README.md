@@ -1,6 +1,6 @@
 # Java Webcam Capture
 
-This library allows you to use your build-in or external webcam directly from Java.
+This library allows you to use your build-in or external webcam directly from Java.  This fork adds streaming audio in addition to video.
 
 [![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 
