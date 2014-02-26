@@ -129,9 +129,6 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	private String id = null;
 	private String fullname = null;
 
-	private byte[] bytes = null;
-	private byte[][] data = null;
-
 	private long t1 = -1;
 	private long t2 = -1;
 
@@ -209,6 +206,9 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 			LOG.error("Images bytes buffer is null!");
 			return null;
 		}
+
+		byte[] bytes = new byte[size.width * size.height * 3];
+		byte[][] data = new byte[][] { bytes };
 
 		buffer.get(bytes);
 
@@ -295,9 +295,6 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 		timestamp.set(System.currentTimeMillis());
 
 		LOG.debug("Webcam device {} is now open", this);
-
-		bytes = new byte[size.width * size.height * 3];
-		data = new byte[][] { bytes };
 
 		open.set(true);
 
