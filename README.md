@@ -228,15 +228,15 @@ List of additional capture drivers includes:
 [FFmpeg]:     http://www.ffmpeg.org/
 [CLI]:        http://en.wikipedia.org/wiki/Command-line_interface
 
-[ipcam]:      https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ipcam
-[gstreamer]:  https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-gstreamer
-[openimaj]:   https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-openimaj
-[v4l4j]:      https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-v4l4j
-[jmf]:        https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-jmf
-[lti-civil]:  https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-lti-civil
-[javacv]:     https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-javacv
-[vlcj]:       https://github.com/sarxos/webcam-capture/tree/master/wwebcam-capture-drivers/ebcam-capture-driver-vlcj
-[ffmpeg-cli]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/webcam-capture-driver-ffmpeg-cli
+[ipcam]:      https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-ipcam
+[gstreamer]:  https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-gstreamer
+[openimaj]:   https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-openimaj
+[v4l4j]:      https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-v4l4j
+[jmf]:        https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-jmf
+[lti-civil]:  https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-lti-civil
+[javacv]:     https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-javacv
+[vlcj]:       https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-vlcj
+[ffmpeg-cli]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-ffmpeg-cli
 
 ## History
 
