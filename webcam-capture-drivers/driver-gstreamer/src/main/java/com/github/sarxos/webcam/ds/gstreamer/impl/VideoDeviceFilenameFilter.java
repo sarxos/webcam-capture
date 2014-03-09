@@ -10,7 +10,8 @@ public class VideoDeviceFilenameFilter implements FilenameFilter {
 
 	@Override
 	public boolean accept(File dir, String name) {
-		return dir.getName().equals("dev") && name.startsWith("video") && Character.isDigit(name.charAt(5));
+		return dir.getName().equals("dev") && name.startsWith("video")
+                && (name.length() > 5 && Character.isDigit(name.charAt(5)));
 	}
 
 	public File[] getVideoFiles() {
