@@ -64,8 +64,30 @@ public class TakeSnapshotFromVideoExample extends JFrame {
 
 		@Override
 		public void run() {
+
+			btStop.setEnabled(true);
+
 			for (WebcamPanel panel : panels) {
 				panel.start();
+			}
+		}
+	}
+
+	private class StopAction extends AbstractAction {
+
+		public StopAction() {
+			super("Stop");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			btStart.setEnabled(true);
+			btSnapMe.setEnabled(false);
+			btStop.setEnabled(false);
+
+			for (WebcamPanel panel : panels) {
+				panel.stop();
 			}
 		}
 	}
@@ -79,6 +101,7 @@ public class TakeSnapshotFromVideoExample extends JFrame {
 
 	private JButton btSnapMe = new JButton(new SnapMeAction());
 	private JButton btStart = new JButton(new StartAction());
+	private JButton btStop = new JButton(new StopAction());
 
 	public TakeSnapshotFromVideoExample() {
 
@@ -96,6 +119,7 @@ public class TakeSnapshotFromVideoExample extends JFrame {
 		// webcam is started
 
 		btSnapMe.setEnabled(false);
+		btStop.setEnabled(false);
 
 		setLayout(new FlowLayout());
 
@@ -105,6 +129,7 @@ public class TakeSnapshotFromVideoExample extends JFrame {
 
 		add(btSnapMe);
 		add(btStart);
+		add(btStop);
 
 		pack();
 		setVisible(true);
