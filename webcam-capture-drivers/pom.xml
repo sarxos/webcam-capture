@@ -21,6 +21,7 @@
 
 	<modules>
 		<module>driver-ffmpeg-cli</module>
+		<module>driver-fswebcam</module>
 		<module>driver-gstreamer</module>
 		<module>driver-ipcam</module>
 		<module>driver-javacv</module>
