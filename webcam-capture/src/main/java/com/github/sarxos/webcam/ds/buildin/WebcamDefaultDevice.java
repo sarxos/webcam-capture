@@ -161,9 +161,15 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 
 	@Override
 	public void setResolution(Dimension size) {
+
+		if (size == null) {
+			throw new IllegalArgumentException("Size cannot be null");
+		}
+
 		if (open.get()) {
 			throw new IllegalStateException("Cannot change resolution when webcam is open, please close it first");
 		}
+
 		this.size = size;
 	}
 
@@ -232,6 +238,9 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 
 		if (size == null) {
 			size = getResolutions()[0];
+		}
+		if (size == null) {
+			throw new RuntimeException("The resolution size cannot be null");
 		}
 
 		LOG.debug("Webcam device {} starting session, size {}", device.getIdentifierStr(), size);

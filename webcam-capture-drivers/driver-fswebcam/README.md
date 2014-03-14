@@ -42,6 +42,26 @@ public class TakePictureExample {
 }
 ```
 
+The snapshot version is available in the Sonatype Snapshot Maven repository:
+
+<repository>
+    <id>Sonatype OSS Snapshot Repository</id>
+    <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+</repository>
+
+Dependency:
+
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-fswebcam</artifactId>
+    <version>0.3.10-SNAPSHOT</version>
+</dependency>
+
+It can be also downloaded manually from:
+
+https://oss.sonatype.org/content/repositories/snapshots/com/github/sarxos/webcam-capture-driver-fswebcam/0.3.10-SNAPSHOT
+
+
 ## Issues
 
 There are several known issues. If you have an idea of how those can
