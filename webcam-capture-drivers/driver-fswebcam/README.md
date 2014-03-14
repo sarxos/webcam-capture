@@ -2,10 +2,11 @@
 
 This capture driver is designed to allow developers to use console program called
 _fswebcam_ written by Philip Heron as the source of images for Webcam Capture API.
-This capture driver works on *nix **only** and requires [fswebcam](https://github.com/fsphil/fswebcam) to be
-installed.
+This capture driver works on **only** on *nix and requires 
+[fswebcam](https://github.com/fsphil/fswebcam) command line too to be installed
+on the environment where Webcam Capture API is used.
 
-To install fswebcam tool:
+To install fswebcam:
 
 ```plain
 sudo apt-get install fswebcam
@@ -49,8 +50,8 @@ be happy to merge it into the master branch.
 
 1. Single call to getImage() causes webcam to be re-open again,
 2. Because of 1, webcam diode is blinking,
-3. Because of 1, FPS is pretty slow (0.2 FPS on my Ubuntu Laptop),
-4. In some cases when the main Java process is killed, the fswebcam subprocess keeps running because noone is reading from the pipe.
+3. Because of 1, FPS is pretty slow (0.2 FPS on my Ubuntu laptop),
+4. In some cases when the main Java process is killed, the fswebcam subprocess keeps running because no one is reading from the pipe.
 
 
 ## License
