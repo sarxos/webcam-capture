@@ -218,7 +218,7 @@ public class IpCamDevice implements WebcamDevice {
 		this.auth = auth;
 
 		if (auth != null) {
-			AuthScope scope = new AuthScope(new HttpHost(url.toString()));
+			AuthScope scope = new AuthScope(new HttpHost(url.getHost().toString()));
 			client.getCredentialsProvider().setCredentials(scope, auth);
 		}
 	}
