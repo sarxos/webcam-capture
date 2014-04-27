@@ -566,7 +566,7 @@ public class Webcam {
 		return true;
 	}
 
-	protected double getFPS() {
+	public double getFPS() {
 		assert updater != null;
 		if (asynchronous) {
 			return updater.getFPS();
