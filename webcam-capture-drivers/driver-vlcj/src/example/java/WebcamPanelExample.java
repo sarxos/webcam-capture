@@ -20,7 +20,7 @@ public class WebcamPanelExample {
 		WebcamPanel panel = new WebcamPanel(webcam);
 		panel.setFPSDisplayed(true);
 
-		JFrame window = new JFrame("Webcam Panel using VLCj");
+		JFrame window = new JFrame("Webcam Panel");
 		window.add(panel);
 		window.setResizable(false);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

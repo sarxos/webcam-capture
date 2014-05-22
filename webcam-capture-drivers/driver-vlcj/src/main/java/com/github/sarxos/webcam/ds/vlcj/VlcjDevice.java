@@ -224,64 +224,75 @@ public class VlcjDevice implements WebcamDevice {
 
 		LOG.info("Opening webcam device");
 
-		factory = new MediaPlayerFactory(VLC_ARGS);
-		player = factory.newHeadlessMediaPlayer();
+		try {
 
-		// for nix systems this should be changed dshow -> ... !!
+			factory = getFactory();
+			player = factory.newHeadlessMediaPlayer();
 
-		String[] options = null;
+			// for nix systems this should be changed dshow -> ... !!
 
-		switch (OS.getOS()) {
-			case WIN:
-				options = new String[] {
-					":dshow-vdev=" + getName(),
-					":dshow-size=" + size.width + "x" + size.height,
-					":dshow-adev=none", // no audio device
-				};
-				break;
-			case NIX:
-				options = new String[] {
-					":v4l-vdev=" + getVDevice(),
-					":v4l-width=" + size.width,
-					":v4l-height=" + size.height,
-					":v4l-fps=30",
-					":v4l-quality=20",
-					":v4l-adev=none", // no audio device
-				};
-				break;
-			case OSX:
-				options = new String[] {
-					":qtcapture-vdev=" + getVDevice(),
-					":qtcapture-width=" + size.width,
-					":qtcapture-height=" + size.height,
-					":qtcapture-adev=none", // no audio device
-				};
-				break;
+			String[] options = null;
+
+			switch (OS.getOS()) {
+				case WIN:
+					options = new String[] {
+						":dshow-vdev=" + getName(),
+						":dshow-size=" + size.width + "x" + size.height,
+						":dshow-adev=none", // no audio device
+					};
+					break;
+				case NIX:
+					options = new String[] {
+						":v4l-vdev=" + getVDevice(),
+						":v4l-width=" + size.width,
+						":v4l-height=" + size.height,
+						":v4l-fps=30",
+						":v4l-quality=20",
+						":v4l-adev=none", // no audio device
+					};
+					break;
+				case OSX:
+					options = new String[] {
+						":qtcapture-vdev=" + getVDevice(),
+						":qtcapture-width=" + size.width,
+						":qtcapture-height=" + size.height,
+						":qtcapture-adev=none", // no audio device
+					};
+					break;
+			}
+
+			player.startMedia(getMRL(), options);
+
+			// wait for images
+
+			int max = 0;
+			do {
+
+				BufferedImage im = player.getSnapshot(size.width, size.height);
+				if (im != null && im.getWidth() > 0) {
+					open = true;
+					LOG.info("Webcam device is now open: " + getName());
+					return;
+				}
+
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					return;
+				}
+
+			} while (max++ < 10);
+
+		} finally {
+
+			if (player != null) {
+				player.release();
+			}
+
+			if (factory != null) {
+				factory.release();
+			}
 		}
-
-		player.startMedia(getMRL(), options);
-
-		// wait for images
-
-		int max = 0;
-		do {
-
-			BufferedImage im = player.getSnapshot(size.width, size.height);
-			if (im != null && im.getWidth() > 0) {
-				open = true;
-				LOG.info("Webcam device is now open: " + getName());
-				return;
-			}
-
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-			}
-
-		} while (max++ < 10);
-
-		player.release();
-		factory.release();
 
 		open = false;
 	}
@@ -316,6 +327,9 @@ public class VlcjDevice implements WebcamDevice {
 	}
 
 	public MediaPlayerFactory getFactory() {
+		if (factory == null) {
+			factory = new MediaPlayerFactory(VLC_ARGS);
+		}
 		return factory;
 	}
 }

@@ -11,29 +11,19 @@ import uk.co.caprica.vlcj.player.discoverer.MediaDiscoverer;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamDiscoverySupport;
 import com.github.sarxos.webcam.WebcamDriver;
 import com.sun.jna.Native;
 
 
 /**
- * NOT STABLE, EXPERIMENTAL STUFF!!!
- * 
- * Vlcj service discovery works only on Linux, so there is no way (at least for
- * now) to list capture devices on Windows.
- * 
- * For Windows dsj library could be used (http://www.humatic.de/htools/dsj.htm)
- * listing DirectShow filters for all capture devices in system.
- * 
- * There is service discovery for Linux, but in any case this one could be used
- * (http://code.google.com/p/v4l4j/) to access the Video4Linux devices.
- * 
- * MAC OS X can reuse Rococoa (http://code.google.com/p/rococoa/), a Java
- * binding to the Mac Objective-C object system, could read device details via
- * the Mac's QTKit library.
+ * This is capture driver which uses <code>vlcj</code> library to gain access to
+ * the camera device.
  * 
  * @author Bartosz Firyn (SarXos)
+ * @see http://www.capricasoftware.co.uk/projects/vlcj/index.html
  */
-public class VlcjDriver implements WebcamDriver {
+public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 	static {
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
@@ -74,5 +64,15 @@ public class VlcjDriver implements WebcamDriver {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName();
+	}
+
+	@Override
+	public long getScanInterval() {
+		return 3000;
+	}
+
+	@Override
+	public boolean isScanPossible() {
+		return true;
 	}
 }
