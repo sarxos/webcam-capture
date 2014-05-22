@@ -57,7 +57,7 @@ public class Webcam {
 	/**
 	 * Webcam driver (LtiCivil, JMF, FMJ, JQT, OpenCV, VLCj, etc).
 	 */
-	private static WebcamDriver driver = null;
+	private static volatile WebcamDriver driver = null;
 
 	/**
 	 * Webcam discovery service.
