@@ -11,8 +11,8 @@
 	<artifactId>webcam-capture-driver-vlcj</artifactId>
 	<packaging>bundle</packaging>
 	
-	<name>Webcam Capture - VLCj Driver</name>
-	<description>Webcam Capture driver using VLCj framework to grab frames from camera device</description>
+	<name>Webcam Capture - Vlcj Driver</name>
+	<description>Webcam Capture driver using vlcj library to grab frames from camera device</description>
 
 	<dependencies>
 		<dependency>
@@ -31,14 +31,30 @@
 			<artifactId>vlcj</artifactId>
 			<version>2.4.1</version>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-easymock</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
