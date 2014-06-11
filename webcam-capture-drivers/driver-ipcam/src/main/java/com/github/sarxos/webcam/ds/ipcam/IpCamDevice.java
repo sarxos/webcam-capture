@@ -19,6 +19,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
@@ -118,6 +119,7 @@ public class IpCamDevice implements WebcamDevice {
 
 					// case when someone manually closed stream, do not log
 					// exception, this is normal behavior
+
 					if (stream.isClosed()) {
 						LOG.debug("Stream already closed, returning");
 						return;
@@ -391,6 +393,40 @@ public class IpCamDevice implements WebcamDevice {
 				}
 			}
 		}
+	}
+
+	/**
+	 * This method will send HTTP HEAD request to the camera URL to check
+	 * whether it's online or offline. It's online when this request succeed and
+	 * it's offline if any exception occurs or response code is 404 Not Found.
+	 * 
+	 * @return True if camera is online, false otherwise
+	 */
+	public boolean isOnline() {
+
+		LOG.debug("Checking online status for {} at {}", getName(), getURL());
+
+		URI uri = null;
+		try {
+			uri = getURL().toURI();
+		} catch (URISyntaxException e) {
+			throw new WebcamException(String.format("Incorrect URI syntax '%s'", uri), e);
+		}
+
+		HttpHead head = new HttpHead(uri);
+
+		HttpResponse response = null;
+		try {
+			response = client.execute(head);
+		} catch (Exception e) {
+			return false;
+		} finally {
+			if (head != null) {
+				head.releaseConnection();
+			}
+		}
+
+		return response.getStatusLine().getStatusCode() != 404;
 	}
 
 	@Override

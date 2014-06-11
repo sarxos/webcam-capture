@@ -51,7 +51,7 @@ public class WebcamDiscoveryService implements Runnable {
 	private volatile List<Webcam> webcams = null;
 
 	private AtomicBoolean running = new AtomicBoolean(false);
-	private AtomicBoolean enabled = new AtomicBoolean(false);
+	private AtomicBoolean enabled = new AtomicBoolean(true);
 
 	private Thread runner = null;
 
