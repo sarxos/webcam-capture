@@ -250,7 +250,6 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			t.setDaemon(true);
 			return t;
 		}
-
 	}
 
 	/**
