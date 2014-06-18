@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.WebcamException;
-import com.github.sarxos.webcam.ds.gstreamer.impl.VideoDeviceFilenameFilter;
+import com.github.sarxos.webcam.util.NixVideoDevUtils;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
 
@@ -113,8 +113,7 @@ public class GStreamerDriver implements WebcamDriver {
 					devices.add(new GStreamerDevice(name.toString()));
 				}
 			} else if (Platform.isLinux()) {
-				VideoDeviceFilenameFilter vfilter = new VideoDeviceFilenameFilter();
-				for (File vfile : vfilter.getVideoFiles()) {
+				for (File vfile : NixVideoDevUtils.getVideoFiles()) {
 					devices.add(new GStreamerDevice(vfile));
 				}
 			} else {

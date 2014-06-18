@@ -14,7 +14,7 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDiscoverySupport;
 import com.github.sarxos.webcam.WebcamDriver;
-import com.github.sarxos.webcam.ds.vlcj.impl.OS;
+import com.github.sarxos.webcam.util.OsUtils;
 import com.sun.jna.Native;
 
 
@@ -43,7 +43,7 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 	private long scanInterval = -1;
 
 	public VlcjDriver() {
-		if (OS.getOS() == OS.WIN) {
+		if (OsUtils.getOS() == OsUtils.WIN) {
 			System.err.println(String.format("WARNING: %s does not support Windows platform", getClass().getSimpleName()));
 		}
 		initialize();

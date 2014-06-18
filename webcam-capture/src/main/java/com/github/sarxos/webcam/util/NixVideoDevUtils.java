@@ -1,21 +1,21 @@
-package com.github.sarxos.webcam.ds.v4l4j.impl;
+package com.github.sarxos.webcam.util;
 
 import java.io.File;
 import java.io.FilenameFilter;
 
 
-public class VideoDeviceFilenameFilter implements FilenameFilter {
+public class NixVideoDevUtils implements FilenameFilter {
 
 	private static final File DEV = new File("/dev");
 
 	@Override
 	public boolean accept(File dir, String name) {
-		return dir.getName().equals("dev") && name.startsWith("video") && Character.isDigit(name.charAt(5));
+		return dir.getName().equals("dev") && name.startsWith("video") && (name.length() > 5 && Character.isDigit(name.charAt(5)));
 	}
 
-	public File[] getVideoFiles() {
+	public static File[] getVideoFiles() {
 
-		String[] names = DEV.list(this);
+		String[] names = DEV.list(new NixVideoDevUtils());
 		File[] files = new File[names.length];
 
 		for (int i = 0; i < names.length; i++) {

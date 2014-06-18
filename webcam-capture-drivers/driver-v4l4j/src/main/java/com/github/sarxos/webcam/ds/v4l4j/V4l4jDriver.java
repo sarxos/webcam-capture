@@ -11,7 +11,7 @@ import au.edu.jcu.v4l4j.V4L4J;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
-import com.github.sarxos.webcam.ds.v4l4j.impl.VideoDeviceFilenameFilter;
+import com.github.sarxos.webcam.util.NixVideoDevUtils;
 
 
 /**
@@ -26,11 +26,6 @@ public class V4l4jDriver implements WebcamDriver {
 	 * Logger.
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(V4l4jDriver.class);
-
-	/**
-	 * File filter used to find /dev/videoN files.
-	 */
-	private static final VideoDeviceFilenameFilter VIDEO_FILE_FILTER = new VideoDeviceFilenameFilter();
 
 	/**
 	 * Initialize customized V4L4J libraries.
@@ -48,7 +43,7 @@ public class V4l4jDriver implements WebcamDriver {
 	public List<WebcamDevice> getDevices() {
 
 		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
-		File[] vfiles = VIDEO_FILE_FILTER.getVideoFiles();
+		File[] vfiles = NixVideoDevUtils.getVideoFiles();
 
 		if (LOG.isDebugEnabled()) {
 			for (File vfile : vfiles) {

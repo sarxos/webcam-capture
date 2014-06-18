@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.vlcj.impl;
+package com.github.sarxos.webcam.util;
 
 /**
  * Just a simple enumeration with supported (not yet confirmed) operating
@@ -6,7 +6,7 @@ package com.github.sarxos.webcam.ds.vlcj.impl;
  * 
  * @author Bartosz Firyn (sarxos)
  */
-public enum OS {
+public enum OsUtils {
 
 	/**
 	 * Microsoft Windows
@@ -23,14 +23,14 @@ public enum OS {
 	 */
 	OSX;
 
-	private static OS os = null;
+	private static OsUtils os = null;
 
 	/**
 	 * Get operating system.
 	 * 
 	 * @return OS
 	 */
-	public static final OS getOS() {
+	public static final OsUtils getOS() {
 		if (os == null) {
 			String osp = System.getProperty("os.name").toLowerCase();
 			if (osp.indexOf("win") >= 0) {

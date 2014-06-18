@@ -14,7 +14,7 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
 import com.github.sarxos.webcam.WebcamResolution;
-import com.github.sarxos.webcam.ds.vlcj.impl.OS;
+import com.github.sarxos.webcam.util.OsUtils;
 
 
 /**
@@ -105,7 +105,7 @@ public class VlcjDevice implements WebcamDevice {
 	}
 
 	public String getCaptureDevice() {
-		switch (OS.getOS()) {
+		switch (OsUtils.getOS()) {
 			case WIN:
 				return "dshow://";
 			case OSX:
@@ -113,7 +113,7 @@ public class VlcjDevice implements WebcamDevice {
 			case NIX:
 				return "v4l2://";
 			default:
-				throw new RuntimeException("Capture device not supported on " + OS.getOS());
+				throw new RuntimeException("Capture device not supported on " + OsUtils.getOS());
 		}
 	}
 
@@ -189,7 +189,7 @@ public class VlcjDevice implements WebcamDevice {
 
 			String[] options = null;
 
-			switch (OS.getOS()) {
+			switch (OsUtils.getOS()) {
 				case WIN:
 					options = new String[] {
 						":dshow-vdev=" + getName(),
