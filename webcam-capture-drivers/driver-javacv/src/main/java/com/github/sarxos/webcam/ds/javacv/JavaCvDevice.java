@@ -2,12 +2,15 @@ package com.github.sarxos.webcam.ds.javacv;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.io.File;
+
+import org.bytedeco.javacpp.videoInputLib.videoInput;
+import org.bytedeco.javacv.FrameGrabber;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
-import com.googlecode.javacv.FrameGrabber;
-import com.googlecode.javacv.FrameGrabber.Exception;
-import com.googlecode.javacv.cpp.videoInputLib.videoInput;
+import com.github.sarxos.webcam.WebcamResolution;
+import com.github.sarxos.webcam.util.OsUtils;
 
 
 /**
@@ -18,6 +21,8 @@ import com.googlecode.javacv.cpp.videoInputLib.videoInput;
 public class JavaCvDevice implements WebcamDevice {
 
 	private int address = -1;
+	private File vfile = null;
+
 	private String name = null;
 	private FrameGrabber grabber = null;
 
@@ -28,22 +33,37 @@ public class JavaCvDevice implements WebcamDevice {
 		this.address = address;
 	}
 
+	public JavaCvDevice(File vfile) {
+		this.vfile = vfile;
+	}
+
 	@Override
 	public String getName() {
 		if (name == null) {
-			name = videoInput.getDeviceName(address);
+			switch (OsUtils.getOS()) {
+				case WIN:
+					name = videoInput.getDeviceName(address).getString();
+					break;
+				case NIX:
+					name = vfile.getAbsolutePath();
+					break;
+				case OSX:
+					throw new UnsupportedOperationException("Mac OS is not supported");
+			}
 		}
 		return name;
 	}
 
 	@Override
 	public Dimension[] getResolutions() {
+		// grabber.get
+
 		throw new WebcamException("Not implemented");
 	}
 
 	@Override
 	public Dimension getResolution() {
-		throw new WebcamException("Not implemented");
+		return WebcamResolution.VGA.getSize();
 	}
 
 	@Override
@@ -65,6 +85,22 @@ public class JavaCvDevice implements WebcamDevice {
 		}
 	}
 
+	private FrameGrabber buildGrabber() throws FrameGrabber.Exception {
+		switch (OsUtils.getOS()) {
+			case WIN:
+				return FrameGrabber.createDefault(address);
+			case NIX:
+				return FrameGrabber.createDefault(vfile);
+			case OSX:
+			default:
+				throw new UnsupportedOperationException("Current OS is not supported");
+		}
+	}
+
+	public FrameGrabber getGrabber() {
+		return grabber;
+	}
+
 	@Override
 	public void open() {
 
@@ -72,15 +108,14 @@ public class JavaCvDevice implements WebcamDevice {
 			return;
 		}
 
-		// CvCapture capture =
-		// opencv_highgui.cvCreateCameraCapture(opencv_highgui.CV_CAP_DSHOW);
-		// IplImage image = opencv_highgui.cvQueryFrame(capture);
-
 		try {
-			grabber = FrameGrabber.createDefault(address);
+
+			grabber = buildGrabber();
 			grabber.start();
+
 			open = true;
-		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+
+		} catch (FrameGrabber.Exception e) {
 			release();
 			throw new WebcamException(e);
 		}
@@ -90,7 +125,7 @@ public class JavaCvDevice implements WebcamDevice {
 		if (grabber != null) {
 			try {
 				grabber.release();
-			} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+			} catch (FrameGrabber.Exception e) {
 				throw new WebcamException(e);
 			}
 		}
@@ -105,7 +140,7 @@ public class JavaCvDevice implements WebcamDevice {
 
 		try {
 			grabber.stop();
-		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+		} catch (FrameGrabber.Exception e) {
 			throw new WebcamException(e);
 		} finally {
 			dispose();
@@ -120,5 +155,10 @@ public class JavaCvDevice implements WebcamDevice {
 	@Override
 	public boolean isOpen() {
 		return open;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName() + "#address=" + address + "#vfile=" + vfile;
 	}
 }

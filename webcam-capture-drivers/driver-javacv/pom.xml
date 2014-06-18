@@ -12,23 +12,8 @@
 	<packaging>jar</packaging>
 	
 	<name>Webcam Capture - JavaCV Driver</name>
-	<description>Webcam Capture driver using JavaCV - Java binding for OpenCV framework</description>
+	<description>Webcam Capture driver using JavaCV binding for OpenCV</description>
 
-	<properties>
-		<javacv.version>0.2</javacv.version>
-	</properties>
-
-	<repositories>
-		<repository>
-			<id>javacv</id>
-			<url>http://maven2.javacv.googlecode.com/git</url>
-		</repository>
-		<repository>
-			<id>kevoree</id>
-			<url>http://maven.kevoree.org/release</url>
-		</repository>
-	</repositories>
-	
 	<dependencies>
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
@@ -36,51 +21,9 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
+			<groupId>org.bytedeco</groupId>
 			<artifactId>javacv</artifactId>
-			<version>${javacv.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<classifier>windows-x86</classifier>
-			<version>${javacv.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<classifier>windows-x86_64</classifier>
-			<version>${javacv.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<classifier>linux-arm</classifier>
-			<version>${javacv.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<classifier>linux-x86</classifier>
-			<version>${javacv.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<classifier>linux-x86_64</classifier>
-			<version>${javacv.version}</version>
-		</dependency>		
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<classifier>macosx-x86_64</classifier>
-			<version>${javacv.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<classifier>android-arm</classifier>
-			<version>${javacv.version}</version>
+			<version>0.8</version>
 		</dependency>
 	</dependencies>
 
@@ -93,9 +36,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
