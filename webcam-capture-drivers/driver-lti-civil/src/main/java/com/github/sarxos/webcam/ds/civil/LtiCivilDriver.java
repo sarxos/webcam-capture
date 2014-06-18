@@ -2,12 +2,14 @@ package com.github.sarxos.webcam.ds.civil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
+import com.github.sarxos.webcam.WebcamException;
 import com.lti.civil.CaptureDeviceInfo;
 import com.lti.civil.CaptureException;
 import com.lti.civil.CaptureSystem;
@@ -19,55 +21,74 @@ public class LtiCivilDriver implements WebcamDriver {
 
 	// load civil DLL
 	static {
-		LtiCivilLoader.load("civil");
+
 	}
 
 	private static final Logger LOG = LoggerFactory.getLogger(LtiCivilDriver.class);
 
-	private static List<WebcamDevice> devices = null;
 	private static CaptureSystemFactory factory = null;
 	private static CaptureSystem system = null;
-	private static boolean initialized = false;
+
+	private static volatile boolean ready = false;
+	private static final AtomicBoolean INIT = new AtomicBoolean(false);
 
 	private static void initialize() {
+
+		if (!INIT.compareAndSet(false, true)) {
+			return;
+		}
+
+		LtiCivilLoader.load("civil");
+
 		factory = DefaultCaptureSystemFactorySingleton.instance();
+
 		try {
 			system = factory.createCaptureSystem();
 			system.init();
+
+			ready = true;
+
 		} catch (UnsatisfiedLinkError e) {
 			// ignore - it is already loaded
+			LOG.debug("Library already loaded");
 		} catch (CaptureException e) {
-			LOG.error("Capture exception", e);
+			throw new WebcamException(e);
 		}
 	}
 
 	protected static CaptureSystem getCaptureSystem() {
-		if (!initialized) {
-			initialize();
-		}
+		initialize();
 		return system;
 	}
 
 	@Override
 	public List<WebcamDevice> getDevices() {
 
-		if (!initialized) {
-			initialize();
+		initialize();
+
+		int i = 0;
+		while (!ready) {
+
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				return null;
+			}
+
+			// wait max 10 seconds for driver to be ready
+			if (i++ > 100) {
+				throw new RuntimeException("Cannot get devices because capture driver has not become ready for 10 seconds");
+			}
 		}
 
-		if (devices == null) {
-			devices = new ArrayList<WebcamDevice>();
-			try {
+		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
 
-				@SuppressWarnings("unchecked")
-				List<CaptureDeviceInfo> infos = system.getCaptureDeviceInfoList();
-
-				for (CaptureDeviceInfo cdi : infos) {
-					devices.add(new LtiCivilDevice(cdi));
-				}
-			} catch (CaptureException e) {
-				e.printStackTrace();
+		try {
+			for (Object cdi : system.getCaptureDeviceInfoList()) {
+				devices.add(new LtiCivilDevice((CaptureDeviceInfo) cdi));
 			}
+		} catch (CaptureException e) {
+			throw new WebcamException(e);
 		}
 
 		return devices;

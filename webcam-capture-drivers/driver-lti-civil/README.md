@@ -9,6 +9,9 @@ Although, the LTI-CIVIL works with Mac OS as well as with Linux or Windows, this
 has been designed for Linux and Windows only (32- and 64-bit). This is because I
 do not have Mac OS machine to perform tests.
 
+## NOTES
+
+* LTI-CIVIL does not work on Ubuntu 12.04 on x86_64!
 
 ## Download
 

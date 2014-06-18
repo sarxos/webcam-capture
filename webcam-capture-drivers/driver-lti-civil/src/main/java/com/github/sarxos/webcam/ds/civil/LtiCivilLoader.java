@@ -40,6 +40,10 @@ public class LtiCivilLoader {
 		}
 	}
 
+	private LtiCivilLoader() {
+		// singleton
+	}
+
 	/**
 	 * Copy bytes from a large (over 2GB) InputStream to an OutputStream.
 	 * 
@@ -49,7 +53,7 @@ public class LtiCivilLoader {
 	 * @throws NullPointerException if the input or output is null
 	 * @throws IOException if an I/O error occurs
 	 */
-	public static long copy(InputStream input, OutputStream output) throws IOException {
+	private static long copy(InputStream input, OutputStream output) throws IOException {
 		byte[] buffer = new byte[1024 * 4];
 		long count = 0;
 		int n = 0;
@@ -60,14 +64,14 @@ public class LtiCivilLoader {
 		return count;
 	}
 
-	public static void load(String lib) {
+	protected static void load(String lib) {
 		LOG.info("Loading native library: " + lib);
 		try {
 			System.loadLibrary(lib);
 			LOG.info("DLL has been loaded from memory: " + lib);
 		} catch (UnsatisfiedLinkError e) {
 			try {
-				load("webcam-capture-lib-" + System.currentTimeMillis(), lib);
+				load("civil-" + System.currentTimeMillis(), lib);
 			} catch (Exception e2) {
 				LOG.error("Exception when loading DLL library", e2);
 				throw new RuntimeException(e2);
@@ -75,7 +79,7 @@ public class LtiCivilLoader {
 		}
 	}
 
-	public static void load(String path, String name) {
+	protected static void load(String path, String name) {
 
 		String libroot = "/META-INF/lib";
 		String libpath = null;
@@ -85,15 +89,10 @@ public class LtiCivilLoader {
 		boolean linux = System.getProperty("os.name").toLowerCase().indexOf("linux") != -1;
 
 		if (linux) {
-			if (arch64) {
-				libpath = libroot + "/linux64/";
-				libfile = "lib" + name + ".so";
-			} else {
-				libpath = libroot + "/linux32/";
-				libfile = "lib" + name + ".so";
-			}
+			libpath = libroot + (arch64 ? "/linux64/" : "/linux32/");
+			libfile = "lib" + name + ".so";
 		} else {
-			libpath = libroot + "/win32/";
+			libpath = libroot + (arch64 ? "/win64/" : "/win32/");
 			libfile = name + ".dll";
 		}
 
@@ -121,6 +120,8 @@ public class LtiCivilLoader {
 		}
 
 		String resource = libpath + libfile;
+
+		LOG.debug("Library resource in JAR is {}", resource);
 
 		InputStream in = LtiCivilDriver.class.getResourceAsStream(resource);
 		if (in == null) {
@@ -152,6 +153,8 @@ public class LtiCivilLoader {
 				}
 			}
 		}
+
+		LOG.debug("Loading library from file {}", file);
 
 		try {
 			System.load(file.getAbsolutePath());
