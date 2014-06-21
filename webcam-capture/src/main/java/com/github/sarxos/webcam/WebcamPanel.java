@@ -104,8 +104,20 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 */
 	public class DefaultPainter implements Painter {
 
+		/**
+		 * Webcam device name.
+		 */
 		private String name = null;
+
+		/**
+		 * Lat repaint time, uset for debug purpose.
+		 */
 		private long lastRepaintTime = -1;
+
+		/**
+		 * Buffered image resized to fit into panel drawing area.
+		 */
+		private BufferedImage resizedImage = null;
 
 		@Override
 		public void paintPanel(WebcamPanel owner, Graphics2D g2) {
@@ -226,10 +238,12 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 					break;
 			}
 
-			BufferedImage resized = null;
+			if (resizedImage != null) {
+				resizedImage.flush();
+			}
 
-			if (w == image.getWidth() && h == image.getHeight()) {
-				resized = image;
+			if (w == image.getWidth() && h == image.getHeight() && !mirrored) {
+				resizedImage = image;
 			} else {
 
 				GraphicsEnvironment genv = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -238,8 +252,8 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 				Graphics2D gr = null;
 				try {
 
-					resized = gc.createCompatibleImage(pw, ph);
-					gr = resized.createGraphics();
+					resizedImage = gc.createCompatibleImage(pw, ph);
+					gr = resizedImage.createGraphics();
 					gr.setComposite(AlphaComposite.Src);
 
 					for (Map.Entry<RenderingHints.Key, Object> hint : imageRenderingHints.entrySet()) {
@@ -249,6 +263,12 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 					gr.setBackground(Color.BLACK);
 					gr.setColor(Color.BLACK);
 					gr.fillRect(0, 0, pw, ph);
+
+					if (mirrored) {
+						x = x + w;
+						w = -w;
+					}
+
 					gr.drawImage(image, x, y, w, h, null);
 
 				} finally {
@@ -258,8 +278,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 				}
 			}
 
-			g2.drawImage(resized, 0, 0, null);
-			resized.flush();
+			g2.drawImage(resizedImage, 0, 0, null);
 
 			if (isFPSDisplayed()) {
 
@@ -648,6 +667,11 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	private boolean displayDebugInfo = false;
 
 	/**
+	 * Is image mirrored.
+	 */
+	private boolean mirrored = false;
+
+	/**
 	 * Creates webcam panel and automatically start webcam.
 	 * 
 	 * @param webcam the webcam to be used to fetch images
@@ -880,26 +904,61 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		this.frequency = fps;
 	}
 
+	/**
+	 * Is displaying of some debug information enabled.
+	 * 
+	 * @return True if debug information are enabled, false otherwise
+	 */
 	public boolean isDisplayDebugInfo() {
 		return displayDebugInfo;
 	}
 
+	/**
+	 * Display some debug information on image surface.
+	 * 
+	 * @param displayDebugInfo the value to control debug information
+	 */
 	public void setDisplayDebugInfo(boolean displayDebugInfo) {
 		this.displayDebugInfo = displayDebugInfo;
 	}
 
+	/**
+	 * This method return true in case if camera FPS is set to be displayed on
+	 * panel surface. Default value returned is false.
+	 * 
+	 * @return True if camera FPS is set to be displayed on panel surface
+	 * @see #setFPSDisplayed(boolean)
+	 */
 	public boolean isFPSDisplayed() {
 		return frequencyDisplayed;
 	}
 
+	/**
+	 * This method is to control if camera FPS should be displayed on the webcam
+	 * panel surface.
+	 * 
+	 * @param displayed the value to control if camera FPS should be displayed
+	 */
 	public void setFPSDisplayed(boolean displayed) {
 		this.frequencyDisplayed = displayed;
 	}
 
+	/**
+	 * This method will return true in case when panel is configured to display
+	 * image size. The string will be printed in the right bottom corner of the
+	 * panel surface.
+	 * 
+	 * @return True in case if panel is configured to display image size
+	 */
 	public boolean isImageSizeDisplayed() {
 		return imageSizeDisplayed;
 	}
 
+	/**
+	 * Configure panel to display camera image size to be displayed.
+	 * 
+	 * @param imageSizeDisplayed
+	 */
 	public void setImageSizeDisplayed(boolean imageSizeDisplayed) {
 		this.imageSizeDisplayed = imageSizeDisplayed;
 	}
@@ -1018,4 +1077,23 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		// do nothing
 	}
 
+	/**
+	 * This method returns true if image mirroring is enabled. The default value
+	 * is false.
+	 * 
+	 * @return True if image is mirrored, false otherwise
+	 */
+	public boolean isMirrored() {
+		return mirrored;
+	}
+
+	/**
+	 * Decide whether or not the image from webcam painted on panel surface will
+	 * be mirrored. The image from camera itself is not modified.
+	 * 
+	 * @param mirrored the parameter to control if image should be mirrored
+	 */
+	public void setMirrored(boolean mirrored) {
+		this.mirrored = mirrored;
+	}
 }

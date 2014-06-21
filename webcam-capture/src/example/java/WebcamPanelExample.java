@@ -15,6 +15,8 @@ public class WebcamPanelExample {
 		WebcamPanel panel = new WebcamPanel(webcam);
 		panel.setFPSDisplayed(true);
 		panel.setDisplayDebugInfo(true);
+		panel.setImageSizeDisplayed(true);
+		panel.setMirrored(true);
 
 		JFrame window = new JFrame("Test webcam panel");
 		window.add(panel);
