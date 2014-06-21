@@ -3,6 +3,7 @@ package com.github.sarxos.webcam;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -234,7 +235,13 @@ public class WebcamUpdater implements Runnable {
 
 		// reschedule task
 
-		executor.schedule(this, delay, TimeUnit.MILLISECONDS);
+		if (webcam.isOpen()) {
+			try {
+				executor.schedule(this, delay, TimeUnit.MILLISECONDS);
+			} catch (RejectedExecutionException e) {
+				LOG.trace("Webcam update has been rejected", e);
+			}
+		}
 
 		// notify webcam listeners about the new image available
 
