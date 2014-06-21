@@ -620,8 +620,6 @@ public class Webcam {
 		long t1 = 0;
 		long t2 = 0;
 
-		assert updater != null;
-
 		if (asynchronous) {
 			return updater.getImage();
 		} else {
@@ -654,7 +652,6 @@ public class Webcam {
 	}
 
 	public boolean isImageNew() {
-		assert updater != null;
 		if (asynchronous) {
 			return updater.isImageNew();
 		}
@@ -662,7 +659,6 @@ public class Webcam {
 	}
 
 	public double getFPS() {
-		assert updater != null;
 		if (asynchronous) {
 			return updater.getFPS();
 		} else {
@@ -1191,6 +1187,5 @@ public class Webcam {
 
 		// stop processor
 		WebcamProcessor.getInstance().shutdown();
-
 	}
 }
