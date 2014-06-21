@@ -1,19 +1,29 @@
 package com.github.sarxos.webcam;
 
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.KEY_INTERPOLATION;
+import static java.awt.RenderingHints.KEY_RENDERING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_OFF;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
+import static java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR;
+import static java.awt.RenderingHints.VALUE_RENDER_SPEED;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -95,6 +105,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	public class DefaultPainter implements Painter {
 
 		private String name = null;
+		private long lastRepaintTime = -1;
 
 		@Override
 		public void paintPanel(WebcamPanel owner, Graphics2D g2) {
@@ -173,24 +184,34 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			assert image != null;
 			assert g2 != null;
 
-			Object antialiasing = g2.getRenderingHint(KEY_ANTIALIASING);
-
-			g2.setRenderingHint(KEY_ANTIALIASING, isAntialiasingEnabled() ? VALUE_ANTIALIAS_ON : VALUE_ANTIALIAS_OFF);
-
 			int pw = getWidth();
 			int ph = getHeight();
 			int iw = image.getWidth();
 			int ih = image.getHeight();
 
+			Object antialiasing = g2.getRenderingHint(KEY_ANTIALIASING);
+			Object rendering = g2.getRenderingHint(KEY_RENDERING);
+
+			g2.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_OFF);
+			g2.setRenderingHint(KEY_RENDERING, VALUE_RENDER_SPEED);
 			g2.setBackground(Color.BLACK);
+			g2.setColor(Color.BLACK);
 			g2.fillRect(0, 0, pw, ph);
+
+			// resized image position and size
+			int x = 0;
+			int y = 0;
+			int w = 0;
+			int h = 0;
 
 			switch (drawMode) {
 				case NONE:
-					g2.drawImage(image, 0, 0, null);
+					w = image.getWidth();
+					h = image.getHeight();
 					break;
 				case FILL:
-					g2.drawImage(image, 0, 0, pw, ph, null);
+					w = pw;
+					h = ph;
 					break;
 				case FIT:
 					double s = Math.max((double) iw / pw, (double) ih / ph);
@@ -198,25 +219,60 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 					double nih = ih / s;
 					double dx = (pw - niw) / 2;
 					double dy = (ph - nih) / 2;
-					g2.drawImage(image, (int) dx, (int) dy, (int) niw, (int) nih, null);
+					w = (int) niw;
+					h = (int) nih;
+					x = (int) dx;
+					y = (int) dy;
 					break;
-				default:
-					g2.setRenderingHint(KEY_ANTIALIASING, antialiasing);
-					throw new RuntimeException("Mode " + drawMode + " not supported");
 			}
+
+			BufferedImage resized = null;
+
+			if (w == image.getWidth() && h == image.getHeight()) {
+				resized = image;
+			} else {
+
+				GraphicsEnvironment genv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				GraphicsConfiguration gc = genv.getDefaultScreenDevice().getDefaultConfiguration();
+
+				Graphics2D gr = null;
+				try {
+
+					resized = gc.createCompatibleImage(pw, ph);
+					gr = resized.createGraphics();
+					gr.setComposite(AlphaComposite.Src);
+
+					for (Map.Entry<RenderingHints.Key, Object> hint : imageRenderingHints.entrySet()) {
+						gr.setRenderingHint(hint.getKey(), hint.getValue());
+					}
+
+					gr.setBackground(Color.BLACK);
+					gr.setColor(Color.BLACK);
+					gr.fillRect(0, 0, pw, ph);
+					gr.drawImage(image, x, y, w, h, null);
+
+				} finally {
+					if (gr != null) {
+						gr.dispose();
+					}
+				}
+			}
+
+			g2.drawImage(resized, 0, 0, null);
+			resized.flush();
 
 			if (isFPSDisplayed()) {
 
 				String str = String.format("FPS: %.1f", webcam.getFPS());
 
-				int x = 5;
-				int y = ph - 5;
+				int sx = 5;
+				int sy = ph - 5;
 
 				g2.setFont(getFont());
 				g2.setColor(Color.BLACK);
-				g2.drawString(str, x + 1, y + 1);
+				g2.drawString(str, sx + 1, sy + 1);
 				g2.setColor(Color.WHITE);
-				g2.drawString(str, x, y);
+				g2.drawString(str, sx, sy);
 			}
 
 			if (isImageSizeDisplayed()) {
@@ -225,17 +281,35 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 
 				FontMetrics metrics = g2.getFontMetrics(getFont());
 				int sw = metrics.stringWidth(res);
-				int x = pw - sw - 5;
-				int y = ph - 5;
+				int sx = pw - sw - 5;
+				int sy = ph - 5;
 
 				g2.setFont(getFont());
 				g2.setColor(Color.BLACK);
-				g2.drawString(res, x + 1, y + 1);
+				g2.drawString(res, sx + 1, sy + 1);
 				g2.setColor(Color.WHITE);
-				g2.drawString(res, x, y);
+				g2.drawString(res, sx, sy);
+			}
+
+			if (isDisplayDebugInfo()) {
+
+				if (lastRepaintTime < 0) {
+					lastRepaintTime = System.currentTimeMillis();
+				} else {
+
+					long now = System.currentTimeMillis();
+					String res = String.format("DEBUG: repaints per second: %.1f", (double) 1000 / (now - lastRepaintTime));
+					lastRepaintTime = now;
+					g2.setFont(getFont());
+					g2.setColor(Color.BLACK);
+					g2.drawString(res, 6, 16);
+					g2.setColor(Color.WHITE);
+					g2.drawString(res, 5, 15);
+				}
 			}
 
 			g2.setRenderingHint(KEY_ANTIALIASING, antialiasing);
+			g2.setRenderingHint(KEY_RENDERING, rendering);
 		}
 	}
 
@@ -294,10 +368,22 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 */
 	private static final ThreadFactory THREAD_FACTORY = new PanelThreadFactory();
 
+	public static final Map<RenderingHints.Key, Object> DEFAULT_IMAGE_RENDERING_HINTS = new HashMap<RenderingHints.Key, Object>();
+	static {
+		DEFAULT_IMAGE_RENDERING_HINTS.put(KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR);
+		DEFAULT_IMAGE_RENDERING_HINTS.put(KEY_RENDERING, VALUE_RENDER_SPEED);
+		DEFAULT_IMAGE_RENDERING_HINTS.put(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+	}
+
 	/**
 	 * This runnable will do nothing more than repaint panel.
 	 */
 	private final Runnable repaint = new SwingRepainter(this);
+
+	/**
+	 * Rendering hints to be used when painting image to be displayed.
+	 */
+	private Map<RenderingHints.Key, Object> imageRenderingHints = new HashMap<RenderingHints.Key, Object>(DEFAULT_IMAGE_RENDERING_HINTS);
 
 	/**
 	 * Scheduled executor acting as timer.
@@ -350,13 +436,12 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 				// second scheduler execution
 
 				try {
-					if (webcam.isOpen()) {
 
-						// FPS limit means that panel rendering frequency is
-						// limited
-						// to the specific value and panel will not be rendered
-						// more
-						// often then specific value
+					// FPS limit means that panel rendering frequency is
+					// limited to the specific value and panel will not be
+					// rendered more often then specific value
+
+					if (webcam.isOpen()) {
 
 						// TODO: rename FPS value in panel to rendering
 						// frequency
@@ -556,6 +641,11 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * Preferred panel size.
 	 */
 	private Dimension defaultSize = null;
+
+	/**
+	 * If debug info should be displayed.
+	 */
+	private boolean displayDebugInfo = false;
 
 	/**
 	 * Creates webcam panel and automatically start webcam.
@@ -790,6 +880,14 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		this.frequency = fps;
 	}
 
+	public boolean isDisplayDebugInfo() {
+		return displayDebugInfo;
+	}
+
+	public void setDisplayDebugInfo(boolean displayDebugInfo) {
+		this.displayDebugInfo = displayDebugInfo;
+	}
+
 	public boolean isFPSDisplayed() {
 		return frequencyDisplayed;
 	}
@@ -919,4 +1017,5 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	public void webcamImageObtained(WebcamEvent we) {
 		// do nothing
 	}
+
 }
