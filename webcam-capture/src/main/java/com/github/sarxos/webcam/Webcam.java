@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,6 +36,61 @@ import com.github.sarxos.webcam.util.ImageUtils;
  * @author Bartosz Firyn (bfiryn)
  */
 public class Webcam {
+
+	/**
+	 * Class used to asynchronously notify all webcam listeners about new image
+	 * available.
+	 * 
+	 * @author Bartosz Firyn (sarxos)
+	 */
+	private static final class ImageNotification implements Runnable {
+
+		/**
+		 * Camera.
+		 */
+		private final Webcam webcam;
+
+		/**
+		 * Acquired image.
+		 */
+		private final BufferedImage image;
+
+		/**
+		 * Create new notification.
+		 * 
+		 * @param webcam the webcam from which image has been acquired
+		 * @param image the acquired image
+		 */
+		public ImageNotification(Webcam webcam, BufferedImage image) {
+			this.webcam = webcam;
+			this.image = image;
+		}
+
+		@Override
+		public void run() {
+			if (image != null) {
+				WebcamEvent we = new WebcamEvent(WebcamEventType.NEW_IMAGE, webcam, image);
+				for (WebcamListener l : webcam.getWebcamListeners()) {
+					try {
+						l.webcamImageObtained(we);
+					} catch (Exception e) {
+						LOG.error(String.format("Notify image acquired, exception when calling listener %s", l.getClass()), e);
+					}
+				}
+			}
+		}
+	}
+
+	private final class NotificationThreadFactory implements ThreadFactory {
+
+		@Override
+		public Thread newThread(Runnable r) {
+			Thread t = new Thread(r, String.format("notificator-[%s]", getName()));
+			t.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
+			t.setDaemon(true);
+			return t;
+		}
+	}
 
 	/**
 	 * Logger instance.
@@ -117,14 +175,23 @@ public class Webcam {
 	/**
 	 * Webcam image updater.
 	 */
-	private WebcamUpdater updater = new WebcamUpdater(this);
+	private volatile WebcamUpdater updater = null;
 
 	/**
-	 * IMage transformer.
+	 * Image transformer.
 	 */
 	private volatile WebcamImageTransformer transformer = null;
 
+	/**
+	 * Lock which denies access to the given webcam when it's already in use by
+	 * other webcam capture API process or thread.
+	 */
 	private WebcamLock lock = null;
+
+	/**
+	 * Executor service for image notifications.
+	 */
+	private ExecutorService notificator = null;
 
 	/**
 	 * Webcam class.
@@ -138,6 +205,21 @@ public class Webcam {
 		}
 		this.device = device;
 		this.lock = new WebcamLock(this);
+	}
+
+	/**
+	 * Asynchronously start new thread which will notify all webcam listeners
+	 * about the new image available.
+	 */
+	protected void notifyWebcamImageAcquired(BufferedImage image) {
+
+		// notify webcam listeners of new image available, do that only if there
+		// are any webcam listeners available because there is no sense to start
+		// additional threads for no purpose
+
+		if (getWebcamListenersCount() > 0) {
+			notificator.execute(new ImageNotification(this, image));
+		}
 	}
 
 	/**
@@ -175,8 +257,9 @@ public class Webcam {
 
 		if (open.compareAndSet(false, true)) {
 
-			assert updater != null;
 			assert lock != null;
+
+			notificator = Executors.newSingleThreadExecutor(new NotificationThreadFactory());
 
 			// lock webcam for other Java (only) processes
 
@@ -195,6 +278,7 @@ public class Webcam {
 			} catch (WebcamException e) {
 				lock.unlock();
 				open.set(false);
+				LOG.debug("Webcam exception when opening", e);
 				throw e;
 			}
 
@@ -202,9 +286,10 @@ public class Webcam {
 
 			// setup non-blocking configuration
 
-			asynchronous = async;
-
-			if (async) {
+			if (asynchronous = async) {
+				if (updater == null) {
+					updater = new WebcamUpdater(this);
+				}
 				updater.start();
 			}
 
@@ -243,7 +328,6 @@ public class Webcam {
 
 			LOG.debug("Closing webcam {}", getName());
 
-			assert updater != null;
 			assert lock != null;
 
 			// close webcam
@@ -261,7 +345,9 @@ public class Webcam {
 			}
 
 			// stop updater
-			updater.stop();
+			if (asynchronous) {
+				updater.stop();
+			}
 
 			// remove shutdown hook (it's not more necessary)
 			removeShutdownHook();
@@ -281,6 +367,15 @@ public class Webcam {
 					l.webcamClosed(we);
 				} catch (Exception e) {
 					LOG.error(String.format("Notify webcam closed, exception when calling %s listener", l.getClass()), e);
+				}
+			}
+
+			notificator.shutdown();
+			while (!notificator.isTerminated()) {
+				try {
+					notificator.awaitTermination(100, TimeUnit.MILLISECONDS);
+				} catch (InterruptedException e) {
+					return false;
 				}
 			}
 
@@ -552,7 +647,7 @@ public class Webcam {
 
 			// notify webcam listeners about new image available
 
-			updater.notifyWebcamImageObtained(this, image);
+			notifyWebcamImageAcquired(image);
 
 			return image;
 		}

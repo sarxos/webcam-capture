@@ -480,7 +480,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 					// completely started (it was in "starting" timeframe)
 
 					LOG.warn("Executor rejected paint update");
-					LOG.debug("Executor rejected paint update because of", e);
+					LOG.trace("Executor rejected paint update because of", e);
 
 					return;
 				}

@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamDiscoveryEvent;
+import com.github.sarxos.webcam.WebcamDiscoveryListener;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.WebcamPanel;
@@ -21,7 +23,7 @@ import com.github.sarxos.webcam.WebcamResolution;
  * 
  * @author Bartosz Firyn (SarXos)
  */
-public class WebcamViewerExample extends JFrame implements Runnable, WebcamListener, WindowListener, UncaughtExceptionHandler, ItemListener {
+public class WebcamViewerExample extends JFrame implements Runnable, WebcamListener, WindowListener, UncaughtExceptionHandler, ItemListener, WebcamDiscoveryListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -31,6 +33,8 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 
 	@Override
 	public void run() {
+
+		Webcam.addDiscoveryListener(this);
 
 		setTitle("Java Webcam Capture POC");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -155,6 +159,7 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 				System.out.println("selected " + webcam.getName());
 
 				panel = new WebcamPanel(webcam, false);
+				panel.setFPSDisplayed(true);
 
 				add(panel, BorderLayout.CENTER);
 				pack();
@@ -171,6 +176,20 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 				t.setUncaughtExceptionHandler(this);
 				t.start();
 			}
+		}
+	}
+
+	@Override
+	public void webcamFound(WebcamDiscoveryEvent event) {
+		if (picker != null) {
+			picker.addItem(event.getWebcam());
+		}
+	}
+
+	@Override
+	public void webcamGone(WebcamDiscoveryEvent event) {
+		if (picker != null) {
+			picker.removeItem(event.getWebcam());
 		}
 	}
 }

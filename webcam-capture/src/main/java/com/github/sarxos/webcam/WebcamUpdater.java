@@ -1,7 +1,6 @@
 package com.github.sarxos.webcam;
 
 import java.awt.image.BufferedImage;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -46,50 +45,6 @@ public class WebcamUpdater implements Runnable {
 	}
 
 	/**
-	 * Class used to asynchronously notify all webcam listeners about new image
-	 * available.
-	 * 
-	 * @author Bartosz Firyn (sarxos)
-	 */
-	private static final class ImageNotification implements Runnable {
-
-		/**
-		 * Camera.
-		 */
-		private final Webcam webcam;
-
-		/**
-		 * Acquired image.
-		 */
-		private final BufferedImage image;
-
-		/**
-		 * Create new notification.
-		 * 
-		 * @param webcam the webcam from which image has been acquired
-		 * @param image the acquired image
-		 */
-		public ImageNotification(Webcam webcam, BufferedImage image) {
-			this.webcam = webcam;
-			this.image = image;
-		}
-
-		@Override
-		public void run() {
-			if (image != null) {
-				WebcamEvent we = new WebcamEvent(WebcamEventType.NEW_IMAGE, webcam, image);
-				for (WebcamListener l : webcam.getWebcamListeners()) {
-					try {
-						l.webcamImageObtained(we);
-					} catch (Exception e) {
-						LOG.error(String.format("Notify image acquired, exception when calling listener %s", l.getClass()), e);
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	 * Logger.
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamUpdater.class);
@@ -105,11 +60,6 @@ public class WebcamUpdater implements Runnable {
 	 * Executor service.
 	 */
 	private ScheduledExecutorService executor = null;
-
-	/**
-	 * Executor service for image notifications.
-	 */
-	private final ExecutorService notificator = Executors.newSingleThreadExecutor(THREAD_FACTORY);
 
 	/**
 	 * Cached image.
@@ -146,6 +96,7 @@ public class WebcamUpdater implements Runnable {
 	 * Start updater.
 	 */
 	public void start() {
+
 		if (running.compareAndSet(false, true)) {
 
 			image.set(new WebcamReadImageTask(Webcam.getDriver(), webcam.getDevice()).getImage());
@@ -166,12 +117,10 @@ public class WebcamUpdater implements Runnable {
 		if (running.compareAndSet(true, false)) {
 
 			executor.shutdown();
-
 			while (!executor.isTerminated()) {
 				try {
 					executor.awaitTermination(100, TimeUnit.MILLISECONDS);
 				} catch (InterruptedException e) {
-					LOG.trace(e.getMessage(), e);
 					return;
 				}
 			}
@@ -198,6 +147,10 @@ public class WebcamUpdater implements Runnable {
 	}
 
 	private void tick() {
+
+		if (!webcam.isOpen()) {
+			return;
+		}
 
 		long t1 = 0;
 		long t2 = 0;
@@ -245,22 +198,7 @@ public class WebcamUpdater implements Runnable {
 
 		// notify webcam listeners about the new image available
 
-		notifyWebcamImageObtained(webcam, image.get());
-	}
-
-	/**
-	 * Asynchronously start new thread which will notify all webcam listeners
-	 * about the new image available.
-	 */
-	protected void notifyWebcamImageObtained(Webcam webcam, BufferedImage image) {
-
-		// notify webcam listeners of new image available, do that only if there
-		// are any webcam listeners available because there is no sense to start
-		// additional threads for no purpose
-
-		if (webcam.getWebcamListenersCount() > 0) {
-			notificator.execute(new ImageNotification(webcam, image));
-		}
+		webcam.notifyWebcamImageAcquired(image.get());
 	}
 
 	/**

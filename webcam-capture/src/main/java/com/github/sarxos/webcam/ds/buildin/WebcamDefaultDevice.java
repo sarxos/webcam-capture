@@ -307,7 +307,7 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 
 		open.set(true);
 
-		refresher = new Thread(this, String.format("frames-refresher:%s", id));
+		refresher = new Thread(this, String.format("frames-refresher-[%s]", id));
 		refresher.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 		refresher.setDaemon(true);
 		refresher.start();
