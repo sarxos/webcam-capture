@@ -1,22 +1,60 @@
 # webcam-capture-driver-gstreamer
 
-This is GStreamer driver for Webcam Capture project. It allows Webcam Capture to
-handle pictures from build-in or USB-connected webcams. It has been designed to 
-work with Windows and Linux **only**. To make use of it user have to 
-[download](http://code.google.com/p/ossbuild/) and install GStreamer application 
+This is capture driver which gives Webcam Capture API possibility to use
+[GStreamer](http://gstreamer.freedesktop.org/documentation/gstreamer010.html)
+as a middleware accessing webcam devices (build-in or USB enabled).
+
+It has been designed to work with Windows and Linux **only**. To make use of it user have to 
+[download](http://code.google.com/p/ossbuild/) GStreamer application installer 
 on Windows or use _apt-get_, _yum_ or other packages manager to install it on Linux.
 
 Currently supported GStreamer version is 0.10.x, so make sure you are installing
 the correct one! It is **not** compatible with GStreamer 1.0 and above!
 
+## Supported
+
+* Windows
+* Linux
 
 ## Download
 
-Below is the newest stable version ZIP containing main project
-JAR with additional documents, examples and all required 3rd-party
-dependencies:
+The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture-driver-gstreamer&v=0.3.10-SNAPSHOT).
 
-* **Latest stable version** - [webcam-capture-driver-gstreamer-0.3.10-RC6-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-gstreamer/0.3.10-RC6/webcam-capture-driver-gstreamer-0.3.10-RC6-dist.zip)
+The latest **stable** version ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-gstreamer/0.3.10-RC7/webcam-capture-driver-gstreamer-0.3.10-RC7-dist.zip).
+
+## Maven
+
+Stable:
+
+```xml
+<repository>
+	<id>SarXos Repository</id>
+	<url>http://www.sarxos.pl/repo/maven2</url>
+</repository>
+```
+```xml
+<dependency>
+	<groupId>com.github.sarxos</groupId>
+	<artifactId>webcam-capture-driver-gstreamer</artifactId>
+	<version>0.3.10-RC7</version>
+</dependency>
+```
+
+Snapshot:
+
+```xml
+<repository>
+    <id>Sonatype OSS Snapshot Repository</id>
+    <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+</repository>
+```
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-gstreamer</artifactId>
+    <version>0.3.10-SNAPSHOT</version>
+</dependency>
+```
 
 ## Example
 
@@ -26,12 +64,8 @@ static {
 }
 
 public static void main(String[] args) {
-
-	WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(0));
-	panel.setFPSDisplayed(true);
-
 	JFrame frame = new JFrame("GStreamer Webcam Capture Driver Demo");
-	frame.add(panel);
+	frame.add(new WebcamPanel(Webcam.getDefault()));
 	frame.pack();
 	frame.setVisible(true);
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,7 +74,7 @@ public static void main(String[] args) {
 
 ## License
 
-Copyright (C) 2012 - 2013 Bartosz Firyn
+Copyright (C) 2012 - 2014 Bartosz Firyn
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

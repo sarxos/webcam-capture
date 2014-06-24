@@ -12,6 +12,46 @@ To install fswebcam:
 sudo apt-get install fswebcam
 ```
 
+## Download
+
+The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture-driver-fswebcam&v=0.3.10-SNAPSHOT).
+
+The latest **stable** ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-fswebcam/0.3.10-RC7/webcam-capture-driver-fswebcam-0.3.10-RC7-dist.zip).
+
+## Maven
+
+Stable:
+
+```xml
+<repository>
+	<id>SarXos Repository</id>
+	<url>http://www.sarxos.pl/repo/maven2</url>
+</repository>
+```
+```xml
+<dependency>
+	<groupId>com.github.sarxos</groupId>
+	<artifactId>webcam-capture-driver-fswebcam</artifactId>
+	<version>0.3.10-RC7</version>
+</dependency>
+```
+
+Snapshot:
+
+```xml
+<repository>
+    <id>Sonatype OSS Snapshot Repository</id>
+    <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+</repository>
+```
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-fswebcam</artifactId>
+    <version>0.3.10-SNAPSHOT</version>
+</dependency>
+```
+
 ## How To Use
 
 Set capture driver before you start using Webcam class:
@@ -41,26 +81,6 @@ public class TakePictureExample {
 	}
 }
 ```
-
-The snapshot version is available in the Sonatype Snapshot Maven repository:
-
-<repository>
-    <id>Sonatype OSS Snapshot Repository</id>
-    <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-</repository>
-
-Dependency:
-
-<dependency>
-    <groupId>com.github.sarxos</groupId>
-    <artifactId>webcam-capture-driver-fswebcam</artifactId>
-    <version>0.3.10-SNAPSHOT</version>
-</dependency>
-
-It can be also downloaded manually from:
-
-https://oss.sonatype.org/content/repositories/snapshots/com/github/sarxos/webcam-capture-driver-fswebcam/0.3.10-SNAPSHOT
-
 
 ## Issues
 

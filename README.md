@@ -24,13 +24,14 @@ Below is the newest stable version ZIP containing main project
 JAR with additional documents, examples and all required 3rd-party
 dependencies:
 
-* **Latest stable version** - [webcam-capture-0.3.10-RC6-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.10-RC6/webcam-capture-0.3.10-RC6-dist.zip)
+* **Latest stable version** - [webcam-capture-0.3.10-RC7-dist.zip](https://github.com/sarxos/webcam-capture/releases/download/webcam-capture-parent-0.3.10-RC7/webcam-capture-0.3.10-RC7-dist.zip)
 
 Other releases:
 
 * Previous stable version - [webcam-capture-0.3.9-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.9/webcam-capture-0.3.9-dist.zip)
-* Latest SNAPSHOT version - [webcam-capture-0.3.10-SNAPSHOT-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.10-SNAPSHOT/webcam-capture-0.3.10-SNAPSHOT-dist.zip)
 * List of all releases ever made - [click](http://www.sarxos.pl/repo/maven2/index.php?dir=com%2Fgithub%2Fsarxos%2Fwebcam-capture%2F)
+
+The latest development version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture&v=0.3.10-SNAPSHOT).
 
 ## Maven
 
@@ -59,7 +60,7 @@ in their own projects.
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3.10-RC6</version>
+	<version>0.3.10-RC7</version>
 </dependency>
 ```
 
@@ -81,8 +82,8 @@ in their own projects.
 ```
 
 If you would like to use the newest SNAPSHOT version, please be aware - 
-sometimes it can be unstable. Add the above repository and dependency 
-into your ```pom.xml```.
+sometimes it may be unstable. If you are OK with this, just add the above
+repository and dependency into your ```pom.xml```.
 
 ## Contribution
 

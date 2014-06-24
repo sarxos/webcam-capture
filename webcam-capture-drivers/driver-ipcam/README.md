@@ -1,10 +1,11 @@
 # webcam-capture-driver-ipcam
 
-This is IP camera driver for Webcam Capture project. It allows Webcam Capture to
+This is capture driver which gives Webcam Capture API possibility to
+access IP camera devices. It allows it to
 handle pictures from IP cameras supporting JPEG and MJPEG (Motion JPEG) compression
-and therefore can work in two modes - ```PULL``` for JPEG and ```PUSH``` for MJPEG.
+and can work in two modes - ```PULL``` for JPEG and ```PUSH``` for MJPEG.
 
-What are the differences between those two modes:
+What are the differences between these two modes:
 
 * ```PULL``` - will request new JPEG image each time when it is required,
 * ```PUSH``` - stream Motion JPEG in real time and serve newest image on-demand.
@@ -24,17 +25,13 @@ help :) Later, when your class is ready, I will be happy to merge it with offici
 
 ## Download
 
-Below is the newest stable version ZIP containing main project
-JAR with additional documents, examples and all required 3rd-party
-dependencies:
+The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture-driver-ipcam&v=0.3.10-SNAPSHOT).
 
-* **Latest stable version** - [webcam-capture-driver-ipcam-0.3.10-RC6-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.10-RC6/webcam-capture-driver-ipcam-0.3.10-RC6-dist.zip)
-* Previous stable version - [webcam-capture-driver-ipcam-0.3.9-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.9/webcam-capture-driver-ipcam-0.3.9-dist.zip)
-
+The latest **stable** version ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.10-RC7/webcam-capture-driver-ipcam-0.3.10-RC7-dist.zip).
 
 ## Maven
 
-Latest stable version:
+Stable:
 
 ```xml
 <repository>
@@ -46,7 +43,23 @@ Latest stable version:
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-ipcam</artifactId>
-	<version>0.3.10-RC6</version>
+	<version>0.3.10-RC7</version>
+</dependency>
+```
+
+Snapshot:
+
+```xml
+<repository>
+    <id>Sonatype OSS Snapshot Repository</id>
+    <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+</repository>
+```
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-ipcam</artifactId>
+    <version>0.3.10-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -64,25 +77,14 @@ as MJPEG stream (this is refered as PUSH mode, because camera push new images
 to the client as soon as new one is available).
 
 ```java
-/**
- * Remember to add IP camera driver JAR to the application classpath!
- * Otherwise you will not be able to use IP camera driver features. Driver
- * has to be set at the very beginning, before any webcam-capture related
- * method is being invoked.
- */
 static {
 	Webcam.setDriver(new IpCamDriver());
 }
 
 public static void main(String[] args) throws MalformedURLException {
-
 	IpCamDeviceRegistry.register(new IpCamDevice("Lignano", "http://88.37.116.138/mjpg/video.mjpg", IpCamMode.PUSH));
-
-	WebcamPanel panel = new WebcamPanel(Webcam.getWebcams().get(0));
-	panel.setFPS(1);
-
 	JFrame f = new JFrame("Live Views From Lignano Beach");
-	f.add(panel);
+	f.add(new WebcamPanel(Webcam.getDefault()));
 	f.pack();
 	f.setVisible(true);
 	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -122,7 +124,7 @@ public static void main(String[] args) throws MalformedURLException {
 		WebcamPanel panel = new WebcamPanel(webcam, new Dimension(256, 144), false);
 		panel.setFillArea(true);
 		panel.setFPSLimited(true);
-		panel.setFPS(0.2); // 0.2 FPS = 1 frame per 5 seconds
+		panel.setFPS(0.2); // 0.1 FPS = 1 frame per 10 seconds
 		panel.setBorder(BorderFactory.createEmptyBorder());
 
 		f.add(panel);
@@ -156,7 +158,7 @@ And here is the cameras.xml file used in the above example:
 
 ## License
 
-Copyright (C) 2012 Bartosz Firyn
+Copyright (C) 2012 - 2014 Bartosz Firyn
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
