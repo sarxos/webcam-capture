@@ -264,12 +264,27 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 					gr.setColor(Color.BLACK);
 					gr.fillRect(0, 0, pw, ph);
 
+					int sx1, sx2, sy1, sy2; // source rectangle coordinates
+					int dx1, dx2, dy1, dy2; // destination rectangle coordinates
+
+					dx1 = x;
+					dy1 = y;
+					dx2 = x + w;
+					dy2 = y + h;
+
 					if (mirrored) {
-						x = x + w;
-						w = -w;
+						sx1 = iw;
+						sy1 = 0;
+						sx2 = 0;
+						sy2 = ih;
+					} else {
+						sx1 = 0;
+						sy1 = 0;
+						sx2 = iw;
+						sy2 = ih;
 					}
 
-					gr.drawImage(image, x, y, w, h, null);
+					gr.drawImage(image, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
 
 				} finally {
 					if (gr != null) {
