@@ -1,15 +1,19 @@
 package com.github.sarxos.webcam.ds.vlcj;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.medialist.MediaList;
 import uk.co.caprica.vlcj.medialist.MediaListItem;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.discoverer.MediaDiscoverer;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+import uk.co.caprica.vlcj.runtime.windows.WindowsRuntimeUtil;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDiscoverySupport;
@@ -27,6 +31,12 @@ import com.sun.jna.Native;
  */
 public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 
+	static {
+		if ("true".equals(System.getProperty("webcam.debug"))) {
+			System.setProperty("vlcj.log", "DEBUG");
+		}
+	}
+	
 	/**
 	 * Default webcam discovery scan interval in milliseconds.
 	 */
@@ -38,14 +48,26 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 	private static final AtomicBoolean initialized = new AtomicBoolean();
 
 	/**
+	 * Native library discoverer.
+	 */
+	private static NativeDiscovery nativeDiscovery;
+	
+	/**
 	 * The scan interval.
 	 */
 	private long scanInterval = -1;
 
+	/**
+	 * Preconfigured media list items.
+	 */
+	private final List<MediaListItem> mediaListItems;
+
 	public VlcjDriver() {
-		if (OsUtils.getOS() == OsUtils.WIN) {
-			System.err.println(String.format("WARNING: %s does not support Windows platform", getClass().getSimpleName()));
-		}
+		this(null);
+	}
+
+	public VlcjDriver(List<MediaListItem> mediaListItems) {
+		this.mediaListItems = mediaListItems; 
 		initialize();
 	}
 
@@ -64,27 +86,63 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 	 */
 	protected static void initialize(boolean load) {
 		if (load && initialized.compareAndSet(false, true)) {
-			Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
+			boolean nativeFound = getNativeDiscovery().discover();
+			if (!nativeFound) {
+				throw new IllegalStateException("The libvlc native library has not been found");
+			}
+			//Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		}
 	}
 
-	@Override
-	public final List<WebcamDevice> getDevices() {
 
-		MediaPlayerFactory mediaPlayerFactory = createMediaPlayerFactory();
-		MediaDiscoverer videoMediaDiscoverer = mediaPlayerFactory.newVideoMediaDiscoverer();
-		MediaList videoDeviceList = videoMediaDiscoverer.getMediaList();
+	/**
+	 * Method to get devices list on Windows. 
+	 * 
+	 * @return Webcam devices list
+	 */
+	private List<WebcamDevice> getDevicesPreconf() {
+		
+		
 
 		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
-		List<MediaListItem> videoDevices = videoDeviceList.items();
 
-		for (MediaListItem item : videoDevices) {
-			devices.add(mediaListItemToDevice(item));
+		MediaListItem mli = new MediaListItem("HP HD Webcam [Fixed]", "dshow://", new ArrayList<MediaListItem>());
+
+		devices.add(mediaListItemToDevice(mli));
+
+		return devices;
+	}
+	
+	@Override
+	public List<WebcamDevice> getDevices() {
+		
+		if (OsUtils.getOS() == OsUtils.WIN) {
+			System.err.println("WARNING: VLCj does not support webcam devices discovery on Windows platform");
 		}
 
-		videoDeviceList.release();
-		videoMediaDiscoverer.release();
-		mediaPlayerFactory.release();
+		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
+
+		if (mediaListItems != null) {
+
+			for (MediaListItem item : mediaListItems) {
+				devices.add(mediaListItemToDevice(item));
+			}
+
+		} else {
+
+			MediaPlayerFactory mediaPlayerFactory = createMediaPlayerFactory();
+			MediaDiscoverer videoMediaDiscoverer = mediaPlayerFactory.newVideoMediaDiscoverer();
+			MediaList videoDeviceList = videoMediaDiscoverer.getMediaList();
+			List<MediaListItem> videoDevices = videoDeviceList.items();
+
+			for (MediaListItem item : videoDevices) {
+				devices.add(mediaListItemToDevice(item));
+			}
+
+			videoDeviceList.release();
+			videoMediaDiscoverer.release();
+			mediaPlayerFactory.release();
+		}
 
 		return devices;
 	}
@@ -140,6 +198,13 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 	@Override
 	public boolean isScanPossible() {
-		return true;
+		return OsUtils.getOS() != OsUtils.WIN;
+	}
+	
+	protected static NativeDiscovery getNativeDiscovery() {
+		if (nativeDiscovery == null) {
+			nativeDiscovery = new NativeDiscovery();
+		}
+		return nativeDiscovery;
 	}
 }

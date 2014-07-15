@@ -96,12 +96,8 @@ public class VlcjDevice implements WebcamDevice {
 
 		List<MediaListItem> subs = item.subItems();
 
-		if (subs.isEmpty()) {
-			throw new RuntimeException("Implementation does not support media list items which are empty!");
-		}
-
 		this.item = item;
-		this.sub = subs.get(0);
+		this.sub = subs.isEmpty() ? item : subs.get(0);
 	}
 
 	public String getCaptureDevice() {
@@ -163,7 +159,7 @@ public class VlcjDevice implements WebcamDevice {
 		if (!open) {
 			throw new WebcamException("Cannot get image, webcam device is not open");
 		}
-		return player.getSnapshot();
+		return player.getSnapshot(size.width, size.height);
 	}
 
 	@Override
@@ -180,75 +176,63 @@ public class VlcjDevice implements WebcamDevice {
 
 		LOG.info("Opening webcam device");
 
-		try {
+		factory = getFactory();
+		player = factory.newHeadlessMediaPlayer();
 
-			factory = getFactory();
-			player = factory.newHeadlessMediaPlayer();
+		String[] options = null;
 
-			// for nix systems this should be changed dshow -> ... !!
-
-			String[] options = null;
-
-			switch (OsUtils.getOS()) {
-				case WIN:
-					options = new String[] {
-						":dshow-vdev=" + getName(),
-						":dshow-size=" + size.width + "x" + size.height,
-						":dshow-adev=none", // no audio device
-					};
-					break;
-				case NIX:
-					options = new String[] {
-						":v4l-vdev=" + getVDevice(),
-						":v4l-width=" + size.width,
-						":v4l-height=" + size.height,
-						":v4l-fps=30",
-						":v4l-quality=20",
-						":v4l-adev=none", // no audio device
-					};
-					break;
-				case OSX:
-					options = new String[] {
-						":qtcapture-vdev=" + getVDevice(),
-						":qtcapture-width=" + size.width,
-						":qtcapture-height=" + size.height,
-						":qtcapture-adev=none", // no audio device
-					};
-					break;
-			}
-
-			player.startMedia(getMRL(), options);
-
-			// wait for images
-
-			int max = 0;
-			do {
-
-				BufferedImage im = player.getSnapshot(size.width, size.height);
-				if (im != null && im.getWidth() > 0) {
-					open = true;
-					LOG.info("Webcam device is now open: " + getName());
-					return;
-				}
-
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					return;
-				}
-
-			} while (max++ < 10);
-
-		} finally {
-
-			if (player != null) {
-				player.release();
-			}
-
-			if (factory != null) {
-				factory.release();
-			}
+		switch (OsUtils.getOS()) {
+			case WIN:
+				LOG.debug("Open VLC device {}", getName());
+				options = new String[] {
+					":dshow-vdev=" + getName(),
+					":dshow-size=" + size.width + "x" + size.height,
+					":dshow-adev=none", // no audio device
+				};
+				break;
+			case NIX:
+				LOG.debug("Open VLC device {}", getVDevice());
+				options = new String[] {
+					":v4l-vdev=" + getVDevice(),
+					":v4l-width=" + size.width,
+					":v4l-height=" + size.height,
+					":v4l-fps=30",
+					":v4l-quality=20",
+					":v4l-adev=none", // no audio device
+				};
+				break;
+			case OSX:
+				LOG.debug("Open VLC device {}", getVDevice());
+				options = new String[] {
+					":qtcapture-vdev=" + getVDevice(),
+					":qtcapture-width=" + size.width,
+					":qtcapture-height=" + size.height,
+					":qtcapture-adev=none", // no audio device
+				};
+				break;
 		}
+
+		player.startMedia(getMRL(), options);
+
+		// wait for images
+
+		int max = 0;
+		do {
+
+			BufferedImage im = player.getSnapshot(size.width, size.height);
+			if (im != null && im.getWidth() > 0) {
+				open = true;
+				LOG.info("Webcam device is now open: " + getName());
+				return;
+			}
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				return;
+			}
+
+		} while (max++ < 10);
 
 		open = false;
 	}
@@ -262,8 +246,14 @@ public class VlcjDevice implements WebcamDevice {
 
 		LOG.info("Closing");
 
-		player.release();
-		factory.release();
+		if (player != null) {
+			LOG.debug("Releasing player");
+			player.release();
+		}
+		if (factory != null) {
+			LOG.debug("Releasing player");
+			factory.release();
+		}
 
 		open = false;
 	}

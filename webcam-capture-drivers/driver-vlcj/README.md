@@ -4,13 +4,14 @@ This is capture driver which uses [vlcj](http://www.capricasoftware.co.uk/projec
 library from [Caprica Software Limited](http://www.capricasoftware.co.uk/)
 to gain access to the camera device.
 
-**NOTE!** This capture driver **does not** work on Windows.
-
 Because vlcj saves every frame to the persistent storage (temporary directory on your hard drive)
 before it is returned by the API method call, 
 the image capture rate is pretty small, indicated by tests to be around ~12 FPS, but it can pe 
 possibly higher or lower depending on the hardware used (e.g. different on hard drive, SSD and
 flash memory).
+
+**NOTE!** On Windows one needs to provide list of webcam devices manually because 
+```vlclib``` does not implement video devices discovery on this platform.  
 
 The vlcj library is distributed according to the terms of the [GPL](http://www.gnu.org/licenses/gpl.html) license.
 
