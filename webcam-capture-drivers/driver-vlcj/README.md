@@ -11,7 +11,8 @@ possibly higher or lower depending on the hardware used (e.g. different on hard 
 flash memory).
 
 **NOTE!** On Windows one needs to provide list of webcam devices manually because 
-```vlclib``` does not implement video devices discovery on this platform.  
+```vlclib``` does not implement video devices discovery on this platform (please see [this example](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-vlcj/src/example/java/WebcamPanelForWindows.java) 
+to find out how this should be done). 
 
 The vlcj library is distributed according to the terms of the [GPL](http://www.gnu.org/licenses/gpl.html) license.
 
