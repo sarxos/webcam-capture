@@ -242,6 +242,9 @@ public class WebcamDiscoveryService implements Runnable {
 		if (support == null) {
 			return;
 		}
+		if (!support.isScanPossible()) {
+			return;
+		}
 
 		// wait initial time interval since devices has been initially
 		// discovered
