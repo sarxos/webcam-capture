@@ -768,11 +768,13 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 
 	@Override
 	protected void paintComponent(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g;
+
+		super.paintComponent(g);
+
 		if (image == null) {
-			painter.paintPanel(this, g2);
+			painter.paintPanel(this, (Graphics2D) g);
 		} else {
-			painter.paintImage(this, image, g2);
+			painter.paintImage(this, image, (Graphics2D) g);
 		}
 	}
 
