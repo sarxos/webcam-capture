@@ -12,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -29,7 +28,7 @@ import com.github.sarxos.webcam.WebcamExceptionHandler;
 import com.github.sarxos.webcam.WebcamResolution;
 
 
-public class FsWebcamDevice implements WebcamDevice, WebcamDevice.BufferAccess {
+public class FsWebcamDevice implements WebcamDevice {
 
 	public static final class ExecutorThreadFactory implements ThreadFactory {
 
@@ -172,14 +171,6 @@ public class FsWebcamDevice implements WebcamDevice, WebcamDevice.BufferAccess {
 
 		return baos.toByteArray();
 
-	}
-
-	@Override
-	public synchronized ByteBuffer getImageBytes() {
-		if (!open.get()) {
-			return null;
-		}
-		return ByteBuffer.wrap(readBytes());
 	}
 
 	@Override
