@@ -14,7 +14,6 @@ import java.awt.image.WritableRaster;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.bridj.Pointer;
 import org.slf4j.Logger;
@@ -75,6 +74,7 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 
 			grabber.setTimeout(timeout);
 			result.set(grabber.nextFrame());
+			fresh.set(true);
 		}
 	}
 
@@ -119,9 +119,9 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	private final AtomicBoolean open = new AtomicBoolean(false);
 
 	/**
-	 * When last frame was requested.
+	 * Is the last image fresh one.
 	 */
-	private final AtomicLong timestamp = new AtomicLong(-1);
+	private final AtomicBoolean fresh = new AtomicBoolean(false);
 
 	private Thread refresher = null;
 
@@ -132,6 +132,9 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	private long t1 = -1;
 	private long t2 = -1;
 
+	/**
+	 * Current FPS.
+	 */
 	private volatile double fps = 0;
 
 	protected WebcamDefaultDevice(Device device) {
@@ -180,17 +183,24 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 			LOG.debug("Webcam is disposed, image will be null");
 			return null;
 		}
-
 		if (!open.get()) {
 			LOG.debug("Webcam is closed, image will be null");
 			return null;
 		}
 
-		LOG.trace("Webcam device get image (next frame)");
+		// if image is not fresh, update it
+
+		if (fresh.compareAndSet(false, true)) {
+			updateFrameBuffer();
+		}
 
 		// get image buffer
 
+		LOG.trace("Webcam grabber get image pointer");
+
 		Pointer<Byte> image = grabber.getImage();
+		fresh.set(false);
+
 		if (image == null) {
 			LOG.warn("Null array pointer found instead of image");
 			return null;
@@ -201,6 +211,50 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 		LOG.trace("Webcam device get buffer, read {} bytes", length);
 
 		return image.getByteBuffer(length);
+	}
+
+	@Override
+	public void getImageBytes(ByteBuffer target) {
+
+		if (disposed.get()) {
+			LOG.debug("Webcam is disposed, image will be null");
+			return;
+		}
+		if (!open.get()) {
+			LOG.debug("Webcam is closed, image will be null");
+			return;
+		}
+
+		int minSize = size.width * size.height * 3;
+		int curSize = target.remaining();
+
+		if (minSize < curSize) {
+			throw new IllegalArgumentException(String.format("Not enough remaining space in target buffer (%d necessary vs %d remaining)", minSize, curSize));
+		}
+
+		// if image is not fresh, update it
+
+		if (fresh.compareAndSet(false, true)) {
+			updateFrameBuffer();
+		}
+
+		// get image buffer
+
+		LOG.trace("Webcam grabber get image pointer");
+
+		Pointer<Byte> image = grabber.getImage();
+		fresh.set(false);
+
+		if (image == null) {
+			LOG.warn("Null array pointer found instead of image");
+			return;
+		}
+
+		LOG.trace("Webcam device read buffer {} bytes", minSize);
+
+		image = image.validBytes(minSize);
+		image.getBytes(target);
+
 	}
 
 	@Override
@@ -301,8 +355,6 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 
 		} while (++i < 3);
 
-		timestamp.set(System.currentTimeMillis());
-
 		LOG.debug("Webcam device {} is now open", this);
 
 		open.set(true);
@@ -370,10 +422,34 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 		this.timeout = timeout;
 	}
 
+	/**
+	 * Update underlying memory buffer and fetch new frame.
+	 */
+	private void updateFrameBuffer() {
+
+		LOG.trace("Next frame");
+
+		if (t1 == -1 || t2 == -1) {
+			t1 = System.currentTimeMillis();
+			t2 = System.currentTimeMillis();
+		}
+
+		int result = new NextFrameTask(this).nextFrame();
+
+		t1 = t2;
+		t2 = System.currentTimeMillis();
+
+		fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+
+		if (result == -1) {
+			LOG.error("Timeout when requesting image!");
+		} else if (result < -1) {
+			LOG.error("Error requesting new frame!");
+		}
+	}
+
 	@Override
 	public void run() {
-
-		int result = -1;
 
 		do {
 
@@ -387,27 +463,7 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 				return;
 			}
 
-			LOG.trace("Next frame");
-
-			if (t1 == -1 || t2 == -1) {
-				t1 = System.currentTimeMillis();
-				t2 = System.currentTimeMillis();
-			}
-
-			result = new NextFrameTask(this).nextFrame();
-
-			t1 = t2;
-			t2 = System.currentTimeMillis();
-
-			fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
-
-			if (result == -1) {
-				LOG.error("Timeout when requesting image!");
-			} else if (result < -1) {
-				LOG.error("Error requesting new frame!");
-			}
-
-			timestamp.set(System.currentTimeMillis());
+			updateFrameBuffer();
 
 		} while (open.get());
 	}

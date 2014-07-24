@@ -10,13 +10,13 @@ import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.WebcamTask;
 
 
-public class WebcamReadImageTask extends WebcamTask {
+public class WebcamGetImageTask extends WebcamTask {
 
-	private static final Logger LOG = LoggerFactory.getLogger(WebcamReadImageTask.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WebcamGetImageTask.class);
 
 	private volatile BufferedImage image = null;
 
-	public WebcamReadImageTask(WebcamDriver driver, WebcamDevice device) {
+	public WebcamGetImageTask(WebcamDriver driver, WebcamDevice device) {
 		super(driver, device);
 	}
 

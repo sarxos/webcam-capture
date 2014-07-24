@@ -1,8 +1,6 @@
 package com.github.sarxos.webcam.util;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -64,39 +62,5 @@ public class ImageUtils {
 		}
 
 		return bytes;
-	}
-
-	public static byte[] toRawByteArray(BufferedImage image) {
-
-		DataBuffer dbuf = image.getRaster().getDataBuffer();
-
-		if (dbuf instanceof DataBufferByte) {
-
-			return ((DataBufferByte) dbuf).getData();
-
-		} else {
-
-			int w = image.getWidth();
-			int h = image.getHeight();
-			int n = w * h;
-
-			byte[] bytes = new byte[n * 3];
-
-			int i, x, y, rgb;
-
-			for (i = 0; i < n; i++) {
-
-				x = i % w;
-				y = i / h;
-
-				rgb = image.getRGB(x, y);
-
-				bytes[i * 3 + 0] = (byte) ((rgb >> 16) & 0xff);
-				bytes[i * 3 + 1] = (byte) ((rgb >> 8) & 0xff);
-				bytes[i * 3 + 2] = (byte) (rgb & 0xff);
-			}
-
-			return bytes;
-		}
 	}
 }

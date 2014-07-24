@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.sarxos.webcam.ds.cgt.WebcamReadImageTask;
+import com.github.sarxos.webcam.ds.cgt.WebcamGetImageTask;
 
 
 /**
@@ -99,7 +99,7 @@ public class WebcamUpdater implements Runnable {
 
 		if (running.compareAndSet(false, true)) {
 
-			image.set(new WebcamReadImageTask(Webcam.getDriver(), webcam.getDevice()).getImage());
+			image.set(new WebcamGetImageTask(Webcam.getDriver(), webcam.getDevice()).getImage());
 
 			executor = Executors.newSingleThreadScheduledExecutor(THREAD_FACTORY);
 			executor.execute(this);
@@ -166,7 +166,7 @@ public class WebcamUpdater implements Runnable {
 		BufferedImage img = null;
 
 		t1 = System.currentTimeMillis();
-		img = webcam.transform(new WebcamReadImageTask(driver, device).getImage());
+		img = webcam.transform(new WebcamGetImageTask(driver, device).getImage());
 		t2 = System.currentTimeMillis();
 
 		image.set(img);

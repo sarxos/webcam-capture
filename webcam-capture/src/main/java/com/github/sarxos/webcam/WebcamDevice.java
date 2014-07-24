@@ -22,12 +22,26 @@ public interface WebcamDevice {
 	public static interface BufferAccess {
 
 		/**
-		 * Get image in form of raw bytes. Do <b>not</b> use this buffer to set
-		 * bytes value, it should be used only for read purpose!
+		 * Read the underlying image memory buffer. This method will return new
+		 * reference to pre-allocated off-heap memory where image bytes are
+		 * stored. The size of this buffer is image width * height * 3 bytes.<br>
+		 * <br>
+		 * 
+		 * <b>NOTE!</b> Do <b>not</b> use this buffer to set bytes value. It
+		 * should be used only for read purpose!
 		 * 
 		 * @return Bytes buffer
 		 */
 		ByteBuffer getImageBytes();
+
+		/**
+		 * Copy the underlying image memory into the target buffer passed as the
+		 * argument.The remaining capacity of the target buffer needs to be at
+		 * least image width * height * 3 bytes.
+		 * 
+		 * @param target the buffer to which image data should be copied
+		 */
+		void getImageBytes(ByteBuffer target);
 
 	}
 

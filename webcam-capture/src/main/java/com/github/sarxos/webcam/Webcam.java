@@ -24,10 +24,10 @@ import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
 import com.github.sarxos.webcam.ds.cgt.WebcamCloseTask;
 import com.github.sarxos.webcam.ds.cgt.WebcamDisposeTask;
+import com.github.sarxos.webcam.ds.cgt.WebcamGetBufferTask;
+import com.github.sarxos.webcam.ds.cgt.WebcamGetImageTask;
 import com.github.sarxos.webcam.ds.cgt.WebcamOpenTask;
 import com.github.sarxos.webcam.ds.cgt.WebcamReadBufferTask;
-import com.github.sarxos.webcam.ds.cgt.WebcamReadImageTask;
-import com.github.sarxos.webcam.util.ImageUtils;
 
 
 /**
@@ -627,7 +627,7 @@ public class Webcam {
 			// get image
 
 			t1 = System.currentTimeMillis();
-			BufferedImage image = transform(new WebcamReadImageTask(driver, device).getImage());
+			BufferedImage image = transform(new WebcamGetImageTask(driver, device).getImage());
 			t2 = System.currentTimeMillis();
 
 			if (image == null) {
@@ -694,14 +694,43 @@ public class Webcam {
 		// buffers, just convert image to RGB byte array
 
 		if (device instanceof BufferAccess) {
-			return new WebcamReadBufferTask(driver, device).getBuffer();
+			return new WebcamGetBufferTask(driver, device).getBuffer();
 		} else {
-			BufferedImage image = getImage();
-			if (image != null) {
-				return ByteBuffer.wrap(ImageUtils.toRawByteArray(image));
-			} else {
-				return null;
-			}
+			throw new IllegalStateException(String.format("Driver %s does not support buffer access", driver.getClass().getName()));
+		}
+	}
+
+	/**
+	 * Get RAW image ByteBuffer. It will always return buffer with 3 x 1 bytes
+	 * per each pixel, where RGB components are on (0, 1, 2) and color space is
+	 * sRGB.<br>
+	 * <br>
+	 * 
+	 * <b>IMPORTANT!</b><br>
+	 * Some drivers can return direct ByteBuffer, so there is no guarantee that
+	 * underlying bytes will not be released in next read image operation.
+	 * Therefore, to avoid potential bugs you should convert this ByteBuffer to
+	 * bytes array before you fetch next image.
+	 * 
+	 * @return Byte buffer
+	 */
+	public void getImageBytes(ByteBuffer target) {
+
+		if (!isReady()) {
+			return;
+		}
+
+		assert driver != null;
+		assert device != null;
+
+		// some devices can support direct image buffers, and for those call
+		// processor task, and for those which does not support direct image
+		// buffers, just convert image to RGB byte array
+
+		if (device instanceof BufferAccess) {
+			new WebcamReadBufferTask(driver, device, target).readBuffer();
+		} else {
+			throw new IllegalStateException(String.format("Driver %s does not support buffer access", driver.getClass().getName()));
 		}
 	}
 

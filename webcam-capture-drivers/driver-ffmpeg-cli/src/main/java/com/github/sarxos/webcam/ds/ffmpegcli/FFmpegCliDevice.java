@@ -139,6 +139,14 @@ public class FFmpegCliDevice implements WebcamDevice, WebcamDevice.BufferAccess 
 	}
 
 	@Override
+	public void getImageBytes(ByteBuffer buffer) {
+		if (!open.get()) {
+			return;
+		}
+		buffer.put(readBytes());
+	}
+
+	@Override
 	public BufferedImage getImage() {
 
 		if (!open.get()) {
