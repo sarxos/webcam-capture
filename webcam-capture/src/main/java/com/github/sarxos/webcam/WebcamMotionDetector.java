@@ -45,9 +45,9 @@ public class WebcamMotionDetector {
 	public static final int DEFAULT_PIXEL_THREASHOLD = 25;
 
 	/**
-	 * Default check interval (in milliseconds, set to 1 second).
+	 * Default check interval, in milliseconds, set to 500 ms.
 	 */
-	public static final int DEFAULT_INTERVAL = 1000;
+	public static final int DEFAULT_INTERVAL = 500;
 
 	/**
 	 * Default percentage image area fraction threshold (set to 0.2%).
@@ -120,7 +120,7 @@ public class WebcamMotionDetector {
 				delay = inertia != -1 ? inertia : 2 * interval;
 
 				if (lastMotionTimestamp + delay < System.currentTimeMillis()) {
-					motion.set(false);
+					motion = false;
 				}
 			}
 		}
@@ -144,7 +144,7 @@ public class WebcamMotionDetector {
 	/**
 	 * Is motion?
 	 */
-	private final AtomicBoolean motion = new AtomicBoolean(false);
+	private volatile boolean motion = false;
 
 	/**
 	 * Previously captured image.
@@ -272,7 +272,17 @@ public class WebcamMotionDetector {
 
 	protected void detect() {
 
+		if (!webcam.isOpen()) {
+			motion = false;
+			return;
+		}
+
 		BufferedImage current = webcam.getImage();
+
+		if (current == null) {
+			motion = false;
+			return;
+		}
 
 		current = blur.filter(current, null);
 		current = gray.filter(current, null);
@@ -308,9 +318,8 @@ public class WebcamMotionDetector {
 
 			cog = new Point(cogX / p, cogY / p);
 
-			if (motion.compareAndSet(false, true)) {
-				lastMotionTimestamp = System.currentTimeMillis();
-			}
+			motion = true;
+			lastMotionTimestamp = System.currentTimeMillis();
 
 			notifyMotionListeners();
 
@@ -457,7 +466,7 @@ public class WebcamMotionDetector {
 		if (!running.get()) {
 			LOG.warn("Motion cannot be detected when detector is not running!");
 		}
-		return motion.get();
+		return motion;
 	}
 
 	/**
