@@ -1,14 +1,16 @@
 package com.github.sarxos.webcam;
 
+
+
 public abstract class WebcamTask {
 
-	private boolean sync = true;
+	private boolean doSync = true;
 	private WebcamProcessor processor = null;
 	private WebcamDevice device = null;
 	private Throwable throwable = null;
 
 	public WebcamTask(boolean threadSafe, WebcamDevice device) {
-		this.sync = !threadSafe;
+		this.doSync = !threadSafe;
 		this.device = device;
 		this.processor = WebcamProcessor.getInstance();
 	}
@@ -31,13 +33,20 @@ public abstract class WebcamTask {
 	 * @throws InterruptedException when thread has been interrupted
 	 */
 	public void process() throws InterruptedException {
-		if (sync) {
-			if (processor == null) {
-				throw new RuntimeException("Driver should be synchronized, but processor is null");
-			}
-			processor.process(this);
-		} else {
+
+		boolean alreadyInSync = Thread.currentThread() instanceof WebcamProcessor.ProcessorThread;
+
+		if (alreadyInSync) {
 			handle();
+		} else {
+			if (doSync) {
+				if (processor == null) {
+					throw new RuntimeException("Driver should be synchronized, but processor is null");
+				}
+				processor.process(this);
+			} else {
+				handle();
+			}
 		}
 	}
 
