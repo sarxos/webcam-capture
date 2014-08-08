@@ -40,7 +40,7 @@ public class DetectMotionExample2 {
 	}
 
 	public static void main(String[] args) throws IOException {
-		new DetectMotionExample();
+		new DetectMotionExample2();
 		System.in.read(); // keep program open
 	}
 }

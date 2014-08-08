@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamMotionDetector;
 import com.github.sarxos.webcam.WebcamPanel;
+import com.github.sarxos.webcam.WebcamResolution;
 
 
 /**
@@ -24,18 +25,18 @@ public class DetectMotionExample3 extends JFrame implements WebcamPanel.Painter 
 
 	private final Webcam webcam;
 	private final WebcamPanel panel;
-	private final WebcamPanel.Painter painter;
 	private final WebcamMotionDetector detector;
 
 	public DetectMotionExample3() {
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Motion Detector Demo");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		webcam = Webcam.getDefault();
+		webcam.setViewSize(WebcamResolution.VGA.getSize());
+		webcam.open(true);
 
 		panel = new WebcamPanel(webcam, false);
-		painter = panel.getPainter(); // store default painter
 		panel.setPainter(this);
 		panel.start();
 
@@ -56,7 +57,7 @@ public class DetectMotionExample3 extends JFrame implements WebcamPanel.Painter 
 
 	@Override
 	public void paintPanel(WebcamPanel panel, Graphics2D g2) {
-		painter.paintPanel(panel, g2);
+		panel.getDefaultPainter().paintPanel(panel, g2);
 	}
 
 	@Override
@@ -80,6 +81,6 @@ public class DetectMotionExample3 extends JFrame implements WebcamPanel.Painter 
 
 		g.dispose();
 
-		painter.paintImage(panel, image, g2);
+		panel.getDefaultPainter().paintImage(panel, image, g2);
 	}
 }
