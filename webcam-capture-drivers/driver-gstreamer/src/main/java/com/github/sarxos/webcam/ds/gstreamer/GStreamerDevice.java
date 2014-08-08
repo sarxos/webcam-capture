@@ -6,7 +6,8 @@ import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -39,9 +40,20 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	private static final long LATENESS = 20; // ms
 
 	/**
+	 * First formats are better. For example video/x-raw-rgb gives 30 FPS on
+	 * HD720p where video/x-raw-yuv only 10 FPS on the same resolution. The goal
+	 * is to use these "better" formats first, and then fallback to less
+	 * efficient when not available.
+	 */
+	private static final String[] BEST_FORMATS = {
+		"video/x-raw-rgb",
+		"video/x-raw-yuv",
+	};
+
+	/**
 	 * Video format to capture.
 	 */
-	private static final String FORMAT_MIME = "video/x-raw-yuv";
+	private String format;
 
 	/**
 	 * All possible resolutions - populated while initialization phase.
@@ -146,46 +158,79 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	 * @param pad the pad to get resolutions from
 	 * @return Array of resolutions supported by device connected with pad
 	 */
-	private static final Dimension[] parseResolutions(Pad pad) {
-
-		List<Dimension> dimensions = new ArrayList<Dimension>();
+	private Dimension[] parseResolutions(Pad pad) {
 
 		Caps caps = pad.getCaps();
 
-		Structure structure = null;
+		format = findBestFormat(caps);
+
+		LOG.debug("Best format is {}", format);
+
+		Dimension r = null;
+		Structure s = null;
 		String mime = null;
 
 		int n = caps.size();
 		int i = 0;
 
-		int w = -1;
-		int h = -1;
+		Map<String, Dimension> map = new HashMap<String, Dimension>();
 
 		do {
 
-			structure = caps.getStructure(i++);
+			s = caps.getStructure(i++);
 
-			LOG.debug("Found format structure {}", structure);
+			LOG.debug("Found format structure {}", s);
 
-			mime = structure.getName();
+			mime = s.getName();
 
-			if (mime.equals(FORMAT_MIME)) {
-				if (Platform.isWindows()) {
-					w = structure.getRange("width").getMinInt();
-					h = structure.getRange("height").getMinInt();
-					dimensions.add(new Dimension(w, h));
-				} else if (Platform.isLinux()) {
-					if ("YUY2".equals(structure.getFourccString("format"))) {
-						w = structure.getInteger("width");
-						h = structure.getInteger("height");
-						dimensions.add(new Dimension(w, h));
-					}
+			if (mime.equals(format)) {
+				if ((r = capStructToResolution(s)) != null) {
+					map.put(r.width + "x" + r.height, r);
 				}
 			}
 
 		} while (i < n);
 
-		return dimensions.toArray(new Dimension[dimensions.size()]);
+		Dimension[] resolutions = new ArrayList<Dimension>(map.values()).toArray(new Dimension[map.size()]);
+
+		if (LOG.isDebugEnabled()) {
+			for (Dimension d : resolutions) {
+				LOG.debug("Resolution detected {}", d);
+			}
+		}
+
+		return resolutions;
+	}
+
+	private static String findBestFormat(Caps caps) {
+		for (String f : BEST_FORMATS) {
+			for (int i = 0, n = caps.size(); i < n; i++) {
+				if (f.equals(caps.getStructure(i).getName())) {
+					return f;
+				}
+			}
+		}
+		return null;
+	}
+
+	private static Dimension capStructToResolution(Structure structure) {
+
+		int w = -1;
+		int h = -1;
+
+		if (Platform.isWindows()) {
+			w = structure.getRange("width").getMinInt();
+			h = structure.getRange("height").getMinInt();
+		} else if (Platform.isLinux()) {
+			w = structure.getInteger("width");
+			h = structure.getInteger("height");
+		}
+
+		if (w > 0 && h > 0) {
+			return new Dimension(w, h);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -243,7 +288,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 			caps.dispose();
 		}
 
-		caps = Caps.fromString(String.format("%s,width=%d,height=%d", FORMAT_MIME, size.width, size.height));
+		caps = Caps.fromString(String.format("%s,width=%d,height=%d", format, size.width, size.height));
 
 		filter.setCaps(caps);
 
@@ -317,9 +362,8 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 		BufferedImage tmp = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		tmp.setAccelerationPriority(0);
-		tmp.flush();
-
 		rgb.get(((DataBufferInt) tmp.getRaster().getDataBuffer()).getData(), 0, width * height);
+		tmp.flush();
 
 		image = tmp;
 

@@ -100,15 +100,17 @@ public class GStreamerDriver implements WebcamDriver {
 		String srcname = null;
 		if (Platform.isWindows()) {
 			srcname = "dshowvideosrc";
-		} else {
+		} else if (Platform.isLinux()) {
 			srcname = "v4l2src";
+		} else if (Platform.isMac()) {
+			srcname = "qtkitvideosrc";
 		}
 
-		Element dshowsrc = ElementFactory.make(srcname, "source");
+		Element src = ElementFactory.make(srcname, "source");
 
 		try {
 			if (Platform.isWindows()) {
-				PropertyProbe probe = PropertyProbe.wrap(dshowsrc);
+				PropertyProbe probe = PropertyProbe.wrap(src);
 				for (Object name : probe.getValues("device-name")) {
 					devices.add(new GStreamerDevice(name.toString()));
 				}
@@ -120,8 +122,8 @@ public class GStreamerDriver implements WebcamDriver {
 				throw new RuntimeException("Platform unsupported by GStreamer capture driver");
 			}
 		} finally {
-			if (dshowsrc != null) {
-				dshowsrc.dispose();
+			if (src != null) {
+				src.dispose();
 			}
 		}
 
