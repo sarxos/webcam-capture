@@ -18,4 +18,4 @@ The server / client address is ```localhost``` by default to run client and serv
 1. The code supports sunny-day scenario only, just to demonstrate the idea, so there are is no complex error checking statements and the code may behave in unexpected manner when launched in _real_ network.
 2. It uses [Xuggler](https://github.com/artclarke/xuggle-xuggler) which seems to be discontinued.
 3. Remember, this example is to present an idea, so if you need enhancement or bug fix, please implement it and send pull request to share it with community. Be creative :)
-4. To perform streaming over the network you need to change address in server from ```localhost``` to your real IP address (e.g. such as ```192.168.1.10```). I'm not sure how it works with the IPv6 support - feel free to test it.
+4. To perform streaming over the network you need to change address in server from ```localhost``` to your real IP address (e.g. such as ```192.168.1.10``` or ```0.0.0.0``` in general). I'm not sure how it works with the IPv6 support - feel free to test it.
