@@ -143,6 +143,7 @@ public class WebcamProcessor {
 		} else {
 			throw new RejectedExecutionException("Cannot process because processor runner has been already shut down");
 		}
+		Thread.sleep(250);
 	}
 
 	public void shutdown() {
