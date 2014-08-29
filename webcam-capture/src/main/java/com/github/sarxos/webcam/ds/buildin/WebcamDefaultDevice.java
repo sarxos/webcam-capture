@@ -42,9 +42,9 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	 * but hope that OpenIMAJ can handle this.
 	 */
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
-		WebcamResolution.QQVGA.getSize(),
-		WebcamResolution.QVGA.getSize(),
-		WebcamResolution.VGA.getSize(),
+	WebcamResolution.QQVGA.getSize(),
+	WebcamResolution.QVGA.getSize(),
+	WebcamResolution.VGA.getSize(),
 	};
 
 	private class NextFrameTask extends WebcamTask {
@@ -147,6 +147,18 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	@Override
 	public String getName() {
 		return fullname;
+	}
+
+	public String getDeviceName() {
+		return name;
+	}
+
+	public String getDeviceId() {
+		return id;
+	}
+
+	public Device getDeviceRef() {
+		return device;
 	}
 
 	@Override
