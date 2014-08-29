@@ -42,9 +42,9 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	 * but hope that OpenIMAJ can handle this.
 	 */
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
-	WebcamResolution.QQVGA.getSize(),
-	WebcamResolution.QVGA.getSize(),
-	WebcamResolution.VGA.getSize(),
+		WebcamResolution.QQVGA.getSize(),
+		WebcamResolution.QVGA.getSize(),
+		WebcamResolution.VGA.getSize(),
 	};
 
 	private class NextFrameTask extends WebcamTask {
@@ -345,7 +345,9 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 				throw new WebcamException(String.format("Different size obtained vs requested - [%dx%d] vs [%dx%d]", w1, h1, w2, h2));
 			}
 
-			LOG.warn("Different size obtained vs requested - [{}x{}] vs [{}x{}]. Setting correct one. New size is [{}x{}]", new Object[] { w1, h1, w2, h2, w2, h2 });
+			Object[] args = new Object[] { w1, h1, w2, h2, w2, h2 };
+			LOG.warn("Different size obtained vs requested - [{}x{}] vs [{}x{}]. Setting correct one. New size is [{}x{}]", args);
+
 			size = new Dimension(w2, h2);
 		}
 
