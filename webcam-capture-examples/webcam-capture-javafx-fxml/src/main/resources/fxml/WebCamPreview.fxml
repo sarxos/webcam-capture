@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.*?>
+
+<BorderPane prefHeight="690.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="WebCamPreviewController">
+	<bottom>
+		<FlowPane fx:id="fpBottomPane" alignment="CENTER" columnHalignment="CENTER" hgap="50.0" prefHeight="80.0" prefWidth="200.0" style="-fx-background-color:#ccc;">
+			<children>
+				<Button fx:id="btnStartCamera" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#startCamera" prefHeight="50.0" prefWidth="190.0" text="Start Camera">
+					<font>
+						<Font name="Segoe UI" size="18.0" fx:id="x1" />
+					</font>
+				</Button>
+				<Button fx:id="btnStopCamera" font="$x1" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#stopCamera" prefHeight="50.0" prefWidth="190.0" text="Stop Camera" />
+				<Button fx:id="btnDisposeCamera" font="$x1" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#disposeCamera" prefHeight="50.0" prefWidth="190.0" text="Dispose Camera" />
+			</children>
+		</FlowPane>
+	</bottom>
+	<center>
+		<BorderPane fx:id="bpWebCamPaneHolder" prefHeight="200.0" prefWidth="200.0">
+			<center>
+				<ImageView fx:id="imgWebCamCapturedImage" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER" />
+			</center>
+		</BorderPane>
+	</center>
+	<top>
+		<GridPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="120.0" style="-fx-background-color:#ccc;&#10;">
+			<children>
+				<Label text="Webcam Capture Example Using Webcam Capture API" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.rowSpan="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+					<font>
+						<Font name="Segoe UI" size="34.0" />
+					</font>
+					<GridPane.margin>
+						<Insets top="10.0" />
+					</GridPane.margin>
+				</Label>
+				<Label font="$x1" text="Please Select WebCam" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+					<GridPane.margin>
+						<Insets left="5.0" right="10.0" />
+					</GridPane.margin>
+				</Label>
+				<ComboBox fx:id="cbCameraOptions" prefHeight="38.0" prefWidth="357.0" style="-fx-font-size: 18px;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+			</children>
+			<columnConstraints>
+				<ColumnConstraints hgrow="SOMETIMES" maxWidth="795.0" minWidth="10.0" prefWidth="418.0" />
+				<ColumnConstraints hgrow="SOMETIMES" maxWidth="502.0" minWidth="10.0" prefWidth="482.0" />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+				<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+			</rowConstraints>
+		</GridPane>
+	</top>
+</BorderPane>

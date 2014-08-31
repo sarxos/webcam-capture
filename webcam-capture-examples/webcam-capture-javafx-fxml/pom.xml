@@ -8,13 +8,13 @@
 		<version>0.3.10-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>webcam-capture-example-javafx</artifactId>
+	<artifactId>webcam-capture-example-javafx-fxml</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Webcam Capture - JavaFX Example</name>
+	<name>Webcam Capture - JavaFX (FXML) Example</name>
 	<description>
 		Example demonstrating how to use Webcam Capture API inside JavaFX
-		application without FXML. For the FXML support check other example.
+		using FXML.
 	</description>
 
 	<dependencies>

@@ -33,7 +33,6 @@ import com.github.sarxos.webcam.Webcam;
  * 
  * @author Rakesh Bhatt (rakeshbhatt10)
  */
-@SuppressWarnings("restriction")
 public class WebCamAppLauncher extends Application {
 
 	private class WebCamInfo {

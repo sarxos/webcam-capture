@@ -1,11 +1,12 @@
 # JavaFX Example With Webcam Capture API
 
 This simple example, generously provided by Rakesh Bhatt ([rakeshbhatt10](https://github.com/rakeshbhatt10)),
-demonstrates how to use Webcam Capture API inside JavaFX application. 
+demonstrates how to use Webcam Capture API inside JavaFX application with 
+scene constructed with FXML and simple WebcamController. 
 FXML is not used at all and complete scene structure is composed directly 
 in the Java code. For the FXML demonstration check other example. 
 
-Original project can be found [here](https://github.com/rakeshbhatt10/WebCamJavaFXSampleSarcoxAPI).
+Original project can be found [here](https://github.com/rakeshbhatt10/WebCamJavaFXFXMLSample).
 
 Thank you Rakesh!
 
@@ -16,7 +17,7 @@ By using Maven:
 
 
 ```plain
-cd webcam-capture-examples/webcam-capture-javafx
+cd webcam-capture-examples/webcam-capture-javafx-fxml
 mvn clean package
 ```
 
@@ -26,8 +27,7 @@ will be placed in ```target/jfx/app``` directory.
 
 ## Screenshoots
 
-![javafx1.png](https://raw.githubusercontent.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-javafx/src/etc/resources/javafx1.png)
-![javafx2.png](https://raw.githubusercontent.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-javafx/src/etc/resources/javafx2.png)
+![javafx-fxml.png](https://raw.githubusercontent.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-javafx-fxml/src/etc/resources/javafx-fxml.png)
 
 
 ## License

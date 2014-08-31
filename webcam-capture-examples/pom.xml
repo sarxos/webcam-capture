@@ -19,6 +19,8 @@
 		<module>webcam-capture-applet</module>
 		<module>webcam-capture-detect-face</module>
 		<module>webcam-capture-executable</module>
+		<module>webcam-capture-javafx</module>
+		<module>webcam-capture-javafx-fxml</module>
 		<module>webcam-capture-live-streaming</module>
 		<module>webcam-capture-manycams</module>
 		<module>webcam-capture-motiondetector</module>
