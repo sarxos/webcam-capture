@@ -7,7 +7,9 @@ in the Java code. For the FXML demonstration check other example.
 
 ## Screenshoots
 
-[TBA]
+![javafx1.png](https://raw.githubusercontent.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-javafx/src/etc/resources/javafx1.png)
+![javafx2.png](https://raw.githubusercontent.com/sarxos/webcam-capture/master/webcam-capture-examples/webcam-capture-javafx/src/etc/resources/javafx2.png)
+
 
 ## License
 
