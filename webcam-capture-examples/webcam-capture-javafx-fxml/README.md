@@ -2,9 +2,7 @@
 
 This simple example, generously provided by Rakesh Bhatt ([rakeshbhatt10](https://github.com/rakeshbhatt10)),
 demonstrates how to use Webcam Capture API inside JavaFX application with 
-scene constructed with FXML and simple WebcamController. 
-FXML is not used at all and complete scene structure is composed directly 
-in the Java code. For the FXML demonstration check other example. 
+scene constructed with FXML and simple FXML controller.
 
 Original project can be found [here](https://github.com/rakeshbhatt10/WebCamJavaFXFXMLSample).
 
