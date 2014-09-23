@@ -1,33 +1,28 @@
 package com.github.sarxos.webcam.ds.vlcj;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.medialist.MediaList;
 import uk.co.caprica.vlcj.medialist.MediaListItem;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.discoverer.MediaDiscoverer;
-import uk.co.caprica.vlcj.runtime.RuntimeUtil;
-import uk.co.caprica.vlcj.runtime.windows.WindowsRuntimeUtil;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDiscoverySupport;
 import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.util.OsUtils;
-import com.sun.jna.Native;
 
 
 /**
- * This is capture driver which uses <code>vlcj</code> library to gain access to
- * the camera device.
- * 
+ * This is capture driver which uses <code>vlcj</code> library to gain access to the camera device.
+ * The library can be found at:<br>
+ * <br>
+ * http://www.capricasoftware.co.uk/projects/vlcj/index.html
+ *
  * @author Bartosz Firyn (SarXos)
- * @see http://www.capricasoftware.co.uk/projects/vlcj/index.html
  */
 public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 
@@ -36,7 +31,7 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 			System.setProperty("vlcj.log", "DEBUG");
 		}
 	}
-	
+
 	/**
 	 * Default webcam discovery scan interval in milliseconds.
 	 */
@@ -51,7 +46,7 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 	 * Native library discoverer.
 	 */
 	private static NativeDiscovery nativeDiscovery;
-	
+
 	/**
 	 * The scan interval.
 	 */
@@ -67,7 +62,7 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 	}
 
 	public VlcjDriver(List<MediaListItem> mediaListItems) {
-		this.mediaListItems = mediaListItems; 
+		this.mediaListItems = mediaListItems;
 		initialize();
 	}
 
@@ -79,9 +74,9 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 	}
 
 	/**
-	 * Initialize natives. If argument is true the natives are being loaded. In
-	 * case of false this method do nothing. It's used mostly in unit tests.
-	 * 
+	 * Initialize natives. If argument is true the natives are being loaded. In case of false this
+	 * method do nothing. It's used mostly in unit tests.
+	 *
 	 * @param load the control to decide whether to load natives or ignore them
 	 */
 	protected static void initialize(boolean load) {
@@ -90,32 +85,13 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 			if (!nativeFound) {
 				throw new IllegalStateException("The libvlc native library has not been found");
 			}
-			//Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
+			// Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		}
 	}
 
-
-	/**
-	 * Method to get devices list on Windows. 
-	 * 
-	 * @return Webcam devices list
-	 */
-	private List<WebcamDevice> getDevicesPreconf() {
-		
-		
-
-		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
-
-		MediaListItem mli = new MediaListItem("HP HD Webcam [Fixed]", "dshow://", new ArrayList<MediaListItem>());
-
-		devices.add(mediaListItemToDevice(mli));
-
-		return devices;
-	}
-	
 	@Override
 	public List<WebcamDevice> getDevices() {
-		
+
 		if (OsUtils.getOS() == OsUtils.WIN) {
 			System.err.println("WARNING: VLCj does not support webcam devices discovery on Windows platform");
 		}
@@ -149,7 +125,7 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 	/**
 	 * Converts media list itemn into webcam device.
-	 * 
+	 *
 	 * @param item the item to be converted to webcam device instance
 	 * @return Webcam device created from media list item
 	 */
@@ -159,7 +135,7 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 	/**
 	 * Creates media player factory.
-	 * 
+	 *
 	 * @return New media player factory
 	 */
 	protected MediaPlayerFactory createMediaPlayerFactory() {
@@ -185,10 +161,9 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 	}
 
 	/**
-	 * Set new scan interval. Value must be positive number. If negative or zero
-	 * is used, then the corresponding getter will return default scan interval
-	 * value.
-	 * 
+	 * Set new scan interval. Value must be positive number. If negative or zero is used, then the
+	 * corresponding getter will return default scan interval value.
+	 *
 	 * @param scanInterval the new scan interval in milliseconds
 	 * @see VlcjDriver#DEFAULT_SCAN_INTERVAL
 	 */
@@ -200,7 +175,7 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 	public boolean isScanPossible() {
 		return OsUtils.getOS() != OsUtils.WIN;
 	}
-	
+
 	protected static NativeDiscovery getNativeDiscovery() {
 		if (nativeDiscovery == null) {
 			nativeDiscovery = new NativeDiscovery();

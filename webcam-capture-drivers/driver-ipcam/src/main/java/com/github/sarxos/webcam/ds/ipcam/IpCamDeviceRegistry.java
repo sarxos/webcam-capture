@@ -17,7 +17,7 @@ import com.github.sarxos.webcam.WebcamException;
 
 /**
  * Class used to register IP camera devices.
- * 
+ *
  * @author Bartosz Firyn (SarXos)
  */
 public class IpCamDeviceRegistry {
@@ -29,8 +29,9 @@ public class IpCamDeviceRegistry {
 
 	/**
 	 * Register IP camera.
-	 * 
+	 *
 	 * @param ipcam the IP camera to be register
+	 * @return IP camera device
 	 */
 	public static IpCamDevice register(IpCamDevice ipcam) {
 
@@ -62,7 +63,7 @@ public class IpCamDeviceRegistry {
 
 	/**
 	 * Register new IP camera device.
-	 * 
+	 *
 	 * @param name the name of the device
 	 * @param url the URL to be used
 	 * @param mode the camera mode to be used
@@ -75,7 +76,7 @@ public class IpCamDeviceRegistry {
 
 	/**
 	 * Is device registered?
-	 * 
+	 *
 	 * @param ipcam the IP camera device
 	 * @return True if device is registsred, false otherwise
 	 */
@@ -97,7 +98,7 @@ public class IpCamDeviceRegistry {
 
 	/**
 	 * Is device with given name registered?
-	 * 
+	 *
 	 * @param name the name of device
 	 * @return True if device is registered, false otherwise
 	 */
@@ -119,7 +120,7 @@ public class IpCamDeviceRegistry {
 
 	/**
 	 * Is device with given URL registered?
-	 * 
+	 *
 	 * @param url the URL used by device
 	 * @return True if device is registered, false otherwise
 	 */
@@ -138,8 +139,8 @@ public class IpCamDeviceRegistry {
 
 	/**
 	 * Is device with given URL registered?
-	 * 
-	 * @param url the URL used by device
+	 *
+	 * @param uri the URI used by device
 	 * @return True if device is registered, false otherwise
 	 */
 	public static boolean isRegistered(URI uri) {
@@ -167,8 +168,9 @@ public class IpCamDeviceRegistry {
 
 	/**
 	 * Unregister IP camera.
-	 * 
+	 *
 	 * @param ipcam the IP camera to be unregister
+	 * @return True if IP camera device has been unregistered, false otherwise
 	 */
 	public static boolean unregister(IpCamDevice ipcam) {
 		try {
@@ -179,8 +181,8 @@ public class IpCamDeviceRegistry {
 	}
 
 	/**
-	 * Run discovery service once if device has been removed to trigger
-	 * disconnected webcam discovery event and keep webcams list up-to-date.
+	 * Run discovery service once if device has been removed to trigger disconnected webcam
+	 * discovery event and keep webcams list up-to-date.
 	 */
 	private static void rescan() {
 		WebcamDiscoveryService discovery = Webcam.getDiscoveryServiceRef();
@@ -192,7 +194,8 @@ public class IpCamDeviceRegistry {
 	/**
 	 * Unregister IP camera with given name.
 	 * 
-	 * @param ipcam the IP camera to be unregister
+	 * @param name the name of IP camera to be unregister
+	 * @return True if device has been registered, false otherwise
 	 */
 	public static boolean unregister(String name) {
 		Iterator<IpCamDevice> di = DEVICES.iterator();
@@ -209,7 +212,7 @@ public class IpCamDeviceRegistry {
 
 	/**
 	 * Get all registered IP cameras.
-	 * 
+	 *
 	 * @return Collection of registered IP cameras
 	 */
 	public static List<IpCamDevice> getIpCameras() {

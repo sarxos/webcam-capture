@@ -14,21 +14,6 @@
 	<name>Webcam Capture - Detect Face Example</name>
 	<description>Example of how to use painter interface to mark detected face</description>
 
-	<repositories>
-		<repository>
-			<id>sarxos-repo</id>
-			<url>http://repo.sarxos.pl/maven2</url>
-		</repository>
-		<repository>
-			<id>OpenIMAJ maven repository</id>
-			<url>http://maven.openimaj.org/</url>
-		</repository>
-		<repository>
-			<id>OpenIMAJ snapshots maven repository</id>
-			<url>http://snapshots.openimaj.org</url>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
@@ -38,7 +23,7 @@
 		<dependency>
 			<groupId>org.openimaj</groupId>
 			<artifactId>faces</artifactId>
-			<version>1.1</version>
+			<version>1.3</version>
 		</dependency>
 	</dependencies>
 

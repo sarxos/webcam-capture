@@ -25,14 +25,14 @@ import com.github.sarxos.webcam.WebcamExceptionHandler;
 
 /**
  * IP camera driver.
- * 
+ *
  * @author Bartosz Firyn (sarxos)
  */
 public class IpCamDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 	/**
 	 * Thread factory.
-	 * 
+	 *
 	 * @author Bartosz Firyn (sarxos)
 	 */
 	private static class DeviceCheckThreadFactory implements ThreadFactory {
@@ -62,9 +62,9 @@ public class IpCamDriver implements WebcamDriver, WebcamDiscoverySupport {
 	private static final ThreadFactory THREAD_FACTORY = new DeviceCheckThreadFactory();
 
 	/**
-	 * The callable to query single IP camera device. Callable getter will
-	 * return device if it's online or null if it's offline.
-	 * 
+	 * The callable to query single IP camera device. Callable getter will return device if it's
+	 * online or null if it's offline.
+	 *
 	 * @author Bartosz Firyn (sarxos)
 	 */
 	private static class DeviceOnlineCheck implements Callable<IpCamDevice> {
@@ -78,8 +78,9 @@ public class IpCamDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 		/**
 		 * The callable to query single IP camera device.
-		 * 
+		 *
 		 * @param device the device to check online status
+		 * @param latch the count down latch
 		 */
 		public DeviceOnlineCheck(IpCamDevice device, CountDownLatch latch) {
 			this.device = device;
@@ -102,8 +103,8 @@ public class IpCamDriver implements WebcamDriver, WebcamDiscoverySupport {
 	private volatile long scanInterval = 10000;
 
 	/**
-	 * Discovery scan timeout in milliseconds. This is maximum time which
-	 * executor will wait for online detection to succeed.
+	 * Discovery scan timeout in milliseconds. This is maximum time which executor will wait for
+	 * online detection to succeed.
 	 */
 	private volatile long scanTimeout = 10000;
 
@@ -214,9 +215,8 @@ public class IpCamDriver implements WebcamDriver, WebcamDiscoverySupport {
 	}
 
 	/**
-	 * Set new scan interval. Value must be given in milliseconds and shall not
-	 * be negative.
-	 * 
+	 * Set new scan interval. Value must be given in milliseconds and shall not be negative.
+	 *
 	 * @param scanInterval
 	 */
 	public void setScanInterval(long scanInterval) {
@@ -234,7 +234,7 @@ public class IpCamDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 	/**
 	 * Set discovery scanning possible.
-	 * 
+	 *
 	 * @param scanning
 	 */
 	public void setScanPossible(boolean scanning) {
@@ -249,9 +249,9 @@ public class IpCamDriver implements WebcamDriver, WebcamDiscoverySupport {
 	}
 
 	/**
-	 * Set new scan timeout. This value cannot be less than 1000 milliseconds
-	 * (which equals 1 second).
-	 * 
+	 * Set new scan timeout. This value cannot be less than 1000 milliseconds (which equals 1
+	 * second).
+	 *
 	 * @param scanTimeout the scan timeout in milliseconds
 	 */
 	public void setScanTimeout(long scanTimeout) {
