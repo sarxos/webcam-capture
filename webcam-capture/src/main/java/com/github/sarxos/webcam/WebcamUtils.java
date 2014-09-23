@@ -57,7 +57,7 @@ public class WebcamUtils {
 
 	/**
 	 * Capture image as BYteBuffer.
-	 * 
+	 *
 	 * @param webcam the webcam from which image should be obtained
 	 * @param format the file format
 	 * @return Byte buffer
@@ -68,8 +68,9 @@ public class WebcamUtils {
 
 	/**
 	 * Get resource bundle for specific class.
-	 * 
+	 *
 	 * @param clazz the class for which resource bundle should be found
+	 * @param locale the {@link Locale} object
 	 * @return Resource bundle
 	 */
 	public static final ResourceBundle loadRB(Class<?> clazz, Locale locale) {

@@ -19,7 +19,7 @@ import com.github.sarxos.webcam.util.jh.JHGrayFilter;
 
 /**
  * Webcam motion detector.
- * 
+ *
  * @author Bartosz Firyn (SarXos)
  */
 public class WebcamMotionDetector {
@@ -56,7 +56,7 @@ public class WebcamMotionDetector {
 
 	/**
 	 * Create new threads for detector internals.
-	 * 
+	 *
 	 * @author Bartosz Firyn (SarXos)
 	 */
 	private static final class DetectorThreadFactory implements ThreadFactory {
@@ -72,7 +72,7 @@ public class WebcamMotionDetector {
 
 	/**
 	 * Run motion detector.
-	 * 
+	 *
 	 * @author Bartosz Firyn (SarXos)
 	 */
 	private class Runner implements Runnable {
@@ -99,7 +99,7 @@ public class WebcamMotionDetector {
 
 	/**
 	 * Change motion to false after specified number of seconds.
-	 * 
+	 *
 	 * @author Bartosz Firyn (SarXos)
 	 */
 	private class Inverter implements Runnable {
@@ -203,11 +203,10 @@ public class WebcamMotionDetector {
 
 	/**
 	 * Create motion detector. Will open webcam if it is closed.
-	 * 
+	 *
 	 * @param webcam web camera instance
 	 * @param pixelThreshold intensity threshold (0 - 255)
 	 * @param areaThreshold percentage threshold of image covered by motion
-	 * @param inertia for how long motion is valid (seconds)
 	 * @param interval the check interval
 	 */
 	public WebcamMotionDetector(Webcam webcam, int pixelThreshold, double areaThreshold, int interval) {
@@ -226,10 +225,10 @@ public class WebcamMotionDetector {
 
 	/**
 	 * Create motion detector with default parameter inertia = 0.
-	 * 
+	 *
 	 * @param webcam web camera instance
 	 * @param pixelThreshold intensity threshold (0 - 255)
-	 * @param areaThreshol percentage threshold of image covered by motion
+	 * @param areaThreshold percentage threshold of image covered by motion (0 - 100)
 	 */
 	public WebcamMotionDetector(Webcam webcam, int pixelThreshold, double areaThreshold) {
 		this(webcam, pixelThreshold, areaThreshold, DEFAULT_INTERVAL);
@@ -237,7 +236,7 @@ public class WebcamMotionDetector {
 
 	/**
 	 * Create motion detector with default parameter inertia = 0.
-	 * 
+	 *
 	 * @param webcam web camera instance
 	 * @param pixelThreshold intensity threshold (0 - 255)
 	 */
@@ -246,9 +245,8 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Create motion detector with default parameters - threshold = 25, inertia
-	 * = 0.
-	 * 
+	 * Create motion detector with default parameters - threshold = 25, inertia = 0.
+	 *
 	 * @param webcam web camera instance
 	 */
 	public WebcamMotionDetector(Webcam webcam) {
@@ -346,7 +344,7 @@ public class WebcamMotionDetector {
 
 	/**
 	 * Add motion listener.
-	 * 
+	 *
 	 * @param l listener to add
 	 * @return true if listeners list has been changed, false otherwise
 	 */
@@ -363,7 +361,7 @@ public class WebcamMotionDetector {
 
 	/**
 	 * Removes motion listener.
-	 * 
+	 *
 	 * @param l motion listener to remove
 	 * @return true if listener was available on the list, false otherwise
 	 */
@@ -379,9 +377,9 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Motion check interval in milliseconds. After motion is detected, it's
-	 * valid for time which is equal to value of 2 * interval.
-	 * 
+	 * Motion check interval in milliseconds. After motion is detected, it's valid for time which is
+	 * equal to value of 2 * interval.
+	 *
 	 * @param interval the new motion check interval (ms)
 	 * @see #DEFAULT_INTERVAL
 	 */
@@ -395,10 +393,10 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Set pixel intensity difference threshold above which pixel is classified
-	 * as "moved". Minimum value is 0 and maximum is 255. Default value is 10.
-	 * This value is equal for all RGB components difference.
-	 * 
+	 * Set pixel intensity difference threshold above which pixel is classified as "moved". Minimum
+	 * value is 0 and maximum is 255. Default value is 10. This value is equal for all RGB
+	 * components difference.
+	 *
 	 * @param threshold the pixel intensity difference threshold
 	 * @see #DEFAULT_PIXEL_THREASHOLD
 	 */
@@ -413,10 +411,10 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Set percentage fraction of detected motion area threshold above which it
-	 * is classified as "moved". Minimum value for this is 0 and maximum is 100,
-	 * which corresponds to full image covered by spontaneous motion.
-	 * 
+	 * Set percentage fraction of detected motion area threshold above which it is classified as
+	 * "moved". Minimum value for this is 0 and maximum is 100, which corresponds to full image
+	 * covered by spontaneous motion.
+	 *
 	 * @param threshold the percentage fraction of image area
 	 * @see #DEFAULT_AREA_THREASHOLD
 	 */
@@ -431,10 +429,9 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Set motion inertia (time when motion is valid). If no value specified
-	 * this is set to 2 * interval. To reset to default value,
-	 * {@link #clearInertia()} method must be used.
-	 * 
+	 * Set motion inertia (time when motion is valid). If no value specified this is set to 2 *
+	 * interval. To reset to default value, {@link #clearInertia()} method must be used.
+	 *
 	 * @param inertia the motion inertia time in milliseconds
 	 * @see #clearInertia()
 	 */
@@ -446,8 +443,8 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Reset inertia time to value calculated automatically on the base of
-	 * interval. This value will be set to 2 * interval.
+	 * Reset inertia time to value calculated automatically on the base of interval. This value will
+	 * be set to 2 * interval.
 	 */
 	public void clearInertia() {
 		this.inertia = -1;
@@ -455,7 +452,7 @@ public class WebcamMotionDetector {
 
 	/**
 	 * Get attached webcam object.
-	 * 
+	 *
 	 * @return Attached webcam
 	 */
 	public Webcam getWebcam() {
@@ -470,9 +467,9 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Get percentage fraction of image covered by motion. 0 means no motion on
-	 * image and 100 means full image covered by spontaneous motion.
-	 * 
+	 * Get percentage fraction of image covered by motion. 0 means no motion on image and 100 means
+	 * full image covered by spontaneous motion.
+	 *
 	 * @return Return percentage image fraction covered by motion
 	 */
 	public double getMotionArea() {
@@ -480,9 +477,9 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Get motion center of gravity. When no motion is detected this value
-	 * points to the image center.
-	 * 
+	 * Get motion center of gravity. When no motion is detected this value points to the image
+	 * center.
+	 *
 	 * @return Center of gravity point
 	 */
 	public Point getMotionCog() {

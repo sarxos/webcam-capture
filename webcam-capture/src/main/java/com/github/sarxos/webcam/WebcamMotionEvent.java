@@ -6,7 +6,7 @@ import java.util.EventObject;
 
 /**
  * Webcam detected motion event.
- * 
+ *
  * @author Bartosz Firyn (SarXos)
  */
 public class WebcamMotionEvent extends EventObject {
@@ -18,9 +18,10 @@ public class WebcamMotionEvent extends EventObject {
 
 	/**
 	 * Create detected motion event.
-	 * 
+	 *
 	 * @param detector
 	 * @param strength
+	 * @param cog center of motion gravity
 	 */
 	public WebcamMotionEvent(WebcamMotionDetector detector, double strength, Point cog) {
 
@@ -31,9 +32,9 @@ public class WebcamMotionEvent extends EventObject {
 	}
 
 	/**
-	 * Get percentage fraction of image covered by motion. 0 is no motion on
-	 * image, and 100 is full image covered by motion.
-	 * 
+	 * Get percentage fraction of image covered by motion. 0 is no motion on image, and 100 is full
+	 * image covered by motion.
+	 *
 	 * @return Motion area
 	 */
 	public double getArea() {

@@ -19,7 +19,7 @@ public class WebcamProcessor {
 
 	/**
 	 * Thread doing supersync processing.
-	 * 
+	 *
 	 * @author sarxos
 	 */
 	public static final class ProcessorThread extends Thread {
@@ -33,7 +33,7 @@ public class WebcamProcessor {
 
 	/**
 	 * Thread factory for processor.
-	 * 
+	 *
 	 * @author Bartosz Firyn (SarXos)
 	 */
 	private static final class ProcessorThreadFactory implements ThreadFactory {
@@ -48,10 +48,9 @@ public class WebcamProcessor {
 	}
 
 	/**
-	 * Heart of overall processing system. This class process all native calls
-	 * wrapped in tasks, by doing this all tasks executions are
-	 * super-synchronized.
-	 * 
+	 * Heart of overall processing system. This class process all native calls wrapped in tasks, by
+	 * doing this all tasks executions are super-synchronized.
+	 *
 	 * @author Bartosz Firyn (SarXos)
 	 */
 	private static final class AtomicProcessor implements Runnable {
@@ -61,9 +60,8 @@ public class WebcamProcessor {
 
 		/**
 		 * Process task.
-		 * 
+		 *
 		 * @param task the task to be processed
-		 * @return Processed task
 		 * @throws InterruptedException when thread has been interrupted
 		 */
 		public void process(WebcamTask task) throws InterruptedException {
@@ -127,7 +125,7 @@ public class WebcamProcessor {
 
 	/**
 	 * Process single webcam task.
-	 * 
+	 *
 	 * @param task the task to be processed
 	 * @throws InterruptedException when thread has been interrupted
 	 */

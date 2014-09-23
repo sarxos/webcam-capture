@@ -20,9 +20,9 @@ import java.awt.image.BufferedImage;
 
 
 /**
- * A filter which performs a box blur on an image. The horizontal and vertical
- * blurs can be specified separately and a number of iterations can be given
- * which allows an approximation to Gaussian blur.
+ * A filter which performs a box blur on an image. The horizontal and vertical blurs can be
+ * specified separately and a number of iterations can be given which allows an approximation to
+ * Gaussian blur.
  */
 public class JHBlurFilter extends JHFilter {
 
@@ -39,7 +39,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Construct a BoxBlurFilter.
-	 * 
+	 *
 	 * @param hRadius the horizontal radius of blur
 	 * @param vRadius the vertical radius of blur
 	 * @param iterations the number of time to iterate the blur
@@ -52,7 +52,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Set whether to premultiply the alpha channel.
-	 * 
+	 *
 	 * @param premultiplyAlpha true to premultiply the alpha
 	 * @see #getPremultiplyAlpha
 	 */
@@ -62,7 +62,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Get whether to premultiply the alpha channel.
-	 * 
+	 *
 	 * @return true to premultiply the alpha
 	 * @see #setPremultiplyAlpha
 	 */
@@ -75,23 +75,26 @@ public class JHBlurFilter extends JHFilter {
 		int width = src.getWidth();
 		int height = src.getHeight();
 
-		if (dst == null)
+		if (dst == null) {
 			dst = createCompatibleDestImage(src, null);
+		}
 
 		int[] inPixels = new int[width * height];
 		int[] outPixels = new int[width * height];
 		getRGB(src, 0, 0, width, height, inPixels);
 
-		if (premultiplyAlpha)
+		if (premultiplyAlpha) {
 			premultiply(inPixels, 0, inPixels.length);
+		}
 		for (int i = 0; i < iterations; i++) {
 			blur(inPixels, outPixels, width, height, hRadius);
 			blur(outPixels, inPixels, height, width, vRadius);
 		}
 		blurFractional(inPixels, outPixels, width, height, hRadius);
 		blurFractional(outPixels, inPixels, height, width, vRadius);
-		if (premultiplyAlpha)
+		if (premultiplyAlpha) {
 			unpremultiply(inPixels, 0, inPixels.length);
+		}
 
 		setRGB(dst, 0, 0, width, height, inPixels);
 		return dst;
@@ -99,7 +102,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Blur and transpose a block of ARGB pixels.
-	 * 
+	 *
 	 * @param in the input pixels
 	 * @param out the output pixels
 	 * @param width the width of the pixel array
@@ -112,8 +115,9 @@ public class JHBlurFilter extends JHFilter {
 		int tableSize = 2 * r + 1;
 		int divide[] = new int[256 * tableSize];
 
-		for (int i = 0; i < 256 * tableSize; i++)
+		for (int i = 0; i < 256 * tableSize; i++) {
 			divide[i] = i / tableSize;
+		}
 
 		int inIndex = 0;
 
@@ -133,11 +137,13 @@ public class JHBlurFilter extends JHFilter {
 				out[outIndex] = (divide[ta] << 24) | (divide[tr] << 16) | (divide[tg] << 8) | divide[tb];
 
 				int i1 = x + r + 1;
-				if (i1 > widthMinus1)
+				if (i1 > widthMinus1) {
 					i1 = widthMinus1;
+				}
 				int i2 = x - r;
-				if (i2 < 0)
+				if (i2 < 0) {
 					i2 = 0;
+				}
 				int rgb1 = in[inIndex + i1];
 				int rgb2 = in[inIndex + i2];
 
@@ -197,7 +203,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Set the horizontal size of the blur. Minimum hRadius value is 0.
-	 * 
+	 *
 	 * @param hRadius the radius of the blur in the horizontal direction
 	 * @see #getHRadius
 	 */
@@ -207,7 +213,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Get the horizontal size of the blur.
-	 * 
+	 *
 	 * @return the radius of the blur in the horizontal direction
 	 * @see #setHRadius
 	 */
@@ -217,7 +223,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Set the vertical size of the blur. Minimal vRadius value is 0.
-	 * 
+	 *
 	 * @param vRadius the radius of the blur in the vertical direction
 	 * @see #getVRadius
 	 */
@@ -227,7 +233,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Get the vertical size of the blur.
-	 * 
+	 *
 	 * @return the radius of the blur in the vertical direction
 	 * @see #setVRadius
 	 */
@@ -236,9 +242,8 @@ public class JHBlurFilter extends JHFilter {
 	}
 
 	/**
-	 * Set both the horizontal and vertical sizes of the blur. Minimum value is
-	 * 0.
-	 * 
+	 * Set both the horizontal and vertical sizes of the blur. Minimum value is 0.
+	 *
 	 * @param radius the radius of the blur in both directions
 	 * @see #getRadius
 	 */
@@ -248,7 +253,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Get the size of the blur.
-	 * 
+	 *
 	 * @return the radius of the blur in the horizontal direction
 	 * @see #setRadius
 	 */
@@ -258,7 +263,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Set the number of iterations the blur is performed. Minimum value is 0.
-	 * 
+	 *
 	 * @param iterations the number of iterations
 	 * @see #getIterations
 	 */
@@ -268,7 +273,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Get the number of iterations the blur is performed.
-	 * 
+	 *
 	 * @return the number of iterations
 	 * @see #setIterations
 	 */
@@ -283,6 +288,10 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Premultiply a block of pixels
+	 *
+	 * @param p pixels
+	 * @param offset the offset
+	 * @param length the length
 	 */
 	public static void premultiply(int[] p, int offset, int length) {
 		length += offset;
@@ -302,6 +311,10 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Premultiply a block of pixels
+	 * 
+	 * @param p the pixels
+	 * @param offset the offset
+	 * @param length the length
 	 */
 	public static void unpremultiply(int[] p, int offset, int length) {
 		length += offset;
@@ -316,12 +329,15 @@ public class JHBlurFilter extends JHFilter {
 				r *= f;
 				g *= f;
 				b *= f;
-				if (r > 255)
+				if (r > 255) {
 					r = 255;
-				if (g > 255)
+				}
+				if (g > 255) {
 					g = 255;
-				if (b > 255)
+				}
+				if (b > 255) {
 					b = 255;
+				}
 				p[i] = (a << 24) | (r << 16) | (g << 8) | b;
 			}
 		}
@@ -329,7 +345,7 @@ public class JHBlurFilter extends JHFilter {
 
 	/**
 	 * Clamp a value to an interval.
-	 * 
+	 *
 	 * @param a the lower clamp threshold
 	 * @param b the upper clamp threshold
 	 * @param x the input parameter
