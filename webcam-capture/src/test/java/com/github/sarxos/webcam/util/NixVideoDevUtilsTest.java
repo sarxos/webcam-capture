@@ -20,7 +20,7 @@ public class NixVideoDevUtilsTest {
      * Accept method was failing with exception: String index out of range: 5
      * This occurs on opensuse 11 where video device files do not all have a suffix. The files are created like so:
      * $ ls -l /dev/video*
-     * /dev/video -> video0
+     * /dev/video -&gt; video0
      * /dev/video0
      *
      * In this case, the link name 'video' is less that 6 characters long, so the filter statement:
