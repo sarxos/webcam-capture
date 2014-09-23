@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.github.sarxos</groupId>
 		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.10</version>
+		<version>0.3.11-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>webcam-capture</artifactId>
@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>com.nativelibs4java</groupId>
 			<artifactId>bridj</artifactId>
-			<version>0.6.2</version>
+			<version>0.6.3-SNAPSHOT</version>
 			<exclusions>
 			    <exclusion>
 			        <artifactId>dx</artifactId>
