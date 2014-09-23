@@ -24,8 +24,9 @@
 			<groupId>org.openimaj</groupId>
 			<artifactId>core-video-capture</artifactId>
 			<version>1.3</version>
+			
+			<!-- webcam-capture doesn't need most of the transitive dependencies -->
 			<exclusions>
-				<!-- webcam-capture doesn't need most of the transitive dependencies -->
 				<exclusion>
   					<groupId>jama</groupId>
   					<artifactId>jama</artifactId>
@@ -105,6 +106,22 @@
 				<exclusion>
   					<groupId>org.apache.httpcomponents</groupId>
   					<artifactId>httpclient</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sourceforge.jmatio</groupId>
+					<artifactId>jmatio</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.caffeineowl.graphics</groupId>
+					<artifactId>BezierUtils</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.media</groupId>
+					<artifactId>jai-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.media</groupId>
+					<artifactId>jai-codec</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
