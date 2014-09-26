@@ -17,7 +17,7 @@ This library allows you to use your build-in or external webcam directly from Ja
 * It is available as Maven dependency or standalone ZIP binary (with all dependencies included),
 * Swing component to display video feed from camera,
 * Swing component to choose camera (drop down),
-* Multiple capturing frameworks:
+* Multiple capturing frameworks are supported:
  * [OpenIMAJ](http://www.openimaj.org/),
  * [LTI CIVIL](http://sourceforge.net/projects/lti-civil/),
  * [Java Media Framework (JMF)](http://www.oracle.com/technetwork/java/javase/tech/index-jsp-140239.html),
@@ -55,7 +55,7 @@ Snapshot version:
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3.10-SNAPSHOT</version>
+	<version>0.3.11-SNAPSHOT</version>
 </dependency>
 
 ```
