@@ -1,6 +1,6 @@
-# Java Webcam Capture
+# Webcam Capture API for Java
 
-This library allows you to use your build-in or external webcam directly from Java.
+This library allows you to use your build-in or external webcam directly from Java. It's designed to abstract commonly used camera features and support multiple capturing farmeworks.
 
 [![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture) [![Coverage Status](https://coveralls.io/repos/sarxos/webcam-capture/badge.png?branch=master)](https://coveralls.io/r/sarxos/webcam-capture?branch=master) [![Ohloh Stats](https://www.ohloh.net/p/java-webcam-capture/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/java-webcam-capture)
 
@@ -9,62 +9,41 @@ This library allows you to use your build-in or external webcam directly from Ja
 * Simple, thread-safe and non-blocking API,
 * No additional software required,
 * Supports multiple platforms (Windows, Linux, Mac OS, etc) and various architectures (32-bit, 64-bit, ARM),
-* Stream images from build-in or USB-connected PC webcams, 
-* Stream images from IP / network cameras (as MJPEG or JPEG),
-* Detect motion,
+* Get images from build-in or USB-connected PC webcams, 
+* Get images from IP / network cameras (as MJPEG or JPEG),
+* Offers ready to use motion detector,
 * All required JARs Available in Maven Central,
-* Can re-stream images as MJPEG,
-* Available as standalone ZIP binaries with all dependencies included,
-* Supports additional video grabbing drivers (such as OpenIMAJ, LTI-CIVIL, JMF, FMJ, OpenCV, VLC, IP Camera),
-* Ready to use Swing component designed to display image from webcam / IP / network camera,
+* Offers possibility to expose images as MJPEG stream,
+* It is available as Maven dependency or standalone ZIP binary (with all dependencies included),
+* Swing component to display video feed from camera,
+* Swing component to choose camera (drop down),
+* Multiple capturing frameworks:
+ * [OpenIMAJ](http://www.openimaj.org/),
+ * [LTI CIVIL](http://sourceforge.net/projects/lti-civil/),
+ * [Java Media Framework (JMF)](http://www.oracle.com/technetwork/java/javase/tech/index-jsp-140239.html),
+ * [Freedom for Media in Java (FMJ)](http://fmj-sf.net/),
+ * [OpenCV](http://opencv.org/) via [JavaCV](https://github.com/bytedeco/javacv),
+ * [VLC](http://www.videolan.org/vlc/) via [vlcj](http://www.capricasoftware.co.uk/projects/vlcj/index.html),
+ * [GStreamer](http://gstreamer.freedesktop.org/) via [gstreamer-java](https://code.google.com/p/gstreamer-java/)
+ * MJPEG IP Cameras,
 
-## Download
+## Raspberry PI (and other ARM devices)
 
-Below is the newest stable version ZIP containing main project
-JAR with additional documents, examples and all required 3rd-party
-dependencies:
-
-* **Latest stable version** - [webcam-capture-0.3.10-RC7-dist.zip](https://github.com/sarxos/webcam-capture/releases/download/webcam-capture-parent-0.3.10-RC7/webcam-capture-0.3.10-RC7-dist.zip)
-
-Other releases:
-
-* Previous stable version - [webcam-capture-0.3.9-dist.zip](http://www.sarxos.pl/repo/maven2/com/github/sarxos/webcam-capture/0.3.9/webcam-capture-0.3.9-dist.zip)
-* List of all releases ever made - [click](http://www.sarxos.pl/repo/maven2/index.php?dir=com%2Fgithub%2Fsarxos%2Fwebcam-capture%2F)
-
-The latest development version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture&v=0.3.10-SNAPSHOT).
+The lates version (0.3.10) does not work on ARM just out of the box. To make it working you need to replace version 0.6.2 of BridJ JAR by the [0.6.3-SNAPHOST](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.nativelibs4java&a=bridj&v=0.6.3-SNAPSHOT) or newer [bridj-0.7-20140918](http://maven.ecs.soton.ac.uk/content/groups/maven.openimaj.org/com/nativelibs4java/bridj/0.7-20140918/bridj-0.7-20140918.jar). Moreover, lately Jonathon Hare from OpenIMAJ team, found a problem described in [bridj #525](https://github.com/ochafik/nativelibs4java/issues/525) which causes problems on armhf architecture.
 
 ## Maven
 
-For those who use Maven and would like to add Webcam Capture dependency
-in their own projects.
-
-#### Official Release
+The latest stable version is [available](http://search.maven.org/#artifactdetails|com.github.sarxos|webcam-capture|0.3.10|bundle) in Maven Central:
 
 ```xml
 <dependency>
-	<groupId>com.github.sarxos</groupId>
-	<artifactId>webcam-capture</artifactId>
-	<version>0.3.9</version>
+  <groupId>com.github.sarxos</groupId>
+  <artifactId>webcam-capture</artifactId>
+  <version>0.3.10</version>
 </dependency>
 ```
 
-#### Release Candidate
-
-```xml
-<repository>
-	<id>SarXos Repository</id>
-	<url>http://www.sarxos.pl/repo/maven2</url>
-</repository>
-```
-```xml
-<dependency>
-	<groupId>com.github.sarxos</groupId>
-	<artifactId>webcam-capture</artifactId>
-	<version>0.3.10-RC7</version>
-</dependency>
-```
-
-#### Snapshot Version
+Snapshot version:
 
 ```xml
 <repository>
@@ -81,9 +60,13 @@ in their own projects.
 
 ```
 
-If you would like to use the newest SNAPSHOT version, please be aware - 
-sometimes it may be unstable. If you are OK with this, just add the above
-repository and dependency into your ```pom.xml```.
+## Download
+
+The newest stable version can be downloaded as separated ZIP binary. This ZIP file contains Webcam Capture API itself and all required dependencies (in ```libs``` directory). Click on the below link to download it:
+
+ [webcam-capture-0.3.10-dist.zip](https://github.com/sarxos/webcam-capture/releases/download/webcam-capture-parent-0.3.10/webcam-capture-0.3.10-dist.zip)
+
+The latest development version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture&v=0.3.11-SNAPSHOT).
 
 ## Contribution
 
