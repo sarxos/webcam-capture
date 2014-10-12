@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<storage>
+	<ipcam name="Biblione Palace" url="http://webcam.hotelbibionepalace.it/mjpg/video.mjpg" mode="push" />
+	<ipcam name="Foscam" url="http://50.197.211.181:8910/videostream.cgi" mode="push">
+		<auth user="user" password="foscam" />
+	</ipcam>
+</storage>
