@@ -93,6 +93,8 @@ public class IpCamDevice implements WebcamDevice {
 			}
 		}
 
+		private volatile boolean processing = true;
+
 		@Override
 		public void run() {
 
@@ -106,13 +108,19 @@ public class IpCamDevice implements WebcamDevice {
 
 					LOG.trace("Reading MJPEG frame");
 
-					BufferedImage image = stream.readFrame();
-
-					if (image != null) {
-						this.image = image;
+					processing = false;
+					try {
+						BufferedImage image = stream.readFrame();
+						if (image != null) {
+							this.image = image;
+						} else {
+							LOG.error("No image received from the stream");
+						}
+					} finally {
 						synchronized (lock) {
 							lock.notifyAll();
 						}
+						processing = false;
 					}
 
 				} catch (IOException e) {
@@ -165,8 +173,10 @@ public class IpCamDevice implements WebcamDevice {
 			}
 			if (image == null) {
 				try {
-					synchronized (lock) {
-						lock.wait();
+					while (processing) {
+						synchronized (lock) {
+							lock.wait();
+						}
 					}
 				} catch (InterruptedException e) {
 					throw new WebcamException("Reader thread interrupted", e);
@@ -297,6 +307,10 @@ public class IpCamDevice implements WebcamDevice {
 
 		if (!open) {
 			throw new WebcamException("IpCam device not open");
+		}
+
+		if (mode == null) {
+			throw new IllegalArgumentException("Camera mode cannot be null!");
 		}
 
 		switch (mode) {

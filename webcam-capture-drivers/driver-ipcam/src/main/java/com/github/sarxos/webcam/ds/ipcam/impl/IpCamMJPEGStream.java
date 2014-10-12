@@ -11,8 +11,13 @@ import java.io.InputStreamReader;
 
 import javax.imageio.ImageIO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class IpCamMJPEGStream extends DataInputStream {
+
+	private static final Logger LOG = LoggerFactory.getLogger(IpCamMJPEGStream.class);
 
 	/**
 	 * The first two bytes of every JPEG stream are the Start Of Image (SOI)
@@ -112,6 +117,10 @@ public class IpCamMJPEGStream extends DataInputStream {
 			length = parseContentLength(header);
 		} catch (NumberFormatException e) {
 			length = getEndOfSeqeunce(this, EOI_MARKER);
+		}
+
+		if (length == 0) {
+			LOG.error("Invalid MJPEG stream, EOI (0xFF,0xD9) not found!");
 		}
 
 		reset();
