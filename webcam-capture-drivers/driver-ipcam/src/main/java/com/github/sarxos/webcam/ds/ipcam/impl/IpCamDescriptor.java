@@ -42,7 +42,7 @@ public class IpCamDescriptor {
 
 	private transient URL url = null;
 
-	@XmlAttribute
+	@XmlAttribute(name = "mode")
 	private IpCamMode mode = IpCamMode.PULL;
 
 	@XmlElement(name = "auth")

@@ -6,4 +6,5 @@
 	<ipcam name="Dasding 06" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=6" />
 	<ipcam name="Dasding 07" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=7" />
 	<ipcam name="Dasding 10" url="http://www.dasding.de/ext/webcam/webcam770.php?cam=10" />
+	<ipcam name="Biblione Palace" url="http://webcam.hotelbibionepalace.it/mjpg/video.mjpg" mode="push" />
 </storage>

@@ -21,7 +21,7 @@ public enum IpCamMode {
 	/**
 	 * IP camera HTTP server will push new image to the device.
 	 */
-	@XmlEnumValue("pull")
+	@XmlEnumValue("push")
 	PUSH,
 
 }
