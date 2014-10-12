@@ -32,8 +32,8 @@ public class WebcamMotionEvent extends EventObject {
 	}
 
 	/**
-	 * Get percentage fraction of image covered by motion. 0 is no motion on image, and 100 is full
-	 * image covered by motion.
+	 * Get percentage fraction of image covered by motion. 0 is no motion on
+	 * image, and 100 is full image covered by motion.
 	 *
 	 * @return Motion area
 	 */
@@ -43,5 +43,14 @@ public class WebcamMotionEvent extends EventObject {
 
 	public Point getCog() {
 		return cog;
+	}
+
+	public Webcam getWebcam() {
+		return ((WebcamMotionDetector) getSource()).getWebcam();
+	}
+
+	@Override
+	public WebcamMotionDetector getSource() {
+		return (WebcamMotionDetector) super.getSource();
 	}
 }
