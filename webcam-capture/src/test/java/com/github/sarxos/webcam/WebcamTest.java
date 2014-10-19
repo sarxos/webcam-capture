@@ -4,9 +4,8 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -166,4 +165,25 @@ public class WebcamTest {
 
 		Assert.assertSame(DummyDriver.class, driver.getClass());
 	}
+
+	@Test
+	public void test_GetWebcamByName() throws InstantiationException {
+		Webcam.setDriver(new DummyDriver());
+		for (Webcam webcam : Webcam.getWebcams()) {
+			Assert.assertEquals(webcam.getName(), Webcam.getWebcamByName(webcam.getName()).getName());
+		}
+	}
+
+	@Test
+	public void test_GetWebcamByNameWithNotExistingWebcamName() throws InstantiationException {
+		Webcam.setDriver(new DummyDriver());
+		Assert.assertNull(Webcam.getWebcamByName("DatCameraDoesNotExist"));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void test_GetWebcamByNameWithNullArgument() throws InstantiationException {
+		Webcam.setDriver(new DummyDriver());
+		Webcam.getWebcamByName(null);
+	}
+
 }

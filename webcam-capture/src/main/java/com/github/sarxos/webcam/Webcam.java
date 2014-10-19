@@ -1194,6 +1194,9 @@ public class Webcam {
 		return lock;
 	}
 
+	/**
+	 * Shutdown webcam framework.
+	 */
 	public static void shutdown() {
 
 		// stop discovery service
@@ -1204,5 +1207,29 @@ public class Webcam {
 
 		// stop processor
 		WebcamProcessor.getInstance().shutdown();
+	}
+
+	/**
+	 * Return webcam with given name or null if no device with given name has
+	 * been found. Please note that specific webcam name may depend on the order
+	 * it was connected to the USB port (e.g. /dev/video0 vs /dev/video1).
+	 * 
+	 * @param name the webcam name
+	 * @return Webcam with given name or null if not found
+	 * @throws IllegalArgumentException when name is null
+	 */
+	public static Webcam getWebcamByName(String name) {
+
+		if (name == null) {
+			throw new IllegalArgumentException("Webcam name cannot be null");
+		}
+
+		for (Webcam webcam : getWebcams()) {
+			if (webcam.getName().equals(name)) {
+				return webcam;
+			}
+		}
+
+		return null;
 	}
 }
