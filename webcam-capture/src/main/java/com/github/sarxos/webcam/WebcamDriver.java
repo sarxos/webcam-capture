@@ -4,7 +4,8 @@ import java.util.List;
 
 
 /**
- * This is interface for all webcam drivers.
+ * Webcam drivers abstraction. The webcam driver (or capture driver, as it is
+ * often referred) is a factory for specific webcam device implementations.
  * 
  * @author Bartosz Firyn (SarXos)
  */

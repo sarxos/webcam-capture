@@ -306,11 +306,11 @@ public class IpCamDevice implements WebcamDevice {
 	public synchronized BufferedImage getImage() {
 
 		if (!open) {
-			throw new WebcamException("IpCam device not open");
+			return null;
 		}
 
 		if (mode == null) {
-			throw new IllegalArgumentException("Camera mode cannot be null!");
+			throw new IllegalStateException("Camera mode cannot be null!");
 		}
 
 		switch (mode) {
