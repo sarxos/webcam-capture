@@ -10,7 +10,7 @@ import com.github.sarxos.webcam.ds.ipcam.IpCamDriver;
 import com.github.sarxos.webcam.ds.ipcam.IpCamMode;
 
 
-public class FoscamMjpegPullExample {
+public class FoscamJpegPullExample {
 
 	static {
 		Webcam.setDriver(new IpCamDriver());
