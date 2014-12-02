@@ -1,4 +1,4 @@
-# Webcam Capture Custom Painter Example
+# Webcam Capture Image Transformer Example
 
 This simple example show how to use webcam image transformer feature.
  
