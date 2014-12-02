@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.github.sarxos</groupId>
 		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.10-SNAPSHOT</version>
+		<version>0.3.11-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>webcam-capture-examples</artifactId>
@@ -25,6 +25,7 @@
 		<module>webcam-capture-manycams</module>
 		<module>webcam-capture-motiondetector</module>
 		<module>webcam-capture-painter</module>
+		<module>webcam-capture-transformer</module>
 		<module>webcam-capture-qrcode</module>
 		<module>webcam-capture-swt-awt</module>
 		<module>webcam-capture-video-recording</module>
