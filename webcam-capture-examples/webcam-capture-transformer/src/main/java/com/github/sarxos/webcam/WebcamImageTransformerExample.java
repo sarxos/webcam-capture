@@ -1,10 +1,15 @@
 package com.github.sarxos.webcam;
 
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -15,15 +20,14 @@ import javax.swing.UIManager;
  *
  * @author Bartosz Firyn (SarXos)
  */
-public class WebcamImageTransformerExample extends JFrame implements WebcamImageTransformer {
-
-	private static final long serialVersionUID = 1L;
+public class WebcamImageTransformerExample implements WebcamImageTransformer {
 
 	private static final BufferedImage IMAGE_FRAME = getImage("frame.png");
 
+	private Webcam webcam = Webcam.getDefault();
+
 	public WebcamImageTransformerExample() {
 
-		Webcam webcam = Webcam.getDefault();
 		webcam.setViewSize(WebcamResolution.VGA.getSize());
 		webcam.setImageTransformer(this);
 		webcam.open();
@@ -34,7 +38,23 @@ public class WebcamImageTransformerExample extends JFrame implements WebcamImage
 		panel.setFPSDisplayed(true);
 		panel.setFillArea(true);
 
+		JButton button = new JButton(new AbstractAction("capture") {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				try {
+					ImageIO.write(webcam.getImage(), "PNG", new File("capture.png"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		window.setLayout(new FlowLayout(FlowLayout.CENTER));
 		window.add(panel);
+		window.add(button);
 		window.pack();
 		window.setVisible(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,7 +66,7 @@ public class WebcamImageTransformerExample extends JFrame implements WebcamImage
 		int w = image.getWidth();
 		int h = image.getHeight();
 
-		BufferedImage modified = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage modified = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
 		Graphics2D g2 = modified.createGraphics();
 		g2.drawImage(image, null, 0, 0);
