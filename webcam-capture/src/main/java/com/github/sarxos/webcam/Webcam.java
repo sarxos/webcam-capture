@@ -283,6 +283,20 @@ public class Webcam {
 
 			LOG.debug("Webcam is now open {}", getName());
 
+			// install shutdown hook
+
+			try {
+				Runtime.getRuntime().addShutdownHook(hook = new WebcamShutdownHook(this));
+			} catch (IllegalStateException e) {
+
+				LOG.debug("Shutdown in progress, do not open device");
+				LOG.trace(e.getMessage(), e);
+
+				close();
+
+				return false;
+			}
+
 			// setup non-blocking configuration
 
 			if (asynchronous = async) {
@@ -291,10 +305,6 @@ public class Webcam {
 				}
 				updater.start();
 			}
-
-			// install shutdown hook
-
-			Runtime.getRuntime().addShutdownHook(hook = new WebcamShutdownHook(this));
 
 			// notify listeners
 
