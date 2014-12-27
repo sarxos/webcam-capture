@@ -38,6 +38,11 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamDefaultDevice.class);
 
 	/**
+	 * The device memory buffer size.
+	 */
+	private static final int DEVICE_BUFFER_SIZE = 5;
+
+	/**
 	 * Artificial view sizes. I'm really not sure if will fit into other webcams
 	 * but hope that OpenIMAJ can handle this.
 	 */
@@ -354,29 +359,44 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 		smodel = new ComponentSampleModel(DATA_TYPE, size.width, size.height, 3, size.width * 3, BAND_OFFSETS);
 		cmodel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
 
-		LOG.debug("Initialize buffer");
+		// clear device memory buffer
 
-		int i = 0;
-		do {
+		LOG.debug("Clear memory buffer");
 
-			grabber.nextFrame();
+		clearMemoryBuffer();
 
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				LOG.error("Nasty interrupted exception", e);
-			}
-
-		} while (++i < 3);
+		// set device to open
 
 		LOG.debug("Webcam device {} is now open", this);
 
 		open.set(true);
 
-		refresher = new Thread(this, String.format("frames-refresher-[%s]", id));
+		// start underlying frames refresher
+
+		refresher = startFramesRefresher();
+	}
+
+	/**
+	 * this is to clean up all frames from device memory buffer which causes
+	 * initial frames to be completely blank (black images)
+	 */
+	private void clearMemoryBuffer() {
+		for (int i = 0; i < DEVICE_BUFFER_SIZE; i++) {
+			grabber.nextFrame();
+		}
+	}
+
+	/**
+	 * Start underlying frames refresher.
+	 * 
+	 * @return Refresher thread
+	 */
+	private Thread startFramesRefresher() {
+		Thread refresher = new Thread(this, String.format("frames-refresher-[%s]", id));
 		refresher.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
 		refresher.setDaemon(true);
 		refresher.start();
+		return refresher;
 	}
 
 	@Override
