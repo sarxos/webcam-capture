@@ -13,12 +13,17 @@
 	
 	<name>Webcam Capture - OpenIMAJ Driver</name>
 	<description>Webcam Capture driver allowing you to capture images using OpenIMAJ library.</description>
-		
+
 	<dependencies>
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
 			<artifactId>webcam-capture</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.nativelibs4java</groupId>
+			<artifactId>bridj</artifactId>
+			<version>0.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openimaj</groupId>
@@ -27,6 +32,30 @@
 			
 			<!-- webcam-capture doesn't need most of the transitive dependencies -->
 			<exclusions>
+				<exclusion>
+					<groupId>net.billylieurance.azuresearch</groupId>
+					<artifactId>azure-bing-search-java</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.ac.ed.ph.snuggletex</groupId>
+					<artifactId>snuggletex-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.ac.ed.ph.snuggletex</groupId>
+					<artifactId>snuggletex-upconversion</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>uk.ac.ed.ph.snuggletex</groupId>
+					<artifactId>snuggletex-jeuclid</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.aetrion.flickr</groupId>
+					<artifactId>flickrapi</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>vigna.dsi.unimi.it</groupId>
+					<artifactId>jal</artifactId>
+				</exclusion>
 				<exclusion>
   					<groupId>jama</groupId>
   					<artifactId>jama</artifactId>
