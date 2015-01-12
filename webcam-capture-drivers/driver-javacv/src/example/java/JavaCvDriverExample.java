@@ -12,7 +12,7 @@ public class JavaCvDriverExample {
 	}
 
 	public static void main(String[] args) {
-		JFrame frame = new JFrame("LTI-CIVIL Webcam Capture Driver Example");
+		JFrame frame = new JFrame("JavaCV Webcam Capture Driver Example");
 		frame.add(new WebcamPanel(Webcam.getDefault()));
 		frame.pack();
 		frame.setVisible(true);
