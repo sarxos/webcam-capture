@@ -14,13 +14,12 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * This class is used as a global (system) lock preventing other processes from
- * using the same camera while it's open. Whenever webcam is open there is a
- * thread running in background which updates the lock once per 2 seconds. Lock
- * is being released whenever webcam is either closed or completely disposed.
- * Lock will remain for at least 2 seconds in case when JVM has not been
+ * This class is used as a global (system) lock preventing other processes from using the same
+ * camera while it's open. Whenever webcam is open there is a thread running in background which
+ * updates the lock once per 2 seconds. Lock is being released whenever webcam is either closed or
+ * completely disposed. Lock will remain for at least 2 seconds in case when JVM has not been
  * gracefully terminated (due to SIGSEGV, SIGTERM, etc).
- * 
+ *
  * @author Bartosz Firyn (sarxos)
  */
 public class WebcamLock {
@@ -37,7 +36,7 @@ public class WebcamLock {
 
 	/**
 	 * Used to update lock state.
-	 * 
+	 *
 	 * @author sarxos
 	 */
 	private class LockUpdater extends Thread {
@@ -80,21 +79,21 @@ public class WebcamLock {
 	/**
 	 * Is webcam locked (local, not cross-VM variable).
 	 */
-	private AtomicBoolean locked = new AtomicBoolean(false);
+	private final AtomicBoolean locked = new AtomicBoolean(false);
 
 	/**
 	 * Is lock completely disabled.
 	 */
-	private AtomicBoolean disabled = new AtomicBoolean(false);
+	private final AtomicBoolean disabled = new AtomicBoolean(false);
 
 	/**
 	 * Lock file.
 	 */
-	private File lock = null;
+	private final File lock;
 
 	/**
 	 * Creates global webcam lock.
-	 * 
+	 *
 	 * @param webcam the webcam instance to be locked
 	 */
 	protected WebcamLock(Webcam webcam) {
@@ -299,8 +298,8 @@ public class WebcamLock {
 	}
 
 	/**
-	 * Completely disable locking mechanism. After this method is invoked, the
-	 * lock will not have any effect on the webcam runtime.
+	 * Completely disable locking mechanism. After this method is invoked, the lock will not have
+	 * any effect on the webcam runtime.
 	 */
 	public void disable() {
 		if (disabled.compareAndSet(false, true)) {
@@ -339,7 +338,7 @@ public class WebcamLock {
 
 	/**
 	 * Check if webcam is locked.
-	 * 
+	 *
 	 * @return True if webcam is locked, false otherwise
 	 */
 	public boolean isLocked() {
@@ -372,5 +371,9 @@ public class WebcamLock {
 		}
 
 		return false;
+	}
+
+	public File getLockFile() {
+		return lock;
 	}
 }

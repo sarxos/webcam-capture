@@ -29,10 +29,10 @@
 			<artifactId>bridj</artifactId>
 			<version>0.6.3-SNAPSHOT</version>
 			<exclusions>
-			    <exclusion>
-			        <artifactId>dx</artifactId>
-			        <groupId>com.google.android.tools</groupId>
-			    </exclusion>
+				<exclusion>
+					<artifactId>dx</artifactId>
+					<groupId>com.google.android.tools</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -44,11 +44,29 @@
 			<artifactId>logback-classic</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- unit tests -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<!-- 
