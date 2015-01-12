@@ -6,3 +6,6 @@ target
 **/*/target
 **/*/dependency-reduced-pom.xml
 pom.xml~
+.project
+.classpath
+
