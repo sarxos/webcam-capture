@@ -58,9 +58,9 @@
 		<connection>scm:git:git@github.com:sarxos/${project.repoid}.git</connection>
 		<developerConnection>scm:git:git@github.com:sarxos/${project.repoid}.git</developerConnection>
 		<url>git@github.com:sarxos/${project.repoid}.git</url>
-	  <tag>HEAD</tag>
-  </scm>
-	
+		<tag>HEAD</tag>
+	</scm>
+
 	<issueManagement>
 		<system>GitHub Issues Manager</system>
 		<url>https://github.com/sarxos/${project.repoid}/issues</url>

@@ -22,7 +22,56 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
+			 <plugin>
+				<groupId>com.ruleoftech</groupId>
+				<artifactId>markdown-page-generator-plugin</artifactId>
+				<version>0.4</version>
+				<executions>
+					<execution>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<inputDirectory>${project.basedir}/..</inputDirectory>
+					<outputDirectory>${project.basedir}/src/main/resources/html</outputDirectory>
+					<headerHtmlFile>${project.basedir}/src/main/resources/md/header.html</headerHtmlFile>
+					<footerHtmlFile>${project.basedir}/src/main/resources/md/footer.html</footerHtmlFile>
+					<pegdownExtensions>HARDWRAPS,AUTOLINKS,TABLES,FENCED_CODE_BLOCKS</pegdownExtensions>
+				</configuration>
+			</plugin>
 		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.ruleoftech</groupId>
+										<artifactId>markdown-page-generator-plugin</artifactId>
+										<versionRange>[0.4,)</versionRange>
+										<goals>
+											<goal>generate</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 </project>
