@@ -2,6 +2,7 @@ import java.awt.Dimension;
 
 import javax.swing.JApplet;
 
+import com.github.sarxos.webcam.WebcamCaptureFrameworkDestroyer;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamResolution;
@@ -61,7 +62,7 @@ public class WebcamAppletExample extends JApplet {
 	public void destroy() {
 		System.out.println("Destroy");
 		webcam.close();
-		Webcam.shutdown();
+		WebcamCaptureFrameworkDestroyer.destroy();
 		System.out.println("Destroyed");
 	}
 

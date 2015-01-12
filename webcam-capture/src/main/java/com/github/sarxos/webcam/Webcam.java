@@ -1205,9 +1205,11 @@ public class Webcam {
 	}
 
 	/**
-	 * Shutdown webcam framework.
+	 * Shutdown webcam framework. This method should be used <b>ONLY</b> when you
+	 * are exiting JVM, but please <b>do not invoke it</b> if you really don't
+	 * need to.
 	 */
-	public static void shutdown() {
+	protected static void shutdown() {
 
 		// stop discovery service
 		WebcamDiscoveryService discovery = getDiscoveryServiceRef();

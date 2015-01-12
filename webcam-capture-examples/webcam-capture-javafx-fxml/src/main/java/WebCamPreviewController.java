@@ -222,7 +222,6 @@ public class WebCamPreviewController implements Initializable {
 	public void disposeCamera(ActionEvent event) {
 		stopCamera = true;
 		closeCamera();
-		Webcam.shutdown();
 		btnStopCamera.setDisable(true);
 		btnStartCamera.setDisable(true);
 	}
