@@ -2,7 +2,10 @@
 
 This library allows you to use your build-in or external webcam directly from Java. It's designed to abstract commonly used camera features and support multiple capturing farmeworks.
 
-[![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture) [![Coverage Status](https://coveralls.io/repos/sarxos/webcam-capture/badge.png?branch=master)](https://coveralls.io/r/sarxos/webcam-capture?branch=master) [![Ohloh Stats](https://www.ohloh.net/p/java-webcam-capture/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/java-webcam-capture)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.sarxos/webcam-capture/badge.png)](http://search.maven.org/#artifactdetails|com.github.sarxos|webcam-capture|0.3.10|bundle)
+[![Coverage Status](https://coveralls.io/repos/sarxos/webcam-capture/badge.png?branch=master)](https://coveralls.io/r/sarxos/webcam-capture?branch=master)
+[![Build Status](https://secure.travis-ci.org/sarxos/webcam-capture.png?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
+[![Ohloh Stats](https://www.ohloh.net/p/java-webcam-capture/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/java-webcam-capture)
 
 ## Features
 
