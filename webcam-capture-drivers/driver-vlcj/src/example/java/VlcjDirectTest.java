@@ -98,18 +98,16 @@ public class VlcjDirectTest {
 				@Override
 				public void display(DirectMediaPlayer player, Memory[] buffers, BufferFormat format) {
 
-					BufferedImage bi = convert(buffers, format);
-					try {
-						ImageIO.write(bi, "JPG", new File(System.currentTimeMillis() + "-test.jpg"));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					if (i++ < 10) {
 
-					System.out.println("write " + i);
+						BufferedImage bi = convert(buffers, format);
+						try {
+							ImageIO.write(bi, "JPG", new File(System.currentTimeMillis() + "-test.jpg"));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 
-					if (i++ > 10) {
-						player.stop();
-						System.exit(0);
+						System.out.println("write " + i);
 					}
 				}
 			});
@@ -117,14 +115,20 @@ public class VlcjDirectTest {
 		String device = "/dev/video0";
 		String mrl = "v4l2://" + device;
 		String[] options = new String[] {
-			":v4l-vdev=" + device,
-			":v4l-width=320", // XXX this setting does not have any effect!
-			":v4l-height=240", // XXX this setting does not have any effect!
-			":v4l-fps=30",
-			":v4l-quality=20",
-			":v4l-adev=none",
+			":v4l2-vdev=" + device,
+			":v4l2-width=320",
+			":v4l2-height=240",
+			":v4l2-fps=30",
+			":v4l2-quality=20",
+			":v4l2-adev=none",
 		};
 
 		player.startMedia(mrl, options);
+
+		Thread.sleep(1000);
+
+		player.stop();
+		player.release();
+		factory.release();
 	}
 }
