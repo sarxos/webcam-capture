@@ -1,5 +1,3 @@
-
-
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -11,7 +9,6 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
 
@@ -27,7 +24,7 @@ import com.sun.jna.Memory;
 
 public class VlcjDirectTest {
 
-	private static class TestBufferFormatCallback implements BufferFormatCallback {
+	private static class DirectBufferFormatCallback implements BufferFormatCallback {
 
 		@Override
 		public BufferFormat getBufferFormat(int sourceWidth, int sourceHeight) {
@@ -35,64 +32,65 @@ public class VlcjDirectTest {
 		}
 	}
 
-	/**
-	 * RGB offsets.
-	 */
-	private static final int[] BAND_OFFSETS = new int[] { 2, 1, 0 };
-	/**
-	 * Number of bytes in each pixel.
-	 */
-	private static final int[] BITS = { 8, 8, 8 };
-
-	/**
-	 * Image color space.
-	 */
-	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-
-	/**
-	 * Data type used in image.
-	 */
-	private static final int DATA_TYPE = DataBuffer.TYPE_BYTE;
-
 	private final static String[] VLC_ARGS = {
-
-		// VLC args by Andrew Davison:
-		// http://fivedots.coe.psu.ac.th/~ad/jg/nui025/snapsWithoutJMF.pdf
-
-		// no interface
 		"--intf", "dummy",
-
-		// no video output
 		"--vout", "dummy",
-
-		// no audio decoding
 		"--no-audio",
-
-		// do not display title
 		"--no-video-title-show",
-
-		// no stats
 		"--no-stats",
-
-		// no subtitles
 		"--no-sub-autodetect-file",
-
-		// no snapshot previews
 		"--no-snapshot-preview",
-
-		// reduce capture lag/latency
 		"--live-caching=50",
-
-		// turn off warnings
 		"--quiet",
 	};
 
+	private static BufferedImage convert(Memory[] buffers, BufferFormat format) {
+
+		if (buffers.length == 0) {
+			throw new RuntimeException("No memory elements found!");
+		}
+
+		final Memory memory = buffers[0];
+		if (memory == null) {
+			throw new RuntimeException("Null memory!");
+		}
+
+		final int width = format.getWidth();
+		final int height = format.getHeight();
+		final int dataType = DataBuffer.TYPE_BYTE;
+		final int pixelStride = 4;
+		final int scanlineStride = width * pixelStride;
+		final int[] bgrBandOffsets = new int[] { 2, 1, 0 };
+		final int[] bits = { 8, 8, 8 };
+		final int[] offsets = new int[] { 0 };
+		final int transparency = Transparency.OPAQUE;
+
+		final byte[] bytes = new byte[scanlineStride * height];
+		final byte[][] data = new byte[][] { bytes };
+
+		memory
+			.getByteBuffer(0, memory.size())
+			.get(bytes);
+
+		ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+		ComponentSampleModel sampleModel = new ComponentSampleModel(dataType, width, height, pixelStride, scanlineStride, bgrBandOffsets);
+		ComponentColorModel colorModel = new ComponentColorModel(colorSpace, bits, false, false, transparency, dataType);
+		DataBufferByte dataBuffer = new DataBufferByte(data, bytes.length, offsets);
+		WritableRaster raster = Raster.createWritableRaster(sampleModel, dataBuffer, null);
+		BufferedImage image = new BufferedImage(colorModel, raster, false, null);
+
+		image.flush();
+
+		return image;
+	}
+
+	private static MediaPlayerFactory factory = new MediaPlayerFactory(VLC_ARGS);
+	private static DirectMediaPlayer player;
+
 	public static void main(String[] args) throws IOException, InterruptedException {
 
-		MediaPlayerFactory mediaPlayerFactory = new MediaPlayerFactory(VLC_ARGS);
-
-		DirectMediaPlayer mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(
-			new TestBufferFormatCallback(),
+		player = factory.newDirectMediaPlayer(
+			new DirectBufferFormatCallback(),
 			new RenderCallback() {
 
 				int i = 0;
@@ -100,81 +98,33 @@ public class VlcjDirectTest {
 				@Override
 				public void display(DirectMediaPlayer player, Memory[] buffers, BufferFormat format) {
 
-					final int width = format.getWidth();
-					final int height = format.getHeight();
-
-					System.out.println(width + " x " + height);
-
-					ComponentSampleModel smodel = new ComponentSampleModel(
-						DataBuffer.TYPE_BYTE,
-						width,
-						height,
-						4, // pixel stride
-						width * 4, // scanline stride
-						BAND_OFFSETS);
-
-					ComponentColorModel cmodel = new ComponentColorModel(
-						COLOR_SPACE, BITS, false, false, Transparency.BITMASK, DATA_TYPE);
-
-					if (buffers.length == 0) {
-						System.err.println("No memory elements found!");
-						return;
-					}
-
-					Memory memory = buffers[0];
-
-					if (memory == null) {
-						System.err.println("Null memory!");
-						return;
-					}
-
-					System.out.println("meme " + memory.size());
-
-					ByteBuffer buffer = memory.getByteBuffer(0, memory.size());
-
-					byte[] bytes = new byte[width * height * 4];
-					byte[][] data = new byte[][] { bytes };
-
-					buffer.get(bytes);
-
-					DataBufferByte dbuf = new DataBufferByte(data, bytes.length, new int[] { 0 });
-					WritableRaster raster = Raster.createWritableRaster(smodel, dbuf, null);
-
-					BufferedImage bi = new BufferedImage(cmodel, raster, false, null);
-					bi.flush();
-
+					BufferedImage bi = convert(buffers, format);
 					try {
-						ImageIO.write(bi, "JPG", new File((i++) + "-test.jpg"));
+						ImageIO.write(bi, "JPG", new File(System.currentTimeMillis() + "-test.jpg"));
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
-					System.out.println("display " + i);
+					System.out.println("write " + i);
+
+					if (i++ > 10) {
+						player.stop();
+						System.exit(0);
+					}
 				}
 			});
 
-		// Options setup.
-		String mrl = "v4l2:///dev/video0"; // Linux
-
+		String device = "/dev/video0";
+		String mrl = "v4l2://" + device;
 		String[] options = new String[] {
-			":v4l-vdev=/dev/video0",
-			":v4l-width=640",
-			":v4l-height=480",
+			":v4l-vdev=" + device,
+			":v4l-width=320", // XXX this setting does not have any effect!
+			":v4l-height=240", // XXX this setting does not have any effect!
 			":v4l-fps=30",
 			":v4l-quality=20",
-			":v4l-adev=none", // no audio device
+			":v4l-adev=none",
 		};
 
-		// Start preocessing.
-		mediaPlayer.startMedia(mrl, options);
-
-		Thread.sleep(5000);
-
-		// Stop precessing.
-		mediaPlayer.stop();
-		mediaPlayer = null;
-
-		System.out.println("Finish!");
+		player.startMedia(mrl, options);
 	}
 }
