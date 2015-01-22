@@ -19,10 +19,9 @@ import com.github.sarxos.webcam.ds.buildin.natives.OpenIMAJGrabber;
 
 
 /**
- * Default build-in webcam driver based on natives from OpenIMAJ framework. It
- * can be widely used on various systems - Mac OS, Linux (x86, x64, ARM),
- * Windows (win32, win64).
- * 
+ * Default build-in webcam driver based on natives from OpenIMAJ framework. It can be widely used on
+ * various systems - Mac OS, Linux (x86, x64, ARM), Windows (win32, win64).
+ *
  * @author Bartosz Firyn (SarXos)
  */
 public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport {
@@ -68,7 +67,7 @@ public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport
 
 		/**
 		 * Return camera devices.
-		 * 
+		 *
 		 * @param grabber the native grabber to use for search
 		 * @return Camera devices.
 		 */
@@ -135,7 +134,7 @@ public class WebcamDefaultDriver implements WebcamDriver, WebcamDiscoverySupport
 
 	@Override
 	public long getScanInterval() {
-		return 3000;
+		return DEFAULT_SCAN_INTERVAL;
 	}
 
 	@Override

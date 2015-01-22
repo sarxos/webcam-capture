@@ -19,10 +19,10 @@ public class WebcamPanelExample {
 
 		WebcamPanel panel = new WebcamPanel(webcam);
 		panel.setFPSDisplayed(true);
+		panel.setImageSizeDisplayed(true);
 
 		JFrame window = new JFrame("Webcam Panel");
 		window.add(panel);
-		window.setResizable(false);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.pack();
 		window.setVisible(true);

@@ -75,6 +75,7 @@ public class VlcjDirectTest {
 		ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 		ComponentSampleModel sampleModel = new ComponentSampleModel(dataType, width, height, pixelStride, scanlineStride, bgrBandOffsets);
 		ComponentColorModel colorModel = new ComponentColorModel(colorSpace, bits, false, false, transparency, dataType);
+
 		DataBufferByte dataBuffer = new DataBufferByte(data, bytes.length, offsets);
 		WritableRaster raster = Raster.createWritableRaster(sampleModel, dataBuffer, null);
 		BufferedImage image = new BufferedImage(colorModel, raster, false, null);
@@ -119,7 +120,6 @@ public class VlcjDirectTest {
 			":v4l2-width=320",
 			":v4l2-height=240",
 			":v4l2-fps=30",
-			":v4l2-quality=20",
 			":v4l2-adev=none",
 		};
 

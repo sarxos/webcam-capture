@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.medialist.MediaList;
 import uk.co.caprica.vlcj.medialist.MediaListItem;
@@ -26,16 +29,16 @@ import com.github.sarxos.webcam.util.OsUtils;
  */
 public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 
+	/**
+	 * I'm the logger.
+	 */
+	private static final Logger LOG = LoggerFactory.getLogger(VlcjDriver.class);
+
 	static {
 		if ("true".equals(System.getProperty("webcam.debug"))) {
 			System.setProperty("vlcj.log", "DEBUG");
 		}
 	}
-
-	/**
-	 * Default webcam discovery scan interval in milliseconds.
-	 */
-	public static final long DEFAULT_SCAN_INTERVAL = 3000;
 
 	/**
 	 * Are natives initialized.
@@ -92,6 +95,8 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 	@Override
 	public List<WebcamDevice> getDevices() {
 
+		LOG.debug("Searching devices");
+
 		if (OsUtils.getOS() == OsUtils.WIN) {
 			System.err.println("WARNING: VLCj does not support webcam devices discovery on Windows platform");
 		}
@@ -112,6 +117,9 @@ public class VlcjDriver implements WebcamDriver, WebcamDiscoverySupport {
 			List<MediaListItem> videoDevices = videoDeviceList.items();
 
 			for (MediaListItem item : videoDevices) {
+
+				LOG.debug("Found item {}", item);
+
 				devices.add(mediaListItemToDevice(item));
 			}
 

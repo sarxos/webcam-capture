@@ -1,11 +1,11 @@
-# Webcam Capture API for Java
+# Webcam Capture API
 
 This library allows you to use your build-in or external webcam directly from Java. It's designed to abstract commonly used camera features and support multiple capturing farmeworks.
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.sarxos/webcam-capture/badge.svg)](http://search.maven.org/#artifactdetails|com.github.sarxos|webcam-capture|0.3.10|bundle)
 [![Build Status](https://img.shields.io/travis/sarxos/webcam-capture.svg?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 [![Coverage Status](https://img.shields.io/coveralls/sarxos/webcam-capture.svg?branch=master)](https://coveralls.io/r/sarxos/webcam-capture?branch=master)
-[![Ohloh Stats](https://img.shields.io/badge/ohloh-%24%20243k%2019.7%20kNCSL-blue.svg)](https://www.ohloh.net/p/java-webcam-capture)
+[![Ohloh Stats](https://img.shields.io/badge/ohloh-19.7kNCSL-blue.svg)](https://www.ohloh.net/p/java-webcam-capture)
 
 ## Features
 
@@ -27,7 +27,7 @@ This library allows you to use your build-in or external webcam directly from Ja
   * [Freedom for Media in Java (FMJ)](http://fmj-sf.net/),
   * [OpenCV](http://opencv.org/) via [JavaCV](https://github.com/bytedeco/javacv),
   * [VLC](http://www.videolan.org/vlc/) via [vlcj](http://www.capricasoftware.co.uk/projects/vlcj/index.html),
-  * [GStreamer](http://gstreamer.freedesktop.org/) via [gstreamer-java](https://code.google.com/p/gstreamer-java/)
+  * [GStreamer](http://gstreamer.freedesktop.org/) (0.10.x only) via [gstreamer-java](https://code.google.com/p/gstreamer-java/)
   * MJPEG IP Cameras,
 
 ## Raspberry PI
@@ -150,15 +150,15 @@ List of additional capture drivers includes:
 
 | Driver Name     | Stable | Central | Description                             |
 |-----------------|--------|---------|-----------------------------------------|
-| [ipcam][]       | yes    | yes     | IP / network camera driver              |
-| [gstreamer][]  | yes    | no      | Driver for [GStreamer][] framework      |
-| [openimaj][]   | yes    | no      | Driver for [OpenIMAJ][] framework       |
-| [v4l4j][]      | yes    | no      | Driver for [V4L4j][] project            |
-| [jmf][]        | yes    | yes     | Driver for [JMF][] / [FMJ][] frameworks |
-| [lti-civil][]  | yes    | yes     | Driver for [LTI-CIVIL][] library        |
-| [javacv][]     | no     | no      | Driver for [JavaCV][] library           |
-| [vlcj][]       | no     | no      | Driver for [VLCj][] library             |
-| [ffmpeg-cli][] | exp    | no      | Driver for [FFmpeg][] [CLI][] tool      |
+| [ipcam][]       | yes    | yes     | Driver for IP / network camera          |
+| [gstreamer][]   | yes    | no      | Driver for [GStreamer][] framework      |
+| [openimaj][]    | yes    | no      | Driver for [OpenIMAJ][] framework       |
+| [v4l4j][]       | yes    | no      | Driver for [V4L4j][] library            |
+| [jmf][]         | yes    | yes     | Driver for [JMF][] / [FMJ][] frameworks |
+| [lti-civil][]   | yes    | yes     | Driver for [LTI-CIVIL][] library        |
+| [javacv][]      | no     | no      | Driver for [JavaCV][] library           |
+| [vlcj][]        | yes    | yes     | Driver for [vlcj][] library             |
+| [ffmpeg-cli][]  | exp    | no      | Driver for [FFmpeg][] [CLI][] tool      |
 
 * Central = Maven Central Repository
 * _exp_ = experimental
@@ -190,7 +190,7 @@ I initially started working on Webcam Capture as a simple proof-of-concept after
 
 ## License
 
-Copyright (C) 2012 - 2015 Bartosz Firyn
+Copyright (C) 2012 - 2015 Bartosz Firyn (https://github.com/sarxos)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
