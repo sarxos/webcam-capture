@@ -149,8 +149,13 @@ public class WebcamMotionDetector {
 	/**
 	 * Previously captured image.
 	 */
-	private BufferedImage previous = null;
+	private BufferedImage previousOriginal = null;
 
+	/**
+	 * Previously captured image with blur and gray filters applied.
+	 */
+	private BufferedImage previousModified = null;
+	
 	/**
 	 * Webcam to be used to detect motion.
 	 */
@@ -279,30 +284,30 @@ public class WebcamMotionDetector {
 			return;
 		}
 
-		BufferedImage current = webcam.getImage();
+		BufferedImage currentOriginal = webcam.getImage();
 
-		if (current == null) {
+		if (currentOriginal == null) {
 			motion = false;
 			return;
 		}
 
-		current = blur.filter(current, null);
-		current = gray.filter(current, null);
+		BufferedImage currentModified = blur.filter(currentOriginal, null);
+		currentModified = gray.filter(currentModified, null);
 
 		int p = 0;
 
 		int cogX = 0;
 		int cogY = 0;
 
-		int w = current.getWidth();
-		int h = current.getHeight();
+		int w = currentModified.getWidth();
+		int h = currentModified.getHeight();
 
-		if (previous != null) {
+		if (previousModified != null) {
 			for (int x = 0; x < w; x++) {
 				for (int y = 0; y < h; y++) {
 
-					int cpx = current.getRGB(x, y);
-					int ppx = previous.getRGB(x, y);
+					int cpx = currentModified.getRGB(x, y);
+					int ppx = previousModified.getRGB(x, y);
 					int pid = combinePixels(cpx, ppx) & 0x000000ff;
 
 					if (pid >= pixelThreshold) {
@@ -323,20 +328,22 @@ public class WebcamMotionDetector {
 			motion = true;
 			lastMotionTimestamp = System.currentTimeMillis();
 
-			notifyMotionListeners();
+			notifyMotionListeners(currentOriginal);
 
 		} else {
 			cog = new Point(w / 2, h / 2);
 		}
 
-		previous = current;
+		previousOriginal = currentOriginal;
+		previousModified = currentModified;
 	}
 
 	/**
 	 * Will notify all attached motion listeners.
+	 * @param image with the motion detected
 	 */
-	private void notifyMotionListeners() {
-		WebcamMotionEvent wme = new WebcamMotionEvent(this, area, cog);
+	private void notifyMotionListeners(BufferedImage currentOriginal) {
+		WebcamMotionEvent wme = new WebcamMotionEvent(this, previousOriginal, currentOriginal, area, cog);
 		for (WebcamMotionListener l : listeners) {
 			try {
 				l.motionDetected(wme);
