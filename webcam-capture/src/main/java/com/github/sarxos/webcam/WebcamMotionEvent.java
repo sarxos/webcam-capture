@@ -1,6 +1,7 @@
 package com.github.sarxos.webcam;
 
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.EventObject;
 
 
@@ -15,6 +16,8 @@ public class WebcamMotionEvent extends EventObject {
 
 	private final double strength;
 	private final Point cog;
+	private final BufferedImage previousImage;
+	private final BufferedImage currentImage;
 
 	/**
 	 * Create detected motion event.
@@ -24,13 +27,26 @@ public class WebcamMotionEvent extends EventObject {
 	 * @param cog center of motion gravity
 	 */
 	public WebcamMotionEvent(WebcamMotionDetector detector, double strength, Point cog) {
+		this(detector, null, null, strength, cog);
+	}
 
+	/**
+	 * Create detected motion event.
+	 *
+	 * @param detector
+	 * @param previousImage
+	 * @param currentImage
+	 * @param strength
+	 * @param cog center of motion gravity
+	 */
+	public WebcamMotionEvent(WebcamMotionDetector detector, BufferedImage previousImage, BufferedImage currentImage, double strength, Point cog) {
 		super(detector);
-
+		this.previousImage = previousImage;
+		this.currentImage = currentImage;
 		this.strength = strength;
 		this.cog = cog;
 	}
-
+	
 	/**
 	 * Get percentage fraction of image covered by motion. 0 is no motion on
 	 * image, and 100 is full image covered by motion.
@@ -47,6 +63,22 @@ public class WebcamMotionEvent extends EventObject {
 
 	public Webcam getWebcam() {
 		return ((WebcamMotionDetector) getSource()).getWebcam();
+	}
+
+	/**
+	 * Returns last image before the motion.
+	 * Instance is shared among the listeners, so if you need to change the image, create a copy. 
+	 */
+	public BufferedImage getPreviousImage() {
+		return previousImage;
+	}
+
+	/**
+	 * Returns image with the motion detected.
+	 * Instance is shared among the listeners, so if you need to change the image, create a copy. 
+	 */
+	public BufferedImage getCurrentImage() {
+		return currentImage;
 	}
 
 	@Override
