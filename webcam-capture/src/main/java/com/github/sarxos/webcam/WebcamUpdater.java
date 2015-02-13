@@ -26,6 +26,46 @@ import com.github.sarxos.webcam.ds.cgt.WebcamGetImageTask;
 public class WebcamUpdater implements Runnable {
 
 	/**
+	 * Implementation of this interface is responsible for calculating the delay
+	 * between 2 image fetching, when the non-blocking (asynchronous) access to the
+	 * webcam is enabled.
+	 */
+	public interface DelayCalculator {
+
+		/**
+		 * Calculates delay before the next image will be fetched from the
+		 * webcam.
+		 * Must return number greater or equal 0. 
+		 * 
+		 * @param snapshotDuration - duration of taking the last image
+		 * @param deviceFps - current FPS obtained from the device, or -1 if the
+		 *            driver doesn't support it
+		 * @return interval (in millis)
+		 */
+		long calculateDelay(long snapshotDuration, double deviceFps);
+	}
+
+	/**
+	 * Default impl of DelayCalculator, based on TARGET_FPS. Returns 0 delay for
+	 * snapshotDuration &gt; 20 millis.
+	 */
+	public static class DefaultDelayCalculator implements DelayCalculator {
+
+		@Override
+		public long calculateDelay(long snapshotDuration, double deviceFps) {
+			// Calculate delay required to achieve target FPS. 
+			// In some cases it can be less than 0 
+			// because camera is not able to serve images as fast as
+			// we would like to. In such case just run with no delay, 
+			// so maximum FPS will be the one supported 
+			// by camera device in the moment.
+
+			long delay = Math.max((1000 / TARGET_FPS) - snapshotDuration, 0);
+			return delay;
+		}
+	}
+
+	/**
 	 * Thread factory for executors used within updater class.
 	 * 
 	 * @author Bartosz Firyn (sarxos)
@@ -84,12 +124,32 @@ public class WebcamUpdater implements Runnable {
 	private volatile boolean imageNew = false;
 
 	/**
-	 * Construct new webcam updater.
+	 * DelayCalculator implementation.
+	 */
+	private final DelayCalculator delayCalculator;
+	
+	/**
+	 * Construct new webcam updater using DefaultDelayCalculator.
 	 * 
 	 * @param webcam the webcam to which updater shall be attached
 	 */
 	protected WebcamUpdater(Webcam webcam) {
+		this(webcam, new DefaultDelayCalculator());
+	}
+
+	/**
+	 * Construct new webcam updater.
+	 * 
+	 * @param webcam the webcam to which updater shall be attached
+	 * @param delayCalculator implementation
+	 */
+	public WebcamUpdater(Webcam webcam, DelayCalculator delayCalculator) {
 		this.webcam = webcam;
+		if (delayCalculator == null) {
+			this.delayCalculator = new DefaultDelayCalculator();
+		} else {
+			this.delayCalculator = delayCalculator;
+		}
 	}
 
 	/**
@@ -172,16 +232,17 @@ public class WebcamUpdater implements Runnable {
 		image.set(img);
 		imageNew = true;
 
-		// Calculate delay required to achieve target FPS. In some cases it can
-		// be less than 0 because camera is not able to serve images as fast as
-		// we would like to. In such case just run with no delay, so maximum FPS
-		// will be the one supported by camera device in the moment.
-
-		long delta = t2 - t1 + 1; // +1 to avoid division by zero
-		long delay = Math.max((1000 / TARGET_FPS) - delta, 0);
-
+		double deviceFps = -1;
 		if (device instanceof WebcamDevice.FPSSource) {
-			fps = ((WebcamDevice.FPSSource) device).getFPS();
+			deviceFps = ((WebcamDevice.FPSSource) device).getFPS();
+		}
+
+		long duration = t2 - t1; 
+		long delay = delayCalculator.calculateDelay(duration, deviceFps);
+		
+		long delta = duration + 1; // +1 to avoid division by zero
+		if (deviceFps >= 0) {
+			fps = deviceFps;
 		} else {
 			fps = (4 * fps + 1000 / delta) / 5;
 		}

@@ -20,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice.BufferAccess;
+import com.github.sarxos.webcam.WebcamUpdater.DefaultDelayCalculator;
+import com.github.sarxos.webcam.WebcamUpdater.DelayCalculator;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
 import com.github.sarxos.webcam.ds.cgt.WebcamCloseTask;
@@ -225,7 +227,7 @@ public class Webcam {
 	 * Open the webcam in blocking (synchronous) mode.
 	 *
 	 * @return True if webcam has been open, false otherwise
-	 * @see #open(boolean)
+	 * @see #open(boolean, DelayCalculator)
 	 * @throws WebcamException when something went wrong
 	 */
 	public boolean open() {
@@ -233,26 +235,53 @@ public class Webcam {
 	}
 
 	/**
-	 * Open the webcam in either blocking (synchronous) or non-blocking (asynchronous) mode.The
-	 * difference between those two modes lies in the image acquisition mechanism.<br>
-	 * <br>
-	 * In blocking mode, when user calls {@link #getImage()} method, device is being queried for new
-	 * image buffer and user have to wait for it to be available.<br>
-	 * <br>
-	 * In non-blocking mode, there is a special thread running in the background which constantly
-	 * fetch new images and cache them internally for further use. This cached instance is returned
-	 * every time when user request new image. Because of that it can be used when timeing is very
-	 * important, because all users calls for new image do not have to wait on device response. By
-	 * using this mode user should be aware of the fact that in some cases, when two consecutive
-	 * calls to get new image are executed more often than webcam device can serve them, the same
-	 * image instance will be returned. User should use {@link #isImageNew()} method to distinguish
-	 * if returned image is not the same as the previous one.
-	 *
+	 * Open the webcam in either blocking (synchronous) or non-blocking
+	 * (asynchronous) mode. If the non-blocking mode is enabled the
+	 * DefaultDelayCalculator is used for calculating delay between two image
+	 * fetching.
+	 * 
 	 * @param async true for non-blocking mode, false for blocking
-	 * @return True if webcam has been open
+	 * @return True if webcam has been open, false otherwise
+	 * @see #open(boolean, DelayCalculator)
 	 * @throws WebcamException when something went wrong
 	 */
 	public boolean open(boolean async) {
+		return open(async, new DefaultDelayCalculator());
+	}
+	
+	/**
+	 * Open the webcam in either blocking (synchronous) or non-blocking
+	 * (asynchronous) mode.The difference between those two modes lies in the
+	 * image acquisition mechanism.<br>
+	 * <br>
+	 * In blocking mode, when user calls {@link #getImage()} method, device is
+	 * being queried for new image buffer and user have to wait for it to be
+	 * available.<br>
+	 * <br>
+	 * In non-blocking mode, there is a special thread running in the background
+	 * which constantly fetch new images and cache them internally for further
+	 * use. This cached instance is returned every time when user request new
+	 * image. Because of that it can be used when timeing is very important,
+	 * because all users calls for new image do not have to wait on device
+	 * response. By using this mode user should be aware of the fact that in
+	 * some cases, when two consecutive calls to get new image are executed more
+	 * often than webcam device can serve them, the same image instance will be
+	 * returned. User should use {@link #isImageNew()} method to distinguish if
+	 * returned image is not the same as the previous one. <br>
+	 * The background thread uses implementation of DelayCalculator interface to
+	 * calculate delay between two image fetching. Custom implementation may be
+	 * specified as parameter of this method. If the non-blocking mode is
+	 * enabled and no DelayCalculator is specified, DefaultDelayCalculator will
+	 * be used.
+	 * 
+	 * @param async true for non-blocking mode, false for blocking
+	 * @param delayCalculator responsible for calculating delay between two
+	 *            image fetching in non-blocking mode; It's ignored in blocking
+	 *            mode.
+	 * @return True if webcam has been open
+	 * @throws WebcamException when something went wrong
+	 */
+	public boolean open(boolean async, DelayCalculator delayCalculator) {
 
 		if (open.compareAndSet(false, true)) {
 
@@ -301,7 +330,7 @@ public class Webcam {
 
 			if (asynchronous = async) {
 				if (updater == null) {
-					updater = new WebcamUpdater(this);
+					updater = new WebcamUpdater(this, delayCalculator);
 				}
 				updater.start();
 			}
