@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.github.sarxos</groupId>
+		<artifactId>webcam-capture-examples</artifactId>
+		<version>0.3.11-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>webcam-capture-example-websockets</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Webcam Capture - WebSockets Example</name>
+	<description>Example demonstrating how to transmit images over WebSockets from webcam server to the web application frontend</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.github.sarxos</groupId>
+			<artifactId>webcam-capture-driver-ipcam</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.aggregate</groupId>
+			<artifactId>jetty-all</artifactId>
+			<version>9.2.7.v20150116</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.5.1</version>
+		</dependency>
+	</dependencies>
+
+</project>

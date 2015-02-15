@@ -1,0 +1,16 @@
+
+.wrapper {
+	margin-left: auto;
+	margin-right: auto;
+	width: 1084px;
+	text-align: center;
+}
+
+img {
+	margin-left: 8px;
+	margin-bottom: 8px;
+	width: 348px;
+	height: 198px;
+	box-shadow: 0 0 16px #444;
+	border: 1px solid #fff;
+}
