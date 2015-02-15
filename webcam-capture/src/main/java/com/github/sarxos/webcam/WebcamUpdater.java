@@ -30,7 +30,7 @@ public class WebcamUpdater implements Runnable {
 	 * between 2 image fetching, when the non-blocking (asynchronous) access to the
 	 * webcam is enabled.
 	 */
-	public interface DelayCalculator {
+	public static interface DelayCalculator {
 
 		/**
 		 * Calculates delay before the next image will be fetched from the
