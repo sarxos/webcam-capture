@@ -4,8 +4,20 @@ This example demonstrates how images feed can be transported over the WebSocket.
  
 ## What Is This
 
+This example has been prepared to demonstrate very primitive way to transport images from server to frontend using HTML5 WebSockets.
+
+After the ```WebcamWebSocketsExample``` is started, the server starts on port 8123. Front end can subscribe to new images by accessing ```ws://127.0.0.1:8123/```.
+
+The example is composed of server and frontend parts:
+
+* [Server - Java files](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-websockets/src/main/java)
+* [Frontend - HTML, JavaScript and CSS](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-websockets/src/main/html)
 
 ## Screenshoots
+
+![web page](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-examples/webcam-capture-websockets/src/etc/resources/screen.png?raw=true "web page")
+
+![initializing](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-examples/webcam-capture-websockets/src/etc/resources/screen2.png?raw=true "initializing")
 
 
 ## License
