@@ -138,6 +138,7 @@ And here are some more advanced examples, few with quite fancy GUI.
 * [How to use Webcam Capture API in JavaFX and FXML](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-javafx-fxml)
 * [How to use Webcam Capture API in SWT](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-swt-awt)
 * [How to use ```WebcamImageTransformer``` to draw effects directly on image from camera](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-transformer)
+* [How to use Webcam Capture API and WebSockets to transport images from server to web client](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-websockets)
 
 ## Capture Drivers
 
