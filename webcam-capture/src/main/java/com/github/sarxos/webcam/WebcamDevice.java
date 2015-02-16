@@ -3,6 +3,7 @@ package com.github.sarxos.webcam;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
+import java.util.Map;
 
 
 /**
@@ -56,6 +57,27 @@ public interface WebcamDevice {
 
 	}
 
+	/**
+	 * This interface may be implemented by devices which expect any specific
+	 * parameters.
+	 * 
+	 * @author Martin Krok (krok32) 
+	 */
+	public static interface Configurable {
+
+		/**
+		 * Sets device parameters. Each device implementation may accept its own
+		 * set of parameters. All accepted keys, value types, possible values
+		 * and defaults should be reasonably documented by the implementor. May
+		 * be called before the open method or later in dependence of the device
+		 * implementation.
+		 * 
+		 * @param parameters - Map of parameters changing device defaults
+		 * @see Webcam#setParameters(Map)
+		 */
+		void setParameters(Map<String, ?> parameters);
+	}
+	
 	/**
 	 * Get device name.
 	 * 

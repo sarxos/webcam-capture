@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice.BufferAccess;
+import com.github.sarxos.webcam.WebcamDevice.Configurable;
 import com.github.sarxos.webcam.WebcamUpdater.DefaultDelayCalculator;
 import com.github.sarxos.webcam.WebcamUpdater.DelayCalculator;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
@@ -764,6 +766,23 @@ public class Webcam {
 		}
 	}
 
+	/**
+	 * If the underlying device implements Configurable interface, specified
+	 * parameters are passed to it. May be called before the open method or
+	 * later in dependence of the device implementation.
+	 * 
+	 * @param parameters - Map of parameters changing device defaults
+	 * @see Configurable
+	 */
+	public void setParameters(Map<String, ?> parameters) {
+		WebcamDevice device = getDevice();
+		if (device instanceof Configurable) {
+			((Configurable) device).setParameters(parameters);
+		} else {
+			LOG.debug("Webcam device {} is not configurable", device);
+		}
+	}
+	
 	/**
 	 * Is webcam ready to be read.
 	 *
