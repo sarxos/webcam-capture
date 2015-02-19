@@ -10,7 +10,6 @@ public class V4l4jViewerExample {
 	}
 
 	public static void main(String[] args) {
-
 		new WebcamViewer();
 	}
 }

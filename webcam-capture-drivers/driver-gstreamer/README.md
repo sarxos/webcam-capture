@@ -11,7 +11,7 @@ on Windows or use _apt-get_, _yum_ or other packages manager to install it on Li
 Currently supported GStreamer version is 0.10.x, so make sure you are installing
 the correct one! It is **not** compatible with GStreamer 1.0 and above!
 
-## Supported
+## Supported Platforms
 
 * Windows
 * Linux
@@ -27,16 +27,10 @@ The latest **stable** version ZIP bundle can be downloaded [here](http://repo.sa
 Stable:
 
 ```xml
-<repository>
-	<id>SarXos Repository</id>
-	<url>http://www.sarxos.pl/repo/maven2</url>
-</repository>
-```
-```xml
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-gstreamer</artifactId>
-	<version>0.3.10-RC7</version>
+	<version>0.3.10</version>
 </dependency>
 ```
 
@@ -52,7 +46,7 @@ Snapshot:
 <dependency>
     <groupId>com.github.sarxos</groupId>
     <artifactId>webcam-capture-driver-gstreamer</artifactId>
-    <version>0.3.10-SNAPSHOT</version>
+    <version>0.3.11-SNAPSHOT</version>
 </dependency>
 ```
 

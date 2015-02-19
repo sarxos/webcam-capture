@@ -12,16 +12,8 @@
 	<packaging>jar</packaging>
 	
 	<name>Webcam Capture - V4L4J Driver</name>
-	<description>Webcam Capture driver using V4L2 Java binding (V4L4J framework) to grab frames from camera devices</description>
+	<description>Webcam Capture driver using V4L2 Java binding (V4L4J project) to grab frames from camera devices</description>
 
-	<repositories>
-		<repository>
-			<id>maven-v4l4j-github-repo</id>
-			<name>Maven Repository on github</name>
-			<url>https://raw.githubusercontent.com/sarxos/v4l4j-wc/master/maven2</url>
-		</repository>
-	</repositories>
-	
 	<dependencies>
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
@@ -29,9 +21,9 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>au.edu.jcu</groupId>
+			<groupId>com.github.sarxos</groupId>
 			<artifactId>v4l4j</artifactId>
-			<version>0.9.1-WC</version>
+			<version>0.9.1-r507</version>
 		</dependency>
 	</dependencies>
 
@@ -40,6 +32,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<altDeploymentRepository></altDeploymentRepository>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

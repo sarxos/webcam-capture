@@ -7,8 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import au.edu.jcu.v4l4j.V4L4J;
-
+import com.github.sarxos.v4l4j.V4L4J;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
 import com.github.sarxos.webcam.util.NixVideoDevUtils;
@@ -31,12 +30,7 @@ public class V4l4jDriver implements WebcamDriver {
 	 * Initialize customized V4L4J libraries.
 	 */
 	static {
-		try {
-			Class.forName("au.edu.jcu.v4l4j.V4L4J");
-			V4L4J.init();
-		} catch (ClassNotFoundException e) {
-			LOG.warn("Modified V4L4J has not been found in classpath");
-		}
+		V4L4J.init();
 	}
 
 	@Override
