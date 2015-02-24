@@ -1,25 +1,29 @@
 # Webcam Capture API
 
-This library allows you to use your build-in or external webcam directly from Java. It's designed to abstract commonly used camera features and support multiple capturing farmeworks.
+This library allows you to use your build-in or external webcam directly from Java. It's designed to abstract commonly used camera features and support various capturing farmeworks.
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.sarxos/webcam-capture/badge.svg)](http://search.maven.org/#artifactdetails|com.github.sarxos|webcam-capture|0.3.10|bundle)
 [![Build Status](https://img.shields.io/travis/sarxos/webcam-capture.svg?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
 [![Coverage Status](https://img.shields.io/coveralls/sarxos/webcam-capture.svg?branch=master)](https://coveralls.io/r/sarxos/webcam-capture?branch=master)
 
+## Rationale
+
+Assume situation when your code depends on some capturing framework, but suddenly you have to drop it and use different, maybe newer one (e.g. replace archaic JMF with newest GStreamer). By doing this you will have to rewrite significant piece of your code because these frameworks are completely differend and not compatible at all. This is where Webcam Capture API comes to save the world - it was created to remove the burden of such situations so you do not have to rewrite your code never again, but instead you can simply switch the driver class to different one.
+
 ## Features
 
-1. Simple, thread-safe and non-blocking API,
-2. No additional software required,
-3. Supports multiple platforms (Windows, Linux, Mac OS, etc) and various architectures (32-bit, 64-bit, ARM),
-4. Get images from build-in or USB-connected PC webcams, 
-5. Get images from IP / network cameras (as MJPEG or JPEG),
-6. Offers ready to use motion detector,
-7. All required JARs Available in Maven Central,
-8. Offers possibility to expose images as MJPEG stream,
-9. It is available as Maven dependency or standalone ZIP binary (with all dependencies included),
-10. Swing component to display video feed from camera,
-11. Swing component to choose camera (drop down),
-12. Multiple capturing frameworks are supported:
+* Simple, thread-safe and non-blocking API,
+* No additional software required,
+* Supports multiple platforms (Windows, Linux, Mac OS, etc) and various architectures (32-bit, 64-bit, ARM),
+* Get images from build-in or USB-connected PC webcams, 
+* Get images from IP / network cameras (as MJPEG or JPEG),
+* Offers ready to use motion detector,
+* All required JARs Available in Maven Central,
+* Offers possibility to expose images as MJPEG stream,
+* It is available as Maven dependency or standalone ZIP binary (with all dependencies included),
+* Swing component to display video feed from camera,
+* Swing component to choose camera (drop down),
+* Multiple capturing frameworks are supported:
   * [OpenIMAJ](http://www.openimaj.org/),
   * [LTI CIVIL](http://sourceforge.net/projects/lti-civil/),
   * [Java Media Framework (JMF)](http://www.oracle.com/technetwork/java/javase/tech/index-jsp-140239.html),
@@ -28,6 +32,10 @@ This library allows you to use your build-in or external webcam directly from Ja
   * [VLC](http://www.videolan.org/vlc/) via [vlcj](http://www.capricasoftware.co.uk/projects/vlcj/index.html),
   * [GStreamer](http://gstreamer.freedesktop.org/) (0.10.x only) via [gstreamer-java](https://code.google.com/p/gstreamer-java/)
   * MJPEG IP Cameras,
+
+The latest stable version is: **```0.3.10```**
+
+The latest development version is: **```0.3.11-SNAPSHOT```**
 
 ## Raspberry PI
 
@@ -142,29 +150,29 @@ And here are some more advanced examples, few with quite fancy GUI.
 
 ## Capture Drivers
 
-Imagine situation when you depend on some framework, but suddenly have to drop it and use different one (e.g. replace archaic JMF with newest GStreamer). By doing this one have to rewrite significant piece of code because new framework is completely incompatible with previous one. Here Webcam Capture API comes to help you! This library has been created to remove the burden of situation when you would like to write your application with intention to replace capturing framework somewhere in the future.
+Webcam Capture API defines ```WebcamDriver``` interface which has been already implemented in several _capturing drivers_ build on top of well-known frameworks used to work with multimedia and cameras. Complete list can be found below.
 
-Webcam Capture API defined ```WebcamDriver``` interface which has been already implemented in several _capturing drivers_ build on top of well-known frameworks used to work with multimedia and cameras. Complete list can be found below. 
-
-By default, Webcam Capture library uses default driver which consists of small, refined part of awesome [OpenIMAJ](http://sourceforge.net/p/openimaj/home/OpenIMAJ/) framework wrapped in thread-safe container which allows it to be used in multithreaded applications. However there are more ready-to-use drivers which can be used as a replacement or addition to the default one. By utilizing those drivers Webcam Capture can be extended with various new features (e.g. IP camera support). 
+By default (if other driver is not specified) library uses **default driver** which consists of small, refined part of awesome [OpenIMAJ](http://sourceforge.net/p/openimaj/home/OpenIMAJ/) framework wrapped in thread-safe container. However, there are more ready-to-use drivers which can be used as a replacement or addition to the default one. By utilizing those drivers Webcam Capture can be extended with various new features (e.g. IP camera support). 
 
 List of additional capture drivers includes:
 
 | Driver Name     | Stable | Central | Description                             |
 |-----------------|--------|---------|-----------------------------------------|
 | [ipcam][]       | yes    | yes     | Driver for IP / network camera          |
-| [gstreamer][]   | yes    | no      | Driver for [GStreamer][] framework      |
-| [openimaj][]    | yes    | no      | Driver for [OpenIMAJ][] framework       |
+| [fswebcam][]    | yes    | yes     | Driver for [FSWebcam][] [CLI][] tool    |
+| [gstreamer][]   | yes    | yes     | Driver for [GStreamer][] framework      |
+| [openimaj][]    | yes    | yes     | Driver for [OpenIMAJ][] framework       |
 | [v4l4j][]       | yes    | no      | Driver for [V4L4j][] library            |
 | [jmf][]         | yes    | yes     | Driver for [JMF][] / [FMJ][] frameworks |
 | [lti-civil][]   | yes    | yes     | Driver for [LTI-CIVIL][] library        |
-| [javacv][]      | no     | no      | Driver for [JavaCV][] library           |
 | [vlcj][]        | yes    | yes     | Driver for [vlcj][] library             |
-| [ffmpeg-cli][]  | exp    | no      | Driver for [FFmpeg][] [CLI][] tool      |
+| [javacv][]      | yes    | yes     | Driver for [JavaCV][] library           |
+| [ffmpeg-cli][]  | poc    | no      | Driver for [FFmpeg][] [CLI][] tool      |
 
-* Central = Maven Central Repository
-* _exp_ = experimental
+* Central = available in Maven Central Repository
+* _poc_ = Proof of Concept
 
+[FSWebcam]:   http://www.firestorm.cx/fswebcam/
 [GStreamer]:  http://gstreamer.freedesktop.org/
 [OpenIMAJ]:   http://www.openimaj.org/
 [V4L4j]:      http://code.google.com/p/v4l4j/
@@ -176,6 +184,7 @@ List of additional capture drivers includes:
 [FFmpeg]:     http://www.ffmpeg.org/
 [CLI]:        http://en.wikipedia.org/wiki/Command-line_interface
 
+[fswebcam]:   https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-fswebcam
 [ipcam]:      https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-ipcam
 [gstreamer]:  https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-gstreamer
 [openimaj]:   https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-openimaj
@@ -185,6 +194,232 @@ List of additional capture drivers includes:
 [javacv]:     https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-javacv
 [vlcj]:       https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-vlcj
 [ffmpeg-cli]: https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-ffmpeg-cli
+
+### Default Driver
+
+If no other driver is specified, the default driver will be used. It consists of small, refined part of awesome [OpenIMAJ][] framework wrapped in thread-safe container.
+
+### IP Camera Driver
+
+This capture driver gives possibility to access IP camera devices and handle images in form of JPEG pictures or MJPEG streams.
+
+Maven dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-ipcam</artifactId>
+    <version>{webcam-capture-version-here}</version>
+</dependency>
+```
+
+How to use:
+
+```java
+Webcam.setDriver(new IpCamDriver());
+```
+
+More details and binaries download can be found on dedicated [webcam-capture-driver-ipcam](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-ipcam) page.
+
+### Fswebcam Driver
+
+This capture driver gives possibility to use CLI tool called ```fswebcam``` (written by Philip Heron) to access UVC devices connected to the computer. It works only on *nix and requires tool to be installed on the environment where driver is used.
+
+Maven dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-fswebcam</artifactId>
+    <version>{webcam-capture-version-here}</version>
+</dependency>
+```
+
+How to use:
+
+```java
+Webcam.setDriver(new FsWebcamDriver());
+```
+
+More details on how to use, how to install ```fswebcam``` and where binaries can be downloaed, can be found on dedicated [webcam-capture-driver-fswebcam](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-fswebcam) page.
+
+### GStreamer Driver
+
+This capture driver gives possibility to use 
+[GStreamer][] to access UVC camera devices connected to computer. It works on Windows and Linux only.
+
+Maven dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-gstreamer</artifactId>
+    <version>{webcam-capture-version-here}</version>
+</dependency>
+```
+
+How to use:
+
+```java
+Webcam.setDriver(new GStreamerDriver());
+```
+
+More details on how to use, how to install GStreamer and where binaries can be downloaded, can be found on dedicated [webcam-capture-driver-gstreamer](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-gstreamer) page.
+
+### OpenIMAJ Driver
+
+This capture driver gives possibility to use [OpenIMAJ][] to access UVC camera devices connected to the computer.
+
+Maven dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-openimaj</artifactId>
+    <version>{webcam-capture-version-here}</version>
+</dependency>
+```
+
+How to use:
+
+```java
+Webcam.setDriver(new OpenImajDriver());
+```
+
+More details on how to use it and where binaries can be downloaded, can be found on dedicated [webcam-capture-driver-openimaj](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-openimaj) page.
+
+### V4L4j Driver
+
+This is capture driver which uses [V4L4j][] project to access UVC camera devices. It works on Linux only and it seems like it is most suitable for use on Raspberry Pi.
+
+Maven dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-v4l4j</artifactId>
+    <version>{webcam-capture-version-here}</version>
+</dependency>
+```
+
+How to use:
+
+```java
+Webcam.setDriver(new V4l4jDriver());
+```
+
+More details on how to use it and where necessary binaries can be downloaded, can be found on dedicated [webcam-capture-driver-v4l4j](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-v4l4j) page.
+
+### JMF Driver
+
+This is capture driver which uses [JMF][] (Java Media Framework) to access UVC webcam devices. The JMF needs to be installed and configured on the PC before this driver can be used. It can also be used alternatively with the [FMJ][] project.
+
+Maven dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-jmf</artifactId>
+    <version>{webcam-capture-version-here}</version>
+</dependency>
+```
+
+How to use:
+
+```java
+Webcam.setDriver(new JmfDriver());
+```
+
+More details on how to use it, install, and where necessary binaries can be downloaded, can be found on dedicated [webcam-capture-driver-jmf](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-jmf) page.
+
+### LTI-CIVIL Driver
+
+This is capture driver designed to leverage capabilities of [LTI-CIVIL](http://sourceforge.net/projects/lti-civil/) project (by Larson Technologies Inc.) and use it to access wide range of UVC devices. It works on 32-bit architectures only.
+
+Maven dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-lti-civil</artifactId>
+    <version>{webcam-capture-version-here}</version>
+</dependency>
+```
+
+How to use it:
+
+```java
+Webcam.setDriver(new LtiCivilDriver());
+```
+
+More details on how to use it, and where necessary binaries can be downloaded, can be found on dedicated [webcam-capture-driver-lti-civil](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-lti-civil) page.
+
+### VLCj Driver
+
+This is capture driver which uses [VLCj][] library from [Caprica Software Limited](http://www.capricasoftware.co.uk/) to gain access to the UVC camera device.
+
+Maven dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-vlcj</artifactId>
+    <version>{webcam-capture-version-here}</version>
+</dependency>
+```
+
+How to use it:
+
+```java
+Webcam.setDriver(new VlcjDriver());
+```
+
+More details on how to use it, how to install, and where necessary binaries can be downloaded, can be found on dedicated [webcam-capture-driver-vlcj](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-vlcj) page.
+
+### JavaCV Driver
+
+This is capture driver which uses [JavaCV][] binding for [OpenCV][] to gain access to the UVC camera device.
+
+Maven dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-javacv</artifactId>
+    <version>{webcam-capture-version-here}</version>
+</dependency>
+```
+
+How to use it:
+
+```java
+Webcam.setDriver(new JavaCvDriver());
+```
+
+More details on how to use it, how to install, and where necessary binaries can be downloaded, can be found on dedicated [webcam-capture-driver-javacv](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-javacv) page.
+
+### FFmpeg CLI Driver
+
+This is capture driver which uses ```ffmpeg``` [CLI][] tool from [FFmpeg][] to access UVC camera device. It works on Linux only.
+
+Maven dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-ffmpeg-cli</artifactId>
+    <version>{webcam-capture-version-here}</version>
+</dependency>
+```
+
+How to use it:
+
+```java
+Webcam.setDriver(new FFmpegCliDriver());
+```
+
+More details on how to use it, how to install, and where necessary binaries can be downloaded, can be found on dedicated [webcam-capture-driver-ffmpeg-cli](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-ffmpeg-cli) page.
+
 
 ## History
 
@@ -200,4 +435,4 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-![SarXos](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture/src/etc/resources/sarxos.png "SarXos")
+![sarxos](https://raw.github.com/sarxos/webcam-capture/master/webcam-capture/src/etc/resources/sarxos.png "sarxos")
