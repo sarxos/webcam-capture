@@ -73,7 +73,19 @@ public enum WebcamResolution {
 	/**
 	 * Size 2048x1536
 	 */
-	QXGA(2048, 1536);
+	QXGA(2048, 1536),
+
+	/**
+	 * Size 2560x1440
+	 */
+	WQHD(2560, 1440),
+
+	/**
+	 * Size 2560x1600
+	 */
+	WQXGA(2560, 1600),
+
+	;
 
 	/**
 	 * Resolution size.
