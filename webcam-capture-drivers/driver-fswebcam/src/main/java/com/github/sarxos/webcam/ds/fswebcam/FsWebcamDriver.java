@@ -19,6 +19,8 @@ public class FsWebcamDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 	private static final VideoDeviceFilenameFilter VFFILTER = new VideoDeviceFilenameFilter();
 
+	private long scanInterval;
+	
 	@Override
 	public List<WebcamDevice> getDevices() {
 
@@ -37,9 +39,16 @@ public class FsWebcamDriver implements WebcamDriver, WebcamDiscoverySupport {
 		return false;
 	}
 
+	/**
+	 * @see FsWebcamDriver#getScanInterval()
+	 */
+	public void setScanInterval(long scanInterval) {
+		this.scanInterval = scanInterval;
+	}
+
 	@Override
 	public long getScanInterval() {
-		return 10000;
+		return scanInterval;
 	}
 
 	@Override

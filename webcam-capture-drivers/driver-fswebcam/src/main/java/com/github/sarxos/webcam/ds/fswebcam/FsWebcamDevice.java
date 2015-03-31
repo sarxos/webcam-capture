@@ -12,6 +12,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -24,11 +27,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamDevice.Configurable;
 import com.github.sarxos.webcam.WebcamExceptionHandler;
 import com.github.sarxos.webcam.WebcamResolution;
 
 
-public class FsWebcamDevice implements WebcamDevice {
+public class FsWebcamDevice implements WebcamDevice, Configurable {
+
+	public static final String PARAM_KEY_COMPRESSION = "compression";
+	public static final String PARAM_KEY_FORMAT = "format";
+	public static final String PARAM_KEY_SKIP = "skip";
+	public static final String PARAM_KEY_FRAMES = "frames";
+	public static final String PARAM_KEY_LOG = "log";
+	public static final String PARAM_KEY_VERBOSE = "verbose";
 
 	public static final class ExecutorThreadFactory implements ThreadFactory {
 
@@ -89,6 +100,7 @@ public class FsWebcamDevice implements WebcamDevice {
 
 	private final File vfile;
 	private final String name;
+	private long counter;
 
 	private Dimension resolution = null;
 	private Process process = null;
@@ -99,6 +111,13 @@ public class FsWebcamDevice implements WebcamDevice {
 	private AtomicBoolean open = new AtomicBoolean(false);
 	private AtomicBoolean disposed = new AtomicBoolean(false);
 
+	private String logFilePathString;
+	private int frames = 1;
+	private int skip = 0;
+	private String format = "jpeg";
+	private int compression = -1;
+	private boolean verbose = false;
+	
 	protected FsWebcamDevice(File vfile) {
 		this.vfile = vfile;
 		this.name = vfile.getAbsolutePath();
@@ -175,46 +194,17 @@ public class FsWebcamDevice implements WebcamDevice {
 
 	@Override
 	public BufferedImage getImage() {
+		counter++;
 
 		if (!open.get()) {
 			return null;
-		}
-
-		//@formatter:off
-		String[] cmd = new String[] { 
-			"/usr/bin/fswebcam", 
-			"--no-banner",                      // only image - no texts, banners, etc
-			"--no-shadow",
-			"--no-title",
-			"--no-subtitle",
-			"--no-timestamp",
-			"--no-info",
-			"--no-underlay",
-			"--no-overlay",
-			"-d", vfile.getAbsolutePath(),      // input video file
-			"-r", getResolutionString(),        // resolution
-			pipe.getAbsolutePath(),             // output file (pipe)
-			LOG.isDebugEnabled() ? "-v" : "",   // enable verbosity if debug mode is enabled
-		};
-		//@formatter:on
-
-		if (LOG.isDebugEnabled()) {
-			StringBuilder sb = new StringBuilder();
-			for (String c : cmd) {
-				sb.append(c).append(' ');
-			}
-			LOG.debug("Invoking command: {}", sb.toString());
 		}
 
 		BufferedImage image = null;
 
 		try {
 
-			process = RT.exec(cmd);
-
-			// print process output
-			EXECUTOR.execute(new StreamReader(process.getInputStream(), false));
-			EXECUTOR.execute(new StreamReader(process.getErrorStream(), true));
+			executeFsWebcamProcess();
 
 			try {
 				dis = new DataInputStream(new FileInputStream(pipe));
@@ -238,14 +228,18 @@ public class FsWebcamDevice implements WebcamDevice {
 
 			process.waitFor();
 
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Image #"+counter+" done");
+			}
 		} catch (IOException e) {
-			LOG.error("Process IO exception", e);
+			LOG.error("Process #"+counter+" IO exception", e);
 		} catch (InterruptedException e) {
 			process.destroy();
 		} finally {
 
 			try {
-				dis.close();
+				if (dis != null)
+					dis.close();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -254,13 +248,63 @@ public class FsWebcamDevice implements WebcamDevice {
 			// call in finally block to reset thread flags
 
 			if (Thread.interrupted()) {
-				throw new RuntimeException("Thread has been interrupted");
+				throw new RuntimeException("Thread has been interrupted #"+counter);
 			}
 		}
 
 		return image;
 	}
 
+	private void executeFsWebcamProcess() throws IOException {
+		//@formatter:off
+		List<String> c = new ArrayList<String>(24);
+		
+		c.add("/usr/bin/fswebcam");
+		c.add("--skip");						// number of skipped images
+		c.add(String.valueOf(skip));
+		c.add("--frames");						// number of images merged to the single output (default 1)
+		c.add(String.valueOf(frames));		
+		c.add("--"+format);						// format jpeg | png						 
+		c.add(String.valueOf(compression));						 
+		c.add("--no-banner");					// only image - no texts, banners, etc
+		c.add("--no-shadow");
+		c.add("--no-title");
+		c.add("--no-subtitle");
+		c.add("--no-timestamp");
+		c.add("--no-info");
+		c.add("--no-underlay");
+		c.add("--no-overlay");
+		c.add("--resolution");					// resolution
+		c.add(getResolutionString());
+		if (verbose) {
+			c.add("--verbose");					 
+		}
+		if (logFilePathString != null) {
+			c.add("--log");						// log file 
+			c.add(logFilePathString);		
+		}
+		c.add("--device");						// input video file
+		c.add(this.vfile.getAbsolutePath());	
+		c.add(pipe.getAbsolutePath());			// output file (pipe)
+		//@formatter:on
+
+		String[] cmd = c.toArray(new String[c.size()]);
+		
+		if (LOG.isDebugEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			for (String cc : cmd) {
+				sb.append(cc).append(' ');
+			}
+			LOG.debug("Invoking command: #"+counter+" \n"+ sb.toString());
+		}
+		
+		process = RT.exec(cmd);
+
+		// print process output
+		EXECUTOR.execute(new StreamReader(process.getInputStream(), false));
+		EXECUTOR.execute(new StreamReader(process.getErrorStream(), true));
+	}
+	
 	@Override
 	public synchronized void open() {
 
@@ -346,4 +390,50 @@ public class FsWebcamDevice implements WebcamDevice {
 	public String toString() {
 		return "video device " + name;
 	}
+
+	/**
+	 * Call this method to set device specific parameters.
+	 * Should be called before {@link #open()} method.
+	 * For details about config options, please see fswebcam manual.
+	 * <ul>
+	 * <li>verbose - Boolean type - If true, fswebcam command-line option --verbose is set.  
+	 * <li>log - String type - If set, it's passed to fswebcam as value of command-line option --log. 
+	 * <li>frames - Integer type - If set, it's passed to fswebcam as value of command-line option --frames.
+	 * <li>skip - Integer type - If set, it's passed to fswebcam as value of command-line option --skip.
+	 * <li>format - String type - Possible values are: "jpeg" (default) | "png". Passed to fswebcam as option: --[format]
+	 * <li>compression - Integer type - Passed to fswebcam together with format --[format] [compression]. Default is -1, which means automatic.
+	 * </ul>
+	 * All Boolean or Integer types may be also specified as String values. E.g. both "true" String or Boolean.TRUE are valid values.
+	 */
+	@Override
+	public void setParameters(Map<String, ?> parameters) {
+		if (parameters != null) {
+			Object value = null;
+			value = parameters.get(PARAM_KEY_VERBOSE);
+			if (value != null) {
+				verbose  = Boolean.parseBoolean(String.valueOf(value)); 
+			}
+			value = parameters.get(PARAM_KEY_LOG);
+			if (value != null) {
+				logFilePathString = String.valueOf(value); 
+			}
+			value = parameters.get(PARAM_KEY_FRAMES);
+			if (value != null) {
+				frames  = Integer.parseInt(String.valueOf(value)); 
+			}
+			value = parameters.get(PARAM_KEY_SKIP);
+			if (value != null) {
+				skip  = Integer.parseInt(String.valueOf(value)); 
+			}
+			value = parameters.get(PARAM_KEY_FORMAT);
+			if (value != null) {
+				format = String.valueOf(value); 
+			}
+			value = parameters.get(PARAM_KEY_COMPRESSION);
+			if (value != null) {
+				compression  = Integer.parseInt(String.valueOf(value)); 
+			}
+		}
+	}
+	
 }
