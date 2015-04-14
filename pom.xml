@@ -4,12 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.sonatype.oss</groupId>
+		<groupId>com.github.sarxos</groupId>
 		<artifactId>oss-parent</artifactId>
-		<version>7</version>
+		<version>2</version>
 	</parent>
 
-	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-parent</artifactId>
 	<version>0.3.11-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -17,7 +16,7 @@
 	<name>Webcam Capture Parent POM</name>
 	<description>This is Webcam Capture root POM</description>
 	<inceptionYear>2012</inceptionYear>
-	<url>https://github.com/sarxos/${project.repoid}</url>
+	<url>https://github.com/sarxos/webcam-capture</url>
 
 	<modules>
 		<module>webcam-capture</module>
@@ -35,40 +34,21 @@
 		<url>https://github.com/sarxos</url>
 	</organization>
 
-	<licenses>
-		<license>
-			<name>MIT License</name>
-			<url>http://webcam-capture.sarxos.pl/LICENSE.txt</url>
-			<distribution>repo,manual</distribution>
-		</license>
-	</licenses>
-
-	<distributionManagement>
-		<repository>
-			<id>${repo-id}</id>
-			<url>${repo-url}</url>
-		</repository>
-		<site>
-			<id>webcam-capture-site</id>
-			<url>ftp://ftp.sarxos.pl</url>
-		</site>
-	</distributionManagement>
-
 	<scm>
-		<connection>scm:git:git@github.com:sarxos/${project.repoid}.git</connection>
-		<developerConnection>scm:git:git@github.com:sarxos/${project.repoid}.git</developerConnection>
-		<url>git@github.com:sarxos/${project.repoid}.git</url>
+		<connection>scm:git:git@github.com:sarxos/webcam-capture.git</connection>
+		<developerConnection>scm:git:git@github.com:sarxos/webcam-capture.git</developerConnection>
+		<url>git@github.com:sarxos/webcam-capture.git</url>
 		<tag>HEAD</tag>
 	</scm>
 
 	<issueManagement>
 		<system>GitHub Issues Manager</system>
-		<url>https://github.com/sarxos/${project.repoid}/issues</url>
+		<url>https://github.com/sarxos/webcam-capture/issues</url>
 	</issueManagement>
 
 	<ciManagement>
 		<system>Travis CI</system>
-		<url>http://travis-ci.org/#!/sarxos/${project.repoid}</url>
+		<url>http://travis-ci.org/#!/sarxos/webcam-capture</url>
 	</ciManagement>
 
 	<developers>
@@ -76,14 +56,7 @@
 			<id>sarxos</id>
 			<name>Bartosz Firyn</name>
 			<email>bartoszfiryn@gmail.com</email>
-			<roles>
-				<role>Project Manager</role>
-				<role>Architect</role>
-				<role>Developer</role>
-			</roles>
-			<url>http://me.sarxos.pl/</url>
-			<organization>Bartosz Firyn (SarXos)</organization>
-			<organizationUrl>https://github.com/sarxos</organizationUrl>
+			<url>https://github.com/sarxos</url>
 			<timezone>+1</timezone>
 		</developer>
 	</developers>
@@ -162,99 +135,13 @@
 			</modules>
 		</profile>
 		<profile>
-			<id>notest</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.9</version>
-						<configuration>
-							<skipTests>true</skipTests>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>release</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<properties>
-				<repo-id>sonatype-nexus-staging</repo-id>
-				<repo-url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</repo-url>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<version>2.2.1</version>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9</version>
-						<executions>
-							<execution>
-								<id>attach-javadocs</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.1</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-release-plugin</artifactId>
-						<version>2.4</version>
-						<configuration>
-							<autoVersionSubmodules>true</autoVersionSubmodules>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
 			<id>assembly</id>
-			<properties>
-				<repo-id>sarxos-ftp-repo</repo-id>
-				<repo-url>ftp://ftp.sarxos.pl/maven2</repo-url>
-			</properties>
 			<build>
 				<pluginManagement>
 					<plugins>
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-assembly-plugin</artifactId>
-							<version>2.4</version>
 							<configuration>
 								<descriptors>
 									<descriptor>${project.assembly.descriptor}</descriptor>
@@ -297,15 +184,6 @@
 					<plugin>
 						<groupId>com.github.danielflower.mavenplugins</groupId>
 						<artifactId>maven-gitlog-plugin</artifactId>
-						<version>1.4.11</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>generate</goal>
-								</goals>
-								<phase>process-resources</phase>
-							</execution>
-						</executions>
 						<configuration>
 							<generatePlainTextChangeLog>false</generatePlainTextChangeLog>
 							<generateSimpleHTMLChangeLog>true</generateSimpleHTMLChangeLog>
@@ -316,16 +194,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9</version>
-						<executions>
-							<execution>
-								<id>generate-javadocs</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>javadoc</goal>
-								</goals>
-							</execution>
-						</executions>
 					</plugin>
 				</plugins>
 			</build>
@@ -337,21 +205,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
-			</plugin>		
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.4</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.6</version>
 				<configuration>
 					<format>xml</format>
 					<maxmem>256m</maxmem>
@@ -398,134 +259,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.9</version>
 					<configuration>
-						<show>public</show>
 						<keywords>cam,webcam,camera,spycam,capture</keywords>
-						<links>
-							<show>public</show>
-							<link>http://java.sun.com/javase/1.6.0/docs/api</link>
-						</links>
-						<linksource>true</linksource>
-						<detectLinks>true</detectLinks>
-						<windowtitle>${project.name} ${project.version} API - ${maven.build.timestamp}</windowtitle>
-						<doctitle>${project.name} ${project.version} API - ${maven.build.timestamp}</doctitle>
-						<header><![CDATA[<a href="${project.organization.url}" target="_blank">${project.organization.name}</a>]]></header>
-						<footer><![CDATA[<a href="${project.organization.url}" target="_blank">${project.organization.name}</a>]]></footer>
-						<bottom><![CDATA[Copyright © {inceptionYear}-{currentYear} <a href="${project.organization.url}" target="_blank">${project.organization.name}</a>. All Rights Reserved.]]></bottom>
 					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
-
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ftp</artifactId>
-				<version>2.7</version>
-			</extension>
-		</extensions>
 	</build>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.1</version>
-				<configuration>
-					<linkJavadoc>true</linkJavadoc>
-					<aggregate>true</aggregate>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<tagListOptions>
-						<tagClasses>
-							<tagClass>
-								<displayName>Things to be done</displayName>
-								<tags>
-									<tag>
-										<matchString>TODO</matchString>
-										<matchType>exact</matchType>
-									</tag>
-									<tag>
-										<matchString>FIXME</matchString>
-										<matchType>exact</matchType>
-									</tag>
-									<tag>
-										<matchString>XXX</matchString>
-										<matchType>exact</matchType>
-									</tag>
-								</tags>
-							</tagClass>
-						</tagClasses>
-					</tagListOptions>				
-					<aggregate>true</aggregate>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.4</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>cim</report>
-							<report>dependencies</report>
-							<report>dependency-convergence</report>
-							<report>dependency-management</report>
-							<report>distribution-management</report>
-							<report>help</report>
-							<report>index</report>
-							<report>issue-tracking</report>
-							<report>license</report>
-							<report>mailing-list</report>
-							<report>modules</report>
-							<report>plugin-management</report>
-							<report>plugins</report>
-							<report>project-team</report>
-							<report>scm</report>
-							<report>summary</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-			<plugin>
-				<groupId>com.googlecode.maven-overview-plugin</groupId>
-				<artifactId>maven-overview-plugin</artifactId>
-				<version>1.6</version>
-				<configuration>
-					<width>700</width>
-					<height>700</height>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.12</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<linkXref>true</linkXref>
-					<sourceEncoding>utf-8</sourceEncoding>
-					<minimumTokens>100</minimumTokens>
-					<targetJdk>1.6</targetJdk>
-					<aggregate>true</aggregate>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
 
 </project>
