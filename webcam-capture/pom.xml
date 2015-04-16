@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>com.nativelibs4java</groupId>
 			<artifactId>bridj</artifactId>
-			<version>0.6.3-SNAPSHOT</version>
+			<version>0.7.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>dx</artifactId>
