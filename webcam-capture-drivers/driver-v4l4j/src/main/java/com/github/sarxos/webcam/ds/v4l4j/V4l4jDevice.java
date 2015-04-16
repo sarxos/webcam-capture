@@ -92,7 +92,7 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 
 	/**
 	 * Create video device from file.
-	 * 
+	 *
 	 * @param file the video descriptor file
 	 * @return The {@link VideoDevice}
 	 */
@@ -110,6 +110,12 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 	private static DeviceInfo getVideoDeviceInfo(VideoDevice device) {
 
 		LOG.trace("Get video device info");
+
+		LOG.trace("Support BGR conversion {}", device.supportBGRConversion());
+		LOG.trace("Support JPG conversion {}", device.supportJPEGConversion());
+		LOG.trace("Support RGB conversion {}", device.supportRGBConversion());
+		LOG.trace("Support YUV conversion {}", device.supportYUVConversion());
+		LOG.trace("Support YVU conversion {}", device.supportYVUConversion());
 
 		DeviceInfo info = null;
 		try {
@@ -147,8 +153,6 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 
 			switch (type) {
 				case UNSUPPORTED:
-					LOG.trace("Ignore {}, resolution type not supported", name);
-					continue;
 				case DISCRETE:
 				case STEPWISE:
 					break;
@@ -156,7 +160,7 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 					throw new WebcamException("Unknown resolution type " + type);
 			}
 
-			LOG.trace("Testing {}", name);
+			LOG.trace("Testing {} ({})", name, type);
 
 			for (int i = 0; i < BEST_FORMATS.length; i++) {
 				if (name.startsWith(BEST_FORMATS[i]) && i < min) {
@@ -214,9 +218,17 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 		return resolutions;
 	}
 
+	private static List<Dimension> getResolutionsUnsupported(ResolutionInfo info) {
+		List<Dimension> resolutions = new ArrayList<Dimension>();
+		resolutions.add(WebcamResolution.QQVGA.getSize());
+		resolutions.add(WebcamResolution.QVGA.getSize());
+		resolutions.add(WebcamResolution.VGA.getSize());
+		return resolutions;
+	}
+
 	/**
 	 * Get video resolutions from {@link ImageFormat}.
-	 * 
+	 *
 	 * @param format the {@link ImageFormat} to test
 	 * @return List of resolutions supported by given format
 	 */
@@ -235,8 +247,9 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 			case STEPWISE:
 				return getResolutionsStepwise(info);
 			case UNSUPPORTED:
+				return getResolutionsUnsupported(info);
 			default:
-				throw new WebcamException("Unsupported resolution type " + type);
+				throw new WebcamException("Unknown resolution type " + type);
 		}
 	}
 
