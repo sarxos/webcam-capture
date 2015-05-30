@@ -2,6 +2,7 @@ package com.github.sarxos.webcam;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.EventObject;
 
 
@@ -30,6 +31,18 @@ public class WebcamMotionEvent extends EventObject {
 		this(detector, null, null, strength, cog);
 	}
 
+    /**
+     * Create detected motion event.
+     *
+     * @param detector
+     * @param strength
+     * @param cog center of motion gravity
+     * @param points list of all detected points
+     */
+    public WebcamMotionEvent(WebcamMotionDetector detector, double strength, Point cog, ArrayList<Point> points) {
+        this(detector, null, null, strength, cog, points);
+    }
+
 	/**
 	 * Create detected motion event.
 	 *
@@ -46,6 +59,26 @@ public class WebcamMotionEvent extends EventObject {
 		this.strength = strength;
 		this.cog = cog;
 	}
+
+    /**
+     * Create detected motion event.
+     *
+     * @param detector
+     * @param previousImage
+     * @param currentImage
+     * @param strength
+     * @param cog center of motion gravity
+     * @param points list of all detected points
+     */
+    public WebcamMotionEvent(WebcamMotionDetector detector, BufferedImage previousImage, BufferedImage currentImage, double strength, Point cog, ArrayList<Point> points) {
+        this(detector, previousImage, currentImage, strength, cog);
+        this.points = points;
+    }
+
+    private ArrayList<Point> points;
+    public ArrayList<Point> getPoints(){
+        return points;
+    }
 	
 	/**
 	 * Get percentage fraction of image covered by motion. 0 is no motion on
@@ -85,4 +118,5 @@ public class WebcamMotionEvent extends EventObject {
 	public WebcamMotionDetector getSource() {
 		return (WebcamMotionDetector) super.getSource();
 	}
+
 }

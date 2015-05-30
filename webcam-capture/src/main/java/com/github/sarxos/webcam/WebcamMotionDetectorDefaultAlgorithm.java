@@ -1,10 +1,11 @@
 package com.github.sarxos.webcam;
 
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-
 import com.github.sarxos.webcam.util.jh.JHBlurFilter;
 import com.github.sarxos.webcam.util.jh.JHGrayFilter;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 /**
  * Default motion detector algorithm.
@@ -71,6 +72,7 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
 
 	@Override
 	public boolean detect(BufferedImage previousModified, BufferedImage currentModified) {
+        Points.clear();
 		int p = 0;
 
 		int cogX = 0;
@@ -79,6 +81,7 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
 		int w = currentModified.getWidth();
 		int h = currentModified.getHeight();
 
+        int j = 0;
 		if (previousModified != null) {
 			for (int x = 0; x < w; x++) {
 				for (int y = 0; y < h; y++) {
@@ -88,10 +91,29 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
 					int pid = combinePixels(cpx, ppx) & 0x000000ff;
 
 					if (pid >= pixelThreshold) {
-						cogX += x;
-						cogY += y;
-						p += 1;
-					}
+                        Point pp = new Point(x, y);
+                        boolean keep = j < maxPoints;
+
+                        if (keep) {
+                            for (Point g : Points) {
+                                if (g.x != pp.x || g.y != pp.y) {
+                                    if (pp.distance(g) <= range) {
+                                        keep = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (keep) {
+                            Points.add(new Point(x, y));
+                            j += 1;
+                        }
+
+                        cogX += x;
+                        cogY += y;
+                        p += 1;
+                    }
 				}
 			}
 		}
@@ -198,5 +220,73 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
 			return 255;
 		}
 		return c;
-	}	
+	}
+
+
+    /**
+     * ArrayList to store the points for a detected motion
+     */
+    ArrayList<Point> Points = new ArrayList<Point>();
+
+    /**
+     * The default minimum range between each point where motion has been detected
+     */
+    public static final int DEFAULT_RANGE = 50;
+
+    /**
+     * The default for the max amount of points that can be detected at one time
+     */
+    public static final int DEFAULT_MAX_POINTS = 100;
+
+    /**
+     * The current minimum range between points
+     */
+    private int range = DEFAULT_RANGE;
+
+    /**
+     * The current max amount of points
+     */
+    private int maxPoints = DEFAULT_MAX_POINTS;
+
+    /**
+     * Set the minimum range between each point detected
+     * @param i the range to set
+     */
+    public void setPointRange(int i){
+        range = i;
+    }
+
+    /**
+     * Get the current minimum range between each point
+     * @return The current range
+     */
+    public int getPointRange(){
+        return range;
+    }
+
+
+    /**
+     * Set the max amount of points that can be detected at one time
+     * @param i The amount of points that can be detected
+     */
+    public void setMaxPoints(int i){
+        maxPoints = i;
+    }
+
+
+    /**
+     * Get the current max amount of points that can be detected at one time
+     * @return
+     */
+    public int getMaxPoints(){
+        return maxPoints;
+    }
+
+    /**
+     * Returns the currently stored points that have been detected
+     * @return The current points
+     */
+    public ArrayList<Point> getPoints(){
+        return Points;
+    }
 }
