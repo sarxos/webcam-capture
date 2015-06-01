@@ -72,7 +72,7 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
 
 	@Override
 	public boolean detect(BufferedImage previousModified, BufferedImage currentModified) {
-        Points.clear();
+        points.clear();
 		int p = 0;
 
 		int cogX = 0;
@@ -95,7 +95,7 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
                         boolean keep = j < maxPoints;
 
                         if (keep) {
-                            for (Point g : Points) {
+                            for (Point g : points) {
                                 if (g.x != pp.x || g.y != pp.y) {
                                     if (pp.distance(g) <= range) {
                                         keep = false;
@@ -106,7 +106,7 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
                         }
 
                         if (keep) {
-                            Points.add(new Point(x, y));
+                            points.add(new Point(x, y));
                             j += 1;
                         }
 
@@ -226,7 +226,7 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
     /**
      * ArrayList to store the points for a detected motion
      */
-    ArrayList<Point> Points = new ArrayList<Point>();
+    ArrayList<Point> points = new ArrayList<Point>();
 
     /**
      * The default minimum range between each point where motion has been detected
@@ -287,6 +287,6 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
      * @return The current points
      */
     public ArrayList<Point> getPoints(){
-        return Points;
+        return points;
     }
 }
