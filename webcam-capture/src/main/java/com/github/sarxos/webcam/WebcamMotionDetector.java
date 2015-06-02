@@ -276,7 +276,7 @@ public class WebcamMotionDetector {
 	 * @param image with the motion detected
 	 */
 	private void notifyMotionListeners(BufferedImage currentOriginal) {
-		WebcamMotionEvent wme = new WebcamMotionEvent(this, previousOriginal, currentOriginal, detectorAlgorithm.getArea(), detectorAlgorithm.getCog());
+		WebcamMotionEvent wme = new WebcamMotionEvent(this, previousOriginal, currentOriginal, detectorAlgorithm.getArea(), detectorAlgorithm.getCog(), detectorAlgorithm.getPoints());
 		for (WebcamMotionListener l : listeners) {
 			try {
 				l.motionDetected(wme);
@@ -436,5 +436,23 @@ public class WebcamMotionDetector {
 	public WebcamMotionDetectorAlgorithm getDetectorAlgorithm() {
 		return detectorAlgorithm;
 	}
+
+
+    public void setMaxMotionPoints(int i){
+        detectorAlgorithm.setMaxPoints(i);
+    }
+
+    public int getMaxMotionPoints(){
+        return detectorAlgorithm.getMaxPoints();
+    }
+
+
+    public void setPointRange(int i){
+        detectorAlgorithm.setPointRange(i);
+    }
+
+    public int getPointRange(){
+        return detectorAlgorithm.getPointRange();
+    }
 
 }

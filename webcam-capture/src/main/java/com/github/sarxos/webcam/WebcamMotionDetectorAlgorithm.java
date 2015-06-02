@@ -2,6 +2,7 @@ package com.github.sarxos.webcam;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 
 /**
@@ -50,4 +51,36 @@ public interface WebcamMotionDetectorAlgorithm {
 	 * @return Return percentage image fraction covered by motion
 	 */
 	double getArea();
+
+    /**
+     * Set the minimum range between each point detected
+     * @param i the range to set
+     */
+    void setPointRange(int i);
+
+    /**
+     * Set the max amount of points that can be detected at one time
+     * @param i The amount of points that can be detected
+     */
+    void setMaxPoints(int i);
+
+
+    /**
+     * Get the current minimum range between each point
+     * @return The current range
+     */
+    int getPointRange();
+
+    /**
+     * Get the current max amount of points that can be detected at one time
+     * @return
+     */
+    int getMaxPoints();
+
+
+    /**
+     * Returns the currently stored points that have been detected
+     * @return The current points
+     */
+    ArrayList<Point> getPoints();
 }
