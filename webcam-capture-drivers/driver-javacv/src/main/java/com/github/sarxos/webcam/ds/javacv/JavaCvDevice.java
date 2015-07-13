@@ -5,7 +5,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import org.bytedeco.javacpp.videoInputLib.videoInput;
+import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.FrameGrabber;
+import org.bytedeco.javacv.Java2DFrameConverter;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
@@ -78,11 +80,18 @@ public class JavaCvDevice implements WebcamDevice {
 			throw new WebcamException("Cannot grab image - webcam device is not open");
 		}
 
+		Frame frame = null;
 		try {
-			return grabber.grab().getBufferedImage();
+			frame = grabber.grab();
 		} catch (Exception e) {
-			throw new WebcamException("Cannot grab image...");
+			throw new WebcamException("OpenCV cannot grab image frame");
 		}
+		if (frame == null) {
+			throw new WebcamException("OpenCV image frame is null");
+		}
+
+		return new Java2DFrameConverter().getBufferedImage(frame);
+
 	}
 
 	private FrameGrabber buildGrabber() throws FrameGrabber.Exception {

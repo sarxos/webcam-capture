@@ -13,7 +13,13 @@ public class JavaCvDriverExample {
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("JavaCV Webcam Capture Driver Example");
-		frame.add(new WebcamPanel(Webcam.getDefault()));
+
+		WebcamPanel panel = new WebcamPanel(Webcam.getDefault());
+		panel.setFPSDisplayed(true);
+		panel.setFitArea(true);
+		panel.setImageSizeDisplayed(true);
+
+		frame.add(panel);
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
