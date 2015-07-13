@@ -84,7 +84,7 @@ public class JavaCvDevice implements WebcamDevice {
 		try {
 			frame = grabber.grab();
 		} catch (Exception e) {
-			throw new WebcamException("OpenCV cannot grab image frame");
+			throw new WebcamException("OpenCV cannot grab image frame", e);
 		}
 		if (frame == null) {
 			throw new WebcamException("OpenCV image frame is null");
