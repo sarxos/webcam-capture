@@ -17,7 +17,7 @@ import com.github.sarxos.webcam.util.OsUtils;
 
 /**
  * UNSTABLE, EXPERIMENTALL STUFF !!!
- * 
+ *
  * @author bfiryn
  */
 public class JavaCvDevice implements WebcamDevice {
@@ -90,7 +90,7 @@ public class JavaCvDevice implements WebcamDevice {
 			throw new WebcamException("OpenCV image frame is null");
 		}
 
-		return new Java2DFrameConverter().getBufferedImage(frame);
+		return new Java2DFrameConverter().convert(frame);
 
 	}
 
