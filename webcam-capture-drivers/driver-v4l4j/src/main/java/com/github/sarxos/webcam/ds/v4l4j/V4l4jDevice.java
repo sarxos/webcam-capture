@@ -5,11 +5,17 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Exchanger;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamException;
+import com.github.sarxos.webcam.WebcamResolution;
 
 import au.edu.jcu.v4l4j.CaptureCallback;
 import au.edu.jcu.v4l4j.DeviceInfo;
@@ -23,10 +29,6 @@ import au.edu.jcu.v4l4j.VideoDevice;
 import au.edu.jcu.v4l4j.VideoFrame;
 import au.edu.jcu.v4l4j.exceptions.StateException;
 import au.edu.jcu.v4l4j.exceptions.V4L4JException;
-
-import com.github.sarxos.webcam.WebcamDevice;
-import com.github.sarxos.webcam.WebcamException;
-import com.github.sarxos.webcam.WebcamResolution;
 
 
 public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.FPSSource {
@@ -66,9 +68,8 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 
 	private AtomicBoolean open = new AtomicBoolean(false);
 	private AtomicBoolean disposed = new AtomicBoolean(false);
-	private CountDownLatch latch = new CountDownLatch(1);
 
-	private volatile BufferedImage image = null;
+	private final Exchanger<BufferedImage> exchanger = new Exchanger<BufferedImage>();
 	private volatile V4L4JException exception = null;
 
 	/* used to calculate fps */
@@ -286,19 +287,20 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 			throw new RuntimeException("Cannot get image from closed device");
 		}
 
-		V4L4JException ex = null;
-		if (exception != null) {
+		V4L4JException ex = this.exception;
+		if (ex != null) {
 			throw new WebcamException(ex);
 		}
 
+		int timeout = 3;
 		try {
-			latch.await();
+			return exchanger.exchange(null, timeout, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
-			LOG.trace("Await has been interrupted", e);
+			return null;
+		} catch (TimeoutException e) {
+			LOG.error("UNable to get image in {} seconds timeout");
 			return null;
 		}
-
-		return image;
 	}
 
 	@Override
@@ -365,8 +367,13 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 		} catch (StateException e) {
 			LOG.trace("State exception on close", e); // ignore
 		} finally {
-			image = null;
-			latch.countDown();
+			try {
+				exchanger.exchange(null, 1000, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				LOG.debug("Exchange interrupted in close");
+			} catch (TimeoutException e) {
+				LOG.debug("Exchange timeout in close");
+			}
 		}
 
 		grabber = null;
@@ -403,6 +410,8 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 	@Override
 	public void nextFrame(VideoFrame frame) {
 
+		LOG.trace("Next frame {}", frame);
+
 		if (!open.get()) {
 			return;
 		}
@@ -413,13 +422,11 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 		}
 
 		try {
-			image = frame.getBufferedImage();
+			exchanger.exchange(frame.getBufferedImage());
+		} catch (InterruptedException e) {
+			return;
 		} finally {
-			try {
-				frame.recycle();
-			} finally {
-				latch.countDown();
-			}
+			frame.recycle();
 		}
 
 		t1 = t2;
