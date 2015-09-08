@@ -117,6 +117,7 @@
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Bundle-DocURL>${project.url}</Bundle-DocURL>
 						<Import-Package>
+							ch.qos.logback.*;resolution:=optional,
 							*,
 						</Import-Package>
 						<Export-Package>
