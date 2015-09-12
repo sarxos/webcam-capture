@@ -29,9 +29,15 @@ $(document).ready(function() {
 				$webcams.append($img)
 			}
 		} else if (type === 'image') {
-			$("img[name='" + data.webcam + "']")
+			var $img = $("img[name='" + data.webcam + "']")
 				.attr("src", "data:image/jpeg;base64," + data.image)
+				.addClass('shadow')
 				.trigger("change");
+			setTimeout(function() {
+				$img
+					.removeClass('shadow')
+					.trigger("change");
+			}, 1000);
 		}
 	};
 

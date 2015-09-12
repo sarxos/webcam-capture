@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
@@ -11,6 +14,8 @@ import com.github.sarxos.webcam.WebcamUpdater;
 
 
 public class WebcamCache implements WebcamUpdater.DelayCalculator, WebcamListener {
+
+	private static final Logger LOG = LoggerFactory.getLogger(WebcamCache.class);
 
 	/**
 	 * How often images are updated on Dasding server.
@@ -46,7 +51,13 @@ public class WebcamCache implements WebcamUpdater.DelayCalculator, WebcamListene
 	}
 
 	public static BufferedImage getImage(String name) {
-		return CACHE.webcams.get(name).getImage();
+		Webcam webcam = CACHE.webcams.get(name);
+		try {
+			return webcam.getImage();
+		} catch (Exception e) {
+			LOG.error("Exception when getting image from webcam", e);
+		}
+		return null;
 	}
 
 	public static List<String> getWebcamNames() {

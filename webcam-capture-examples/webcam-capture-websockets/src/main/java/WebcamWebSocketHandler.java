@@ -103,10 +103,12 @@ public class WebcamWebSocketHandler {
 	}
 
 	private void send(String message) {
-		try {
-			session.getRemote().sendString(message);
-		} catch (IOException e) {
-			LOG.error("Exception when sending string", e);
+		if (session.isOpen()) {
+			try {
+				session.getRemote().sendStringByFuture(message);
+			} catch (Exception e) {
+				LOG.error("Exception when sending string", e);
+			}
 		}
 	}
 
