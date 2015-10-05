@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.github.sarxos</groupId>
 		<artifactId>webcam-capture-examples</artifactId>
-		<version>0.3.11-SNAPSHOT</version>
+		<version>0.3.12-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>webcam-capture-example-websockets</artifactId>

@@ -27,7 +27,7 @@ public class DetectMotionExample extends JFrame implements Runnable {
 	private JLabel label = null;
 
 	private Webcam webcam = Webcam.getDefault();
-	private int threshold = WebcamMotionDetector.DEFAULT_PIXEL_THREASHOLD;
+	private int threshold = 25;
 	private int inertia = 1000; // how long motion is valid
 
 	public DetectMotionExample() {
