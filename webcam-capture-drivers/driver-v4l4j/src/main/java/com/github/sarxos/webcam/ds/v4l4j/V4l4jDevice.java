@@ -298,7 +298,7 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 		} catch (InterruptedException e) {
 			return null;
 		} catch (TimeoutException e) {
-			LOG.error("UNable to get image in {} seconds timeout");
+			LOG.error("Unable to get image in {} seconds timeout", timeout);
 			return null;
 		}
 	}
