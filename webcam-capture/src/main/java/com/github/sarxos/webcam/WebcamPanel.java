@@ -1017,6 +1017,39 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		return started.get();
 	}
 
+	/**
+	 * This method returns the current draw mode, mainly used by custom painters
+	 * @return
+     */
+    public DrawMode getDrawMode(){
+		return this.drawMode;
+	}
+
+	/**
+	 * This method sets the drawmode
+	 * @param drawMode
+     */
+	public void setDrawMode(DrawMode drawMode){
+		this.drawMode = drawMode;
+	}
+
+	/**
+	 * Indicates whether the panel is in an error state
+	 * @return true if the panel has an error present
+     */
+	public boolean isErrored(){
+		return errored;
+	}
+
+	/**
+	 * Hints for rendering, mainly used for custom painters
+	 * @return the stored RenderingHints
+     */
+	public Map<RenderingHints.Key, Object> getImageRenderingHints() {
+		return imageRenderingHints;
+	}
+
+	@Deprecated//appropriate for binary, but not enum
 	public boolean isFitArea() {
 		return drawMode == DrawMode.FIT;
 	}
@@ -1029,6 +1062,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 *
 	 * @param fitArea the fit area mode enabled or disabled
 	 */
+	@Deprecated//appropriate for binary, but not enum
 	public void setFitArea(boolean fitArea) {
 		this.drawMode = fitArea ? DrawMode.FIT : DrawMode.NONE;
 	}
@@ -1039,6 +1073,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 *
 	 * @param fillArea shall image be resided to fill panel area
 	 */
+	@Deprecated//appropriate for binary, but not enum
 	public void setFillArea(boolean fillArea) {
 		this.drawMode = fillArea ? DrawMode.FILL : DrawMode.NONE;
 	}
@@ -1050,6 +1085,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 *
 	 * @return True if image is being resized, false otherwise
 	 */
+	@Deprecated//appropriate for binary, but not enum
 	public boolean isFillArea() {
 		return drawMode == DrawMode.FILL;
 	}
