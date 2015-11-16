@@ -53,7 +53,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 *
 	 * @author Sylwia Kauczor
 	 */
-	public static enum DrawMode {
+	public enum DrawMode {
 
 		/**
 		 * Do not resize image - paint it as it is. This will make the image to
@@ -79,7 +79,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 *
 	 * @author Bartosz Firyn (SarXos)
 	 */
-	public static interface Painter {
+	public interface Painter {
 
 		/**
 		 * Paint panel without image.
@@ -156,7 +156,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			g2.drawLine(0, 0, getWidth(), getHeight());
 			g2.drawLine(0, getHeight(), getWidth(), 0);
 
-			String str = null;
+			String str;
 
 			final String strInitDevice = rb.getString("INITIALIZING_DEVICE");
 			final String strNoImage = rb.getString("NO_IMAGE");
@@ -499,8 +499,6 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 
 					LOG.warn("Executor rejected paint update");
 					LOG.trace("Executor rejected paint update because of", e);
-
-					return;
 				}
 			}
 		}
@@ -893,7 +891,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * requests). If true, images will be fetched in configured time intervals.
 	 * If false, images will be fetched as fast as camera can serve them.
 	 *
-	 * @param frequencyLimit
+	 * @param frequencyLimit true if limiting the frequency of image requests
 	 */
 	public void setFPSLimited(boolean frequencyLimit) {
 		this.frequencyLimit = frequencyLimit;
@@ -977,7 +975,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	/**
 	 * Configure panel to display camera image size to be displayed.
 	 *
-	 * @param imageSizeDisplayed
+	 * @param imageSizeDisplayed if true the pixel dimensions are displayed over the image.
 	 */
 	public void setImageSizeDisplayed(boolean imageSizeDisplayed) {
 		this.imageSizeDisplayed = imageSizeDisplayed;
@@ -1019,7 +1017,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 
 	/**
 	 * This method returns the current draw mode, mainly used by custom painters
-	 * @return
+	 * @return the current value of the {@link DrawMode}
      */
     public DrawMode getDrawMode(){
 		return this.drawMode;
@@ -1027,7 +1025,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 
 	/**
 	 * This method sets the drawmode
-	 * @param drawMode
+	 * @param drawMode the desired {@link DrawMode}
      */
 	public void setDrawMode(DrawMode drawMode){
 		this.drawMode = drawMode;
@@ -1044,12 +1042,13 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	/**
 	 * Hints for rendering, mainly used for custom painters
 	 * @return the stored RenderingHints
+	 * @deprecated use {@link #getDrawMode()}  instead.
      */
 	public Map<RenderingHints.Key, Object> getImageRenderingHints() {
 		return imageRenderingHints;
 	}
 
-	@Deprecated//appropriate for binary, but not enum
+	@Deprecated
 	public boolean isFitArea() {
 		return drawMode == DrawMode.FIT;
 	}
@@ -1061,8 +1060,9 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * image will be drawn as it is.
 	 *
 	 * @param fitArea the fit area mode enabled or disabled
+	 * @deprecated use {@link #setDrawMode(DrawMode drawMode)}  instead.
 	 */
-	@Deprecated//appropriate for binary, but not enum
+	@Deprecated
 	public void setFitArea(boolean fitArea) {
 		this.drawMode = fitArea ? DrawMode.FIT : DrawMode.NONE;
 	}
@@ -1072,8 +1072,9 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * will be rendered as it was obtained from webcam instance.
 	 *
 	 * @param fillArea shall image be resided to fill panel area
+	 * @deprecated use {@link #setDrawMode(DrawMode drawMode)}  instead.
 	 */
-	@Deprecated//appropriate for binary, but not enum
+	@Deprecated
 	public void setFillArea(boolean fillArea) {
 		this.drawMode = fillArea ? DrawMode.FILL : DrawMode.NONE;
 	}
@@ -1084,8 +1085,9 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * webcam instance.
 	 *
 	 * @return True if image is being resized, false otherwise
+	 * @deprecated use {@link #getDrawMode()}  instead.
 	 */
-	@Deprecated//appropriate for binary, but not enum
+	@Deprecated
 	public boolean isFillArea() {
 		return drawMode == DrawMode.FILL;
 	}
