@@ -9,4 +9,7 @@ pom.xml~
 .project
 .classpath
 README.md~
-
+*.iml
+.idea/
+*.ipr
+*.iws
