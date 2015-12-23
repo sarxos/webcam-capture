@@ -77,7 +77,7 @@ The newest stable version can be downloaded as separated ZIP binary. This ZIP fi
 
  [webcam-capture-0.3.10-dist.zip](https://github.com/sarxos/webcam-capture/releases/download/webcam-capture-parent-0.3.10/webcam-capture-0.3.10-dist.zip)
 
-The latest development version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture&v=0.3.11-SNAPSHOT).
+The latest development version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture&v=0.3.12-SNAPSHOT).
 
 ## Contribution
 
