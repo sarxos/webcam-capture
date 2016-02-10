@@ -206,11 +206,12 @@ public class WebCamAppLauncher extends Application {
 					try {
 						if ((grabbedImage = webCam.getImage()) != null) {
 
+							final Image mainiamge = SwingFXUtils.toFXImage(grabbedImage, null);
+
 							Platform.runLater(new Runnable() {
 
 								@Override
 								public void run() {
-									Image mainiamge = SwingFXUtils.toFXImage(grabbedImage, null);
 									imageProperty.set(mainiamge);
 								}
 							});
