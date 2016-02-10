@@ -43,8 +43,8 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	private static final int DEVICE_BUFFER_SIZE = 5;
 
 	/**
-	 * Artificial view sizes. I'm really not sure if will fit into other webcams
-	 * but hope that OpenIMAJ can handle this.
+	 * Artificial view sizes. I'm really not sure if will fit into other webcams but hope that
+	 * OpenIMAJ can handle this.
 	 */
 	private final static Dimension[] DIMENSIONS = new Dimension[] {
 		WebcamResolution.QQVGA.getSize(),
@@ -77,7 +77,6 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 				return;
 			}
 
-			grabber.setTimeout(timeout);
 			result.set(grabber.nextFrame());
 			fresh.set(true);
 		}
@@ -335,6 +334,11 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 			throw new WebcamException("Cannot start native grabber!");
 		}
 
+		// set timeout, this MUST be done after grabber is open and before it's closed, otherwise it
+		// will result as crash
+
+		grabber.setTimeout(timeout);
+
 		LOG.debug("Webcam device session started");
 
 		Dimension size2 = new Dimension(grabber.getWidth(), grabber.getHeight());
@@ -377,8 +381,8 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	}
 
 	/**
-	 * this is to clean up all frames from device memory buffer which causes
-	 * initial frames to be completely blank (black images)
+	 * this is to clean up all frames from device memory buffer which causes initial frames to be
+	 * completely blank (black images)
 	 */
 	private void clearMemoryBuffer() {
 		for (int i = 0; i < DEVICE_BUFFER_SIZE; i++) {
@@ -424,8 +428,8 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	}
 
 	/**
-	 * Determines if device should fail when requested image size is different
-	 * than actually received.
+	 * Determines if device should fail when requested image size is different than actually
+	 * received.
 	 * 
 	 * @param fail the fail on size mismatch flag, true or false
 	 */
@@ -453,6 +457,9 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	 * @param timeout the timeout value in milliseconds
 	 */
 	public void setTimeout(int timeout) {
+		if (isOpen()) {
+			throw new WebcamException("Timeout must be set before webcam is open");
+		}
 		this.timeout = timeout;
 	}
 
