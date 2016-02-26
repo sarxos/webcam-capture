@@ -8,6 +8,16 @@ Currently this is the most stable capture driver to be used with the Raspberry P
 
 ## Maven
 
+Stable:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-v4l4j</artifactId>
+    <version>0.3.11</version>
+</dependency>
+```
+
 Snapshot:
 
 ```xml
@@ -20,7 +30,7 @@ Snapshot:
 <dependency>
     <groupId>com.github.sarxos</groupId>
     <artifactId>webcam-capture-driver-v4l4j</artifactId>
-    <version>0.3.11-SNAPSHOT</version>
+    <version>0.3.12-SNAPSHOT</version>
 </dependency>
 ```
 
