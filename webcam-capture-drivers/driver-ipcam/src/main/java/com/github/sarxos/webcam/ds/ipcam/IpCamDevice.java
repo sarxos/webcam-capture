@@ -23,6 +23,8 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -205,7 +207,7 @@ public class IpCamDevice implements WebcamDevice {
 
 	private Dimension[] sizes = null;
 	private Dimension size = null;
-
+	
 	public IpCamDevice(String name, String url, IpCamMode mode) throws MalformedURLException {
 		this(name, new URL(url), mode, null);
 	}
@@ -233,6 +235,10 @@ public class IpCamDevice implements WebcamDevice {
 			AuthScope scope = new AuthScope(new HttpHost(url.getHost().toString()));
 			client.getCredentialsProvider().setCredentials(scope, auth);
 		}
+	}
+
+	public IpCamHttpClient getClient() {
+		return client;
 	}
 
 	protected static final URL toURL(String url) {
@@ -428,7 +434,7 @@ public class IpCamDevice implements WebcamDevice {
 		}
 
 		HttpHead head = new HttpHead(uri);
-
+		
 		HttpResponse response = null;
 		try {
 			response = client.execute(head);

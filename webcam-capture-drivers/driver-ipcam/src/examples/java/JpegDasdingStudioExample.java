@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
+import com.github.sarxos.webcam.WebcamPanel.DrawMode;
 import com.github.sarxos.webcam.ds.ipcam.IpCamDriver;
 import com.github.sarxos.webcam.ds.ipcam.IpCamStorage;
 
@@ -49,7 +50,7 @@ public class JpegDasdingStudioExample {
 		for (Webcam webcam : Webcam.getWebcams()) {
 
 			WebcamPanel panel = new WebcamPanel(webcam, new Dimension(256, 144), false);
-			panel.setFillArea(true);
+			panel.setDrawMode(DrawMode.FIT);
 			panel.setFPSLimited(true);
 			panel.setFPSLimit(0.2); // 0.2 FPS = 1 frame per 5 seconds
 			panel.setBorder(BorderFactory.createEmptyBorder());
