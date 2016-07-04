@@ -13,3 +13,4 @@ README.md~
 .idea/
 *.ipr
 *.iws
+.DS_Store

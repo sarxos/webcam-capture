@@ -3,6 +3,7 @@ package com.github.sarxos.webcam.util;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
@@ -62,5 +63,22 @@ public class ImageUtils {
 		}
 
 		return bytes;
+	}
+
+	public static BufferedImage readFromResource(String resource) {
+		InputStream is = null;
+		try {
+			return ImageIO.read(is = ImageUtils.class.getClassLoader().getResourceAsStream(resource));
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					throw new IllegalStateException(e);
+				}
+			}
+		}
 	}
 }

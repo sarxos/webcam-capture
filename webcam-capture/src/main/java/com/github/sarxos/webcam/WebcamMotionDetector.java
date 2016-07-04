@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Webcam motion detector.
  *
- * @author Bartosz Firyn (SarXos)
+ * @author Bartosz Firyn (sarxos)
  */
 public class WebcamMotionDetector {
 
@@ -141,8 +141,8 @@ public class WebcamMotionDetector {
 	/**
 	 * Previously captured image with blur and gray filters applied.
 	 */
-	private BufferedImage previousModified = null;
-	
+	private BufferedImage previousFiltered = null;
+
 	/**
 	 * Webcam to be used to detect motion.
 	 */
@@ -166,24 +166,24 @@ public class WebcamMotionDetector {
 	/**
 	 * Implementation of motion detection algorithm.
 	 */
-	private final WebcamMotionDetectorAlgorithm detectorAlgorithm;
+	private final WebcamMotionDetectorAlgorithm algorithm;
 
 	/**
-	 * Create motion detector. Will open webcam if it is closed. 
+	 * Create motion detector. Will open webcam if it is closed.
 	 * 
 	 * @param webcam web camera instance
-	 * @param motion detector algorithm implementation 
-	 * @param interval the check interval
+	 * @param motion detector algorithm implementation
+	 * @param interval the check interval (in milliseconds)
 	 */
-	public WebcamMotionDetector(Webcam webcam, WebcamMotionDetectorAlgorithm detectorAlgorithm, int interval) {
+	public WebcamMotionDetector(Webcam webcam, WebcamMotionDetectorAlgorithm algorithm, int interval) {
 		this.webcam = webcam;
-		this.detectorAlgorithm = detectorAlgorithm;
+		this.algorithm = algorithm;
 		setInterval(interval);
 	}
-	
+
 	/**
-	 * Create motion detector. Will open webcam if it is closed. 
-	 * Uses WebcamMotionDetectorDefaultAlgorithm for motion detection. 
+	 * Create motion detector. Will open webcam if it is closed. Uses
+	 * WebcamMotionDetectorDefaultAlgorithm for motion detection.
 	 *
 	 * @param webcam web camera instance
 	 * @param pixelThreshold intensity threshold (0 - 255)
@@ -195,21 +195,20 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Create motion detector with default parameter inertia = 0.
-	 * Uses WebcamMotionDetectorDefaultAlgorithm for motion detection. 
+	 * Create motion detector with default parameter inertia = 0. Uses
+	 * WebcamMotionDetectorDefaultAlgorithm for motion detection.
 	 *
 	 * @param webcam web camera instance
 	 * @param pixelThreshold intensity threshold (0 - 255)
-	 * @param areaThreshold percentage threshold of image covered by motion (0 -
-	 *            100)
+	 * @param areaThreshold percentage threshold of image covered by motion (0 - 100)
 	 */
 	public WebcamMotionDetector(Webcam webcam, int pixelThreshold, double areaThreshold) {
 		this(webcam, pixelThreshold, areaThreshold, DEFAULT_INTERVAL);
 	}
 
 	/**
-	 * Create motion detector with default parameter inertia = 0.
-	 * Uses WebcamMotionDetectorDefaultAlgorithm for motion detection. 
+	 * Create motion detector with default parameter inertia = 0. Uses
+	 * WebcamMotionDetectorDefaultAlgorithm for motion detection.
 	 *
 	 * @param webcam web camera instance
 	 * @param pixelThreshold intensity threshold (0 - 255)
@@ -219,8 +218,7 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Create motion detector with default parameters - threshold = 25, inertia
-	 * = 0.
+	 * Create motion detector with default parameters - threshold = 25, inertia = 0.
 	 *
 	 * @param webcam web camera instance
 	 */
@@ -257,26 +255,26 @@ public class WebcamMotionDetector {
 			return;
 		}
 
-		BufferedImage currentModified = detectorAlgorithm.prepareImage(currentOriginal);
-		
-		boolean movementDetected = detectorAlgorithm.detect(previousModified, currentModified);
+		final BufferedImage currentFiltered = algorithm.filter(currentOriginal);
+		final boolean motionDetected = algorithm.detect(previousFiltered, currentFiltered);
 
-		if (movementDetected) {
+		if (motionDetected) {
 			motion = true;
 			lastMotionTimestamp = System.currentTimeMillis();
 			notifyMotionListeners(currentOriginal);
 		}
-		
+
 		previousOriginal = currentOriginal;
-		previousModified = currentModified;
+		previousFiltered = currentFiltered;
 	}
 
 	/**
 	 * Will notify all attached motion listeners.
+	 * 
 	 * @param image with the motion detected
 	 */
 	private void notifyMotionListeners(BufferedImage currentOriginal) {
-		WebcamMotionEvent wme = new WebcamMotionEvent(this, previousOriginal, currentOriginal, detectorAlgorithm.getArea(), detectorAlgorithm.getCog(), detectorAlgorithm.getPoints());
+		WebcamMotionEvent wme = new WebcamMotionEvent(this, previousOriginal, currentOriginal, algorithm.getArea(), algorithm.getCog(), algorithm.getPoints());
 		for (WebcamMotionListener l : listeners) {
 			try {
 				l.motionDetected(wme);
@@ -321,8 +319,8 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Motion check interval in milliseconds. After motion is detected, it's
-	 * valid for time which is equal to value of 2 * interval.
+	 * Motion check interval in milliseconds. After motion is detected, it's valid for time which is
+	 * equal to value of 2 * interval.
 	 *
 	 * @param interval the new motion check interval (ms)
 	 * @see #DEFAULT_INTERVAL
@@ -337,37 +335,32 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Sets pixelThreshold to the underlying detector algorithm, but only if the
-	 * algorithm is (or extends) WebcamMotionDetectorDefaultAlgorithm
+	 * Sets pixelThreshold to the underlying detector algorithm, but only if the algorithm is (or
+	 * extends) WebcamMotionDetectorDefaultAlgorithm
 	 * 
 	 * @see WebcamMotionDetectorDefaultAlgorithm#setPixelThreshold(int)
 	 * 
 	 * @param threshold the pixel intensity difference threshold
 	 */
 	public void setPixelThreshold(int threshold) {
-		if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm) {
-			((WebcamMotionDetectorDefaultAlgorithm)detectorAlgorithm).setPixelThreshold(threshold);
-		}
+		((WebcamMotionDetectorDefaultAlgorithm) algorithm).setPixelThreshold(threshold);
 	}
 
 	/**
-	 * Sets areaThreshold to the underlying detector algorithm, but only if the
-	 * algorithm is (or extends) WebcamMotionDetectorDefaultAlgorithm
+	 * Sets areaThreshold to the underlying detector algorithm, but only if the algorithm is (or
+	 * extends) WebcamMotionDetectorDefaultAlgorithm
 	 * 
 	 * @see WebcamMotionDetectorDefaultAlgorithm#setAreaThreshold(double)
 	 * 
 	 * @param threshold the percentage fraction of image area
 	 */
 	public void setAreaThreshold(double threshold) {
-		if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm) {
-			((WebcamMotionDetectorDefaultAlgorithm)detectorAlgorithm).setAreaThreshold(threshold);
-		}
+		((WebcamMotionDetectorDefaultAlgorithm) algorithm).setAreaThreshold(threshold);
 	}
 
 	/**
-	 * Set motion inertia (time when motion is valid). If no value specified
-	 * this is set to 2 * interval. To reset to default value,
-	 * {@link #clearInertia()} method must be used.
+	 * Set motion inertia (time when motion is valid). If no value specified this is set to 2 *
+	 * interval. To reset to default value, {@link #clearInertia()} method must be used.
 	 *
 	 * @param inertia the motion inertia time in milliseconds
 	 * @see #clearInertia()
@@ -380,8 +373,8 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Reset inertia time to value calculated automatically on the base of
-	 * interval. This value will be set to 2 * interval.
+	 * Reset inertia time to value calculated automatically on the base of interval. This value will
+	 * be set to 2 * interval.
 	 */
 	public void clearInertia() {
 		this.inertia = -1;
@@ -404,23 +397,23 @@ public class WebcamMotionDetector {
 	}
 
 	/**
-	 * Get percentage fraction of image covered by motion. 0 means no motion on
-	 * image and 100 means full image covered by spontaneous motion.
+	 * Get percentage fraction of image covered by motion. 0 means no motion on image and 100 means
+	 * full image covered by spontaneous motion.
 	 *
 	 * @return Return percentage image fraction covered by motion
 	 */
 	public double getMotionArea() {
-		return detectorAlgorithm.getArea();
+		return algorithm.getArea();
 	}
 
 	/**
-	 * Get motion center of gravity. When no motion is detected this value
-	 * points to the image center.
+	 * Get motion center of gravity. When no motion is detected this value points to the image
+	 * center.
 	 *
 	 * @return Center of gravity point
 	 */
 	public Point getMotionCog() {
-		Point cog = detectorAlgorithm.getCog();
+		Point cog = algorithm.getCog();
 		if (cog == null) {
 			// detectorAlgorithm hasn't been called so far - get image center
 			int w = webcam.getViewSize().width;
@@ -434,25 +427,22 @@ public class WebcamMotionDetector {
 	 * @return the detectorAlgorithm
 	 */
 	public WebcamMotionDetectorAlgorithm getDetectorAlgorithm() {
-		return detectorAlgorithm;
+		return algorithm;
 	}
 
+	public void setMaxMotionPoints(int i) {
+		algorithm.setMaxPoints(i);
+	}
 
-    public void setMaxMotionPoints(int i){
-        detectorAlgorithm.setMaxPoints(i);
-    }
+	public int getMaxMotionPoints() {
+		return algorithm.getMaxPoints();
+	}
 
-    public int getMaxMotionPoints(){
-        return detectorAlgorithm.getMaxPoints();
-    }
+	public void setPointRange(int i) {
+		algorithm.setPointRange(i);
+	}
 
-
-    public void setPointRange(int i){
-        detectorAlgorithm.setPointRange(i);
-    }
-
-    public int getPointRange(){
-        return detectorAlgorithm.getPointRange();
-    }
-
+	public int getPointRange() {
+		return algorithm.getPointRange();
+	}
 }

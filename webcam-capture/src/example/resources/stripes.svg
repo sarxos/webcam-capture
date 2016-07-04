@@ -1,0 +1,3 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'>
+  <path d='M-1,1 l2,-2 M0,10 l10, -10 M9,11 l2,-2' stroke='orange' stroke-width='2' stroke-opacity="0.4"/>
+</svg>
