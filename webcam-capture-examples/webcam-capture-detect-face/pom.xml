@@ -135,6 +135,30 @@
 					<groupId>de.bwaldvogel</groupId>
 					<artifactId>liblinear-dense</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>vigna.dsi.unimi.it</groupId>
+					<artifactId>jal</artifactId>
+				</exclusion>
+				<exclusion>
+                                        <groupId>net.billylieurance.azuresearch</groupId>
+                                        <artifactId>azure-bing-search-java</artifactId>
+                                </exclusion>
+				<exclusion>
+                                        <groupId>uk.ac.ed.ph.snuggletex</groupId>
+                                        <artifactId>snuggletex-core</artifactId>
+                                </exclusion>
+				<exclusion>
+                                        <groupId>uk.ac.ed.ph.snuggletex</groupId>
+                                        <artifactId>snuggletex-upconversion</artifactId>
+                                </exclusion>
+				<exclusion>
+                                        <groupId>uk.ac.ed.ph.snuggletex</groupId>
+                                        <artifactId>snuggletex-jeuclid</artifactId>
+                                </exclusion>
+				<exclusion>
+                                        <groupId>com.aetrion.flickr</groupId>
+                                        <artifactId>flickrapi</artifactId>
+                                </exclusion>
 			</exclusions>
 		</dependency>
 	</dependencies>
