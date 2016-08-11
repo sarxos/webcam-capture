@@ -1,6 +1,7 @@
 package com.github.sarxos.webcam;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -375,6 +376,22 @@ public class WebcamMotionDetector {
   public void setMaxAreaThreshold(double threshold) {
     if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm) {
       ((WebcamMotionDetectorDefaultAlgorithm)detectorAlgorithm).setMaxAreaThreshold(threshold);
+    } else {
+      throw new IllegalArgumentException("This algorithm does not support max threshold");
+    }
+  }
+  
+  
+  /**
+   * Set the "Do Not Engage" area of the frame. The "do not engage" area is an area
+   * of the frame where motion is ignored
+   * @param rectangle
+   */
+  public void setDne(Rectangle rectangle) {
+    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm) {
+      ((WebcamMotionDetectorDefaultAlgorithm)detectorAlgorithm).setDne(rectangle);
+    } else {
+      throw new IllegalArgumentException("This algorithm does not support do not engage zone");
     }
   }
   

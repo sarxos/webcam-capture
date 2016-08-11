@@ -27,10 +27,30 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
   public static final double DEFAULT_AREA_THREASHOLD = 0.2;
 
   /**
-   * Default max percentage image area fraction threshold (set to 50%).
+   * Default max percentage image area fraction threshold (set to 100%).
    */
   public static final double DEFAULT_AREA_THREASHOLD_MAX = 100;
 
+  /**
+   * Default do not engage x coordinate
+   */
+  public static final int DEFAULT_DNE_X = 0;
+  
+  /**
+   * Default do not engage x coordinate
+   */
+  public static final int DEFAULT_DNE_Y = 0;
+  
+  /**
+   * Default do not engage x coordinate
+   */
+  public static final int DEFAULT_DNE_WIDTH = 0;
+  
+  /**
+   * Default do not engage x coordinate
+   */
+  public static final int DEFAULT_DNE_HEIGHT = 0;
+  
   /**
    * Pixel intensity threshold (0 - 255).
    */
@@ -55,6 +75,11 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
    * Center of motion gravity.
    */
   private Point cog = null;
+  
+  /**
+   * Do not engage rectangle
+   */
+  private Rectangle dne = new Rectangle(DEFAULT_DNE_X, DEFAULT_DNE_Y, DEFAULT_DNE_WIDTH, DEFAULT_DNE_HEIGHT);
 
   /**
    * Blur filter instance.
@@ -85,7 +110,8 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
   }
 
   @Override
-  public boolean detect(BufferedImage previousModified, BufferedImage currentModified) {
+  public boolean detect(BufferedImage previousModified, BufferedImage currentModified)
+  {
     points.clear();
     thresholds.clear();
     int p = 0;
@@ -97,38 +123,50 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
     int h = currentModified.getHeight();
 
     int j = 0;
-    if (previousModified != null) {
-      for (int x = 0; x < w; x++) {
-        for (int y = 0; y < h; y++) {
+    if (previousModified != null)
+    {
+      for (int x = 0; x < w; x++)
+      {
+        for (int y = 0; y < h; y++)
+        {
+          // only proceed if the point is outside the do-not-engage zone
+          if (!dne.contains(x, y))
+          {
+            int cpx = currentModified.getRGB(x, y);
+            int ppx = previousModified.getRGB(x, y);
+            int pid = combinePixels(cpx, ppx) & 0x000000ff;
 
-          int cpx = currentModified.getRGB(x, y);
-          int ppx = previousModified.getRGB(x, y);
-          int pid = combinePixels(cpx, ppx) & 0x000000ff;
+            if (pid >= pixelThreshold)
+            {
+              Point pp = new Point(x, y);
+              boolean keep = j < maxPoints;
 
-          if (pid >= pixelThreshold) {
-            Point pp = new Point(x, y);
-            boolean keep = j < maxPoints;
-
-            if (keep) {
-              for (Point g : points) {
-                if (g.x != pp.x || g.y != pp.y) {
-                  if (pp.distance(g) <= range) {
-                    keep = false;
-                    break;
+              if (keep)
+              {
+                for (Point g : points)
+                {
+                  if (g.x != pp.x || g.y != pp.y)
+                  {
+                    if (pp.distance(g) <= range)
+                    {
+                      keep = false;
+                      break;
+                    }
                   }
                 }
               }
-            }
 
-            if (keep) {
-              points.add(new Point(x, y));
-              j += 1;
-            }
+              if (keep)
+              {
+                points.add(new Point(x, y));
+                j += 1;
+              }
 
-            cogX += x;
-            cogY += y;
-            p += 1;
-            thresholds.add(pid);
+              cogX += x;
+              cogY += y;
+              p += 1;
+              thresholds.add(pid);
+            }
           }
         }
       }
@@ -337,5 +375,15 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
    */
   public ArrayList<Point> getPoints(){
     return points;
+  }
+
+  public Rectangle getDne()
+  {
+    return dne;
+  }
+
+  public void setDne(Rectangle dne)
+  {
+    this.dne = dne;
   }
 }
