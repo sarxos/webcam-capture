@@ -553,7 +553,7 @@ public class Webcam {
 	 *
 	 * @param sizes the array of custom resolutions to be supported by webcam
 	 */
-	public void setCustomViewSizes(Dimension[] sizes) {
+	public void setCustomViewSizes(Dimension... sizes) {
 		assert customSizes != null;
 		if (sizes == null) {
 			customSizes.clear();
