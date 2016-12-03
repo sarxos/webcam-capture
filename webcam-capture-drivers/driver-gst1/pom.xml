@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>org.freedesktop.gstreamer</groupId>
 			<artifactId>gst1-java-core</artifactId>
-			<version>0.9.1-sx</version>
+			<version>0.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>

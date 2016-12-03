@@ -1,10 +1,13 @@
 package com.github.sarxos.webcam.ds.gst1;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.imageio.ImageIO;
 
 import org.freedesktop.gstreamer.Element;
 import org.freedesktop.gstreamer.ElementFactory;
@@ -19,9 +22,9 @@ import com.github.sarxos.webcam.util.NixVideoDevUtils;
 import com.sun.jna.Platform;
 
 
-public class GStreamerDriver implements WebcamDriver {
+public class Gst1Driver implements WebcamDriver {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GStreamerDriver.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Gst1Driver.class);
 
 	private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 	private static final CountDownLatch LATCH = new CountDownLatch(1);
@@ -39,7 +42,7 @@ public class GStreamerDriver implements WebcamDriver {
 		}
 	}
 
-	public GStreamerDriver() {
+	public Gst1Driver() {
 		if (INITIALIZED.compareAndSet(false, true)) {
 			init();
 			LATCH.countDown();
@@ -54,7 +57,7 @@ public class GStreamerDriver implements WebcamDriver {
 
 	private static final void init() {
 		String[] args = new String[] {};
-		Gst.init(GStreamerDriver.class.getSimpleName(), args);
+		Gst.init(Gst1Driver.class.getSimpleName(), args);
 		Runtime.getRuntime().addShutdownHook(new GStreamerShutdownHook());
 	}
 
@@ -78,11 +81,11 @@ public class GStreamerDriver implements WebcamDriver {
 			if (Platform.isWindows()) {
 				PropertyProbe probe = PropertyProbe.wrap(src);
 				for (Object name : probe.getValues("device-name")) {
-					devices.add(new GStreamerDevice(name.toString()));
+					devices.add(new Gst1Device(name.toString()));
 				}
 			} else if (Platform.isLinux()) {
 				for (File vfile : NixVideoDevUtils.getVideoFiles()) {
-					devices.add(new GStreamerDevice(vfile));
+					devices.add(new Gst1Device(vfile));
 				}
 			} else {
 				throw new RuntimeException("Platform unsupported by GStreamer capture driver");
@@ -101,9 +104,18 @@ public class GStreamerDriver implements WebcamDriver {
 		return false;
 	}
 
-	public static void main(String[] args) {
-		for (WebcamDevice d : new GStreamerDriver().getDevices()) {
+	@Override
+	public String toString() {
+		return "Driver " + getClass().getName();
+	}
+
+	public static void main(String[] args) throws IOException {
+		for (WebcamDevice d : new Gst1Driver().getDevices()) {
 			System.out.println(d);
+			d.open();
+			ImageIO.write(d.getImage(), "JPG", new File("a.jpg"));
+			d.close();
 		}
+
 	}
 }

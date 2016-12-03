@@ -40,10 +40,9 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	private static final long LATENESS = 20; // ms
 
 	/**
-	 * First formats are better. For example video/x-raw-rgb gives 30 FPS on
-	 * HD720p where video/x-raw-yuv only 10 FPS on the same resolution. The goal
-	 * is to use these "better" formats first, and then fallback to less
-	 * efficient when not available.
+	 * First formats are better. For example video/x-raw-rgb gives 30 FPS on HD720p where
+	 * video/x-raw-yuv only 10 FPS on the same resolution. The goal is to use these "better" formats
+	 * first, and then fallback to less efficient when not available.
 	 */
 	private static final String[] BEST_FORMATS = {
 		"video/x-raw-rgb",
@@ -96,7 +95,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 	/**
 	 * Create GStreamer webcam device.
-	 * 
+	 *
 	 * @param name the name of webcam device
 	 */
 	protected GStreamerDevice(String name) {
@@ -154,7 +153,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 	/**
 	 * Use GStreamer to get all possible resolutions.
-	 * 
+	 *
 	 * @param pad the pad to get resolutions from
 	 * @return Array of resolutions supported by device connected with pad
 	 */
