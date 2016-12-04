@@ -6,6 +6,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.github.sarxos.webcam.WebcamException;
 
 
+/**
+ * Atomic webcam initializer.
+ *
+ * @author Bartosz Firyn (sarxos)
+ */
 public class WebcamInitializer {
 
 	private final Initializable initializable;
@@ -21,7 +26,6 @@ public class WebcamInitializer {
 			try {
 				initializable.initialize();
 			} catch (Exception e) {
-				initialized.set(false);
 				throw new WebcamException(e);
 			} finally {
 				latch.countDown();
@@ -31,6 +35,16 @@ public class WebcamInitializer {
 				latch.await();
 			} catch (InterruptedException e) {
 				return;
+			}
+		}
+	}
+
+	public void teardown() {
+		if (initialized.compareAndSet(true, false)) {
+			try {
+				initializable.teardown();
+			} catch (Exception e) {
+				throw new WebcamException(e);
 			}
 		}
 	}

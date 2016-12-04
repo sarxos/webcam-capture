@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
+import com.github.sarxos.webcam.ds.gst1.impl.GsUtils;
 import com.github.sarxos.webcam.util.NixVideoDevUtils;
 import com.sun.jna.Platform;
 
@@ -66,20 +67,12 @@ public class Gst1Driver implements WebcamDriver {
 
 		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
 
-		String srcname = null;
-		if (Platform.isWindows()) {
-			srcname = "dshowvideosrc";
-		} else if (Platform.isLinux()) {
-			srcname = "v4l2src";
-		} else if (Platform.isMac()) {
-			srcname = "qtkitvideosrc";
-		}
-
-		Element src = ElementFactory.make(srcname, "source");
+		final String factory = GsUtils.getCompatibleSourceName();
+		final Element source = ElementFactory.make(factory, "source");
 
 		try {
 			if (Platform.isWindows()) {
-				PropertyProbe probe = PropertyProbe.wrap(src);
+				PropertyProbe probe = PropertyProbe.wrap(source);
 				for (Object name : probe.getValues("device-name")) {
 					devices.add(new Gst1Device(name.toString()));
 				}
@@ -91,8 +84,8 @@ public class Gst1Driver implements WebcamDriver {
 				throw new RuntimeException("Platform unsupported by GStreamer capture driver");
 			}
 		} finally {
-			if (src != null) {
-				src.dispose();
+			if (source != null) {
+				source.dispose();
 			}
 		}
 
@@ -112,6 +105,7 @@ public class Gst1Driver implements WebcamDriver {
 	public static void main(String[] args) throws IOException {
 		for (WebcamDevice d : new Gst1Driver().getDevices()) {
 			System.out.println(d);
+			d.getResolutions();
 			d.open();
 			ImageIO.write(d.getImage(), "JPG", new File("a.jpg"));
 			d.close();

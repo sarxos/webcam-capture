@@ -4,4 +4,6 @@ public interface Initializable {
 
 	void initialize();
 
+	void teardown();
+
 }

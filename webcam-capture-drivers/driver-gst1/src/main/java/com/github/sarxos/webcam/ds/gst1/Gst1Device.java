@@ -4,15 +4,10 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.bridj.Platform;
 import org.freedesktop.gstreamer.Bin;
 import org.freedesktop.gstreamer.Caps;
 import org.freedesktop.gstreamer.Element;
@@ -28,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
 import com.github.sarxos.webcam.ds.gst1.impl.AppSinkNewSampleListener;
+import com.github.sarxos.webcam.ds.gst1.impl.GsUtils;
 import com.github.sarxos.webcam.util.Initializable;
 import com.github.sarxos.webcam.util.WebcamInitializer;
 
@@ -65,7 +61,7 @@ public class Gst1Device implements WebcamDevice, Initializable {
 		"RGB"
 	};
 
-	private final AtomicReference<BufferedImage> ref = new AtomicReference<>();
+	private final Exchanger<BufferedImage> exchanger = new Exchanger<>();
 	private final WebcamInitializer initializer = new WebcamInitializer(this);
 	private final String name;
 
@@ -90,6 +86,18 @@ public class Gst1Device implements WebcamDevice, Initializable {
 	}
 
 	@Override
+	public void initialize() {
+		pipeLink();
+		pipeReady();
+	}
+
+	@Override
+	public void teardown() {
+		pipeStop();
+		pipeUnlink();
+	}
+
+	@Override
 	public void open() {
 
 		if (disposed) {
@@ -110,42 +118,38 @@ public class Gst1Device implements WebcamDevice, Initializable {
 			.toString();
 		final Caps caps = Caps.fromString(str);
 
-		// LOG.debug("Opening device {} with caps {}", name, caps);
+		LOG.debug("Opening device {} with caps {}", name, caps);
 
 		filter.setCaps(caps);
 
-		// pipeLink();
 		pipePlay();
 
 		open = true;
 	}
 
-	@Override
-	public void initialize() {
-		pipeLink();
-		pipeReady();
-	}
-
 	private Dimension[] findResolutions() {
 
-		// final boolean isLinux = Platform.isLinux();
+		initializer.initialize();
 
-		// if (isLinux) {
-		// pipeLink();
-		// pipeReady();
-		// }
+		pipeReady();
 
 		try {
 			return findResolutions0();
 		} finally {
-			// if (isLinux) {
-			// pipeStop();
-			// pipeUnlink();
-			// }
+			pipeStop();
 		}
 	}
 
 	private Dimension[] findResolutions0() {
+
+		final Pad pad = getSourcePad();
+		final Caps caps = pad.getCaps();
+		final String format = getFormat();
+
+		return GsUtils.getResolutionsFromCaps(caps, format);
+	}
+
+	private Pad getSourcePad() {
 
 		final Element source = getSource();
 		final List<Pad> pads = source.getPads();
@@ -154,73 +158,35 @@ public class Gst1Device implements WebcamDevice, Initializable {
 			throw new WebcamException("Cannot find supported resolutions because pads list is empty!");
 		}
 
-		final Map<String, Dimension> map = new LinkedHashMap<>();
-
-		final Pad pad = pads.get(0);
-		final Caps caps = pad.getCaps();
-		final String name = getName();
-		final String format = getFormat();
-
-		for (int i = 0; i < caps.size(); i++) {
-
-			final Structure structure = caps.getStructure(i);
-			final String f = structure.getString("format");
-
-			LOG.trace("Found device {} caps {}", name, structure);
-
-			if (!Objects.equals(f, format)) {
-				continue;
-			}
-
-			final Dimension resolution = capsStructureToResolution(structure);
-
-			if (resolution != null) {
-				map.put(resolution.width + "x" + resolution.height, resolution);
-			}
-		}
-
-		Dimension[] resolutions = new ArrayList<Dimension>(map.values()).toArray(new Dimension[map.size()]);
-
-		if (LOG.isDebugEnabled()) {
-			for (Dimension d : resolutions) {
-				LOG.debug("Resolution detected {}", d);
-			}
-		}
-
-		return resolutions;
+		return pads.get(0);
 	}
 
 	private void pipeLink() {
 
-		// Bin source = Bin.launch("v4l2src device=/dev/video0", true); // ! videoconvert
-		final Bin pipe = getPipeline();
 		final Element source = getSource();
 		final Element convert = getConvert();
 		final Element filter = getFilter();
 		final Element sink = getSink();
+		final Bin pipe = getPipeline();
 
 		pipe.addMany(source, convert, filter, sink);
-		// pipe.addMany(bin, filter, sink);
 
 		if (!Element.linkMany(source, convert, filter, sink)) {
-			// if (!Element.linkMany(bin, filter, sink)) {
 			throw new IllegalStateException("Unable to link elements to pipeline bin");
 		}
 	}
 
 	private void pipeUnlink() {
 
-		final Bin pipe = getPipeline();
 		final Element source = getSource();
 		final Element convert = getConvert();
 		final Element filter = getFilter();
 		final Element sink = getSink();
+		final Bin pipe = getPipeline();
 
 		Element.unlinkMany(source, convert, filter, sink);
-		// Element.unlinkMany(bin, filter, sink);
 
 		pipe.removeMany(source, convert, filter, sink);
-		// pipe.removeMany(bin, filter, sink);
 	}
 
 	private void pipeReady() {
@@ -264,7 +230,11 @@ public class Gst1Device implements WebcamDevice, Initializable {
 	}
 
 	private Element createConvert() {
-		return ElementFactory.make("videoconvert", getName() + "-videoconvert");
+
+		final String name = getName();
+		final String id = name + "-videoconvert";
+
+		return ElementFactory.make("videoconvert", id);
 	}
 
 	public Element getFilter() {
@@ -275,7 +245,11 @@ public class Gst1Device implements WebcamDevice, Initializable {
 	}
 
 	private Element createFilter() {
-		return ElementFactory.make("capsfilter", getName() + "-filter");
+
+		final String name = getName();
+		final String id = name + "-capsfilter";
+
+		return ElementFactory.make("capsfilter", id);
 	}
 
 	public AppSink getSink() {
@@ -288,23 +262,22 @@ public class Gst1Device implements WebcamDevice, Initializable {
 	private AppSink createSink() {
 
 		final String format = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN ? "BGRx" : "xRGB";
-		final String clazz = getClass().getSimpleName();
 		final String name = getName();
-		final String identifier = "GstVideoSink-" + name;
-		final AppSink videosink = new AppSink(identifier);
+		final String id = name + "-sink";
+		final AppSink sink = new AppSink(id);
 		final Caps caps = new Caps("video/x-raw,pixel-aspect-ratio=1/1,format=" + format);
 
 		LOG.debug("Creating video sink with caps {}", caps);
 
-		videosink.set("emit-signals", true);
-		videosink.connect(new AppSinkNewSampleListener(this));
-		videosink.setCaps(caps);
-		videosink.setMaximumLateness(LATENESS, TimeUnit.MILLISECONDS);
-		videosink.setQOSEnabled(true);
+		sink.set("emit-signals", true);
+		sink.connect(new AppSinkNewSampleListener(exchanger));
+		sink.setCaps(caps);
+		sink.setMaximumLateness(LATENESS, TimeUnit.MILLISECONDS);
+		sink.setQOSEnabled(true);
 
-		LOG.debug("Device {} videosing {} has been created", name, videosink);
+		LOG.debug("Device {} videosing {} has been created", name, sink);
 
-		return videosink;
+		return sink;
 	}
 
 	public Element getSource() {
@@ -341,8 +314,7 @@ public class Gst1Device implements WebcamDevice, Initializable {
 
 	private String findBestFormat() {
 
-		final Element source = getSource();
-		final Pad pad = source.getPads().get(0);
+		final Pad pad = getSourcePad();
 		final Caps caps = pad.getCaps();
 
 		if (LOG.isDebugEnabled()) {
@@ -375,28 +347,6 @@ public class Gst1Device implements WebcamDevice, Initializable {
 		}
 
 		throw new WebcamException("Cannot find best format");
-	}
-
-	private Dimension capsStructureToResolution(Structure structure) {
-
-		LOG.debug("Device {}, read resolution from caps strcuture {}", getName(), structure);
-
-		int w = -1;
-		int h = -1;
-
-		if (Platform.isWindows()) {
-			w = structure.getRange("width").getMinInt();
-			h = structure.getRange("height").getMinInt();
-		} else if (Platform.isLinux()) {
-			w = structure.getInteger("width");
-			h = structure.getInteger("height");
-		}
-
-		if (w > 0 && h > 0) {
-			return new Dimension(w, h);
-		} else {
-			return null;
-		}
 	}
 
 	@Override
@@ -436,33 +386,30 @@ public class Gst1Device implements WebcamDevice, Initializable {
 	@Override
 	public BufferedImage getImage() {
 
+		initializer.initialize();
+
 		LOG.debug("Device {} get image", getName());
 
-		BufferedImage bi = ref.get();
-
-		while (bi == null) {
-
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				throw new WebcamException("Thread has been interrupted", e);
-			}
-
-			bi = ref.get();
+		try {
+			return exchanger.exchange(null);
+		} catch (InterruptedException e) {
+			throw new WebcamException("Image exchange has been interrupted", e);
 		}
-
-		return bi;
 	}
 
 	@Override
 	public void close() {
 
+		// not initialized = do nothing, no need to close
+
+		if (!initializer.isInitialized()) {
+			return;
+		}
 		if (!open) {
 			return;
 		}
 
 		pipeStop();
-		pipeUnlink();
 
 		open = false;
 	}
@@ -472,18 +419,13 @@ public class Gst1Device implements WebcamDevice, Initializable {
 
 		close();
 
-		if (source != null) {
-			source.dispose();
-		}
-		if (filter != null) {
-			filter.dispose();
-		}
-		if (sink != null) {
-			sink.dispose();
-		}
-		if (pipe != null) {
-			pipe.dispose();
-		}
+		initializer.teardown();
+
+		GsUtils.dispose(source);
+		GsUtils.dispose(filter);
+		GsUtils.dispose(convert);
+		GsUtils.dispose(sink);
+		GsUtils.dispose(pipe);
 
 		disposed = true;
 	}
@@ -496,9 +438,5 @@ public class Gst1Device implements WebcamDevice, Initializable {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + " " + getName();
-	}
-
-	public AtomicReference<BufferedImage> getRef() {
-		return ref;
 	}
 }

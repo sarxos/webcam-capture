@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.Exchanger;
 
 import org.freedesktop.gstreamer.Buffer;
 import org.freedesktop.gstreamer.FlowReturn;
@@ -14,7 +14,7 @@ import org.freedesktop.gstreamer.elements.AppSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.sarxos.webcam.ds.gst1.Gst1Device;
+import com.github.sarxos.webcam.WebcamException;
 
 
 /**
@@ -29,23 +29,26 @@ public class AppSinkNewSampleListener implements AppSink.NEW_SAMPLE {
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(AppSinkNewSampleListener.class);
 
-	private final Gst1Device device;
+	private final Exchanger<BufferedImage> exchanger;
 
-	public AppSinkNewSampleListener(Gst1Device device) {
-		this.device = device;
+	public AppSinkNewSampleListener(Exchanger<BufferedImage> exchanger) {
+		this.exchanger = exchanger;
 	}
 
 	public void rgbFrame(boolean isPrerollFrame, int width, int height, IntBuffer rgb) {
 
 		LOG.debug("RGB frame ({}x{}), preroll is {}", width, height, isPrerollFrame);
 
-		final AtomicReference<BufferedImage> ref = device.getRef();
 		final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		final int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
 		rgb.get(pixels, 0, width * height);
 
-		ref.set(image);
+		try {
+			exchanger.exchange(image);
+		} catch (InterruptedException e) {
+			throw new WebcamException("Exchange has been interrupted", e);
+		}
 	}
 
 	@Override
