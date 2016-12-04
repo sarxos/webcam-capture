@@ -67,7 +67,7 @@ public class Gst1Driver implements WebcamDriver {
 
 		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
 
-		final String factory = GsUtils.getCompatibleSourceName();
+		final String factory = GsUtils.getCompatibleSourceFactory();
 		final Element source = ElementFactory.make(factory, "source");
 
 		try {

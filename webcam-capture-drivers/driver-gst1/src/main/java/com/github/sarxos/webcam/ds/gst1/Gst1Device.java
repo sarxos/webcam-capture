@@ -388,7 +388,7 @@ public class Gst1Device implements WebcamDevice, Initializable {
 
 		initializer.initialize();
 
-		LOG.debug("Device {} get image", getName());
+		LOG.trace("Device {} get image", getName());
 
 		try {
 			return exchanger.exchange(null);
@@ -418,6 +418,8 @@ public class Gst1Device implements WebcamDevice, Initializable {
 	public void dispose() {
 
 		close();
+
+		LOG.debug("Teardowning device {}", getName());
 
 		initializer.teardown();
 

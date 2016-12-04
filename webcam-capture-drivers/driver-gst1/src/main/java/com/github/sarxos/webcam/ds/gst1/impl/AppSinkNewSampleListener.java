@@ -37,7 +37,7 @@ public class AppSinkNewSampleListener implements AppSink.NEW_SAMPLE {
 
 	public void rgbFrame(boolean isPrerollFrame, int width, int height, IntBuffer rgb) {
 
-		LOG.debug("RGB frame ({}x{}), preroll is {}", width, height, isPrerollFrame);
+		LOG.trace("RGB frame ({}x{}), preroll is {}", width, height, isPrerollFrame);
 
 		final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		final int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
@@ -54,7 +54,7 @@ public class AppSinkNewSampleListener implements AppSink.NEW_SAMPLE {
 	@Override
 	public FlowReturn newSample(AppSink elem) {
 
-		LOG.debug("New sample ready in {}", elem);
+		LOG.trace("New sample ready in {}", elem);
 
 		final Sample sample = elem.pullSample();
 		final Structure capsStruct = sample.getCaps().getStructure(0);
