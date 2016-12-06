@@ -20,14 +20,12 @@ public class IpCamMJPEGStream extends DataInputStream {
 	private static final Logger LOG = LoggerFactory.getLogger(IpCamMJPEGStream.class);
 
 	/**
-	 * The first two bytes of every JPEG stream are the Start Of Image (SOI)
-	 * marker values FFh D8h.
+	 * The first two bytes of every JPEG stream are the Start Of Image (SOI) marker values FFh D8h.
 	 */
 	private final byte[] SOI_MARKER = { (byte) 0xFF, (byte) 0xD8 };
 
 	/**
-	 * All JPEG data streams end with the End Of Image (EOI) marker values FFh
-	 * D9h.
+	 * All JPEG data streams end with the End Of Image (EOI) marker values FFh D9h.
 	 */
 	private final byte[] EOI_MARKER = { (byte) 0xFF, (byte) 0xD9 };
 
