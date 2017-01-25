@@ -23,8 +23,6 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +35,7 @@ import com.github.sarxos.webcam.ds.ipcam.impl.IpCamMJPEGStream;
 
 /**
  * IP camera device.
- * 
+ *
  * @author Bartosz Firyn (SarXos)
  */
 public class IpCamDevice implements WebcamDevice {
@@ -207,7 +205,7 @@ public class IpCamDevice implements WebcamDevice {
 
 	private Dimension[] sizes = null;
 	private Dimension size = null;
-	
+
 	public IpCamDevice(String name, String url, IpCamMode mode) throws MalformedURLException {
 		this(name, new URL(url), mode, null);
 	}
@@ -416,10 +414,10 @@ public class IpCamDevice implements WebcamDevice {
 	}
 
 	/**
-	 * This method will send HTTP HEAD request to the camera URL to check
-	 * whether it's online or offline. It's online when this request succeed and
-	 * it's offline if any exception occurs or response code is 404 Not Found.
-	 * 
+	 * This method will send HTTP HEAD request to the camera URL to check whether it's online or
+	 * offline. It's online when this request succeed and it's offline if any exception occurs or
+	 * response code is 404 Not Found.
+	 *
 	 * @return True if camera is online, false otherwise
 	 */
 	public boolean isOnline() {
@@ -434,7 +432,7 @@ public class IpCamDevice implements WebcamDevice {
 		}
 
 		HttpHead head = new HttpHead(uri);
-		
+
 		HttpResponse response = null;
 		try {
 			response = client.execute(head);
