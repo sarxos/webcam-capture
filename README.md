@@ -81,7 +81,7 @@ The latest development version JAR (aka SNAPSHOT) can be downloaded [here](https
 
 ## Contribution
 
-If you have strong will, spare time, knownledge or even some small amount of money you would like to spent for good purpose you can help developing this awesome Webcam Capture API and make it even better! Several kinds of contributions are very welcome:
+If you have strong will, spare time, knowledge or even some small amount of money you would like to spent for good purpose you can help developing this awesome Webcam Capture API and make it even better! Several kinds of contributions are very welcome:
 
 ##### Star Project
 
