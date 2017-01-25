@@ -388,28 +388,37 @@ public class WebcamMotionDetector {
    * @param rectangle
    */
   public void setDne(Rectangle rectangle) {
-    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm) {
-      ((WebcamMotionDetectorDefaultAlgorithm)detectorAlgorithm).setDne(rectangle);
+    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultWithDNE)
+    {
+      ((WebcamMotionDetectorDefaultWithDNE) detectorAlgorithm).setDne(rectangle);
     } else {
       throw new IllegalArgumentException("This algorithm does not support do not engage zone");
     }
   }
-  
-  
-  public ArrayList<Integer> getThresholds() {
-    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm) {
-      return ((WebcamMotionDetectorDefaultAlgorithm)detectorAlgorithm).getThresholds();
-    } else {
+
+  /**
+   * @return thresholds
+   */
+  public ArrayList<Integer> getThresholds()
+  {
+    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm
+        || detectorAlgorithm instanceof WebcamMotionDetectorDefaultWithDNE)
+    {
+      return ((WebcamMotionDetectorDefaultAlgorithm) detectorAlgorithm).getThresholds();
+    }
+    else
+    {
       throw new UnsupportedOperationException("This method is only valid for the default detector algorithm");
     }
   }
 
   /**
-   * Set motion inertia (time when motion is valid). If no value specified
-   * this is set to 2 * interval. To reset to default value,
-   * {@link #clearInertia()} method must be used.
+   * Set motion inertia (time when motion is valid). If no value specified this
+   * is set to 2 * interval. To reset to default value, {@link #clearInertia()}
+   * method must be used.
    *
-   * @param inertia the motion inertia time in milliseconds
+   * @param inertia
+   *          the motion inertia time in milliseconds
    * @see #clearInertia()
    */
   public void setInertia(int inertia) {

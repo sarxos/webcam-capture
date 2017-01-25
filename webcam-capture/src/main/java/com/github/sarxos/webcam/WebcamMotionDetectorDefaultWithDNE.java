@@ -1,11 +1,11 @@
 package com.github.sarxos.webcam;
 
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-
 import com.github.sarxos.webcam.util.jh.JHBlurFilter;
 import com.github.sarxos.webcam.util.jh.JHGrayFilter;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 /**
  * Default motion detector algorithm.
@@ -14,7 +14,7 @@ import com.github.sarxos.webcam.util.jh.JHGrayFilter;
  * @author kevin
  *
  */
-public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetectorAlgorithm {
+public class WebcamMotionDetectorDefaultWithDNE implements WebcamMotionDetectorAlgorithm {
 
   /**
    * Default pixel difference intensity threshold (set to 25).
@@ -30,6 +30,26 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
    * Default max percentage image area fraction threshold (set to 100%).
    */
   public static final double DEFAULT_AREA_THREASHOLD_MAX = 100;
+
+  /**
+   * Default do not engage x coordinate
+   */
+  public static final int DEFAULT_DNE_X = 0;
+  
+  /**
+   * Default do not engage x coordinate
+   */
+  public static final int DEFAULT_DNE_Y = 0;
+  
+  /**
+   * Default do not engage x coordinate
+   */
+  public static final int DEFAULT_DNE_WIDTH = 0;
+  
+  /**
+   * Default do not engage x coordinate
+   */
+  public static final int DEFAULT_DNE_HEIGHT = 0;
   
   /**
    * Pixel intensity threshold (0 - 255).
@@ -55,6 +75,11 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
    * Center of motion gravity.
    */
   private Point cog = null;
+  
+  /**
+   * Do not engage rectangle
+   */
+  private Rectangle dne = new Rectangle(DEFAULT_DNE_X, DEFAULT_DNE_Y, DEFAULT_DNE_WIDTH, DEFAULT_DNE_HEIGHT);
 
   /**
    * Blur filter instance.
@@ -72,7 +97,7 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
    * @param pixelThreshold intensity threshold (0 - 255)
    * @param areaThreshold percentage threshold of image covered by motion
    */
-  public WebcamMotionDetectorDefaultAlgorithm(int pixelThreshold, double areaThreshold) {
+  public WebcamMotionDetectorDefaultWithDNE(int pixelThreshold, double areaThreshold) {
     setPixelThreshold(pixelThreshold);
     setAreaThreshold(areaThreshold);
   }
@@ -104,40 +129,44 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
       {
         for (int y = 0; y < h; y++)
         {
-          int cpx = currentModified.getRGB(x, y);
-          int ppx = previousModified.getRGB(x, y);
-          int pid = combinePixels(cpx, ppx) & 0x000000ff;
-
-          if (pid >= pixelThreshold)
+          // only proceed if the point is outside the do-not-engage zone
+          if (!dne.contains(x, y))
           {
-            Point pp = new Point(x, y);
-            boolean keep = j < maxPoints;
+            int cpx = currentModified.getRGB(x, y);
+            int ppx = previousModified.getRGB(x, y);
+            int pid = combinePixels(cpx, ppx) & 0x000000ff;
 
-            if (keep)
+            if (pid >= pixelThreshold)
             {
-              for (Point g : points)
+              Point pp = new Point(x, y);
+              boolean keep = j < maxPoints;
+
+              if (keep)
               {
-                if (g.x != pp.x || g.y != pp.y)
+                for (Point g : points)
                 {
-                  if (pp.distance(g) <= range)
+                  if (g.x != pp.x || g.y != pp.y)
                   {
-                    keep = false;
-                    break;
+                    if (pp.distance(g) <= range)
+                    {
+                      keep = false;
+                      break;
+                    }
                   }
                 }
               }
-            }
 
-            if (keep)
-            {
-              points.add(new Point(x, y));
-              j += 1;
-            }
+              if (keep)
+              {
+                points.add(new Point(x, y));
+                j += 1;
+              }
 
-            cogX += x;
-            cogY += y;
-            p += 1;
-            thresholds.add(pid);
+              cogX += x;
+              cogY += y;
+              p += 1;
+              thresholds.add(pid);
+            }
           }
         }
       }
@@ -346,5 +375,15 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
    */
   public ArrayList<Point> getPoints(){
     return points;
+  }
+
+  public Rectangle getDne()
+  {
+    return dne;
+  }
+
+  public void setDne(Rectangle dne)
+  {
+    this.dne = dne;
   }
 }
