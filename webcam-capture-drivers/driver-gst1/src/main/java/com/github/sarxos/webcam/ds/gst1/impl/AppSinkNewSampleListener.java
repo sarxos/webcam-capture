@@ -51,7 +51,6 @@ public class AppSinkNewSampleListener implements AppSink.NEW_SAMPLE {
 		}
 	}
 
-	@Override
 	public FlowReturn newSample(AppSink elem) {
 
 		LOG.trace("New sample ready in {}", elem);
@@ -72,4 +71,10 @@ public class AppSinkNewSampleListener implements AppSink.NEW_SAMPLE {
 
 		return FlowReturn.OK;
 	}
+
+  @Override
+  public void newBuffer(AppSink arg0) {
+    // TODO Auto-generated method stub
+    
+  }
 }
