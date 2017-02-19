@@ -346,8 +346,8 @@ public class WebcamMotionDetector {
    * @param threshold the pixel intensity difference threshold
    */
   public void setPixelThreshold(int threshold) {
-    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm) {
-      ((WebcamMotionDetectorDefaultAlgorithm)detectorAlgorithm).setPixelThreshold(threshold);
+    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultWithDNE) {
+      ((WebcamMotionDetectorDefaultWithDNE)detectorAlgorithm).setPixelThreshold(threshold);
     }
   }
 
@@ -360,8 +360,8 @@ public class WebcamMotionDetector {
    * @param threshold the percentage fraction of image area
    */
   public void setAreaThreshold(double threshold) {
-    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm) {
-      ((WebcamMotionDetectorDefaultAlgorithm)detectorAlgorithm).setAreaThreshold(threshold);
+    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultWithDNE) {
+      ((WebcamMotionDetectorDefaultWithDNE)detectorAlgorithm).setAreaThreshold(threshold);
     }
   }
 
@@ -374,8 +374,8 @@ public class WebcamMotionDetector {
    * @param threshold the percentage fraction of image area
    */
   public void setMaxAreaThreshold(double threshold) {
-    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm) {
-      ((WebcamMotionDetectorDefaultAlgorithm)detectorAlgorithm).setMaxAreaThreshold(threshold);
+    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultWithDNE) {
+      ((WebcamMotionDetectorDefaultWithDNE)detectorAlgorithm).setMaxAreaThreshold(threshold);
     } else {
       throw new IllegalArgumentException("This algorithm does not support max threshold");
     }
