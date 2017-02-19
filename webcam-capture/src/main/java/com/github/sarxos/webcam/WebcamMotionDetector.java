@@ -401,12 +401,14 @@ public class WebcamMotionDetector {
    */
   public ArrayList<Integer> getThresholds()
   {
-    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm
-        || detectorAlgorithm instanceof WebcamMotionDetectorDefaultWithDNE)
+    if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultAlgorithm)
     {
       return ((WebcamMotionDetectorDefaultAlgorithm) detectorAlgorithm).getThresholds();
     }
-    else
+    else if (detectorAlgorithm instanceof WebcamMotionDetectorDefaultWithDNE)
+    {
+      return ((WebcamMotionDetectorDefaultWithDNE) detectorAlgorithm).getThresholds();
+    } else
     {
       throw new UnsupportedOperationException("This method is only valid for the default detector algorithm");
     }
