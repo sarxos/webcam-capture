@@ -20,8 +20,9 @@ public class FoscamMjpegPushExample {
 
 		String name = "Test #255";
 		String url = "http://ce3014.myfoscam.org:20054/videostream.cgi";
+
 		IpCamMode mode = IpCamMode.PUSH;
-		IpCamAuth auth = new IpCamAuth("user", "user");
+		IpCamAuth auth = new IpCamAuth("username", "password"); // replace with your own username and password
 
 		IpCamDeviceRegistry.register(name, url, mode, auth);
 
