@@ -8,7 +8,7 @@ This library allows you to use your build-in or external webcam directly from Ja
 
 ## Rationale
 
-Assume situation when your code depends on some capturing framework, but suddenly you have to drop it and use different, maybe newer one (e.g. replace archaic JMF with newest GStreamer). By doing this you will have to rewrite significant piece of your code because these frameworks are completely differend and not compatible at all. This is where Webcam Capture API comes to save the world - it was created to remove the burden of such situations so you do not have to rewrite your code never again, but instead you can simply switch the driver class to different one.
+Assume situation when your code depends on some capturing framework, but suddenly you have to drop it and use different, maybe newer one (e.g. replace archaic JMF with newest GStreamer). By doing this you will have to rewrite significant piece of your code because these frameworks are completely different and not compatible at all. This is where Webcam Capture API comes to save the world - it was created to remove the burden of such situations so you do not have to rewrite your code never again, but instead you can simply switch the driver class to different one.
 
 ## Features
 
