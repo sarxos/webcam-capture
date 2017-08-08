@@ -6,10 +6,9 @@ This example show how to read QR and bar codes with Webcam Capture.
 
 This example show how to process QR and bar codes with your webcam using 
 [Webcam Capture](https://github.com/sarxos/webcam-capture) 
-project together with [ZXing](https://github.com/zxing/zxing) library.
+project together with awesome [ZXing](https://github.com/zxing/zxing) library.
 
-Demo showing how it is working is **[available](http://youtu.be/JLUJWgveEco)** 
-on YouTube. 
+Youtube video demonstrating how it is working is [available here](http://youtu.be/JLUJWgveEco). 
 
 ### Screenshoots:
 
