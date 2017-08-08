@@ -30,7 +30,8 @@
 		<module>webcam-capture-swt-awt</module>
 		<module>webcam-capture-video-recording</module>
 		<module>webcam-capture-onejar</module>
-                <module>webcam-capture-websockets</module>
+		<module>webcam-capture-websockets</module>
+		<module>webcam-capture-akka</module>
 	</modules>
 
 	<build>
