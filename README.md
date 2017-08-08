@@ -33,9 +33,9 @@ Assume situation when your code depends on some capturing framework, but suddenl
   * [GStreamer](http://gstreamer.freedesktop.org/) (0.10.x only) via [gstreamer-java](https://code.google.com/p/gstreamer-java/)
   * MJPEG IP Cameras,
 
-The latest stable version is: **```0.3.10```**
+The latest stable version is: **```0.3.11```**
 
-The latest development version is: **```0.3.11-SNAPSHOT```**
+The latest development version is: **```0.3.12-SNAPSHOT```**
 
 ## Raspberry PI
 
@@ -45,13 +45,13 @@ The lates version (0.3.10) does not work on ARM just out of the box. To make it 
 
 ## Maven
 
-The latest stable version is [available](http://search.maven.org/#artifactdetails|com.github.sarxos|webcam-capture|0.3.10|bundle) in Maven Central:
+The latest stable version is [available](http://search.maven.org/#artifactdetails|com.github.sarxos|webcam-capture|0.3.11|bundle) in Maven Central:
 
 ```xml
 <dependency>
   <groupId>com.github.sarxos</groupId>
   <artifactId>webcam-capture</artifactId>
-  <version>0.3.10</version>
+  <version>0.3.11</version>
 </dependency>
 ```
 
@@ -67,7 +67,7 @@ Snapshot version:
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3.11-SNAPSHOT</version>
+	<version>0.3.12-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -75,7 +75,7 @@ Snapshot version:
 
 The newest stable version can be downloaded as separated ZIP binary. This ZIP file contains Webcam Capture API itself and all required dependencies (in ```libs``` directory). Click on the below link to download it:
 
- [webcam-capture-0.3.10-dist.zip](https://github.com/sarxos/webcam-capture/releases/download/webcam-capture-parent-0.3.10/webcam-capture-0.3.10-dist.zip)
+ [webcam-capture-0.3.11-dist.zip](https://github.com/sarxos/webcam-capture/releases/download/webcam-capture-parent-0.3.11/webcam-capture-0.3.11-dist.zip)
 
 The latest development version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture&v=0.3.12-SNAPSHOT).
 
@@ -142,7 +142,7 @@ And here are some more advanced examples, few with quite fancy GUI.
 * [How to use ```WebcamMotionDetector``` with the ```JFrame``` window](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-examples/webcam-capture-motiondetector)
 * [How to use webcam capture in Java Applet](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-applet)
 * [How to use ```WebcamPanel.Painter``` interface to draw effects on ```WebcamPanel``` component](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-painter)
-* [How to read QR / DataMatrix and Bar codes](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-qrcode)
+* [How to read QR / DataMatrix and Bar codes (2 examples)](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-qrcode)
 * [How to record video from webcam](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-examples/webcam-capture-video-recording/src/main/java/com/github/sarxos/webcam/Encoder.java)
 * [How to transcode webcam images into live h264 stream](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-live-streaming)
 * [How to use Webcam Capture API in JavaFX](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-javafx)
@@ -151,6 +151,7 @@ And here are some more advanced examples, few with quite fancy GUI.
 * [How to use Webcam Capture API in SWT](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-swt-awt)
 * [How to use ```WebcamImageTransformer``` to draw effects directly on image from camera](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-transformer)
 * [How to use Webcam Capture API and WebSockets to transport images from server to web client](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-websockets)
+* [How to use Webcam Capture API from Akka](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-examples/webcam-capture-akka/src/main/java/Application.java)
 
 ## Capture Drivers
 
@@ -431,7 +432,7 @@ I initially started working on Webcam Capture as a simple proof-of-concept after
 
 ## License
 
-Copyright (C) 2012 - 2015 Bartosz Firyn (https://github.com/sarxos)
+Copyright (C) 2012 - 2017 Bartosz Firyn (https://github.com/sarxos) and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
