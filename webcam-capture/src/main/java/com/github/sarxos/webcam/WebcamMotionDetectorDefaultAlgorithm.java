@@ -28,7 +28,7 @@ public class WebcamMotionDetectorDefaultAlgorithm implements WebcamMotionDetecto
 	private volatile int pixelThreshold = DEFAULT_PIXEL_THREASHOLD;
 
 	/**
-	 * Pixel intensity threshold (0 - 100).
+	 * Percentage image area fraction threshold (0 - 100).
 	 */
 	private volatile double areaThreshold = DEFAULT_AREA_THREASHOLD;
 
