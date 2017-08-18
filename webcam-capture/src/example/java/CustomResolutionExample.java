@@ -18,7 +18,7 @@ public class CustomResolutionExample {
 		//@formatter:off
 		Dimension[] nonStandardResolutions = new Dimension[] {
 			WebcamResolution.PAL.getSize(),
-			WebcamResolution.HD720.getSize(),
+			WebcamResolution.HD.getSize(),
 			new Dimension(2000, 1000),
 			new Dimension(1000, 500),
 		};
@@ -27,7 +27,7 @@ public class CustomResolutionExample {
 		// your camera have to support HD720p to run this code
 		Webcam webcam = Webcam.getDefault();
 		webcam.setCustomViewSizes(nonStandardResolutions);
-		webcam.setViewSize(WebcamResolution.HD720.getSize());
+		webcam.setViewSize(WebcamResolution.HD.getSize());
 		webcam.open();
 
 		BufferedImage image = webcam.getImage();

@@ -25,7 +25,7 @@
 		<module>driver-gst1</module>
 		<module>driver-gstreamer</module>
 		<module>driver-ipcam</module>
-		<module>driver-javacv</module>
+		<module>driver-opencv</module>
 		<module>driver-jmf</module>
 		<module>driver-lti-civil</module>
 		<module>driver-openimaj</module>
