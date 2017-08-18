@@ -129,6 +129,7 @@ Below are the very pretty basic examples demonstrating of how Webcam Capture API
 * [How to save captured image in PNG / JPG / GIF / BMP etc](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/DifferentFileFormatsExample.java)
 * [How to capture with many parallel threads](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/ConcurrentThreadsExample.java)
 * [How to detect motion (text mode only)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/DetectMotionExample.java)
+* [How to detect motion with Do-Not-Engage zone](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/DetectMotionDoNotEngageZoneExample.java)
 * [How to perform multipoint motion detection](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/MultipointMotionDetectionExample.java)
 * [How to display images from multiple IP cameras exposing pictures in JPG format](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-ipcam/src/examples/java/JpegDasdingStudioExample.java)
 * [How to display image from IP camera exposing MJPEG stream](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-ipcam/src/examples/java/MjpegLignanoBeachExample.java)
