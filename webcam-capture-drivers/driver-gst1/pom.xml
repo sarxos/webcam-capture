@@ -14,14 +14,6 @@
 	<name>Webcam Capture - GStreamer 1.x Driver</name>
 	<description>Webcam Capture driver using GStreamer 1.x framework to grab frames from camera devices</description>
 
-	<repositories>
-		<repository>
-			<id>ftp-repo</id>
-			<name>sarxos-ftp-repo</name>
-			<url>http://sarxos.pl/maven2</url>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
@@ -36,7 +28,7 @@
 		<dependency>
 			<groupId>org.freedesktop.gstreamer</groupId>
 			<artifactId>gst1-java-core</artifactId>
-			<version>0.9-SNAPSHOT</version>
+			<version>0.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
