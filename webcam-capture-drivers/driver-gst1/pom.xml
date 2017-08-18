@@ -7,12 +7,17 @@
 		<artifactId>webcam-capture-drivers</artifactId>
 		<version>0.3.12-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>webcam-capture-driver-gst1</artifactId>
 	<packaging>jar</packaging>
-	
+
 	<name>Webcam Capture - GStreamer 1.x Driver</name>
 	<description>Webcam Capture driver using GStreamer 1.x framework to grab frames from camera devices</description>
+
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
 
 	<dependencies>
 		<dependency>
