@@ -17,7 +17,7 @@
 	<repositories>
 		<repository>
 			<id>xuggle repo</id>
-			<url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
+			<url>http://www.dcm4che.org/maven2/</url>
 		</repository>
 	</repositories>
 
