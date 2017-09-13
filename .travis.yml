@@ -6,13 +6,13 @@ jdk:
   - openjdk7
 
 before_install:
-  - mvn install -DskipTests=true -e
+  - mvn install -DskipTests=true -e -B
 
 script:
-  - mvn test -X
+  - mvn test -B
 
 after_success:
-  - mvn clean cobertura:cobertura coveralls:report -P ci
+  - mvn clean cobertura:cobertura coveralls:report -B -P ci
 
 branches:
   except:
