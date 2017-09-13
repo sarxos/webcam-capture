@@ -17,7 +17,35 @@ do not have Mac OS machine to perform tests.
 
 TBD
 
-## Example
+## Maven
+
+Stable:
+
+```xml
+<dependency>
+	<groupId>com.github.sarxos</groupId>
+	<artifactId>webcam-capture-driver-lti-civil</artifactId>
+	<version>0.3.10</version>
+</dependency>
+```
+
+Snapshot:
+
+```xml
+<repository>
+    <id>Sonatype OSS Snapshot Repository</id>
+    <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+</repository>
+```
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-lti-civil</artifactId>
+    <version>0.3.11-SNAPSHOT</version>
+</dependency>
+```
+
+## How To Use It
 
 ```java
 static {
