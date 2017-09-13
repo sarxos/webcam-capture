@@ -1,9 +1,9 @@
 language: java
 jdk:
-  - openjdk6
+#  - openjdk6
 #  - oraclejdk7
 #  - oraclejdk8
-#  - openjdk7
+  - openjdk7
 
 before_install:
   - mvn install -DskipTests=true -e
@@ -12,7 +12,7 @@ script:
   - mvn test -X
 
 after_success:
-  - mvn clean cobertura:cobertura coveralls:cobertura -P ci
+  - mvn clean cobertura:cobertura coveralls:report -P ci
 
 branches:
   except:

@@ -1,4 +1,5 @@
 package com.github.sarxos.example2;
+
 import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -17,6 +18,7 @@ import com.google.zxing.NotFoundException;
 import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+
 
 public class QrCapture extends JFrame implements Closeable {
 
@@ -52,9 +54,13 @@ public class QrCapture extends JFrame implements Closeable {
 		pack();
 		setVisible(true);
 
-		final Thread daemon = new Thread(() -> {
-			while (isVisible()) {
-				read();
+		final Thread daemon = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				while (isVisible()) {
+					read();
+				}
 			}
 		});
 		daemon.setDaemon(true);

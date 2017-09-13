@@ -1,4 +1,5 @@
 package com.github.sarxos.example2;
+
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 
@@ -7,6 +8,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+
+@SuppressWarnings("serial")
 public class WebcamQRCodeExample2 extends JFrame {
 
 	public WebcamQRCodeExample2() {
@@ -19,12 +22,16 @@ public class WebcamQRCodeExample2 extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				final Thread thread = new Thread(() -> {
-					try (QrCapture qr = new QrCapture()) {
-						showMessage("QR code text is:\n" + qr.getResult() + "");
-					} catch (InterruptedException ex) {
-						ex.printStackTrace();
-					}
+				final Thread thread = new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						try (QrCapture qr = new QrCapture()) {
+							showMessage("QR code text is:\n" + qr.getResult() + "");
+						} catch (InterruptedException ex) {
+							ex.printStackTrace();
+						}
+					};
 				});
 				thread.setDaemon(true);
 				thread.start();

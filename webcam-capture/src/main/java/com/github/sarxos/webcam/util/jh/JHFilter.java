@@ -28,7 +28,7 @@ import java.awt.image.ColorModel;
 /**
  * A convenience class which implements those methods of BufferedImageOp which are rarely changed.
  */
-public abstract class JHFilter implements BufferedImageOp, Cloneable {
+public abstract class JHFilter implements BufferedImageOp {
 
 	@Override
 	public BufferedImage createCompatibleDestImage(BufferedImage src, ColorModel dstCM) {
@@ -64,8 +64,8 @@ public abstract class JHFilter implements BufferedImageOp, Cloneable {
 	 * @param image a BufferedImage object
 	 * @param x the left edge of the pixel block
 	 * @param y the right edge of the pixel block
-	 * @param width the width of the pixel arry
-	 * @param height the height of the pixel arry
+	 * @param width the width of the pixel array
+	 * @param height the height of the pixel array
 	 * @param pixels the array to hold the returned pixels. May be null.
 	 * @return the pixels
 	 * @see #setRGB
@@ -85,8 +85,8 @@ public abstract class JHFilter implements BufferedImageOp, Cloneable {
 	 * @param image a BufferedImage object
 	 * @param x the left edge of the pixel block
 	 * @param y the right edge of the pixel block
-	 * @param width the width of the pixel arry
-	 * @param height the height of the pixel arry
+	 * @param width the width of the pixel array
+	 * @param height the height of the pixel array
 	 * @param pixels the array of pixels to set
 	 * @see #getRGB
 	 */
@@ -96,15 +96,6 @@ public abstract class JHFilter implements BufferedImageOp, Cloneable {
 			image.getRaster().setDataElements(x, y, width, height, pixels);
 		} else {
 			image.setRGB(x, y, width, height, pixels, 0, width);
-		}
-	}
-
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
 		}
 	}
 }
