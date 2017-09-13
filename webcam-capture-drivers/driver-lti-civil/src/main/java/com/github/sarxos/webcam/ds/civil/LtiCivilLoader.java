@@ -16,7 +16,7 @@ public class LtiCivilLoader {
 	private static final Logger LOG = LoggerFactory.getLogger(LtiCivilLoader.class);
 
 	/**
-	 * Will be called until JVM shutdown.
+	 * Will be called on JVM shutdown.
 	 * 
 	 * @author Bartosz Firyn (SarXos)
 	 */
@@ -34,7 +34,7 @@ public class LtiCivilLoader {
 			super.run();
 			if (file.exists()) {
 				if (!file.delete()) {
-					LOG.warn(String.format("JVM was not able to remove file %s", file));
+					LOG.warn("JVM was not able to remove file {}", file);
 				}
 			}
 		}
@@ -65,10 +65,10 @@ public class LtiCivilLoader {
 	}
 
 	protected static void load(String lib) {
-		LOG.info("Loading native library: " + lib);
+		LOG.info("Loading native library: {}", lib);
 		try {
 			System.loadLibrary(lib);
-			LOG.info("DLL has been loaded from memory: " + lib);
+			LOG.info("DLL has been loaded from memory: {}", lib);
 		} catch (UnsatisfiedLinkError e) {
 			try {
 				load("civil-" + System.currentTimeMillis(), lib);
