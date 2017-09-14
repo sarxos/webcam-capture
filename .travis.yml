@@ -12,7 +12,7 @@ script:
   - mvn test -B
 
 after_success:
-  - mvn clean cobertura:cobertura coveralls:report -B -P ci
+  - mvn cobertura:cobertura coveralls:report -B -P ci
 
 branches:
   except:

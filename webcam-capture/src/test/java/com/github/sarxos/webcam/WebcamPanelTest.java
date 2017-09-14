@@ -3,8 +3,6 @@ package com.github.sarxos.webcam;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JFrame;
-
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -79,13 +77,9 @@ public class WebcamPanelTest {
 			.assertThat(p.getDrawMode())
 			.isEqualTo(DrawMode.FILL);
 
-		final JFrame frame = new JFrame();
-		frame.setContentPane(p);
-		frame.pack();
+		ScreenImage.createImage(p);
 
 		Thread.sleep(100);
-
-		frame.dispose();
 
 		p.stop();
 		w.close();
@@ -107,13 +101,9 @@ public class WebcamPanelTest {
 			.assertThat(p.getDrawMode())
 			.isEqualTo(DrawMode.FIT);
 
-		final JFrame frame = new JFrame();
-		frame.setContentPane(p);
-		frame.pack();
+		ScreenImage.createImage(p);
 
 		Thread.sleep(100);
-
-		frame.dispose();
 
 		p.stop();
 		w.close();
@@ -135,13 +125,9 @@ public class WebcamPanelTest {
 			.assertThat(p.getDrawMode())
 			.isEqualTo(DrawMode.NONE);
 
-		final JFrame frame = new JFrame();
-		frame.setContentPane(p);
-		frame.pack();
+		ScreenImage.createImage(p);
 
 		Thread.sleep(100);
-
-		frame.dispose();
 
 		p.stop();
 		w.close();
