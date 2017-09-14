@@ -42,6 +42,12 @@ public class DummyDevice implements WebcamDevice {
 		this.size = size;
 	}
 
+	private int mx = 1;
+	private int my = 1;
+	private int r = 10;
+	private int x = r;
+	private int y = r;
+
 	@Override
 	public BufferedImage getImage() {
 
@@ -49,13 +55,23 @@ public class DummyDevice implements WebcamDevice {
 			throw new WebcamException("Not open");
 		}
 
-		BufferedImage bi = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
-		Graphics2D g2 = bi.createGraphics();
+		final BufferedImage bi = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
+		final Graphics2D g2 = bi.createGraphics();
 		g2.setColor(Color.RED);
 		g2.fillRect(0, 0, size.width, size.height);
-		g2.drawString(getName(), 20, 20);
+		g2.setColor(Color.BLACK);
+		g2.drawString(getName(), 10, 20);
+		g2.setColor(Color.WHITE);
+		g2.drawOval(x += mx, y += my, r, r);
 		g2.dispose();
 		bi.flush();
+
+		if (x <= 0 + r || x >= size.width - r) {
+			mx = -mx;
+		}
+		if (y <= 0 + r || y >= size.height - r) {
+			my = -my;
+		}
 
 		return bi;
 	}
@@ -70,6 +86,7 @@ public class DummyDevice implements WebcamDevice {
 		open = false;
 	}
 
+	@Override
 	public boolean isOpen() {
 		return open;
 	}
