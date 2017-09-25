@@ -1,5 +1,7 @@
 package com.github.sarxos.webcam.ds.gstreamer;
 
+import static com.github.sarxos.webcam.ds.gstreamer.GStreamerDriver.FORMAT_MJPEG;
+
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -40,16 +42,6 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	private static final long LATENESS = 20; // ms
 
 	/**
-	 * First formats are better. For example video/x-raw-rgb gives 30 FPS on HD720p where
-	 * video/x-raw-yuv only 10 FPS on the same resolution. The goal is to use these "better" formats
-	 * first, and then fallback to less efficient when not available.
-	 */
-	private static final String[] BEST_FORMATS = {
-		"video/x-raw-rgb",
-		"video/x-raw-yuv",
-	};
-
-	/**
 	 * Video format to capture.
 	 */
 	private String format;
@@ -68,11 +60,16 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	 */
 	private final File vfile;
 
+	private final GStreamerDriver driver;
+
 	/* gstreamer stuff */
 
 	private Pipeline pipe = null;
 	private Element source = null;
 	private Element filter = null;
+	private Element jpegpar = null;
+	private Element jpegdec = null;
+	private Element[] elements = null;
 	private RGBDataSink sink = null;
 
 	private Caps caps = null;
@@ -98,12 +95,14 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	 *
 	 * @param name the name of webcam device
 	 */
-	protected GStreamerDevice(String name) {
+	protected GStreamerDevice(GStreamerDriver driver, String name) {
+		this.driver = driver;
 		this.name = name;
 		this.vfile = null;
 	}
 
-	protected GStreamerDevice(File vfile) {
+	protected GStreamerDevice(GStreamerDriver driver, File vfile) {
+		this.driver = driver;
 		this.name = null;
 		this.vfile = vfile;
 	}
@@ -122,10 +121,10 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 		pipe = new Pipeline(name);
 
 		if (Platform.isWindows()) {
-			source = ElementFactory.make("dshowvideosrc", "source");
+			source = ElementFactory.make("dshowvideosrc", "dshowvideosrc");
 			source.set("device-name", name);
 		} else if (Platform.isLinux()) {
-			source = ElementFactory.make("v4l2src", "source");
+			source = ElementFactory.make("v4l2src", "v4l2src");
 			source.set("device", vfile.getAbsolutePath());
 		}
 
@@ -134,21 +133,20 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 		sink.getSinkElement().setMaximumLateness(LATENESS, TimeUnit.MILLISECONDS);
 		sink.getSinkElement().setQOSEnabled(true);
 
-		filter = ElementFactory.make("capsfilter", "filter");
+		filter = ElementFactory.make("capsfilter", "capsfilter");
 
-		if (Platform.isLinux()) {
-			pipe.addMany(source, filter, sink);
-			Element.linkMany(source, filter, sink);
-			pipe.setState(State.READY);
-		}
+		jpegpar = ElementFactory.make("jpegparse", "jpegparse");
+		jpegdec = ElementFactory.make("jpegdec", "jpegdec");
+
+		// if (Platform.isLinux()) {
+		pipelineReady();
+		// }
 
 		resolutions = parseResolutions(source.getPads().get(0));
 
-		if (Platform.isLinux()) {
-			pipe.setState(State.NULL);
-			Element.unlinkMany(source, filter, sink);
-			pipe.removeMany(source, filter, sink);
-		}
+		// if (Platform.isLinux()) {
+		pipelineStop();
+		// }
 	}
 
 	/**
@@ -161,7 +159,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 		Caps caps = pad.getCaps();
 
-		format = findBestFormat(caps);
+		format = findPreferredFormat(caps);
 
 		LOG.debug("Best format is {}", format);
 
@@ -169,7 +167,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 		Structure s = null;
 		String mime = null;
 
-		int n = caps.size();
+		final int n = caps.size();
 		int i = 0;
 
 		Map<String, Dimension> map = new HashMap<String, Dimension>();
@@ -190,19 +188,19 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 		} while (i < n);
 
-		Dimension[] resolutions = new ArrayList<Dimension>(map.values()).toArray(new Dimension[map.size()]);
+		final Dimension[] resolutions = new ArrayList<Dimension>(map.values()).toArray(new Dimension[0]);
 
 		if (LOG.isDebugEnabled()) {
 			for (Dimension d : resolutions) {
-				LOG.debug("Resolution detected {}", d);
+				LOG.debug("Resolution detected {} with format {}", d, format);
 			}
 		}
 
 		return resolutions;
 	}
 
-	private static String findBestFormat(Caps caps) {
-		for (String f : BEST_FORMATS) {
+	private String findPreferredFormat(Caps caps) {
+		for (String f : driver.getPreferredFormats()) {
 			for (int i = 0, n = caps.size(); i < n; i++) {
 				if (f.equals(caps.getStructure(i).getName())) {
 					return f;
@@ -287,25 +285,68 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 			caps.dispose();
 		}
 
-		caps = Caps.fromString(String.format("%s,width=%d,height=%d", format, size.width, size.height));
-
+		caps = Caps.fromString(String.format("%s,framerate=30/1,width=%d,height=%d", format, size.width, size.height));
 		filter.setCaps(caps);
 
-		LOG.debug("Link elements");
+		LOG.debug("Using filter caps: {}", caps);
 
-		pipe.addMany(source, filter, sink);
-		Element.linkMany(source, filter, sink);
-		pipe.setState(State.PLAYING);
+		pipelinePlay();
+
+		LOG.debug("Wait for device to be ready");
 
 		// wait max 20s for image to appear
 		synchronized (this) {
-			LOG.debug("Wait for device to be ready");
 			try {
 				this.wait(20000);
 			} catch (InterruptedException e) {
 				return;
 			}
 		}
+	}
+
+	private void pipelineElementsReset() {
+		elements = null;
+	}
+
+	private Element[] pipelineElementsPrepare() {
+		if (elements == null) {
+			if (FORMAT_MJPEG.equals(format)) {
+				elements = new Element[] { source, filter, jpegpar, jpegdec, sink };
+			} else {
+				elements = new Element[] { source, filter, sink };
+			}
+		}
+		return elements;
+	}
+
+	private void pipelineElementsLink() {
+		final Element[] elements = pipelineElementsPrepare();
+		pipe.addMany(elements);
+		if (!Element.linkMany(elements)) {
+			LOG.warn("Some elements were not successfully linked!");
+		}
+	}
+
+	private void pipelineElementsUnlink() {
+		final Element[] elements = pipelineElementsPrepare();
+		Element.unlinkMany(elements);
+		pipe.removeMany(elements);
+	}
+
+	private void pipelineReady() {
+		pipelineElementsLink();
+		pipe.setState(State.READY);
+	}
+
+	private void pipelinePlay() {
+		pipelineElementsReset();
+		pipelineElementsLink();
+		pipe.setState(State.PLAYING);
+	}
+
+	private void pipelineStop() {
+		pipe.setState(State.NULL);
+		pipelineElementsUnlink();
 	}
 
 	@Override
@@ -317,13 +358,9 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 		LOG.debug("Closing GStreamer device");
 
+		pipelineStop();
+
 		image = null;
-
-		LOG.debug("Unlink elements");
-
-		pipe.setState(State.NULL);
-		Element.unlinkMany(source, filter, sink);
-		pipe.removeMany(source, filter, sink);
 	}
 
 	@Override
@@ -337,11 +374,13 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 		close();
 
-		filter.dispose();
 		source.dispose();
+		filter.dispose();
+		jpegpar.dispose();
+		jpegdec.dispose();
+		caps.dispose();
 		sink.dispose();
 		pipe.dispose();
-		caps.dispose();
 	}
 
 	@Override

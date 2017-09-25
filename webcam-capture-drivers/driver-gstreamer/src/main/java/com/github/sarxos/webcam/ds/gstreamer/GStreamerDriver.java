@@ -2,6 +2,7 @@ package com.github.sarxos.webcam.ds.gstreamer;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -45,12 +46,19 @@ public class GStreamerDriver implements WebcamDriver {
 	private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
 	public GStreamerDriver() {
-		if (INITIALIZED.compareAndSet(false, true)) {
-			init();
-		}
+		init();
+	}
+
+	public GStreamerDriver(final List<String> preferredFormats) {
+		init();
+		setPreferredFormats(preferredFormats);
 	}
 
 	private static final void init() {
+
+		if (!INITIALIZED.compareAndSet(false, true)) {
+			return;
+		}
 
 		if (!Platform.isWindows() && !Platform.isLinux()) {
 			throw new WebcamException(String.format("%s has been designed to work only on Windows and Linux platforms", GStreamerDriver.class.getSimpleName()));
@@ -92,6 +100,27 @@ public class GStreamerDriver implements WebcamDriver {
 		Runtime.getRuntime().addShutdownHook(new GStreamerShutdownHook());
 	}
 
+	public static final String FORMAT_RGB = "video/x-raw-rgb";
+	public static final String FORMAT_YUV = "video/x-raw-yuv";
+	public static final String FORMAT_MJPEG = "image/jpeg";
+
+	private List<String> preferredFormats = new ArrayList<>(Arrays.asList(FORMAT_RGB, FORMAT_YUV, FORMAT_MJPEG));
+
+	/**
+	 * Set preferred video formats for this driver. First formats from the list are better and will
+	 * be selected if available.
+	 */
+	public void setPreferredFormats(List<String> preferredFormats) {
+		if (preferredFormats.isEmpty()) {
+			throw new IllegalArgumentException("Preferred formats list must not be empty");
+		}
+		this.preferredFormats = new ArrayList<>(preferredFormats);
+	}
+
+	public List<String> getPreferredFormats() {
+		return preferredFormats;
+	}
+
 	@Override
 	public List<WebcamDevice> getDevices() {
 
@@ -106,17 +135,17 @@ public class GStreamerDriver implements WebcamDriver {
 			srcname = "qtkitvideosrc";
 		}
 
-		Element src = ElementFactory.make(srcname, "source");
+		final Element src = ElementFactory.make(srcname, "source");
 
 		try {
 			if (Platform.isWindows()) {
 				PropertyProbe probe = PropertyProbe.wrap(src);
 				for (Object name : probe.getValues("device-name")) {
-					devices.add(new GStreamerDevice(name.toString()));
+					devices.add(new GStreamerDevice(this, name.toString()));
 				}
 			} else if (Platform.isLinux()) {
 				for (File vfile : NixVideoDevUtils.getVideoFiles()) {
-					devices.add(new GStreamerDevice(vfile));
+					devices.add(new GStreamerDevice(this, vfile));
 				}
 			} else {
 				throw new RuntimeException("Platform unsupported by GStreamer capture driver");
