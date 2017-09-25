@@ -67,7 +67,6 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	private Pipeline pipe = null;
 	private Element source = null;
 	private Element filter = null;
-	private Element jpegparse = null;
 	private Element jpegdec = null;
 	private Element[] elements = null;
 	private RGBDataSink sink = null;
@@ -136,7 +135,6 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 		filter = ElementFactory.make("capsfilter", "capsfilter");
 
-		jpegparse = ElementFactory.make("jpegparse", "jpegparse");
 		jpegdec = ElementFactory.make("jpegdec", "jpegdec");
 
 		pipelineReady();
@@ -306,7 +304,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	private Element[] pipelineElementsPrepare() {
 		if (elements == null) {
 			if (FORMAT_MJPEG.equals(format)) {
-				elements = new Element[] { source, filter, jpegparse, jpegdec, sink };
+				elements = new Element[] { source, filter, jpegdec, sink };
 			} else {
 				elements = new Element[] { source, filter, sink };
 			}
@@ -371,7 +369,6 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 		source.dispose();
 		filter.dispose();
-		jpegparse.dispose();
 		jpegdec.dispose();
 		caps.dispose();
 		sink.dispose();
