@@ -54,11 +54,11 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	/**
 	 * Device name, immutable. Used only on Windows platform.
 	 */
-	private final String name;
+	private final int deviceIndex;
 	/**
 	 * Device name, immutable. Used only on Linux platform.
 	 */
-	private final File vfile;
+	private final File videoFile;
 
 	private final GStreamerDriver driver;
 
@@ -67,7 +67,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	private Pipeline pipe = null;
 	private Element source = null;
 	private Element filter = null;
-	private Element jpegpar = null;
+	private Element jpegparse = null;
 	private Element jpegdec = null;
 	private Element[] elements = null;
 	private RGBDataSink sink = null;
@@ -95,16 +95,16 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	 *
 	 * @param name the name of webcam device
 	 */
-	protected GStreamerDevice(GStreamerDriver driver, String name) {
+	protected GStreamerDevice(GStreamerDriver driver, int deviceIndex) {
 		this.driver = driver;
-		this.name = name;
-		this.vfile = null;
+		this.deviceIndex = deviceIndex;
+		this.videoFile = null;
 	}
 
-	protected GStreamerDevice(GStreamerDriver driver, File vfile) {
+	protected GStreamerDevice(GStreamerDriver driver, File videoFile) {
 		this.driver = driver;
-		this.name = null;
-		this.vfile = vfile;
+		this.deviceIndex = -1;
+		this.videoFile = videoFile;
 	}
 
 	/**
@@ -118,35 +118,30 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 		LOG.debug("GStreamer webcam device initialization");
 
-		pipe = new Pipeline(name);
+		pipe = new Pipeline(getName());
+		source = ElementFactory.make(GStreamerDriver.getSourceBySystem(), "source");
 
 		if (Platform.isWindows()) {
-			source = ElementFactory.make("dshowvideosrc", "dshowvideosrc");
-			source.set("device-name", name);
+			source.set("device-index", deviceIndex);
 		} else if (Platform.isLinux()) {
-			source = ElementFactory.make("v4l2src", "v4l2src");
-			source.set("device", vfile.getAbsolutePath());
+			source.set("device", videoFile.getAbsolutePath());
+		} else if (Platform.isMacOSX()) {
+			throw new IllegalStateException("not yet implemented");
 		}
 
-		sink = new RGBDataSink(name, this);
+		sink = new RGBDataSink(getName(), this);
 		sink.setPassDirectBuffer(true);
 		sink.getSinkElement().setMaximumLateness(LATENESS, TimeUnit.MILLISECONDS);
 		sink.getSinkElement().setQOSEnabled(true);
 
 		filter = ElementFactory.make("capsfilter", "capsfilter");
 
-		jpegpar = ElementFactory.make("jpegparse", "jpegparse");
+		jpegparse = ElementFactory.make("jpegparse", "jpegparse");
 		jpegdec = ElementFactory.make("jpegdec", "jpegdec");
 
-		// if (Platform.isLinux()) {
 		pipelineReady();
-		// }
-
 		resolutions = parseResolutions(source.getPads().get(0));
-
-		// if (Platform.isLinux()) {
 		pipelineStop();
-		// }
 	}
 
 	/**
@@ -233,9 +228,9 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	@Override
 	public String getName() {
 		if (Platform.isWindows()) {
-			return name;
+			return Integer.toString(deviceIndex);
 		} else if (Platform.isLinux()) {
-			return vfile.getAbsolutePath();
+			return videoFile.getAbsolutePath();
 		} else {
 			throw new RuntimeException("Platform not supported by GStreamer capture driver");
 		}
@@ -311,7 +306,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	private Element[] pipelineElementsPrepare() {
 		if (elements == null) {
 			if (FORMAT_MJPEG.equals(format)) {
-				elements = new Element[] { source, filter, jpegpar, jpegdec, sink };
+				elements = new Element[] { source, filter, jpegparse, jpegdec, sink };
 			} else {
 				elements = new Element[] { source, filter, sink };
 			}
@@ -376,7 +371,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 		source.dispose();
 		filter.dispose();
-		jpegpar.dispose();
+		jpegparse.dispose();
 		jpegdec.dispose();
 		caps.dispose();
 		sink.dispose();

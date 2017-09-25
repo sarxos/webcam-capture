@@ -9,7 +9,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
-import org.gstreamer.interfaces.PropertyProbe;
+import org.gstreamer.State;
+import org.gstreamer.StateChangeReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +105,10 @@ public class GStreamerDriver implements WebcamDriver {
 	public static final String FORMAT_YUV = "video/x-raw-yuv";
 	public static final String FORMAT_MJPEG = "image/jpeg";
 
+	protected static final String SRC_WINDOWS_KERNEL_STREAMING = "ksvideosrc";
+	protected static final String SRC_VIDEO_FOR_LINUX_2 = "v4l2src";
+	protected static final String SRC_QUICKTIME_KIT = "qtkitvideosrc";
+
 	private List<String> preferredFormats = new ArrayList<>(Arrays.asList(FORMAT_RGB, FORMAT_YUV, FORMAT_MJPEG));
 
 	/**
@@ -121,28 +126,41 @@ public class GStreamerDriver implements WebcamDriver {
 		return preferredFormats;
 	}
 
+	protected static String getSourceBySystem() {
+		if (Platform.isWindows()) {
+			return SRC_WINDOWS_KERNEL_STREAMING;
+		} else if (Platform.isLinux()) {
+			return SRC_VIDEO_FOR_LINUX_2;
+		} else if (Platform.isMac()) {
+			return SRC_QUICKTIME_KIT;
+		}
+		throw new IllegalStateException("Unsupported operating system");
+	}
+
 	@Override
 	public List<WebcamDevice> getDevices() {
 
 		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
 
-		String srcname = null;
-		if (Platform.isWindows()) {
-			srcname = "dshowvideosrc";
-		} else if (Platform.isLinux()) {
-			srcname = "v4l2src";
-		} else if (Platform.isMac()) {
-			srcname = "qtkitvideosrc";
-		}
-
-		final Element src = ElementFactory.make(srcname, "source");
+		final String srcName = getSourceBySystem();
+		final Element src = ElementFactory.make(srcName, srcName);
 
 		try {
 			if (Platform.isWindows()) {
-				PropertyProbe probe = PropertyProbe.wrap(src);
-				for (Object name : probe.getValues("device-name")) {
-					devices.add(new GStreamerDevice(this, name.toString()));
-				}
+
+				src.setState(State.NULL);
+
+				int m = 50;
+				int i = 0;
+				do {
+					src.set("device-index", i);
+					if (src.setState(State.READY) == StateChangeReturn.SUCCESS) {
+						devices.add(new GStreamerDevice(this, i));
+					} else {
+						break;
+					}
+				} while (i < m);
+
 			} else if (Platform.isLinux()) {
 				for (File vfile : NixVideoDevUtils.getVideoFiles()) {
 					devices.add(new GStreamerDevice(this, vfile));
