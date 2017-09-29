@@ -154,6 +154,16 @@ And here are some more advanced examples, few with quite fancy GUI.
 * [How to use Webcam Capture API and WebSockets to transport images from server to web client](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-websockets)
 * [How to use Webcam Capture API from Akka](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-examples/webcam-capture-akka/src/main/java/Application.java)
 
+
+## YouTube Tutorials
+
+Video series by [Genuine Coder](https://www.youtube.com/GenuineCoder) for Webcam Capture beginners:
+* [Java Webcam Capture #1: Introduction and Capturing with 3 lines of code](https://www.youtube.com/watch?v=2BHyL_XK8YQ)
+* [Java Webcam Capture #2: Take Images with Different Resolutions](https://www.youtube.com/watch?v=dL4MVWJjVVY)
+* [Java Webcam Capture #3: Video Feed from Webcam using Thread](https://www.youtube.com/watch?v=RkzfFGP60fw)
+* [Java Webcam Capture #4: Video Feed from Webcam (Easy Way)](https://www.youtube.com/watch?v=amMaYzl45Pw)
+
+
 ## Capture Drivers
 
 Webcam Capture API defines ```WebcamDriver``` interface which has been already implemented in several _capturing drivers_ build on top of well-known frameworks used to work with multimedia and cameras. Complete list can be found below.
