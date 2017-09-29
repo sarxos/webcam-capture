@@ -29,6 +29,7 @@
 		<module>driver-jmf</module>
 		<module>driver-lti-civil</module>
 		<module>driver-openimaj</module>
+		<module>driver-screencapture</module>
 		<module>driver-v4l4j</module>
 		<module>driver-vlcj</module>
 	</modules>
