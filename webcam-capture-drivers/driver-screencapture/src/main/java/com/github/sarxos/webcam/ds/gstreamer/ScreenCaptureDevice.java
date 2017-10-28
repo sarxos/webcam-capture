@@ -6,7 +6,6 @@ import java.awt.DisplayMode;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Robot;
@@ -72,6 +71,9 @@ public class ScreenCaptureDevice implements WebcamDevice {
 		BufferedImage screen = robot.createScreenCapture(bounds);
 		int width = resolution.width;
 		int height = resolution.height;
+		if (screen.getWidth() == width && screen.getHeight() == height) {
+			return screen;	// No need for adaption
+		}
 		BufferedImage img = new BufferedImage(width, height, screen.getType());
 		Graphics2D g = img.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
