@@ -3,9 +3,11 @@ package com.github.sarxos.webcam.ds.gstreamer;
 import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
 
@@ -59,14 +61,28 @@ public class ScreenCaptureDevice implements WebcamDevice {
 
 	@Override
 	public void setResolution(Dimension size) {
-		// do nothings, screen has only one resolution which is already set
+	    resolution.setSize(size.getWidth(), size.getHeight());
 	}
 
 	@Override
 	public BufferedImage getImage() {
 		final GraphicsConfiguration gc = device.getDefaultConfiguration();
 		final Rectangle bounds = gc.getBounds();
-		return robot.createScreenCapture(bounds);
+		BufferedImage screen = robot.createScreenCapture(bounds);
+		int width = resolution.width;
+		int height = resolution.height;
+		if (screen.getWidth() == width && screen.getHeight() == height) {
+			return screen;	// No need for adaption
+		}
+		BufferedImage img = new BufferedImage(width, height, screen.getType());
+		Graphics2D g = img.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+		                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g.drawImage(screen, 0, 0, width, height,
+		                    0, 0, screen.getWidth(), screen.getHeight(),
+		                    null);
+		g.dispose();
+		return img;
 	}
 
 	@Override
