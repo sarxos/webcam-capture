@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class WebcamCompositeDriver implements WebcamDriver {
+public class WebcamCompositeDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 	private List<WebcamDriver> drivers = new ArrayList<WebcamDriver>();
+
+	private int scanInterval = -1;
 
 	public WebcamCompositeDriver(WebcamDriver... drivers) {
 		for (WebcamDriver driver : drivers) {
@@ -41,5 +43,22 @@ public class WebcamCompositeDriver implements WebcamDriver {
 			}
 		}
 		return safe;
+	}
+
+	public void setScanInterval(int scanInterval) {
+		this.scanInterval = scanInterval;
+	}
+
+	@Override
+	public long getScanInterval() {
+		if (scanInterval <= 0) {
+			return DEFAULT_SCAN_INTERVAL;
+		}
+		return scanInterval;
+	}
+
+	@Override
+	public boolean isScanPossible() {
+		return true;
 	}
 }
