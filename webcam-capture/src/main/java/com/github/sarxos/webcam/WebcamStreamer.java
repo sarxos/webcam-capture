@@ -21,6 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * This is very simple class which allows video from webcam to be exposed as MJPEG stream on a given
+ * port. The mapping between webcam and port is one-to-one, which means that a single port need to
+ * be allocated for every webcam you want to stream from.
+ *
+ * @author Bartoisz Firyn (sarxos)
+ */
 public class WebcamStreamer implements ThreadFactory, WebcamListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamStreamer.class);
@@ -33,12 +40,9 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 
 		@Override
 		public void run() {
-			try {
-				ServerSocket server = new ServerSocket(port);
+			try (ServerSocket server = new ServerSocket(port)) {
 				while (started.get()) {
-					Socket socket = server.accept();
-					LOG.info("New connection from {}", socket.getRemoteSocketAddress());
-					executor.execute(new Connection(socket));
+					executor.execute(new Connection(server.accept()));
 				}
 			} catch (Exception e) {
 				LOG.error("Cannot accept socket connection", e);
@@ -56,6 +60,8 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 
 		@Override
 		public void run() {
+
+			LOG.info("New connection from {}", socket.getRemoteSocketAddress());
 
 			BufferedReader br = null;
 			BufferedOutputStream bos = null;
@@ -135,9 +141,19 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 							bos.write(CRLF.getBytes());
 							bos.flush();
 						} catch (SocketException e) {
-							LOG.error("Socket exception from " + socket.getRemoteSocketAddress(), e);
+
+							if (!socket.isConnected()) {
+								LOG.debug("Connection to client has been lost");
+							}
+							if (socket.isClosed()) {
+								LOG.debug("Connection to client is closed");
+							}
+
 							br.close();
 							bos.close();
+
+							LOG.debug("Socket exception from " + socket.getRemoteSocketAddress(), e);
+
 							return;
 						}
 
