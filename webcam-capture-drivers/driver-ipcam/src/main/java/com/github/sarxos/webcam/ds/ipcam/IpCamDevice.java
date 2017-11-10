@@ -1,17 +1,9 @@
 package com.github.sarxos.webcam.ds.ipcam;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import javax.imageio.ImageIO;
-
+import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamException;
+import com.github.sarxos.webcam.ds.ipcam.impl.IpCamHttpClient;
+import com.github.sarxos.webcam.ds.ipcam.impl.IpCamMJPEGStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -27,10 +19,18 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.sarxos.webcam.WebcamDevice;
-import com.github.sarxos.webcam.WebcamException;
-import com.github.sarxos.webcam.ds.ipcam.impl.IpCamHttpClient;
-import com.github.sarxos.webcam.ds.ipcam.impl.IpCamMJPEGStream;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+import java.util.concurrent.*;
 
 
 /**
@@ -44,154 +44,6 @@ public class IpCamDevice implements WebcamDevice {
 	 * Logger.
 	 */
 	private static final Logger LOG = LoggerFactory.getLogger(IpCamDevice.class);
-
-	private final class PushImageReader implements Runnable {
-
-		private final Object lock = new Object();
-		private IpCamMJPEGStream stream = null;
-		private BufferedImage image = null;
-		private boolean running = true;
-		private WebcamException exception = null;
-		private HttpGet get = null;
-		private URI uri = null;
-
-		public PushImageReader(URI uri) {
-			this.uri = uri;
-			stream = new IpCamMJPEGStream(requestStream(uri));
-		}
-
-		private InputStream requestStream(URI uri) {
-
-			BasicHttpContext context = new BasicHttpContext();
-
-			IpCamAuth auth = getAuth();
-			if (auth != null) {
-				AuthCache cache = new BasicAuthCache();
-				cache.put(new HttpHost(uri.getHost()), new BasicScheme());
-				context.setAttribute(ClientContext.AUTH_CACHE, cache);
-			}
-
-			try {
-				get = new HttpGet(uri);
-
-				HttpResponse respone = client.execute(get, context);
-				HttpEntity entity = respone.getEntity();
-
-				Header ct = entity.getContentType();
-				if (ct == null) {
-					throw new WebcamException("Content Type header is missing");
-				}
-
-				if (ct.getValue().startsWith("image/")) {
-					throw new WebcamException("Cannot read images in PUSH mode, change mode to PULL");
-				}
-
-				return entity.getContent();
-
-			} catch (Exception e) {
-				throw new WebcamException("Cannot download image", e);
-			}
-		}
-
-		private volatile boolean processing = true;
-
-		@Override
-		public void run() {
-
-			while (running) {
-
-				if (stream.isClosed()) {
-					break;
-				}
-
-				try {
-
-					LOG.trace("Reading MJPEG frame");
-
-					processing = false;
-					try {
-						BufferedImage image = stream.readFrame();
-						if (image != null) {
-							this.image = image;
-						} else {
-							LOG.error("No image received from the stream");
-						}
-					} finally {
-						synchronized (lock) {
-							lock.notifyAll();
-						}
-						processing = false;
-					}
-
-				} catch (IOException e) {
-
-					// case when someone manually closed stream, do not log
-					// exception, this is normal behavior
-
-					if (stream.isClosed()) {
-						LOG.debug("Stream already closed, returning");
-						return;
-					}
-
-					if (e instanceof EOFException) {
-
-						LOG.debug("EOF detected, recreating MJPEG stream");
-
-						get.releaseConnection();
-
-						try {
-							stream.close();
-						} catch (IOException ioe) {
-							throw new WebcamException(ioe);
-						}
-
-						stream = new IpCamMJPEGStream(requestStream(uri));
-
-						continue;
-					}
-
-					LOG.error("Cannot read MJPEG frame", e);
-
-					if (failOnError) {
-						exception = new WebcamException("Cannot read MJPEG frame", e);
-						throw exception;
-					}
-				}
-			}
-
-			try {
-				stream.close();
-			} catch (IOException e) {
-				LOG.debug("Some nasty exception when closing MJPEG stream", e);
-			}
-
-		}
-
-		public BufferedImage getImage() {
-			if (exception != null) {
-				throw exception;
-			}
-			if (image == null) {
-				try {
-					while (processing) {
-						synchronized (lock) {
-							lock.wait();
-						}
-					}
-				} catch (InterruptedException e) {
-					throw new WebcamException("Reader thread interrupted", e);
-				} catch (Exception e) {
-					throw new RuntimeException("Problem waiting on lock", e);
-				}
-			}
-			return image;
-		}
-
-		public void stop() {
-			running = false;
-		}
-	}
-
 	private String name = null;
 	private URL url = null;
 	private IpCamMode mode = null;
@@ -199,13 +51,12 @@ public class IpCamDevice implements WebcamDevice {
 	private IpCamHttpClient client = new IpCamHttpClient();
 	private PushImageReader pushReader = null;
 	private boolean failOnError = false;
-
-	private volatile boolean open = false;
-	private volatile boolean disposed = false;
-
+    private ArrayBlockingQueue<Runnable> queue = null;
+    private ExecutorService executorService = null;
+    private volatile boolean open = false;
+    private volatile boolean disposed = false;
 	private Dimension[] sizes = null;
 	private Dimension size = null;
-
 	public IpCamDevice(String name, String url, IpCamMode mode) throws MalformedURLException {
 		this(name, new URL(url), mode, null);
 	}
@@ -235,30 +86,71 @@ public class IpCamDevice implements WebcamDevice {
 		}
 	}
 
-	public IpCamHttpClient getClient() {
-		return client;
-	}
+    protected static final URL toURL(String url) {
 
-	protected static final URL toURL(String url) {
+        String base = null;
+        if (url.startsWith("http://")) {
+            base = url;
+        } else {
+            base = String.format("http://%s", url);
+        }
 
-		String base = null;
-		if (url.startsWith("http://")) {
-			base = url;
-		} else {
-			base = String.format("http://%s", url);
-		}
+        try {
+            return new URL(base);
+        } catch (MalformedURLException e) {
+            throw new WebcamException(String.format("Incorrect URL '%s'", url), e);
+        }
+    }
 
-		try {
-			return new URL(base);
-		} catch (MalformedURLException e) {
-			throw new WebcamException(String.format("Incorrect URL '%s'", url), e);
-		}
-	}
+    private void initThreadPool() {
+        queue = new ArrayBlockingQueue<Runnable>(1);
+        executorService =
+                new ThreadPoolExecutor(
+                        1,
+                        1,
+                        1,
+                        TimeUnit.SECONDS,
+                        queue,
+                        new ThreadFactory() {
+                            @Override
+                            public Thread newThread(Runnable r) {
+                                final String threadName = String.format("%s-reader", getName());
+                                Thread thread = new Thread(r, threadName);
+                                thread.setDaemon(true);
+                                return thread;
+                            }
+                        });
+        executorService.shutdown();
+    }
 
-	@Override
-	public String getName() {
-		return name;
-	}
+    private boolean isThreadAlive() {
+        return !executorService.isTerminated();
+    }
+
+    private void destroyThreadPool() throws InterruptedException {
+        if (executorService != null) {
+            if (pushReader != null) {
+                pushReader.stop();
+            }
+            executorService.shutdown();
+            boolean haveCompleted = executorService.awaitTermination(50, TimeUnit.MILLISECONDS);
+            if (!haveCompleted) {
+                List<Runnable> interrupted = executorService.shutdownNow();
+                if (!interrupted.isEmpty()) {
+                    LOG.debug("One thread was interrupted for camera " + getName());
+                }
+            }
+        }
+    }
+
+    public IpCamHttpClient getClient() {
+        return client;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
 
 	@Override
 	public Dimension[] getResolutions() {
@@ -291,20 +183,20 @@ public class IpCamDevice implements WebcamDevice {
 
 	protected void setSizes(Dimension[] sizes) {
 		this.sizes = sizes;
-	}
+    }
+
+    @Override
+    public Dimension getResolution() {
+        if (size == null) {
+            size = getResolutions()[0];
+        }
+        return size;
+    }
 
 	@Override
-	public Dimension getResolution() {
-		if (size == null) {
-			size = getResolutions()[0];
-		}
-		return size;
-	}
-
-	@Override
-	public void setResolution(Dimension size) {
-		this.size = size;
-	}
+    public void setResolution(Dimension size) {
+        this.size = size;
+    }
 
 	@Override
 	public synchronized BufferedImage getImage() {
@@ -331,9 +223,14 @@ public class IpCamDevice implements WebcamDevice {
 
 		if (pushReader == null) {
 
-			URI uri = null;
-			try {
-				uri = getURL().toURI();
+            try {
+                destroyThreadPool();
+            } catch (InterruptedException e) {
+                LOG.error("Interrupted thread", e);
+            }
+            URI uri = null;
+            try {
+                uri = getURL().toURI();
 			} catch (URISyntaxException e) {
 				throw new WebcamException(String.format("Incorrect URI syntax '%s'", uri), e);
 			}
@@ -342,10 +239,9 @@ public class IpCamDevice implements WebcamDevice {
 
 			// TODO: change to executor
 
-			Thread thread = new Thread(pushReader, String.format("%s-reader", getName()));
-			thread.setDaemon(true);
-			thread.start();
-		}
+            initThreadPool();
+            executorService.execute(pushReader);
+        }
 
 		return pushReader.getImage();
 	}
@@ -429,32 +325,32 @@ public class IpCamDevice implements WebcamDevice {
 			uri = getURL().toURI();
 		} catch (URISyntaxException e) {
 			throw new WebcamException(String.format("Incorrect URI syntax '%s'", uri), e);
-		}
+        }
 
-		HttpHead head = new HttpHead(uri);
+        HttpHead head = new HttpHead(uri);
 
-		HttpResponse response = null;
-		try {
-			response = client.execute(head);
-		} catch (Exception e) {
-			return false;
-		} finally {
-			if (head != null) {
-				head.releaseConnection();
-			}
-		}
+        HttpResponse response = null;
+        try {
+            response = client.execute(head);
+        } catch (Exception e) {
+            return false;
+        } finally {
+            if (head != null) {
+                head.releaseConnection();
+            }
+        }
 
-		return response.getStatusLine().getStatusCode() != 404;
-	}
+        return response.getStatusLine().getStatusCode() != 404;
+    }
 
-	@Override
-	public void open() {
-		if (disposed) {
-			LOG.warn("Device cannopt be open because it's already disposed");
-			return;
-		}
-		open = true;
-	}
+    @Override
+    public void open() {
+        if (disposed) {
+            LOG.warn("Device cannopt be open because it's already disposed");
+            return;
+        }
+        open = true;
+    }
 
 	@Override
 	public void close() {
@@ -462,10 +358,14 @@ public class IpCamDevice implements WebcamDevice {
 		if (!open) {
 			return;
 		}
-
-		if (pushReader != null) {
-			pushReader.stop();
-			pushReader = null;
+        try {
+            destroyThreadPool();
+        } catch (InterruptedException e) {
+            LOG.error("Interrupted while closing camera " + getName());
+        }
+        if (pushReader != null) {
+            pushReader.stop();
+            pushReader = null;
 		}
 
 		open = false;
@@ -497,15 +397,161 @@ public class IpCamDevice implements WebcamDevice {
 
 	public void setFailOnError(boolean failOnError) {
 		this.failOnError = failOnError;
-	}
+    }
 
-	@Override
-	public void dispose() {
-		disposed = true;
-	}
+    @Override
+    public void dispose() {
+        disposed = true;
+    }
 
 	@Override
 	public boolean isOpen() {
 		return open;
-	}
+    }
+
+    private final class PushImageReader implements Runnable {
+
+        private final Object lock = new Object();
+        private IpCamMJPEGStream stream = null;
+        private BufferedImage image = null;
+        private volatile boolean running = true;
+        private WebcamException exception = null;
+        private HttpGet get = null;
+        private URI uri = null;
+        private volatile boolean processing = true;
+
+        public PushImageReader(URI uri) {
+            this.uri = uri;
+            stream = new IpCamMJPEGStream(requestStream(uri));
+        }
+
+        private InputStream requestStream(URI uri) {
+
+            BasicHttpContext context = new BasicHttpContext();
+
+            IpCamAuth auth = getAuth();
+            if (auth != null) {
+                AuthCache cache = new BasicAuthCache();
+                cache.put(new HttpHost(uri.getHost()), new BasicScheme());
+                context.setAttribute(ClientContext.AUTH_CACHE, cache);
+            }
+
+            try {
+                get = new HttpGet(uri);
+
+                HttpResponse respone = client.execute(get, context);
+                HttpEntity entity = respone.getEntity();
+
+                Header ct = entity.getContentType();
+                if (ct == null) {
+                    throw new WebcamException("Content Type header is missing");
+                }
+
+                if (ct.getValue().startsWith("image/")) {
+                    throw new WebcamException("Cannot read images in PUSH mode, change mode to PULL");
+                }
+
+                return entity.getContent();
+
+            } catch (Exception e) {
+                throw new WebcamException("Cannot download image", e);
+            }
+        }
+
+        @Override
+        public void run() {
+
+            while (running) {
+
+                if (stream.isClosed()) {
+                    break;
+                }
+
+                try {
+
+                    LOG.trace("Reading MJPEG frame");
+
+                    processing = false;
+                    try {
+                        BufferedImage image = stream.readFrame();
+                        if (image != null) {
+                            this.image = image;
+                        } else {
+                            LOG.error("No image received from the stream");
+                        }
+                    } finally {
+                        synchronized (lock) {
+                            lock.notifyAll();
+                        }
+                        processing = false;
+                    }
+
+                } catch (IOException e) {
+
+                    // case when someone manually closed stream, do not log
+                    // exception, this is normal behavior
+
+                    if (stream.isClosed()) {
+                        LOG.debug("Stream already closed, returning");
+                        return;
+                    }
+
+                    if (e instanceof EOFException) {
+
+                        LOG.debug("EOF detected, recreating MJPEG stream");
+
+                        get.releaseConnection();
+
+                        try {
+                            stream.close();
+                        } catch (IOException ioe) {
+                            throw new WebcamException(ioe);
+                        }
+
+                        stream = new IpCamMJPEGStream(requestStream(uri));
+
+                        continue;
+                    }
+
+                    LOG.error("Cannot read MJPEG frame", e);
+
+                    if (failOnError) {
+                        exception = new WebcamException("Cannot read MJPEG frame", e);
+                        throw exception;
+                    }
+                }
+            }
+
+            try {
+                stream.close();
+            } catch (IOException e) {
+                LOG.debug("Some nasty exception when closing MJPEG stream", e);
+            }
+
+        }
+
+        public BufferedImage getImage() {
+            if (exception != null) {
+                throw exception;
+            }
+            if (image == null) {
+                try {
+                    while (processing) {
+                        synchronized (lock) {
+                            lock.wait();
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    throw new WebcamException("Reader thread interrupted", e);
+                } catch (Exception e) {
+                    throw new RuntimeException("Problem waiting on lock", e);
+                }
+            }
+            return image;
+        }
+
+        public void stop() {
+            running = false;
+        }
+    }
 }
