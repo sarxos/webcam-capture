@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -40,7 +41,7 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 
 		@Override
 		public void run() {
-			try (ServerSocket server = new ServerSocket(port)) {
+			try (ServerSocket server = new ServerSocket(port, 50, InetAddress.getByName("0.0.0.0"))) {
 				while (started.get()) {
 					executor.execute(new Connection(server.accept()));
 				}
@@ -63,9 +64,9 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 
 			LOG.info("New connection from {}", socket.getRemoteSocketAddress());
 
-			BufferedReader br = null;
-			BufferedOutputStream bos = null;
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			final BufferedReader br;
+			final BufferedOutputStream bos;
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
 			try {
 				br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -149,8 +150,12 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 								LOG.debug("Connection to client is closed");
 							}
 
-							br.close();
-							bos.close();
+							try {
+								br.close();
+								bos.close();
+							} catch (SocketException se) {
+								LOG.debug("Exception when closing socket", se);
+							}
 
 							LOG.debug("Socket exception from " + socket.getRemoteSocketAddress(), e);
 
@@ -185,17 +190,20 @@ public class WebcamStreamer implements ThreadFactory, WebcamListener {
 				}
 
 			} finally {
+
+				LOG.info("Closing connection from {}", socket.getRemoteSocketAddress());
+
 				for (Closeable closeable : new Closeable[] { br, bos, baos }) {
 					try {
 						closeable.close();
 					} catch (IOException e) {
-						LOG.error("Cannot close socket", e);
+						LOG.debug("Cannot close socket", e);
 					}
 				}
 				try {
 					socket.close();
 				} catch (IOException e) {
-					LOG.error("Cannot close socket", e);
+					LOG.debug("Cannot close socket", e);
 				}
 			}
 		}
