@@ -9,7 +9,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.concurrent.Semaphore;
 
 import javax.imageio.ImageIO;
 
@@ -43,7 +42,7 @@ import com.github.sarxos.webcam.ds.ipcam.impl.IpCamMJPEGStream;
 /**
  * IP camera device.
  *
- * @author Bartosz Firyn (SarXos)
+ * @author Bartosz Firyn (sarxos)
  */
 public class IpCamDevice implements WebcamDevice, FPSSource {
 
@@ -58,22 +57,19 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 
 		void halt();
 
-		void init();
+		void start();
 	}
 
 	private final class PushImageReader extends Thread implements ImageReader {
 
 		private final URI uri;
 		private volatile boolean running = true;
-		private volatile WebcamException exception = null;
 		private volatile BufferedImage image = null;
 		private BufferedImage tmp;
-		private final Semaphore semaphore = new Semaphore(1);
 		private volatile double fps = 0;
 
 		public PushImageReader(final URI uri) {
 			this.uri = uri;
-			this.semaphore.drainPermits();
 			this.setDaemon(true);
 		}
 
@@ -97,7 +93,6 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 						t1 = System.currentTimeMillis();
 						if ((tmp = stream.readFrame()) != null) {
 							image = tmp;
-							semaphore.release();
 						}
 						t2 = System.currentTimeMillis();
 						fps = (double) 1000 / (t2 - t1 + 1);
@@ -106,33 +101,22 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 					if (e instanceof EOFException) { // EOF, ignore error and recreate stream
 						continue;
 					}
-					exception = new WebcamException("Cannot read MJPEG frame", e);
+					LOG.error("Cannot read MJPEG frame", e);
 				}
 			}
 		}
 
 		@Override
 		public BufferedImage readImage() throws InterruptedException {
-			if (exception != null && failOnError) {
-				throw exception;
+			while (running && image == null) {
+				Thread.sleep(10);
 			}
-			semaphore.acquire();
-			try {
-				return image;
-			} finally {
-				semaphore.release();
-			}
+			return image;
 		}
 
 		@Override
 		public void halt() {
 			running = false;
-			semaphore.release();
-		}
-
-		@Override
-		public void init() {
-			start();
 		}
 
 		@Override
@@ -181,7 +165,7 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 		}
 
 		@Override
-		public void init() {
+		public void start() {
 			// do nothing, no need to start this one
 		}
 
@@ -195,9 +179,9 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 	private final URL url;
 	private final IpCamMode mode;
 	private final IpCamAuth auth;
-	private boolean failOnError = false;
 
 	private final HttpClient client;
+	private final HttpContext context;
 	private ImageReader reader;
 
 	private boolean open = false;
@@ -228,6 +212,8 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 		this.mode = mode;
 		this.auth = auth;
 		this.client = createClient();
+		this.context = createContext();
+
 	}
 
 	protected static final URL toURL(String url) {
@@ -268,7 +254,7 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 		}
 	}
 
-	private HttpContext context() {
+	private HttpContext createContext() {
 
 		final IpCamAuth auth = getAuth();
 
@@ -295,7 +281,7 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 	private InputStream get(final URI uri, boolean withoutImageMime) throws UnsupportedOperationException, IOException {
 
 		final HttpGet get = new HttpGet(uri);
-		final HttpResponse respone = client.execute(get, context());
+		final HttpResponse respone = client.execute(get, context);
 		final HttpEntity entity = respone.getEntity();
 
 		// normal jpeg return image/jpeg as opposite to mjpeg
@@ -366,14 +352,14 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 
 	@Override
 	public synchronized BufferedImage getImage() {
-		if (open) {
-			try {
-				return reader.readImage();
-			} catch (InterruptedException e) {
-				throw new WebcamException(e);
-			}
+		if (!open) {
+			return null;
 		}
-		return null;
+		try {
+			return reader.readImage();
+		} catch (InterruptedException e) {
+			throw new WebcamException(e);
+		}
 	}
 
 	/**
@@ -400,7 +386,7 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 		if (!open) {
 
 			reader = createReader();
-			reader.init();
+			reader.start();
 
 			try {
 				reader.readImage();
@@ -429,10 +415,6 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 
 	public IpCamAuth getAuth() {
 		return auth;
-	}
-
-	public void setFailOnError(boolean failOnError) {
-		this.failOnError = failOnError;
 	}
 
 	@Override
