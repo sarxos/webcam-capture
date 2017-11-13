@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamImageTransformer;
 import com.github.sarxos.webcam.WebcamPanel;
+import com.github.sarxos.webcam.WebcamPanel.DrawMode;
 import com.github.sarxos.webcam.WebcamResolution;
 import com.github.sarxos.webcam.util.jh.JHFlipFilter;
 
@@ -22,8 +23,8 @@ public class ImageTransformerRotationExample implements WebcamImageTransformer {
 	/**
 	 * This is filter from JH Labs which flips buffered image 90 degrees clockwise. For more details
 	 * please follow to the <a href="http://www.jhlabs.com/ip/filters/index.html">JH Labs Filters<a>
-	 * home page (filters source code can be found <a
-	 * href="https://github.com/axet/jhlabs">here</a>).
+	 * home page (filters source code can be found
+	 * <a href="https://github.com/axet/jhlabs">here</a>).
 	 */
 	private final BufferedImageOp filter = new JHFlipFilter(JHFlipFilter.FLIP_90CW);
 
@@ -49,7 +50,7 @@ public class ImageTransformerRotationExample implements WebcamImageTransformer {
 
 		WebcamPanel panel = new WebcamPanel(webcam);
 		panel.setFPSDisplayed(true);
-		panel.setFitArea(true);
+		panel.setDrawMode(DrawMode.FIT);
 
 		// add panel to window
 
