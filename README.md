@@ -135,7 +135,9 @@ Below are the very pretty basic examples demonstrating of how Webcam Capture API
 * [How to display image from IP camera exposing MJPEG stream](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-ipcam/src/examples/java/MjpegLignanoBeachExample.java)
 * [How to use composite driver to display both, build-in and IP camera images](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-ipcam/src/examples/java/DualNativeAndMjpegWebcamExample.java)
 * [How to work with Raspberry Pi (camera module or UVC device)](https://github.com/sarxos/webcam-capture/wiki/How-To-Configure-Raspberry-Pi)
-* [How to rotate the image from camera with ```WebcamImageTransformer```](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/ImageTransformerRotationExample.java)
+* [How to flip (mirror) image displayed in ```WebcamPanel```](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/WebcamPanelFlippingExample.java)
+* [How to rotate image displayed in ```WebcamPanel```](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/WebcamPanelRotationExample.java)
+* [How to rotate image from camera with ```WebcamImageTransformer```](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/ImageTransformerRotationExample.java)
 
 And here are some more advanced examples, few with quite fancy GUI.
 
