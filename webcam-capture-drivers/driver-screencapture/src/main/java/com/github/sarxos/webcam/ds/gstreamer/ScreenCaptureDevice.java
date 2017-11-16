@@ -4,7 +4,6 @@ import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -18,6 +17,12 @@ import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
 
 
+/**
+ * This class abstract screen device (display) which can be used to capture image from.
+ *
+ * @author Bartosz Firyn (sarxos)
+ * @author Hagen Stanek (gubjack)
+ */
 public class ScreenCaptureDevice implements WebcamDevice {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScreenCaptureDevice.class);
@@ -25,15 +30,18 @@ public class ScreenCaptureDevice implements WebcamDevice {
 	private final GraphicsDevice device;
 	private final DisplayMode mode;
 	private final Dimension resolution;
+	private final Dimension[] resolutions;
 	private final Robot robot;
 
 	private boolean open = false;
+	private Rectangle bounds;
 
 	public ScreenCaptureDevice(final GraphicsDevice device) {
 
 		this.device = device;
 		this.mode = device.getDisplayMode();
 		this.resolution = new Dimension(mode.getWidth(), mode.getHeight());
+		this.resolutions = new Dimension[] { this.resolution };
 
 		try {
 			this.robot = new Robot(device);
@@ -51,7 +59,7 @@ public class ScreenCaptureDevice implements WebcamDevice {
 
 	@Override
 	public Dimension[] getResolutions() {
-		return new Dimension[] { resolution };
+		return resolutions;
 	}
 
 	@Override
@@ -61,33 +69,42 @@ public class ScreenCaptureDevice implements WebcamDevice {
 
 	@Override
 	public void setResolution(Dimension size) {
-	    resolution.setSize(size.getWidth(), size.getHeight());
+		resolution.setSize(size.getWidth(), size.getHeight());
 	}
 
 	@Override
 	public BufferedImage getImage() {
-		final GraphicsConfiguration gc = device.getDefaultConfiguration();
-		final Rectangle bounds = gc.getBounds();
-		BufferedImage screen = robot.createScreenCapture(bounds);
-		int width = resolution.width;
-		int height = resolution.height;
+
+		final BufferedImage screen = robot.createScreenCapture(bounds);
+		final int width = resolution.width;
+		final int height = resolution.height;
+
 		if (screen.getWidth() == width && screen.getHeight() == height) {
-			return screen;	// No need for adaption
+			return screen; // No need for adaption
 		}
-		BufferedImage img = new BufferedImage(width, height, screen.getType());
-		Graphics2D g = img.createGraphics();
-		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-		                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		g.drawImage(screen, 0, 0, width, height,
-		                    0, 0, screen.getWidth(), screen.getHeight(),
-		                    null);
+
+		final BufferedImage img = new BufferedImage(width, height, screen.getType());
+		final Graphics2D g = img.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g.drawImage(screen, 0, 0, width, height, 0, 0, screen.getWidth(), screen.getHeight(), null);
 		g.dispose();
+
 		return img;
 	}
 
 	@Override
 	public void open() {
+
+		if (open) {
+			return;
+		}
+
 		LOG.debug("Opening screen device {} with resolution {}", getName(), getResolution());
+
+		this.bounds = device
+			.getDefaultConfiguration()
+			.getBounds();
+
 		open = true;
 	}
 

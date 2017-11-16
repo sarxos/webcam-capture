@@ -17,7 +17,7 @@ public class WebcamPanelExample {
 
 	public static void main(String[] args) {
 
-		JFrame window = new JFrame("aaa");
+		final JFrame window = new JFrame("Screen Capture Example");
 		window.setResizable(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.getContentPane().setLayout(new FlowLayout());

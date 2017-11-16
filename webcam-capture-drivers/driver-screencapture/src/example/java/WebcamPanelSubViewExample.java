@@ -22,7 +22,7 @@ public class WebcamPanelSubViewExample {
 	}
 
 	private final Dimension size = WebcamResolution.QQVGA.getSize();
-	private final Webcam screen = Webcam.getWebcamByName(":0.1");
+	private final Webcam screen = Webcam.getWebcams().get(1);
 	private final WebcamPanel panel = new WebcamPanel(screen);
 	private final Painter dp = panel.getDefaultPainter();
 	private final JFrame window = new JFrame("Test");
