@@ -237,10 +237,9 @@ public class Webcam {
 	}
 
 	/**
-	 * Open the webcam in either blocking (synchronous) or non-blocking
-	 * (asynchronous) mode. If the non-blocking mode is enabled the
-	 * DefaultDelayCalculator is used for calculating delay between two image
-	 * fetching.
+	 * Open the webcam in either blocking (synchronous) or non-blocking (asynchronous) mode. If the
+	 * non-blocking mode is enabled the DefaultDelayCalculator is used for calculating delay between
+	 * two image fetching.
 	 * 
 	 * @param async true for non-blocking mode, false for blocking
 	 * @return True if webcam has been open, false otherwise
@@ -250,36 +249,30 @@ public class Webcam {
 	public boolean open(boolean async) {
 		return open(async, new DefaultDelayCalculator());
 	}
-	
+
 	/**
-	 * Open the webcam in either blocking (synchronous) or non-blocking
-	 * (asynchronous) mode.The difference between those two modes lies in the
-	 * image acquisition mechanism.<br>
+	 * Open the webcam in either blocking (synchronous) or non-blocking (asynchronous) mode.The
+	 * difference between those two modes lies in the image acquisition mechanism.<br>
 	 * <br>
-	 * In blocking mode, when user calls {@link #getImage()} method, device is
-	 * being queried for new image buffer and user have to wait for it to be
-	 * available.<br>
+	 * In blocking mode, when user calls {@link #getImage()} method, device is being queried for new
+	 * image buffer and user have to wait for it to be available.<br>
 	 * <br>
-	 * In non-blocking mode, there is a special thread running in the background
-	 * which constantly fetch new images and cache them internally for further
-	 * use. This cached instance is returned every time when user request new
-	 * image. Because of that it can be used when timeing is very important,
-	 * because all users calls for new image do not have to wait on device
-	 * response. By using this mode user should be aware of the fact that in
-	 * some cases, when two consecutive calls to get new image are executed more
-	 * often than webcam device can serve them, the same image instance will be
-	 * returned. User should use {@link #isImageNew()} method to distinguish if
-	 * returned image is not the same as the previous one. <br>
-	 * The background thread uses implementation of DelayCalculator interface to
-	 * calculate delay between two image fetching. Custom implementation may be
-	 * specified as parameter of this method. If the non-blocking mode is
-	 * enabled and no DelayCalculator is specified, DefaultDelayCalculator will
-	 * be used.
+	 * In non-blocking mode, there is a special thread running in the background which constantly
+	 * fetch new images and cache them internally for further use. This cached instance is returned
+	 * every time when user request new image. Because of that it can be used when timeing is very
+	 * important, because all users calls for new image do not have to wait on device response. By
+	 * using this mode user should be aware of the fact that in some cases, when two consecutive
+	 * calls to get new image are executed more often than webcam device can serve them, the same
+	 * image instance will be returned. User should use {@link #isImageNew()} method to distinguish
+	 * if returned image is not the same as the previous one. <br>
+	 * The background thread uses implementation of DelayCalculator interface to calculate delay
+	 * between two image fetching. Custom implementation may be specified as parameter of this
+	 * method. If the non-blocking mode is enabled and no DelayCalculator is specified,
+	 * DefaultDelayCalculator will be used.
 	 * 
 	 * @param async true for non-blocking mode, false for blocking
-	 * @param delayCalculator responsible for calculating delay between two
-	 *            image fetching in non-blocking mode; It's ignored in blocking
-	 *            mode.
+	 * @param delayCalculator responsible for calculating delay between two image fetching in
+	 *            non-blocking mode; It's ignored in blocking mode.
 	 * @return True if webcam has been open
 	 * @throws WebcamException when something went wrong
 	 */
@@ -724,12 +717,25 @@ public class Webcam {
 		assert driver != null;
 		assert device != null;
 
+		long t1 = 0;
+		long t2 = 0;
+
 		// some devices can support direct image buffers, and for those call
 		// processor task, and for those which does not support direct image
 		// buffers, just convert image to RGB byte array
 
 		if (device instanceof BufferAccess) {
-			return new WebcamGetBufferTask(driver, device).getBuffer();
+			t1 = System.currentTimeMillis();
+			try {
+				return new WebcamGetBufferTask(driver, device).getBuffer();
+			} finally {
+				t2 = System.currentTimeMillis();
+				if (device instanceof WebcamDevice.FPSSource) {
+					fps = ((WebcamDevice.FPSSource) device).getFPS();
+				} else {
+					fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+				}
+			}
 		} else {
 			throw new IllegalStateException(String.format("Driver %s does not support buffer access", driver.getClass().getName()));
 		}
@@ -755,21 +761,34 @@ public class Webcam {
 		assert driver != null;
 		assert device != null;
 
+		long t1 = 0;
+		long t2 = 0;
+
 		// some devices can support direct image buffers, and for those call
 		// processor task, and for those which does not support direct image
 		// buffers, just convert image to RGB byte array
 
 		if (device instanceof BufferAccess) {
-			new WebcamReadBufferTask(driver, device, target).readBuffer();
+			t1 = System.currentTimeMillis();
+			try {
+				new WebcamReadBufferTask(driver, device, target).readBuffer();
+			} finally {
+				t2 = System.currentTimeMillis();
+				if (device instanceof WebcamDevice.FPSSource) {
+					fps = ((WebcamDevice.FPSSource) device).getFPS();
+				} else {
+					fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+				}
+			}
 		} else {
 			throw new IllegalStateException(String.format("Driver %s does not support buffer access", driver.getClass().getName()));
 		}
 	}
 
 	/**
-	 * If the underlying device implements Configurable interface, specified
-	 * parameters are passed to it. May be called before the open method or
-	 * later in dependence of the device implementation.
+	 * If the underlying device implements Configurable interface, specified parameters are passed
+	 * to it. May be called before the open method or later in dependence of the device
+	 * implementation.
 	 * 
 	 * @param parameters - Map of parameters changing device defaults
 	 * @see Configurable
@@ -782,7 +801,7 @@ public class Webcam {
 			LOG.debug("Webcam device {} is not configurable", device);
 		}
 	}
-	
+
 	/**
 	 * Is webcam ready to be read.
 	 *
@@ -1253,9 +1272,8 @@ public class Webcam {
 	}
 
 	/**
-	 * Shutdown webcam framework. This method should be used <b>ONLY</b> when you
-	 * are exiting JVM, but please <b>do not invoke it</b> if you really don't
-	 * need to.
+	 * Shutdown webcam framework. This method should be used <b>ONLY</b> when you are exiting JVM,
+	 * but please <b>do not invoke it</b> if you really don't need to.
 	 */
 	protected static void shutdown() {
 
@@ -1270,9 +1288,9 @@ public class Webcam {
 	}
 
 	/**
-	 * Return webcam with given name or null if no device with given name has
-	 * been found. Please note that specific webcam name may depend on the order
-	 * it was connected to the USB port (e.g. /dev/video0 vs /dev/video1).
+	 * Return webcam with given name or null if no device with given name has been found. Please
+	 * note that specific webcam name may depend on the order it was connected to the USB port (e.g.
+	 * /dev/video0 vs /dev/video1).
 	 * 
 	 * @param name the webcam name
 	 * @return Webcam with given name or null if not found

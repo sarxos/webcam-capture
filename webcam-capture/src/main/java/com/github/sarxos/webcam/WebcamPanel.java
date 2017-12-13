@@ -75,6 +75,39 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	}
 
 	/**
+	 * This interface can be used to supply {@link BufferedImage} to {@link WebcamPanel}.
+	 *
+	 * @author Bartosz Firyn (sarxos)
+	 */
+	public interface ImageSupplier {
+
+		/**
+		 * @return {@link BufferedImage} to be displayed in {@link WebcamPanel}
+		 */
+		public BufferedImage get();
+	}
+
+	/**
+	 * Default implementation of {@link ImageSupplier} used in {@link WebcamPanel}. It invokes
+	 * {@link Webcam#getImage()} and return {@link BufferedImage}.
+	 *
+	 * @author Bartosz Firyn (sarxos)
+	 */
+	private static class DefaultImageSupplier implements ImageSupplier {
+
+		private final Webcam webcam;
+
+		public DefaultImageSupplier(Webcam webcam) {
+			this.webcam = webcam;
+		}
+
+		@Override
+		public BufferedImage get() {
+			return webcam.getImage();
+		}
+	}
+
+	/**
 	 * Interface of the painter used to draw image in panel.
 	 *
 	 * @author Bartosz Firyn (SarXos)
@@ -156,9 +189,8 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 			g2.drawLine(0, 0, getWidth(), getHeight());
 			g2.drawLine(0, getHeight(), getWidth(), 0);
 
-
 			String str;
-			
+
 			final String strInitDevice = rb.getString("INITIALIZING_DEVICE");
 			final String strNoImage = rb.getString("NO_IMAGE");
 			final String strDeviceError = rb.getString("DEVICE_ERROR");
@@ -562,7 +594,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 
 			// get new image from webcam
 
-			BufferedImage tmp = webcam.getImage();
+			BufferedImage tmp = supplier.get();
 			boolean repaint = true;
 
 			if (tmp != null) {
@@ -625,6 +657,8 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * Webcam object used to fetch images.
 	 */
 	private final Webcam webcam;
+
+	private final ImageSupplier supplier;
 
 	/**
 	 * Repainter is used to fetch images from camera and force panel repaint when image is ready.
@@ -715,6 +749,10 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 * @see WebcamPanel#setFillArea(boolean)
 	 */
 	public WebcamPanel(Webcam webcam, Dimension size, boolean start) {
+		this(webcam, size, start, new DefaultImageSupplier(webcam));
+	}
+
+	public WebcamPanel(Webcam webcam, Dimension size, boolean start, ImageSupplier supplier) {
 
 		if (webcam == null) {
 			throw new IllegalArgumentException(String.format("Webcam argument in %s constructor cannot be null!", getClass().getSimpleName()));
@@ -723,6 +761,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		this.defaultSize = size;
 		this.webcam = webcam;
 		this.updater = new ImageUpdater();
+		this.supplier = supplier;
 		this.rb = WebcamUtils.loadRB(WebcamPanel.class, getLocale());
 
 		setDoubleBuffered(true);
@@ -1177,5 +1216,12 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 	 */
 	public Webcam getWebcam() {
 		return webcam;
+	}
+
+	/**
+	 * @return {@link BufferedImage} displayed on {@link WebcamPanel}
+	 */
+	public BufferedImage getImage() {
+		return image;
 	}
 }
