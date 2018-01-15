@@ -70,9 +70,9 @@ public class ParallelGetImageBytesExample {
 		 */
 		public void ready(ByteBuffer bb) {
 			try {
-				exchange(bb, 0, TimeUnit.SECONDS);
+				exchange(bb, 500, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException | TimeoutException e) {
-				throw new IllegalStateException(e);
+				// do nothing, frame is dropped
 			}
 		}
 
