@@ -1,9 +1,19 @@
-# webcam-capture-driver-jmf
+# webcam-capture-driver-opencv
 
 This is capture driver which uses [JavaCV](https://github.com/bytedeco/javacv) 
 interface to [OpenCV](http://opencv.org/) to access camera devices.
 
 ## Maven
+
+Stable:
+
+```xml
+<dependency>
+	<groupId>com.github.sarxos</groupId>
+	<artifactId>webcam-capture-driver-javacv</artifactId>
+	<version>0.3.11</version>
+</dependency>
+```
 
 Snapshot:
 
@@ -25,11 +35,11 @@ Snapshot:
 
 ```java
 static {
-	Webcam.setDriver(new JmfDriver());
+	Webcam.setDriver(new JavaCvDriver());
 }
 
 public static void main(String[] args) {
-	JFrame frame = new JFrame("JMF Webcam Capture Driver Demo");
+	JFrame frame = new JFrame("JavaCv Capture Driver Demo");
 	frame.add(new WebcamPanel(Webcam.getDefault()));
 	frame.pack();
 	frame.setVisible(true);

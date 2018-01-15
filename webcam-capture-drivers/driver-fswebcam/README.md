@@ -10,10 +10,9 @@ $ sudo apt-get install fswebcam
 
 ## Download
 
-The latest **stable** ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-fswebcam/0.3.10/webcam-capture-driver-fswebcam-0.3.10-dist.zip).
+The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/content/repositories/snapshots/com/github/sarxos/webcam-capture-driver-fswebcam/0.3.12-SNAPSHOT/webcam-capture-driver-fswebcam-0.3.12-20171213.184511-7.jar).
 
-The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture-driver-fswebcam&v=0.3.11-SNAPSHOT).
-
+The latest **stable** ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-fswebcam/0.3.11/webcam-capture-driver-fswebcam-0.3.11-dist.zip).
 
 ## Maven
 
@@ -23,7 +22,7 @@ Stable:
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-fswebcam</artifactId>
-	<version>0.3.10</version>
+	<version>0.3.11</version>
 </dependency>
 ```
 
@@ -39,7 +38,7 @@ Snapshot:
 <dependency>
     <groupId>com.github.sarxos</groupId>
     <artifactId>webcam-capture-driver-fswebcam</artifactId>
-    <version>0.3.11-SNAPSHOT</version>
+    <version>0.3.12-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -85,7 +84,7 @@ There are several known issues. If you have an idea of how those can be fixed, p
 
 ## License
 
-Copyright (C) 2014 - 2015 Bartosz Firyn
+Copyright (C) 2012 - 2017 Bartosz Firyn
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
