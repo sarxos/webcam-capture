@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
 
@@ -34,9 +35,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamDevice.BufferAccess;
 import com.github.sarxos.webcam.WebcamDevice.FPSSource;
 import com.github.sarxos.webcam.WebcamException;
 import com.github.sarxos.webcam.ds.ipcam.impl.IpCamMJPEGStream;
+import com.github.sarxos.webcam.util.ImageUtils;
 
 
 /**
@@ -44,7 +47,7 @@ import com.github.sarxos.webcam.ds.ipcam.impl.IpCamMJPEGStream;
  *
  * @author Bartosz Firyn (sarxos)
  */
-public class IpCamDevice implements WebcamDevice, FPSSource {
+public class IpCamDevice implements WebcamDevice, FPSSource, BufferAccess {
 
 	/**
 	 * Logger.
@@ -430,5 +433,32 @@ public class IpCamDevice implements WebcamDevice, FPSSource {
 	@Override
 	public double getFPS() {
 		return reader.getFPS();
+	}
+
+	/**
+	 * Return image RGB data in form of {@link ByteBuffer}. Please note that {@link ByteBuffer}
+	 * returned by this method does not contain original JPEG data bytes, but bytes representing RGB
+	 * data of the image constructed from JPEG data.
+	 */
+	@Override
+	public synchronized ByteBuffer getImageBytes() {
+		final BufferedImage bi = getImage();
+		if (bi == null) {
+			return null;
+		}
+		return ByteBuffer.wrap(ImageUtils.imageToBytes(bi));
+	}
+
+	/**
+	 * Put image RGB data into the {@link ByteBuffer}. Please note that data from {@link ByteBuffer}
+	 * consumed by this method does not contain original JPEG data bytes, but bytes representing RGB
+	 * data of the image constructed from JPEG data.
+	 */
+	@Override
+	public void getImageBytes(ByteBuffer buffer) {
+		final BufferedImage bi = getImage();
+		if (bi != null) {
+			buffer.put(ImageUtils.imageToBytes(bi));
+		}
 	}
 }
