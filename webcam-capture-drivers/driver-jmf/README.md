@@ -10,9 +10,9 @@ It can also be used with the alternative [FMJ](http://fmj-sf.net/).
 
 ## Download
 
-The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture-driver-jmf&v=0.3.10-SNAPSHOT).
+The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/content/repositories/snapshots/com/github/sarxos/webcam-capture-driver-jmf/0.3.12-SNAPSHOT/webcam-capture-driver-jmf-0.3.12-20171213.184548-7.jar).
 
-The latest **stable** version ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-jmf/0.3.10-RC7/webcam-capture-driver-jmf-0.3.10-RC7-dist.zip).
+The latest **stable** version ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-jmf/0.3.11/webcam-capture-driver-jmf-0.3.11-dist.zip).
 
 
 ## Maven
@@ -23,7 +23,7 @@ Release:
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-jmf</artifactId>
-	<version>0.3.9</version>
+	<version>0.3.11</version>
 </dependency>
 ```
 
@@ -39,7 +39,7 @@ Stable:
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-jmf</artifactId>
-	<version>0.3.10-RC7</version>
+	<version>0.3.12-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -77,7 +77,7 @@ public static void main(String[] args) {
 
 ## License
 
-Copyright (C) 2012 - 2014 Bartosz Firyn
+Copyright (C) 2012 - 2017 Bartosz Firyn
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

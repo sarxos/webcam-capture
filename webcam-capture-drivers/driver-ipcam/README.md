@@ -25,25 +25,19 @@ help :) Later, when your class is ready, I will be happy to merge it with offici
 
 ## Download
 
-The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture-driver-ipcam&v=0.3.10-SNAPSHOT).
+The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/content/repositories/snapshots/com/github/sarxos/webcam-capture-driver-ipcam/0.3.12-SNAPSHOT/webcam-capture-driver-ipcam-0.3.12-20171213.184535-7.jar).
 
-The latest **stable** version ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.10-RC7/webcam-capture-driver-ipcam-0.3.10-RC7-dist.zip).
+The latest **stable** version ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.11/webcam-capture-driver-ipcam-0.3.11-dist.zip).
 
 ## Maven
 
 Stable:
 
 ```xml
-<repository>
-	<id>SarXos Repository</id>
-	<url>http://www.sarxos.pl/repo/maven2</url>
-</repository>
-```
-```xml
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-ipcam</artifactId>
-	<version>0.3.10-RC7</version>
+	<version>0.3.11</version>
 </dependency>
 ```
 
@@ -59,7 +53,7 @@ Snapshot:
 <dependency>
     <groupId>com.github.sarxos</groupId>
     <artifactId>webcam-capture-driver-ipcam</artifactId>
-    <version>0.3.10-SNAPSHOT</version>
+    <version>0.3.12-SNAPSHOT</version>
 </dependency>
 ```
 

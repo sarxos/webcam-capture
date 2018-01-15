@@ -1,26 +1,6 @@
-# webcam-capture-driver-gstreamer
+# webcam-capture-driver-openimaj
 
-This is capture driver which gives Webcam Capture API possibility to use
-[GStreamer](http://gstreamer.freedesktop.org/documentation/gstreamer010.html)
-as a middleware accessing webcam devices (build-in or USB enabled).
-
-It has been designed to work with Windows and Linux **only**. To make use of it user have to 
-[download](http://code.google.com/p/ossbuild/) GStreamer application installer 
-on Windows or use _apt-get_, _yum_ or other packages manager to install it on Linux.
-
-Currently supported GStreamer version is 0.10.x, so make sure you are installing
-the correct one! It is **not** compatible with GStreamer 1.0 and above!
-
-## Supported Platforms
-
-* Windows
-* Linux
-
-## Download
-
-The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/content/repositories/snapshots/com/github/sarxos/webcam-capture-driver-gstreamer/0.3.12-SNAPSHOT/webcam-capture-driver-gstreamer-0.3.12-20171213.184528-7.jar).
-
-The latest **stable** version ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-gstreamer/0.3.11/webcam-capture-driver-gstreamer-0.3.11-dist.zip).
+This is capture driver which uses [OpenIMAJ](http://openimaj.org) to access camera devices.
 
 ## Maven
 
@@ -29,7 +9,7 @@ Stable:
 ```xml
 <dependency>
 	<groupId>com.github.sarxos</groupId>
-	<artifactId>webcam-capture-driver-gstreamer</artifactId>
+	<artifactId>webcam-capture-driver-openimaj</artifactId>
 	<version>0.3.11</version>
 </dependency>
 ```
@@ -45,7 +25,7 @@ Snapshot:
 ```xml
 <dependency>
     <groupId>com.github.sarxos</groupId>
-    <artifactId>webcam-capture-driver-gstreamer</artifactId>
+    <artifactId>webcam-capture-driver-openimaj</artifactId>
     <version>0.3.12-SNAPSHOT</version>
 </dependency>
 ```
@@ -54,11 +34,11 @@ Snapshot:
 
 ```java
 static {
-	Webcam.setDriver(new GStreamerDriver());
+	Webcam.setDriver(new OpenImajDriver());
 }
 
 public static void main(String[] args) {
-	JFrame frame = new JFrame("GStreamer Webcam Capture Driver Demo");
+	JFrame frame = new JFrame("OpenIMAJDriver Capture Driver Demo");
 	frame.add(new WebcamPanel(Webcam.getDefault()));
 	frame.pack();
 	frame.setVisible(true);

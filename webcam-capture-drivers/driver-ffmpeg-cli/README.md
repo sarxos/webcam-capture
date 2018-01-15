@@ -15,16 +15,35 @@ code, or you would like to perform any enhancement, feel free to
 send pull request. Due to other urgent issues, I wont put any effort
 to enhance and/or fix this driver.
 
-## How To Use It
+
+## How To Use
 
 Set new driver before you start using Webcam class:
 
 ```java
-Webcam.setDriver(new FFmpegCliDriver());
-Webcam webcam = Webcam.getDefault();
-webcam.open();
-// ... do your stuff
-webcam.close();
+public class TakePictureExample {
+
+	// set capture driver for ffmpeg tool
+	static {
+		Webcam.setDriver(new FFmpegCliDriver());
+	}
+
+	public static void main(String[] args) throws IOException {
+
+		// get default webcam and open it
+		Webcam webcam = Webcam.getDefault();
+		webcam.open();
+
+		// get image from webcam device
+		BufferedImage image = webcam.getImage();
+
+		// save image to PNG file
+		ImageIO.write(image, "JPG", new File("test.jpg"));
+
+		// close webcam
+		webcam.close();
+	}
+}
 ```
 
 ## License
