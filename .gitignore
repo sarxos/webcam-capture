@@ -4,7 +4,8 @@ target
 */target
 **/*/.settings
 **/*/target
-**/*/dependency-reduced-pom.xml
+dependency-reduced-pom.xml
+dependency-reduced-pom.xml.bak
 pom.xml~
 pom.xml.bak
 .project
