@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>webcam-capture-parent</artifactId>
-	<version>0.3.12-SNAPSHOT</version>
+	<version>0.3.12</version>
 	<packaging>pom</packaging>
 
 	<name>Webcam Capture Parent POM</name>
@@ -38,7 +38,7 @@
 		<connection>scm:git:git@github.com:sarxos/webcam-capture.git</connection>
 		<developerConnection>scm:git:git@github.com:sarxos/webcam-capture.git</developerConnection>
 		<url>git@github.com:sarxos/webcam-capture.git</url>
-		<tag>HEAD</tag>
+		<tag>webcam-capture-parent-0.3.12</tag>
 	</scm>
 
 	<issueManagement>
