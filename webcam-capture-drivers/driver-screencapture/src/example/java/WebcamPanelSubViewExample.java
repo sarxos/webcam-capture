@@ -21,31 +21,29 @@ public class WebcamPanelSubViewExample {
 		Webcam.setDriver(new WebcamCompositeDriver(new WebcamDefaultDriver(), new ScreenCaptureDriver()));
 	}
 
-	private final Dimension size = WebcamResolution.QQVGA.getSize();
+	private final Webcam webcam = Webcam.getWebcams().get(0);
 	private final Webcam screen = Webcam.getWebcams().get(1);
-	private final WebcamPanel panel = new WebcamPanel(screen);
+	private final Dimension webcamSize = WebcamResolution.QVGA.getSize();
+	private final Dimension screenSize = WebcamResolution.QHD.getSize();
+	private final WebcamPanel panel = new WebcamPanel(screen, false);
 	private final Painter dp = panel.getDefaultPainter();
 	private final JFrame window = new JFrame("Test");
 
 	private final class SubViewPainter implements Painter {
 
-		private final Webcam webcam = Webcam.getDefault();
-		private final int x = 619;
-		private final int y = 437;
-		private final int w = size.width;
-		private final int h = size.height;
-
-		public SubViewPainter() {
-			webcam.setViewSize(size);
-			webcam.open();
-		}
+		private final int x = screenSize.width - webcamSize.width - 5;
+		private final int y = screenSize.height - webcamSize.height - 21;
+		private final int w = webcamSize.width;
+		private final int h = webcamSize.height;
 
 		@Override
 		public void paintImage(WebcamPanel owner, BufferedImage image, Graphics2D g2) {
+
 			dp.paintImage(owner, image, g2);
+
 			g2.setColor(Color.BLACK);
 			g2.drawRect(x - 1, y - 1, w + 1, h + 1);
-			g2.drawImage(webcam.getImage(), x, y, w, h, null);
+			g2.drawImage(webcam.getImage(), x, y, null);
 		}
 
 		@Override
@@ -56,21 +54,29 @@ public class WebcamPanelSubViewExample {
 
 	public WebcamPanelSubViewExample() {
 
+		screen.setCustomViewSizes(screenSize);
+		screen.setViewSize(screenSize);
 		screen.open(true);
 
+		panel.setFPSLimit(30);
 		panel.setFPSDisplayed(true);
-		panel.setDrawMode(DrawMode.FIT);
+		panel.setDrawMode(DrawMode.NONE);
 		panel.setImageSizeDisplayed(true);
-		panel.setFPSDisplayed(true);
 		panel.setPainter(new SubViewPainter());
-		panel.setPreferredSize(new Dimension(800, 600));
+		panel.setPreferredSize(screenSize);
 
-		window.setResizable(true);
+		webcam.setViewSize(webcamSize);
+		webcam.open(true);
+
+		window.setPreferredSize(screenSize);
+		window.setResizable(false);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setLayout(null);
 		window.setContentPane(panel);
 		window.pack();
 		window.setVisible(true);
 
+		panel.start();
 	}
 
 	public static void main(String[] args) {

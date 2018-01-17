@@ -80,7 +80,7 @@ public class ScreenCaptureDevice implements WebcamDevice {
 		final int height = resolution.height;
 
 		if (screen.getWidth() == width && screen.getHeight() == height) {
-			return screen; // No need for adaption
+			return screen; // No need for adaptation
 		}
 
 		final BufferedImage img = new BufferedImage(width, height, screen.getType());
