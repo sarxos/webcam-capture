@@ -14,7 +14,7 @@ Stable:
 <dependency>
     <groupId>com.github.sarxos</groupId>
     <artifactId>webcam-capture-driver-v4l4j</artifactId>
-    <version>0.3.11</version>
+    <version>0.3.12</version>
 </dependency>
 ```
 
@@ -30,7 +30,7 @@ Snapshot:
 <dependency>
     <groupId>com.github.sarxos</groupId>
     <artifactId>webcam-capture-driver-v4l4j</artifactId>
-    <version>0.3.12-SNAPSHOT</version>
+    <version>0.3.13-SNAPSHOT</version>
 </dependency>
 ```
 

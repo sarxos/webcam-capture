@@ -33,9 +33,9 @@ Assume situation when your code depends on some capturing framework, but suddenl
   * [GStreamer](http://gstreamer.freedesktop.org/) (0.10.x only) via [gstreamer-java](https://code.google.com/p/gstreamer-java/)
   * MJPEG IP Cameras,
 
-The latest stable version is: **```0.3.11```**
+The latest stable version is: **```0.3.12```**
 
-The latest development version is: **```0.3.12-SNAPSHOT```**
+The latest development version is: **```0.3.13-SNAPSHOT```**
 
 ## Raspberry PI
 
@@ -45,13 +45,13 @@ The lates version (0.3.10) does not work on ARM just out of the box. To make it 
 
 ## Maven
 
-The latest stable version is [available](http://search.maven.org/#artifactdetails|com.github.sarxos|webcam-capture|0.3.11|bundle) in Maven Central:
+The latest stable version is [available](http://search.maven.org/#artifactdetails|com.github.sarxos|webcam-capture|0.3.12|bundle) in Maven Central:
 
 ```xml
 <dependency>
   <groupId>com.github.sarxos</groupId>
   <artifactId>webcam-capture</artifactId>
-  <version>0.3.11</version>
+  <version>0.3.12</version>
 </dependency>
 ```
 
@@ -67,7 +67,7 @@ Snapshot version:
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture</artifactId>
-	<version>0.3.12-SNAPSHOT</version>
+	<version>0.3.13-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -75,9 +75,9 @@ Snapshot version:
 
 The newest stable version can be downloaded as separated ZIP binary. This ZIP file contains Webcam Capture API itself and all required dependencies (in ```libs``` directory). Click on the below link to download it:
 
- [webcam-capture-0.3.11-dist.zip](https://github.com/sarxos/webcam-capture/releases/download/webcam-capture-parent-0.3.11/webcam-capture-0.3.11-dist.zip)
+ [webcam-capture-0.3.12-dist.zip](https://github.com/sarxos/webcam-capture/releases/download/webcam-capture-parent-0.3.12/webcam-capture-0.3.12-dist.zip)
 
-The latest development version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture&v=0.3.12-SNAPSHOT).
+The latest development version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture&v=0.3.13-SNAPSHOT).
 
 ## Contribution
 

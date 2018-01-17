@@ -22,9 +22,9 @@ the correct one! It is **not** compatible with GStreamer 1.0 and above!
 
 ## Download
 
-The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/content/repositories/snapshots/com/github/sarxos/webcam-capture-driver-gstreamer/0.3.12-SNAPSHOT/webcam-capture-driver-gstreamer-0.3.12-20171213.184528-7.jar).
+The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/content/repositories/snapshots/com/github/sarxos/webcam-capture-driver-gstreamer/0.3.13-SNAPSHOT/webcam-capture-driver-gstreamer-0.3.12-20171213.184528-7.jar).
 
-The latest **stable** version ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-gstreamer/0.3.11/webcam-capture-driver-gstreamer-0.3.11-dist.zip).
+The latest **stable** version ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-gstreamer/0.3.12/webcam-capture-driver-gstreamer-0.3.12-dist.zip).
 
 ## Maven
 
@@ -34,7 +34,7 @@ Stable:
 <dependency>
 	<groupId>com.github.sarxos</groupId>
 	<artifactId>webcam-capture-driver-gstreamer</artifactId>
-	<version>0.3.11</version>
+	<version>0.3.12</version>
 </dependency>
 ```
 
@@ -50,7 +50,7 @@ Snapshot:
 <dependency>
     <groupId>com.github.sarxos</groupId>
     <artifactId>webcam-capture-driver-gstreamer</artifactId>
-    <version>0.3.12-SNAPSHOT</version>
+    <version>0.3.13-SNAPSHOT</version>
 </dependency>
 ```
 
