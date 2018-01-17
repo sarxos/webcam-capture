@@ -6,7 +6,7 @@
   <parent>
     <artifactId>webcam-capture-examples</artifactId>
     <groupId>com.github.sarxos</groupId>
-    <version>0.3.12-SNAPSHOT</version>
+    <version>0.3.12</version>
   </parent>
 
   <artifactId>webcam-capture-example-onejar</artifactId>
@@ -15,7 +15,7 @@
     <dependency>
       <groupId>com.github.sarxos</groupId>
       <artifactId>webcam-capture</artifactId>
-      <version>0.3.12-SNAPSHOT</version>
+      <version>0.3.12</version>
     </dependency>
   </dependencies>
 
