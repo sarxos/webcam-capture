@@ -1,8 +1,12 @@
 # webcam-capture-driver-gstreamer
 
 This is capture driver which gives Webcam Capture API possibility to use
-[GStreamer](http://gstreamer.freedesktop.org/documentation/gstreamer010.html)
+[GStreamer 0.10+](http://gstreamer.freedesktop.org/documentation/gstreamer010.html)
 as a middleware accessing webcam devices (build-in or USB enabled).
+
+**NOTE**: This capture driver is **only** for GStreamer 0.10+. With GStramer 1.0+ you have to use
+[webcam-capture-driver-gst1](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-gst1)
+instead!
 
 It has been designed to work with Windows and Linux **only**. To make use of it user have to 
 [download](http://code.google.com/p/ossbuild/) GStreamer application installer 
