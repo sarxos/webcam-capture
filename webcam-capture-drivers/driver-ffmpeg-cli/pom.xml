@@ -1,52 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.sarxos</groupId>
-		<artifactId>webcam-capture-drivers</artifactId>
-		<version>0.3.12-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <artifactId>webcam-capture-drivers</artifactId>
+    <groupId>com.github.sarxos</groupId>
+    <version>0.3.12-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>webcam-capture-driver-ffmpeg-cli</artifactId>
-	<packaging>jar</packaging>
+  <artifactId>webcam-capture-driver-ffmpeg-cli</artifactId>
+  <packaging>jar</packaging>
 
-	<name>Webcam Capture - FFmpeg CLI Driver</name>
-	<description>
-		Webcam Capture driver using ffmpeg CLI tool to grab frames from camera 
+  <name>Webcam Capture - FFmpeg CLI Driver</name>
+  <description>Webcam Capture driver using ffmpeg CLI tool to grab frames from camera 
 		device into named pipe and decode them in Java. This driver works only
 		on *NIX systems (ans possibly on Mac OS). No Windows, sorry... It also
 		requires ffmpeg to be installed on the computer where image capturing 
-		will be running.
-	</description>
+		will be running.</description>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.github.sarxos</groupId>
-			<artifactId>webcam-capture</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.0.9</version>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.sarxos</groupId>
+      <artifactId>webcam-capture</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

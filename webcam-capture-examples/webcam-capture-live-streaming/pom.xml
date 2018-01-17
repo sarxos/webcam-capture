@@ -1,66 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.sarxos</groupId>
-		<artifactId>webcam-capture-examples</artifactId>
-		<version>0.3.12-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <artifactId>webcam-capture-examples</artifactId>
+    <groupId>com.github.sarxos</groupId>
+    <version>0.3.12-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>webcam-capture-example-live-streaming</artifactId>
-	<packaging>jar</packaging>
+  <artifactId>webcam-capture-example-live-streaming</artifactId>
+  <packaging>jar</packaging>
 
-	<name>Webcam Capture - Live Vide Streaming Example</name>
-	<description>
-	    Example how to capture images from webcam and transcode into live stream
-	    send to remote peers. 
-	</description>
+  <name>Webcam Capture - Live Vide Streaming Example</name>
+  <description>Example how to capture images from webcam and transcode into live stream
+	    send to remote peers.</description>
 
-	<developers>
-	    <developer>
-	        <id>hepin1989</id>
-	        <email>hepin1989@gmail.com</email>
-	        <url>http://sosia.us</url>
-	        <roles>
-	           	<role>Developer</role>
-	        </roles>
-	    </developer>
-	</developers>
-	
-	<repositories>
-		<repository>
-			<id>xuggle repo</id>
-			<url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
-		</repository>
-	</repositories>
+  <developers>
+    <developer>
+      <id>hepin1989</id>
+      <email>hepin1989@gmail.com</email>
+      <url>http://sosia.us</url>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.github.sarxos</groupId>
-			<artifactId>webcam-capture</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>xuggle</groupId>
-			<artifactId>xuggle-xuggler</artifactId>
-			<version>5.4</version>
-		</dependency>
-		<dependency>
-			<groupId>net.coobird</groupId>
-			<artifactId>thumbnailator</artifactId>
-			<version>0.4.3</version>
-		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty</artifactId>
-			<version>3.6.3.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.7.3</version>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.sarxos</groupId>
+      <artifactId>webcam-capture</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty</artifactId>
+      <version>3.6.3.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>net.coobird</groupId>
+      <artifactId>thumbnailator</artifactId>
+      <version>0.4.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.3</version>
+    </dependency>
+    <dependency>
+      <groupId>xuggle</groupId>
+      <artifactId>xuggle-xuggler</artifactId>
+      <version>5.4</version>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>xuggle repo</id>
+      <url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
+    </repository>
+  </repositories>
 
 </project>

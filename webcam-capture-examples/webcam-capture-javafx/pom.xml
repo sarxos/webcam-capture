@@ -1,79 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
-	<modelVersion>4.0.0</modelVersion>
-	
-	<parent>
-		<groupId>com.github.sarxos</groupId>
-		<artifactId>webcam-capture-examples</artifactId>
-		<version>0.3.12-SNAPSHOT</version>
-	</parent>
 
-	<artifactId>webcam-capture-example-javafx</artifactId>
-	<packaging>jar</packaging>
+  <modelVersion>4.0.0</modelVersion>
 
-	<name>Webcam Capture - JavaFX Example</name>
-	<description>
-		Example demonstrating how to use Webcam Capture API inside JavaFX
-		application without FXML. For the FXML support check other example.
-	</description>
+  <parent>
+    <artifactId>webcam-capture-examples</artifactId>
+    <groupId>com.github.sarxos</groupId>
+    <version>0.3.12-SNAPSHOT</version>
+  </parent>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.github.sarxos</groupId>
-			<artifactId>webcam-capture</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
+  <artifactId>webcam-capture-example-javafx</artifactId>
+  <packaging>jar</packaging>
 
-	<profiles>
-		<profile>
-			<id>jdk17</id>
-			<activation>
-				<jdk>1.7</jdk>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.oracle</groupId>
-					<artifactId>javafx</artifactId>
-					<version>2.2</version>
-					<systemPath>${java.home}/lib/jfxrt.jar</systemPath>
-					<scope>system</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
+  <name>Webcam Capture - JavaFX Example</name>
+  <description>Example demonstrating how to use Webcam Capture API inside JavaFX
+		application without FXML. For the FXML support check other example.</description>
 
-	<build>
-		<finalName>WebCamAppLauncher</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.zenjava</groupId>
-				<artifactId>javafx-maven-plugin</artifactId>
-				<version>8.1.1</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<mainClass>WebCamAppLauncher</mainClass>
-					<bundleArguments>
-						<!-- just to w/a https://github.com/zonski/javafx-maven-plugin/pull/72 -->
-					</bundleArguments>
-				</configuration>
-			</plugin>			
-        </plugins>     
-	</build>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.sarxos</groupId>
+      <artifactId>webcam-capture</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>WebCamAppLauncher</finalName>
+    <plugins>
+      <plugin>
+        <groupId>com.zenjava</groupId>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <version>8.1.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>WebCamAppLauncher</mainClass>
+          <bundleArguments>
+            <!-- just to w/a https://github.com/zonski/javafx-maven-plugin/pull/72 -->
+          </bundleArguments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>jdk17</id>
+      <activation>
+        <jdk>1.7</jdk>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.oracle</groupId>
+          <artifactId>javafx</artifactId>
+          <version>2.2</version>
+          <scope>system</scope>
+          <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>

@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.sarxos</groupId>
-		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.12-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <artifactId>webcam-capture-parent</artifactId>
+    <groupId>com.github.sarxos</groupId>
+    <version>0.3.12-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>webcam-capture-addons</artifactId>
-	<packaging>pom</packaging>
+  <artifactId>webcam-capture-addons</artifactId>
+  <packaging>pom</packaging>
 
-	<name>Webcam Capture Addons</name>
-	<description>Parent POM for Webcam Capture addons set</description>
+  <name>Webcam Capture Addons</name>
+  <description>Parent POM for Webcam Capture addons set</description>
 
-	<modules>
-		<module>webcam-capture-addon-swt</module>
-		<module>webcam-capture-addon-spycam</module>
-	</modules>
+  <modules>
+    <module>webcam-capture-addon-swt</module>
+    <module>webcam-capture-addon-spycam</module>
+  </modules>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

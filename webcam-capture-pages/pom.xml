@@ -1,77 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.sarxos</groupId>
-		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.12-SNAPSHOT</version>
-	</parent>
-	
-	<artifactId>webcam-capture-pages</artifactId>
-	
-	<name>Webcam Capture Pages</name>
-	<description>Webcam Capture pages</description>
+  <parent>
+    <artifactId>webcam-capture-parent</artifactId>
+    <groupId>com.github.sarxos</groupId>
+    <version>0.3.12-SNAPSHOT</version>
+  </parent>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			 <plugin>
-				<groupId>com.ruleoftech</groupId>
-				<artifactId>markdown-page-generator-plugin</artifactId>
-				<version>0.4</version>
-				<executions>
-					<execution>
-						<phase>process-sources</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<inputDirectory>${project.basedir}/..</inputDirectory>
-					<outputDirectory>${project.basedir}/src/main/resources/html</outputDirectory>
-					<headerHtmlFile>${project.basedir}/src/main/resources/md/header.html</headerHtmlFile>
-					<footerHtmlFile>${project.basedir}/src/main/resources/md/footer.html</footerHtmlFile>
-					<pegdownExtensions>HARDWRAPS,AUTOLINKS,TABLES,FENCED_CODE_BLOCKS</pegdownExtensions>
-				</configuration>
-			</plugin>
-		</plugins>
+  <artifactId>webcam-capture-pages</artifactId>
 
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>com.ruleoftech</groupId>
-										<artifactId>markdown-page-generator-plugin</artifactId>
-										<versionRange>[0.4,)</versionRange>
-										<goals>
-											<goal>generate</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore/>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+  <name>Webcam Capture Pages</name>
+  <description>Webcam Capture pages</description>
+
+  <build>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.ruleoftech</groupId>
+                    <artifactId>markdown-page-generator-plugin</artifactId>
+                    <versionRange>[0.4,)</versionRange>
+                    <goals>
+                      <goal>generate</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>com.ruleoftech</groupId>
+        <artifactId>markdown-page-generator-plugin</artifactId>
+        <version>0.4</version>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <inputDirectory>${project.basedir}/..</inputDirectory>
+          <outputDirectory>${project.basedir}/src/main/resources/html</outputDirectory>
+          <headerHtmlFile>${project.basedir}/src/main/resources/md/header.html</headerHtmlFile>
+          <footerHtmlFile>${project.basedir}/src/main/resources/md/footer.html</footerHtmlFile>
+          <pegdownExtensions>HARDWRAPS,AUTOLINKS,TABLES,FENCED_CODE_BLOCKS</pegdownExtensions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

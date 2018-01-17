@@ -1,36 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.sarxos</groupId>
-		<artifactId>webcam-capture-examples</artifactId>
-		<version>0.3.12-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <artifactId>webcam-capture-examples</artifactId>
+    <groupId>com.github.sarxos</groupId>
+    <version>0.3.12-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>webcam-capture-example-painter</artifactId>
-	<packaging>jar</packaging>
+  <artifactId>webcam-capture-example-painter</artifactId>
+  <packaging>jar</packaging>
 
-	<name>Webcam Capture - Custom Painter Example</name>
-	<description>Example of how to create custom painter for WebcamPanel component</description>
+  <name>Webcam Capture - Custom Painter Example</name>
+  <description>Example of how to create custom painter for WebcamPanel component</description>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.github.sarxos</groupId>
-			<artifactId>webcam-capture</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.insubstantial</groupId>
-			<artifactId>substance</artifactId>
-			<version>7.1</version>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.insubstantial</groupId>
+      <artifactId>substance</artifactId>
+      <version>7.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.sarxos</groupId>
+      <artifactId>webcam-capture</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-		<dependency>
-			<groupId>com.jhlabs</groupId>
-			<artifactId>filters</artifactId>
-			<version>2.0.235-1</version>
-		</dependency>
-	</dependencies>
+    <dependency>
+      <groupId>com.jhlabs</groupId>
+      <artifactId>filters</artifactId>
+      <version>2.0.235-1</version>
+    </dependency>
+  </dependencies>
 
 </project>

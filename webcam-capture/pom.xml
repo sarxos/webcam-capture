@@ -1,75 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.sarxos</groupId>
-		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.12-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <artifactId>webcam-capture-parent</artifactId>
+    <groupId>com.github.sarxos</groupId>
+    <version>0.3.12-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>webcam-capture</artifactId>
-	<packaging>bundle</packaging>
+  <artifactId>webcam-capture</artifactId>
+  <packaging>bundle</packaging>
 
-	<name>Webcam Capture</name>
-	<description>This library allows you to use your PC webcam, IP or network cameras directly from Java. It's compatible with most operating systems (Windows, Linux, MacOS).</description>
+  <name>Webcam Capture</name>
+  <description>This library allows you to use your PC webcam, IP or network cameras directly from Java. It's compatible with most operating systems (Windows, Linux, MacOS).</description>
 
-	<!-- remove when BridJ v0.7 is released -->
-	<repositories>
-		<repository>
-			<id>sonatype</id>
-			<name>Sonatype OSS Snapshots Repository</name>
-			<url>http://oss.sonatype.org/content/groups/public</url>
-		</repository>
-	</repositories>
+  <dependencies>
+    <dependency>
+      <groupId>com.nativelibs4java</groupId>
+      <artifactId>bridj</artifactId>
+      <version>0.7.0</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>dx</artifactId>
+          <groupId>com.google.android.tools</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.nativelibs4java</groupId>
-			<artifactId>bridj</artifactId>
-			<version>0.7.0</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>dx</artifactId>
-					<groupId>com.google.android.tools</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<scope>provided</scope>
-		</dependency>
+    <!-- unit tests -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
 
-		<!-- unit tests -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.jayway.awaitility</groupId>
-			<artifactId>awaitility</artifactId>
-			<scope>test</scope>
-		</dependency>
+  </dependencies>
 
-	</dependencies>
+  <!-- remove when BridJ v0.7 is released -->
+  <repositories>
+    <repository>
+      <id>sonatype</id>
+      <name>Sonatype OSS Snapshots Repository</name>
+      <url>http://oss.sonatype.org/content/groups/public</url>
+    </repository>
+  </repositories>
 
-	<!-- 
+  <!-- 
 	<profiles>
 		<profile>
 			<id>deploy-snapshot</id>
@@ -98,43 +99,37 @@
 		</profile>
 	</profiles>
 	-->
-	 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>2.3.7</version>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Name>${project.name}</Bundle-Name>
-						<Bundle-Version>${project.version}</Bundle-Version>
-						<Bundle-DocURL>${project.url}</Bundle-DocURL>
-						<Import-Package>
-							ch.qos.logback.*;resolution:=optional,
-							*,
-						</Import-Package>
-						<Export-Package>
-							com.github.sarxos.webcam,
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.3.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Name>${project.name}</Bundle-Name>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Bundle-DocURL>${project.url}</Bundle-DocURL>
+            <Import-Package>ch.qos.logback.*;resolution:=optional,
+							*,</Import-Package>
+            <Export-Package>com.github.sarxos.webcam,
 							com.github.sarxos.webcam.log,
-							com.github.sarxos.webcam.util,
-						</Export-Package>
-						<Private-Package>
-							com.github.sarxos.webcam.ds,
+							com.github.sarxos.webcam.util,</Export-Package>
+            <Private-Package>com.github.sarxos.webcam.ds,
 							com.github.sarxos.webcam.ds.*,
-							com.github.sarxos.webcam.util.*,
-						</Private-Package>
-						<Include-Resources>{maven-resources}</Include-Resources>
-					</instructions>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+							com.github.sarxos.webcam.util.*,</Private-Package>
+            <Include-Resources>{maven-resources}</Include-Resources>
+          </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

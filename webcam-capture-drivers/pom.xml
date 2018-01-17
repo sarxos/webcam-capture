@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.sarxos</groupId>
-		<artifactId>webcam-capture-parent</artifactId>
-		<version>0.3.12-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <artifactId>webcam-capture-parent</artifactId>
+    <groupId>com.github.sarxos</groupId>
+    <version>0.3.12-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>webcam-capture-drivers</artifactId>
-	<packaging>pom</packaging>
+  <artifactId>webcam-capture-drivers</artifactId>
+  <packaging>pom</packaging>
 
-	<name>Webcam Capture Drivers</name>
-	<description>Parent POM for Webcam Capture drivers set</description>
+  <name>Webcam Capture Drivers</name>
+  <description>Parent POM for Webcam Capture drivers set</description>
 
-	<properties>
-		<project.assembly.descriptor>../../distribution.xml</project.assembly.descriptor>
-	</properties>
+  <modules>
+    <module>driver-ffmpeg-cli</module>
+    <module>driver-fswebcam</module>
+    <module>driver-gst1</module>
+    <module>driver-gstreamer</module>
+    <module>driver-ipcam</module>
+    <module>driver-opencv</module>
+    <module>driver-jmf</module>
+    <module>driver-lti-civil</module>
+    <module>driver-openimaj</module>
+    <module>driver-screencapture</module>
+    <module>driver-v4l4j</module>
+    <module>driver-vlcj</module>
+  </modules>
 
-	<modules>
-		<module>driver-ffmpeg-cli</module>
-		<module>driver-fswebcam</module>
-		<module>driver-gst1</module>
-		<module>driver-gstreamer</module>
-		<module>driver-ipcam</module>
-		<module>driver-opencv</module>
-		<module>driver-jmf</module>
-		<module>driver-lti-civil</module>
-		<module>driver-openimaj</module>
-		<module>driver-screencapture</module>
-		<module>driver-v4l4j</module>
-		<module>driver-vlcj</module>
-	</modules>
+  <properties>
+    <project.assembly.descriptor>../../distribution.xml</project.assembly.descriptor>
+  </properties>
 
 </project>

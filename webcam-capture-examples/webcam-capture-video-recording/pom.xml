@@ -1,37 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.sarxos</groupId>
-		<artifactId>webcam-capture-examples</artifactId>
-		<version>0.3.12-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <artifactId>webcam-capture-examples</artifactId>
+    <groupId>com.github.sarxos</groupId>
+    <version>0.3.12-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>webcam-capture-example-video-recordig</artifactId>
-	<packaging>jar</packaging>
+  <artifactId>webcam-capture-example-video-recordig</artifactId>
+  <packaging>jar</packaging>
 
-	<name>Webcam Capture - Video Recording Example</name>
-	<description>Example how to record h264 video from your webcam device (without audio track) using awesome Xuggler library</description>
+  <name>Webcam Capture - Video Recording Example</name>
+  <description>Example how to record h264 video from your webcam device (without audio track) using awesome Xuggler library</description>
 
-	<repositories>
-		<repository>
-			<id>xuggle repo</id>
-			<url>http://www.dcm4che.org/maven2/</url>
-		</repository>
-	</repositories>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.sarxos</groupId>
+      <artifactId>webcam-capture</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>xuggle</groupId>
+      <artifactId>xuggle-xuggler</artifactId>
+      <version>5.4</version>
+    </dependency>
+  </dependencies>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.github.sarxos</groupId>
-			<artifactId>webcam-capture</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>xuggle</groupId>
-			<artifactId>xuggle-xuggler</artifactId>
-			<version>5.4</version>
-		</dependency>
-	</dependencies>
+  <repositories>
+    <repository>
+      <id>xuggle repo</id>
+      <url>http://www.dcm4che.org/maven2/</url>
+    </repository>
+  </repositories>
 
 </project>
