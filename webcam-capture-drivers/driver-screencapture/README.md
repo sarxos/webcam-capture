@@ -1,8 +1,7 @@
 # webcam-capture-driver-screencapture
 
 This is capture driver which is able to capture video feed from your screen devices. It uses AWT Robot under
-the hood and it's is directly limited by its performance. Every screen device connected to your computer will
-be abstracted as a separate webcam device.
+the hood. Every screen device connected to your computer will be abstracted as a separate webcam device.
 
 ## Maven
 
