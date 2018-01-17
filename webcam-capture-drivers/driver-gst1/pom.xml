@@ -6,7 +6,7 @@
   <parent>
     <artifactId>webcam-capture-drivers</artifactId>
     <groupId>com.github.sarxos</groupId>
-    <version>0.3.12-SNAPSHOT</version>
+    <version>0.3.12</version>
   </parent>
 
   <artifactId>webcam-capture-driver-gst1</artifactId>
