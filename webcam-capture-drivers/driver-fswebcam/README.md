@@ -1,4 +1,4 @@
-# FsWebcam Capture Driver
+# webcam-capture-driver-fswebcam
 
 This capture driver is designed to allow developers to use console program called _fswebcam_ written by Philip Heron as the source of images for Webcam Capture API. This capture driver works on **only** on *nix and requires [fswebcam](https://github.com/fsphil/fswebcam) command line too to be installed on the environment where Webcam Capture API is used.
 
@@ -10,7 +10,7 @@ $ sudo apt-get install fswebcam
 
 ## Download
 
-The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/content/repositories/snapshots/com/github/sarxos/webcam-capture-driver-fswebcam/0.3.13-SNAPSHOT/webcam-capture-driver-fswebcam-0.3.12-20171213.184511-7.jar).
+The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture-driver-fswebcam&v=0.3.13-SNAPSHOT).
 
 The latest **stable** ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-fswebcam/0.3.12/webcam-capture-driver-fswebcam-0.3.12-dist.zip).
 

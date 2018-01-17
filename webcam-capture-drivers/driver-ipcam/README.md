@@ -25,7 +25,7 @@ help :) Later, when your class is ready, I will be happy to merge it with offici
 
 ## Download
 
-The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/content/repositories/snapshots/com/github/sarxos/webcam-capture-driver-ipcam/0.3.13-SNAPSHOT/webcam-capture-driver-ipcam-0.3.12-20171213.184535-7.jar).
+The latest **development** version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture-driver-ipcam&v=0.3.13-SNAPSHOT).
 
 The latest **stable** version ZIP bundle can be downloaded [here](http://repo.sarxos.pl/maven2/com/github/sarxos/webcam-capture-driver-ipcam/0.3.12/webcam-capture-driver-ipcam-0.3.12-dist.zip).
 
