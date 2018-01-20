@@ -1,11 +1,10 @@
-package com.github.sarxos.webcam;
-
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import com.github.sarxos.webcam.*;
 import com.github.sarxos.webcam.ds.ffmpegcli.FFmpegCliDriver;
 
 
@@ -27,13 +26,13 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 		// IMPORTANT! Replace default driver by FFmpegCliDriver.
 		Webcam.setDriver(new FFmpegCliDriver());
 
-		setTitle("Java Webcam Capture MJPEG POC");
+		setTitle("Java FFmpeg Capture");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		addWindowListener(this);
 
 		webcam = Webcam.getDefault();
 		if (webcam == null) {
-			System.out.println("No webcams supporting MJPEG format has been found...");
+			System.out.println("No webcams has been found...");
 			System.exit(1);
 		}
 
@@ -114,3 +113,4 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 		viewer.pause();
 	}
 }
+
