@@ -1,16 +1,19 @@
-package com.github.sarxos.webcam;
-
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamEvent;
+import com.github.sarxos.webcam.WebcamListener;
+import com.github.sarxos.webcam.WebcamPanel;
+import com.github.sarxos.webcam.WebcamResolution;
 import com.github.sarxos.webcam.ds.ffmpegcli.FFmpegCliDriver;
 
 
 /**
- * Proof of concept of how to handle webcam video stream from Java
+ * Proof of concept of how to handle webcam video stream from Java with FFmpeg.
  * 
  * @author Bartosz Firyn (SarXos)
  */
@@ -18,22 +21,24 @@ public class WebcamViewerExample extends JFrame implements Runnable, WebcamListe
 
 	private static final long serialVersionUID = 1L;
 
+	// IMPORTANT! Replace default driver by FFmpegCliDriver.
+	static {
+		Webcam.setDriver(new FFmpegCliDriver());
+	}
+
 	private Webcam webcam = null;
 	private WebcamPanel viewer = null;
 
 	@Override
 	public void run() {
 
-		// IMPORTANT! Replace default driver by FFmpegCliDriver.
-		Webcam.setDriver(new FFmpegCliDriver());
-
-		setTitle("Java Webcam Capture MJPEG POC");
+		setTitle("Java FFmpeg Capture");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		addWindowListener(this);
 
 		webcam = Webcam.getDefault();
 		if (webcam == null) {
-			System.out.println("No webcams supporting MJPEG format has been found...");
+			System.out.println("No webcams has been found...");
 			System.exit(1);
 		}
 

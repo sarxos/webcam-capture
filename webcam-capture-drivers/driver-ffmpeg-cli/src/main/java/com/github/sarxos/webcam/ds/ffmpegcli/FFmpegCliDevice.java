@@ -2,54 +2,104 @@ package com.github.sarxos.webcam.ds.ffmpegcli;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
+import java.awt.image.DataBufferByte;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.imageio.ImageIO;
-
+import org.bridj.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamException;
 
 
 public class FFmpegCliDevice implements WebcamDevice, WebcamDevice.BufferAccess {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FFmpegCliDevice.class);
-	private static final Runtime RT = Runtime.getRuntime();
 
-	private File vfile = null;
+	private volatile Process process = null;
+
+	private String path = "";
 	private String name = null;
 	private Dimension[] resolutions = null;
 	private Dimension resolution = null;
-	private Process process = null;
-	private File pipe = null;
-	private ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	private DataInputStream dis = null;
 
 	private AtomicBoolean open = new AtomicBoolean(false);
 	private AtomicBoolean disposed = new AtomicBoolean(false);
 
-	protected FFmpegCliDevice(File vfile, String vinfo) {
+	protected FFmpegCliDevice(String path, File vfile, String resolutions) {
+		this(path, vfile.getAbsolutePath(), resolutions);
+	}
 
-		String[] parts = vinfo.split(" : ");
+	protected FFmpegCliDevice(String path, String name, String resolutions) {
+		this.path = path;
+		this.name = name;
+		this.resolutions = readResolutions(resolutions);
+	}
 
-		this.vfile = vfile;
-		this.name = vfile.getAbsolutePath();
-		this.resolutions = readResolutions(parts[3].trim());
+	public void startProcess() throws IOException {
+		ProcessBuilder builder = new ProcessBuilder(buildCommand());
+		builder.redirectErrorStream(true); // so we can ignore the error stream
+
+		process = builder.start();
+	}
+
+	private byte[] readNextFrame() throws IOException {
+		InputStream out = process.getInputStream();
+
+		final int SIZE = arraySize();
+		final int CHUNK_SIZE = SIZE / 20;
+
+		int cursor = 0;
+		byte[] buffer = new byte[SIZE];
+
+		while (isAlive(process)) {
+			int no = out.available();
+			if (no >= CHUNK_SIZE) {
+
+				// If buffer is not full yet
+				if (cursor < SIZE) {
+					out.read(buffer, cursor, CHUNK_SIZE);
+					cursor += CHUNK_SIZE;
+				} else {
+					break;
+				}
+			}
+		}
+
+		return buffer;
+	}
+
+	/**
+	 * Based on answer: https://stackoverflow.com/a/12062505/7030976
+	 *
+	 * @param bgr - byte array in bgr format
+	 * @return new image
+	 */
+	private BufferedImage buildImage(byte[] bgr) {
+		BufferedImage image = new BufferedImage(resolution.width, resolution.height, BufferedImage.TYPE_3BYTE_BGR);
+		byte[] imageData = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+		System.arraycopy(bgr, 0, imageData, 0, bgr.length);
+
+		return image;
+	}
+
+	private static boolean isAlive(Process p) {
+		try {
+			p.exitValue();
+			return false;
+		} catch (IllegalThreadStateException e) {
+			return true;
+		}
 	}
 
 	private Dimension[] readResolutions(String res) {
-
 		List<Dimension> resolutions = new ArrayList<Dimension>();
 		String[] parts = res.split(" ");
 
@@ -89,143 +139,23 @@ public class FFmpegCliDevice implements WebcamDevice, WebcamDevice.BufferAccess 
 		this.resolution = resolution;
 	}
 
-	private synchronized byte[] readBytes() {
-
-		if (!open.get()) {
-			return null;
-		}
-
-		baos.reset();
-
-		int b, c;
-		try {
-
-			// search for SOI
-			while (true) {
-				if ((b = dis.readUnsignedByte()) == 0xFF) {
-					if ((c = dis.readUnsignedByte()) == 0xD8) {
-						baos.write(b);
-						baos.write(c);
-						break; // SOI found
-					}
-				}
-			}
-
-			// read until EOI
-			do {
-				baos.write(c = dis.readUnsignedByte());
-				if (c == 0xFF) {
-					baos.write(c = dis.readUnsignedByte());
-					if (c == 0xD9) {
-						break; // EOI found
-					}
-				}
-			} while (true);
-
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		return baos.toByteArray();
-
-	}
-
 	@Override
-	public synchronized ByteBuffer getImageBytes() {
-		if (!open.get()) {
-			return null;
-		}
-		return ByteBuffer.wrap(readBytes());
-	}
-
-	@Override
-	public void getImageBytes(ByteBuffer buffer) {
-		if (!open.get()) {
-			return;
-		}
-		buffer.put(readBytes());
-	}
-
-	@Override
-	public BufferedImage getImage() {
-
-		if (!open.get()) {
-			return null;
-		}
-
-		ByteArrayInputStream bais = new ByteArrayInputStream(readBytes());
-		try {
-			return ImageIO.read(bais);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				bais.close();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	@Override
-	public synchronized void open() {
-
-		if (disposed.get()) {
-			return;
-		}
-
+	public void open() {
 		if (!open.compareAndSet(false, true)) {
 			return;
 		}
 
-		pipe = new File("/tmp/" + vfile.getName() + ".mjpeg");
-
-		//@formatter:off
-		String[] cmd = new String[] { 
-			"ffmpeg", 
-			"-y",                          // overwrite output file 
-			"-f", "video4linux2",          // format
-			"-input_format", "mjpeg",      // input format
-			"-r", "50",                    // requested FPS
-			"-s", getResolutionString(),   // frame dimension
-			"-i", vfile.getAbsolutePath(), // input file 
-			"-vcodec", "copy",             // video codec to be used
-			pipe.getAbsolutePath(),        // output file
-		};
-		//@formatter:on
-
-		if (LOG.isDebugEnabled()) {
-			StringBuilder sb = new StringBuilder();
-			for (String c : cmd) {
-				sb.append(c).append(' ');
-			}
-			LOG.debug("Executing command: {}", sb.toString());
-		}
-
 		try {
-			RT.exec(new String[] { "mkfifo", pipe.getAbsolutePath() }).waitFor();
-			process = RT.exec(cmd);
-			dis = new DataInputStream(new FileInputStream(pipe));
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
+			startProcess();
 		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
+			throw new WebcamException(e);
 		}
 	}
 
 	@Override
-	public synchronized void close() {
-
+	public void close() {
 		if (!open.compareAndSet(true, false)) {
 			return;
-		}
-
-		try {
-			dis.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
 		}
 
 		process.destroy();
@@ -234,10 +164,6 @@ public class FFmpegCliDevice implements WebcamDevice, WebcamDevice.BufferAccess 
 			process.waitFor();
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
-		}
-
-		if (!pipe.delete()) {
-			pipe.deleteOnExit();
 		}
 	}
 
@@ -253,8 +179,70 @@ public class FFmpegCliDevice implements WebcamDevice, WebcamDevice.BufferAccess 
 		return open.get();
 	}
 
+	public String[] buildCommand() {
+		String captureDriver = FFmpegCliDriver.getCaptureDriver();
+
+		String deviceInput = name;
+		if (Platform.isWindows()) {
+			deviceInput = "\"video=" + name + "\"";
+		}
+
+		return new String[] {
+			FFmpegCliDriver.getCommand(path),
+			"-loglevel", "panic", // suppress ffmpeg headers
+			"-f", captureDriver, // camera format
+			"-s", getResolutionString(), // frame dimension
+			"-i", deviceInput, // input file
+			"-vcodec", "rawvideo", // raw output
+			"-f", "rawvideo", // raw output
+			"-vf", "hflip", // flip image horizontally
+			"-vsync", "vfr", // avoid frame duplication
+			"-pix_fmt", "bgr24", // output format as bgr24
+			"-", // output to stdout
+		};
+	}
+
 	@Override
-	public String toString() {
-		return "video device " + name;
+	public BufferedImage getImage() {
+		if (!open.get()) {
+			return null;
+		}
+
+		try {
+			return buildImage(readNextFrame());
+		} catch (IOException e) {
+			throw new WebcamException(e);
+		}
+	}
+
+	@Override
+	public ByteBuffer getImageBytes() {
+
+		if (!open.get()) {
+			return null;
+		}
+
+		final ByteBuffer buffer;
+		try {
+			buffer = ByteBuffer.allocate(arraySize());
+			buffer.put(readNextFrame());
+		} catch (IOException e) {
+			throw new WebcamException(e);
+		}
+
+		return buffer;
+	}
+
+	@Override
+	public void getImageBytes(ByteBuffer byteBuffer) {
+		try {
+			byteBuffer.put(readNextFrame());
+		} catch (IOException e) {
+			throw new WebcamException(e);
+		}
+	}
+
+	private int arraySize() {
+		return resolution.width * resolution.height * 3;
 	}
 }

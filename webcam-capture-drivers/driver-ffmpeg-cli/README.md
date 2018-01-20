@@ -1,20 +1,17 @@
 # FFmpeg CLI Capture Driver
 
 This is a proof-of-concept, experimental capture driver. It uses FFmpeg to 
-stream MJPEG-encoded video from webcam device into named pipe. 
-This pipe is later read by Java process which converts MJPEG-stream to the set of
-```BufferedImage``` objects returned one after the other from ```Webcam.getImage()``` 
-method invokation. 
+stream video from webcam device through process standard output.
 
-This driver works **only** on Linux, and you **have** to have
-[ffmpeg](http://linuxers.org/tutorial/how-install-ffmpeg-linux)
-instaled on your PC, it's buggy and not well designed (has 
-terrible memory consumption), and will probably remain as such 
-untill somebody redesign it. Therefore, if you found a bug in this driver
-code, or you would like to perform any enhancement, feel free to 
-send pull request. Due to other urgent issues, I wont put any effort
-to enhance and/or fix this driver.
+This driver has been tested on:
 
+* Fedora 26 (FFmpeg 3.1.11 and Oracle JDK 8),
+* Ubuntu 14.04 (FFmpeg 3.3.3 and Oracle JDK 8) ,
+* Windows 7 64bits (FFmpeg 3.4.1 and Oracle JDK 9).
+
+It has some problems because
+it starts own sub-process to stream data from `ffmpeg` and this process needs to be killed,
+but in general works well.
 
 ## How To Use
 
