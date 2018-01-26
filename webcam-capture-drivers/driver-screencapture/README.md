@@ -33,7 +33,7 @@ Snapshot:
 
 ## How To Use
 
-Set capture driver before you start using Webcam class:
+Set capture driver before you start using Webcam class.
 
 ```java
 import java.awt.Dimension;
@@ -83,16 +83,22 @@ public class WebcamPanelExample {
 	}
 }
 ```
+The picture below is an effect of the above code running. All my three screens are captured in real time.
 
-## Examples
+![](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-screencapture/src/etc/resources/screen-1.jpg?raw=true)
 
-Please check [this](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-screencapture/src/example/java) directory for more examples.
+## More Examples
+
+Please check [this](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-screencapture/src/example/java) directory to see more examples.
+
+![](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-screencapture/src/etc/resources/screen-2.jpg)
 
 ## Known Problems
 
-1. I noticed this on my Ubuntu Linux - black regions appears in place where other application (e.g. Cairo Dock)
-   render OpenGL content. I don't know about any workaround or solution for this problem. Not verified on Mac and Windows.
-   Please report [new issue](https://github.com/sarxos/webcam-capture/issues/new) if you know how to fix this. 
+1. I noticed this on my Ubuntu Linux - black regions appear in place where other application (e.g. Cairo Dock)
+   render OpenGL content. I don't know about any workaround or solution for this problem other than disabling
+   these applications. Not verified on Mac and Windows. Please report
+   [new issue](https://github.com/sarxos/webcam-capture/issues/new) if you know how to fix this. 
 
 ## Capture Driver License
 
