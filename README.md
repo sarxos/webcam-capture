@@ -75,7 +75,7 @@ Snapshot version:
 
 The newest stable version can be downloaded as separated ZIP binary. This ZIP file contains Webcam Capture API itself and all required dependencies (in ```libs``` directory). Click on the below link to download it:
 
- [webcam-capture-0.3.12-dist.zip](https://github.com/sarxos/webcam-capture/releases/download/webcam-capture-parent-0.3.12/webcam-capture-0.3.12-dist.zip)
+ [webcam-capture-0.3.12-dist.zip](https://github.com/sarxos/webcam-capture/archive/webcam-capture-parent-0.3.12.zip)
 
 The latest development version JAR (aka SNAPSHOT) can be downloaded [here](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.github.sarxos&a=webcam-capture&v=0.3.13-SNAPSHOT).
 
