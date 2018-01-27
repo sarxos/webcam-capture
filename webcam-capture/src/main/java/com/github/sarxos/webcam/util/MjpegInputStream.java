@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.ipcam.impl;
+package com.github.sarxos.webcam.util;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -15,12 +15,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class IpCamMJPEGStream extends DataInputStream {
+/**
+ * This is {@link InputStream} with ability to read MJPEG frames as {@link BufferedImage}.
+ *
+ * @author Bartosz Firyn (sarxos)
+ */
+public class MjpegInputStream extends DataInputStream {
 
-	private static final Logger LOG = LoggerFactory.getLogger(IpCamMJPEGStream.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MjpegInputStream.class);
 
 	/**
-	 * The first two bytes of every JPEG stream are the Start Of Image (SOI) marker values FFh D8h.
+	 * The first two bytes of every JPEG frame are the Start Of Image (SOI) marker values FFh D8h.
 	 */
 	private final byte[] SOI_MARKER = { (byte) 0xFF, (byte) 0xD8 };
 
@@ -44,13 +49,16 @@ public class IpCamMJPEGStream extends DataInputStream {
 	 */
 	private final static int FRAME_MAX_LENGTH = 100000 + HEADER_MAX_LENGTH;
 
+	/**
+	 * Is stream open?
+	 */
 	private boolean open = true;
 
-	public IpCamMJPEGStream(InputStream in) {
+	public MjpegInputStream(final InputStream in) {
 		super(new BufferedInputStream(in, FRAME_MAX_LENGTH));
 	}
 
-	private int getEndOfSeqeunce(DataInputStream in, byte[] sequence) throws IOException {
+	private int getEndOfSeqeunce(final DataInputStream in, final byte[] sequence) throws IOException {
 		int s = 0;
 		byte c;
 		for (int i = 0; i < FRAME_MAX_LENGTH; i++) {
@@ -67,23 +75,25 @@ public class IpCamMJPEGStream extends DataInputStream {
 		return -1;
 	}
 
-	private int getStartOfSequence(DataInputStream in, byte[] sequence) throws IOException {
+	private int getStartOfSequence(final DataInputStream in, final byte[] sequence) throws IOException {
 		int end = getEndOfSeqeunce(in, sequence);
 		return end < 0 ? -1 : end - sequence.length;
 	}
 
-	private int parseContentLength(byte[] headerBytes) throws IOException, NumberFormatException {
+	private int parseContentLength(final byte[] headerBytes) throws IOException, NumberFormatException {
 
-		ByteArrayInputStream bais = new ByteArrayInputStream(headerBytes);
-		InputStreamReader isr = new InputStreamReader(bais);
-		BufferedReader br = new BufferedReader(isr);
+		try (
+			final ByteArrayInputStream bais = new ByteArrayInputStream(headerBytes);
+			final InputStreamReader isr = new InputStreamReader(bais);
+			final BufferedReader br = new BufferedReader(isr)) {
 
-		String line = null;
-		while ((line = br.readLine()) != null) {
-			if (line.toLowerCase().startsWith(CONTENT_LENGTH)) {
-				String[] parts = line.split(":");
-				if (parts.length == 2) {
-					return Integer.parseInt(parts[1].trim());
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				if (line.toLowerCase().startsWith(CONTENT_LENGTH)) {
+					final String[] parts = line.split(":");
+					if (parts.length == 2) {
+						return Integer.parseInt(parts[1].trim());
+					}
 				}
 			}
 		}
@@ -91,14 +101,17 @@ public class IpCamMJPEGStream extends DataInputStream {
 		return 0;
 	}
 
+	/**
+	 * Read single MJPEG frame (JPEG image) from stram.
+	 *
+	 * @return JPEG image as {@link BufferedImage} or null
+	 * @throws IOException when there is a problem in reading from stream
+	 */
 	public BufferedImage readFrame() throws IOException {
 
 		if (!open) {
 			return null;
 		}
-
-		byte[] header = null;
-		byte[] frame = null;
 
 		mark(FRAME_MAX_LENGTH);
 
@@ -106,7 +119,7 @@ public class IpCamMJPEGStream extends DataInputStream {
 
 		reset();
 
-		header = new byte[n];
+		final byte[] header = new byte[n];
 
 		readFully(header);
 
@@ -123,13 +136,14 @@ public class IpCamMJPEGStream extends DataInputStream {
 
 		reset();
 
-		frame = new byte[length];
+		final byte[] frame = new byte[length];
 
 		skipBytes(n);
+
 		readFully(frame);
 
-		try {
-			return ImageIO.read(new ByteArrayInputStream(frame));
+		try (final ByteArrayInputStream bais = new ByteArrayInputStream(frame)) {
+			return ImageIO.read(bais);
 		} catch (IOException e) {
 			return null;
 		}
@@ -137,8 +151,11 @@ public class IpCamMJPEGStream extends DataInputStream {
 
 	@Override
 	public void close() throws IOException {
-		open = false;
-		super.close();
+		try {
+			super.close();
+		} finally {
+			this.open = false;
+		}
 	}
 
 	public boolean isClosed() {

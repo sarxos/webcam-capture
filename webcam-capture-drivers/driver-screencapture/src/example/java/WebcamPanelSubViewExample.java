@@ -12,7 +12,7 @@ import com.github.sarxos.webcam.WebcamPanel.DrawMode;
 import com.github.sarxos.webcam.WebcamPanel.Painter;
 import com.github.sarxos.webcam.WebcamResolution;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
-import com.github.sarxos.webcam.ds.gstreamer.ScreenCaptureDriver;
+import com.github.sarxos.webcam.ds.screencapture.ScreenCaptureDriver;
 
 
 public class WebcamPanelSubViewExample {

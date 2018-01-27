@@ -38,8 +38,8 @@ import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDevice.BufferAccess;
 import com.github.sarxos.webcam.WebcamDevice.FPSSource;
 import com.github.sarxos.webcam.WebcamException;
-import com.github.sarxos.webcam.ds.ipcam.impl.IpCamMJPEGStream;
 import com.github.sarxos.webcam.util.ImageUtils;
+import com.github.sarxos.webcam.util.MjpegInputStream;
 
 
 /**
@@ -76,9 +76,9 @@ public class IpCamDevice implements WebcamDevice, FPSSource, BufferAccess {
 			this.setDaemon(true);
 		}
 
-		private IpCamMJPEGStream request(final URI uri) {
+		private MjpegInputStream request(final URI uri) {
 			try {
-				return new IpCamMJPEGStream(get(uri, true));
+				return new MjpegInputStream(get(uri, true));
 			} catch (Exception e) {
 				throw new WebcamException("Cannot download image. " + e.getMessage(), e);
 			}
@@ -91,7 +91,7 @@ public class IpCamDevice implements WebcamDevice, FPSSource, BufferAccess {
 			long t2;
 
 			while (running) {
-				try (final IpCamMJPEGStream stream = request(uri)) {
+				try (final MjpegInputStream stream = request(uri)) {
 					do {
 						t1 = System.currentTimeMillis();
 						if ((tmp = stream.readFrame()) != null) {

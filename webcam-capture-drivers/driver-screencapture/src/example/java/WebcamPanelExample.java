@@ -6,8 +6,8 @@ import javax.swing.JFrame;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamPanel.DrawMode;
+import com.github.sarxos.webcam.ds.screencapture.ScreenCaptureDriver;
 import com.github.sarxos.webcam.WebcamResolution;
-import com.github.sarxos.webcam.ds.gstreamer.ScreenCaptureDriver;
 
 
 public class WebcamPanelExample {

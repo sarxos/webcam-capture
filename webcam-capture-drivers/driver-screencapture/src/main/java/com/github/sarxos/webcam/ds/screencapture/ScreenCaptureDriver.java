@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.gstreamer;
+package com.github.sarxos.webcam.ds.screencapture;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
