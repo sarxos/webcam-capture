@@ -4,19 +4,19 @@ This is capture driver which is able to capture video feed from MJPEG stream. Bu
 
 ### Streaming With GStreamer
 
-Here is example of how GStreamer 1.x can be used to stream video feed as MJPEG. This command should
-be executed on the host computer (i.e. the server with connected webcam and from where we want
-to stream video feed).
+Here is example of how GStreamer 1.x can be used to stream video feed as MJPEG on Raspberry Pi
+or any other Linux system with gStreamer 1.x installed. This command should be executed on the
+host computer (i.e. the server with connected webcam and from where we want to stream video feed).
 
 ```plain
 $ gst-launch-1.0 -v v4l2src device=/dev/video0 \
   ! capsfilter caps="video/x-raw, width=640, height=480" \
   ! decodebin name=dec ! videoconvert ! jpegenc \
-  ! multipartmux !   tcpserversink host=0.0.0.0 port=5000
+  ! multipartmux ! tcpserversink host=0.0.0.0 port=5000
 ``` 
 
-The above will feed video stream from `/dev/video0` and convert it to video, then convert
-frames to JPEG and perform MIME multipart encoding to finally make it available
+The above will `/dev/video0` device (default webcam) to get video from and convert
+individual frames to JPEG and then perform MIME multipart encoding to make it finally available
 over TCP on port `5000`.
 
 Expected command output is something like this:
@@ -96,13 +96,10 @@ import com.github.sarxos.webcam.ds.mjpeg.MjpegCaptureDriver;
 
 public class WebcamPanelExample {
 
-	private static final String STREAM_1 = "tcp://127.0.0.1:5000"; // this is your local host
-	private static final String STREAM_2 = "tcp://192.168.1.12:5000"; // this is some remote host
-
 	static {
 		Webcam.setDriver(new MjpegCaptureDriver()
-			.withUri(STREAM_1)
-			.withUri(STREAM_2));
+			.withUri("tcp://127.0.0.1:5000") // this is your local host
+			.withUri("tcp://192.168.1.12:5000")); // this is some remote host
 	}
 
 	public static void main(String[] args) throws InterruptedException {
