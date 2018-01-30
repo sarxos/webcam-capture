@@ -1,260 +1,246 @@
 package com.github.sarxos.webcam.ds.ffmpegcli;
 
-import java.awt.Dimension;
+import com.github.sarxos.webcam.WebcamDevice;
+import org.bridj.Platform;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
+import java.awt.image.DataBufferByte;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.imageio.ImageIO;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.sarxos.webcam.WebcamDevice;
-
-
 public class FFmpegCliDevice implements WebcamDevice, WebcamDevice.BufferAccess {
 
-	private static final Logger LOG = LoggerFactory.getLogger(FFmpegCliDevice.class);
-	private static final Runtime RT = Runtime.getRuntime();
+    private static final Logger LOG = LoggerFactory.getLogger(FFmpegCliDevice.class);
 
-	private File vfile = null;
-	private String name = null;
-	private Dimension[] resolutions = null;
-	private Dimension resolution = null;
-	private Process process = null;
-	private File pipe = null;
-	private ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	private DataInputStream dis = null;
+    private volatile Process process = null;
 
-	private AtomicBoolean open = new AtomicBoolean(false);
-	private AtomicBoolean disposed = new AtomicBoolean(false);
+    private String path = "";
+    private String name = null;
+    private Dimension[] resolutions = null;
+    private Dimension resolution = null;
 
-	protected FFmpegCliDevice(File vfile, String vinfo) {
+    private AtomicBoolean open = new AtomicBoolean(false);
+    private AtomicBoolean disposed = new AtomicBoolean(false);
 
-		String[] parts = vinfo.split(" : ");
+    protected FFmpegCliDevice(String path, File vfile, String resolutions) {
+        this(path, vfile.getAbsolutePath(), resolutions);
+    }
 
-		this.vfile = vfile;
-		this.name = vfile.getAbsolutePath();
-		this.resolutions = readResolutions(parts[3].trim());
-	}
+    protected FFmpegCliDevice(String path, String name, String resolutions) {
+        this.path = path;
+        this.name = name;
+        this.resolutions = readResolutions(resolutions);
+    }
 
-	private Dimension[] readResolutions(String res) {
+    public void startProcess() throws IOException {
+        ProcessBuilder builder = new ProcessBuilder(buildCommand());
+        builder.redirectErrorStream(true); // so we can ignore the error stream
 
-		List<Dimension> resolutions = new ArrayList<Dimension>();
-		String[] parts = res.split(" ");
+        process = builder.start();
+    }
 
-		for (String part : parts) {
-			String[] xy = part.split("x");
-			resolutions.add(new Dimension(Integer.parseInt(xy[0]), Integer.parseInt(xy[1])));
-		}
+    private byte[] readNextFrame() throws IOException {
+        InputStream out = process.getInputStream();
 
-		return resolutions.toArray(new Dimension[resolutions.size()]);
-	}
+        final int SIZE = arraySize();
+        final int CHUNK_SIZE = SIZE / 20;
 
-	@Override
-	public String getName() {
-		return name;
-	}
+        int cursor = 0;
+        byte[] buffer = new byte[SIZE];
 
-	@Override
-	public Dimension[] getResolutions() {
-		return resolutions;
-	}
+        while (isAlive(process)) {
+            int no = out.available();
+            if (no >= CHUNK_SIZE) {
 
-	@Override
-	public Dimension getResolution() {
-		if (resolution == null) {
-			resolution = getResolutions()[0];
-		}
-		return resolution;
-	}
+                // If buffer is not full yet
+                if (cursor < SIZE) {
+                    out.read(buffer, cursor, CHUNK_SIZE);
+                    cursor += CHUNK_SIZE;
+                } else {
+                    break;
+                }
+            }
+        }
 
-	private String getResolutionString() {
-		Dimension d = getResolution();
-		return String.format("%dx%d", d.width, d.height);
-	}
+        return buffer;
+    }
 
-	@Override
-	public void setResolution(Dimension resolution) {
-		this.resolution = resolution;
-	}
+    /**
+     * Based on answer: https://stackoverflow.com/a/12062505/7030976
+     *
+     * @param bgr - byte array in bgr format
+     * @return new image
+     */
+    private BufferedImage buildImage(byte[] bgr) {
+        BufferedImage image = new BufferedImage(resolution.width, resolution.height, BufferedImage.TYPE_3BYTE_BGR);
+        byte[] imageData = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+        System.arraycopy(bgr, 0, imageData, 0, bgr.length);
 
-	private synchronized byte[] readBytes() {
+        return image;
+    }
 
-		if (!open.get()) {
-			return null;
-		}
+    private static boolean isAlive(Process p) {
+        try {
+            p.exitValue();
+            return false;
+        } catch (IllegalThreadStateException e) {
+            return true;
+        }
+    }
 
-		baos.reset();
+    private Dimension[] readResolutions(String res) {
+        List<Dimension> resolutions = new ArrayList<Dimension>();
+        String[] parts = res.split(" ");
 
-		int b, c;
-		try {
+        for (String part : parts) {
+            String[] xy = part.split("x");
+            resolutions.add(new Dimension(Integer.parseInt(xy[0]), Integer.parseInt(xy[1])));
+        }
 
-			// search for SOI
-			while (true) {
-				if ((b = dis.readUnsignedByte()) == 0xFF) {
-					if ((c = dis.readUnsignedByte()) == 0xD8) {
-						baos.write(b);
-						baos.write(c);
-						break; // SOI found
-					}
-				}
-			}
+        return resolutions.toArray(new Dimension[resolutions.size()]);
+    }
 
-			// read until EOI
-			do {
-				baos.write(c = dis.readUnsignedByte());
-				if (c == 0xFF) {
-					baos.write(c = dis.readUnsignedByte());
-					if (c == 0xD9) {
-						break; // EOI found
-					}
-				}
-			} while (true);
+    @Override
+    public String getName() {
+        return name;
+    }
 
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+    @Override
+    public Dimension[] getResolutions() {
+        return resolutions;
+    }
 
-		return baos.toByteArray();
+    @Override
+    public Dimension getResolution() {
+        if (resolution == null) {
+            resolution = getResolutions()[0];
+        }
+        return resolution;
+    }
 
-	}
+    private String getResolutionString() {
+        Dimension d = getResolution();
+        return String.format("%dx%d", d.width, d.height);
+    }
 
-	@Override
-	public synchronized ByteBuffer getImageBytes() {
-		if (!open.get()) {
-			return null;
-		}
-		return ByteBuffer.wrap(readBytes());
-	}
+    @Override
+    public void setResolution(Dimension resolution) {
+        this.resolution = resolution;
+    }
 
-	@Override
-	public void getImageBytes(ByteBuffer buffer) {
-		if (!open.get()) {
-			return;
-		}
-		buffer.put(readBytes());
-	}
+    public void open() {
+        if (!open.compareAndSet(false, true)) {
+            return;
+        }
 
-	@Override
-	public BufferedImage getImage() {
+        try {
+            startProcess();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-		if (!open.get()) {
-			return null;
-		}
+    @Override
+    public void close() {
+        if (!open.compareAndSet(true, false)) {
+            return;
+        }
 
-		ByteArrayInputStream bais = new ByteArrayInputStream(readBytes());
-		try {
-			return ImageIO.read(bais);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				bais.close();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
+        process.destroy();
 
-	@Override
-	public synchronized void open() {
+        try {
+            process.waitFor();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-		if (disposed.get()) {
-			return;
-		}
+    @Override
+    public void dispose() {
+        if (disposed.compareAndSet(false, true) && open.get()) {
+            close();
+        }
+    }
 
-		if (!open.compareAndSet(false, true)) {
-			return;
-		}
+    @Override
+    public boolean isOpen() {
+        return open.get();
+    }
 
-		pipe = new File("/tmp/" + vfile.getName() + ".mjpeg");
+    public String[] buildCommand() {
+        String captureDriver = FFmpegCliDriver.getCaptureDriver();
 
-		//@formatter:off
-		String[] cmd = new String[] { 
-			"ffmpeg", 
-			"-y",                          // overwrite output file 
-			"-f", "video4linux2",          // format
-			"-input_format", "mjpeg",      // input format
-			"-r", "50",                    // requested FPS
-			"-s", getResolutionString(),   // frame dimension
-			"-i", vfile.getAbsolutePath(), // input file 
-			"-vcodec", "copy",             // video codec to be used
-			pipe.getAbsolutePath(),        // output file
-		};
-		//@formatter:on
+        String deviceInput = name;
+        if (Platform.isWindows()) {
+            deviceInput = "\"video=" + name + "\"";
+        }
 
-		if (LOG.isDebugEnabled()) {
-			StringBuilder sb = new StringBuilder();
-			for (String c : cmd) {
-				sb.append(c).append(' ');
-			}
-			LOG.debug("Executing command: {}", sb.toString());
-		}
+        return new String[]{
+                FFmpegCliDriver.getCommand(path),
+                "-loglevel", "panic",          // suppress ffmpeg headers
+                "-f", captureDriver,           // camera format
+                "-s", getResolutionString(),   // frame dimension
+                "-i", deviceInput, // input file
+                "-vcodec", "rawvideo",         // raw output
+                "-f", "rawvideo",              // raw output
+                "-vf", "hflip",                // flip image horizontally
+                "-vsync", "vfr",               // avoid frame duplication
+                "-pix_fmt", "bgr24",           // output format as bgr24
+                "-",                           // output to stdout
+        };
+    }
 
-		try {
-			RT.exec(new String[] { "mkfifo", pipe.getAbsolutePath() }).waitFor();
-			process = RT.exec(cmd);
-			dis = new DataInputStream(new FileInputStream(pipe));
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    public BufferedImage getImage() {
+        if (!open.get()) {
+            return null;
+        }
 
-	@Override
-	public synchronized void close() {
+        try {
+            byte[] buffer = readNextFrame();
+            BufferedImage image = buildImage(buffer);
+            return image;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-		if (!open.compareAndSet(true, false)) {
-			return;
-		}
+        return null;
+    }
 
-		try {
-			dis.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+    @Override
+    public ByteBuffer getImageBytes() {
+        if (!open.get()) {
+            return null;
+        }
 
-		process.destroy();
+        try {
+            ByteBuffer buffer = ByteBuffer.allocate(arraySize());
+            buffer.put(readNextFrame());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-		try {
-			process.waitFor();
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+        return null;
+    }
 
-		if (!pipe.delete()) {
-			pipe.deleteOnExit();
-		}
-	}
+    @Override
+    public void getImageBytes(ByteBuffer byteBuffer) {
+        try {
+            byteBuffer.put(readNextFrame());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void dispose() {
-		if (disposed.compareAndSet(false, true) && open.get()) {
-			close();
-		}
-	}
+    private int arraySize() {
+        return resolution.width * resolution.height * 3;
+    }
 
-	@Override
-	public boolean isOpen() {
-		return open.get();
-	}
-
-	@Override
-	public String toString() {
-		return "video device " + name;
-	}
 }
