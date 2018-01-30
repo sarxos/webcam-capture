@@ -139,6 +139,7 @@ Below are the very pretty basic examples demonstrating of how Webcam Capture API
 * [How to rotate image displayed in ```WebcamPanel```](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/WebcamPanelRotationExample.java)
 * [How to rotate image from camera with ```WebcamImageTransformer```](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/ImageTransformerRotationExample.java)
 * [How to use AdaptiveSizeWriter to compress images](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture/src/example/java/AdaptiveSizeWriterExample.java)
+* [How to use Webcam Capture with DroidCam application (smartphone working as IP camera)](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-ipcam/src/examples/java/DroidCamExample.java)
 
 And here are some more advanced examples, few with quite fancy GUI.
 
