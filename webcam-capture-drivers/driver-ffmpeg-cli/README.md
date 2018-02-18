@@ -7,6 +7,7 @@ This driver has been tested on:
 
 * Fedora 26 (FFmpeg 3.1.11 and Oracle JDK 8),
 * Ubuntu 14.04 (FFmpeg 3.3.3 and Oracle JDK 8) ,
+* Raspbian GNU/Linux 9.3 (stretch) (FFmpeg 3.2.10 and OpenJDK 1.8.0_151),
 * Windows 7 64bits (FFmpeg 3.4.1 and Oracle JDK 9).
 
 It has some problems because
