@@ -398,7 +398,7 @@ More details on how to use it, how to install, and where necessary binaries can 
 
 ### JavaCV Driver
 
-This is capture driver which uses [JavaCV][] binding for [OpenCV][] to gain access to the UVC camera device.
+This is capture driver which uses [JavaCV][] binding for [OpenCV](https://opencv.org/) to gain access to the UVC camera device.
 
 Maven dependency:
 
