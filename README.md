@@ -199,7 +199,7 @@ List of additional capture drivers includes:
 [JMF]:        http://www.oracle.com/technetwork/java/javase/download-142937.html
 [FMJ]:        http://fmj-sf.net/
 [LTI-CIVIL]:  http://lti-civil.org/
-[JavaCV]:     http://code.google.com/p/javacv/
+[JavaCV]:     https://github.com/bytedeco/javacv
 [VLCj]:       http://code.google.com/p/vlcj/
 [FFmpeg]:     http://www.ffmpeg.org/
 [CLI]:        http://en.wikipedia.org/wiki/Command-line_interface
