@@ -418,11 +418,6 @@ or if you are using webcam-capture < 0.3.12:
     <artifactId>webcam-capture-driver-javacv</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>
-<dependency>
-    <groupId>org.bytedeco</groupId>
-    <artifactId>javacv-platform</artifactId>
-    <version>{javacv-platform-version-here}</version>
-</dependency>
 ```
 
 How to use it:
