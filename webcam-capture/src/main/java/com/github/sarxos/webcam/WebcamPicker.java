@@ -5,7 +5,7 @@ import java.util.List;
 import javax.swing.JComboBox;
 
 
-public class WebcamPicker extends JComboBox {
+public class WebcamPicker extends JComboBox<Webcam> {
 
 	private static final long serialVersionUID = 1L;
 

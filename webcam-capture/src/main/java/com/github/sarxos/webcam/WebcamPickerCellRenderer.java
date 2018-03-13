@@ -7,8 +7,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+import com.github.sarxos.webcam.Webcam;
 
-public class WebcamPickerCellRenderer extends JLabel implements ListCellRenderer {
+
+public class WebcamPickerCellRenderer extends JLabel implements ListCellRenderer<Webcam> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -22,9 +24,7 @@ public class WebcamPickerCellRenderer extends JLabel implements ListCellRenderer
 	}
 
 	@Override
-	public Component getListCellRendererComponent(JList list, Object value, int i, boolean selected, boolean focused) {
-
-		Webcam webcam = (Webcam) value;
+	public Component getListCellRendererComponent(JList<? extends Webcam> list, Webcam webcam, int i, boolean selected, boolean focused) {
 
 		if (selected) {
 			setBackground(list.getSelectionBackground());
@@ -39,5 +39,4 @@ public class WebcamPickerCellRenderer extends JLabel implements ListCellRenderer
 
 		return this;
 	}
-
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 
 
-public class WebcamPickerModel extends DefaultComboBoxModel {
+public class WebcamPickerModel extends DefaultComboBoxModel<Webcam> {
 
 	private static final long serialVersionUID = 1L;
 
