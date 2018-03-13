@@ -7,8 +7,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import com.github.sarxos.webcam.Webcam;
-
 
 public class WebcamPickerCellRenderer extends JLabel implements ListCellRenderer<Webcam> {
 
