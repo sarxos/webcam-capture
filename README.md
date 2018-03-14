@@ -199,7 +199,7 @@ List of additional capture drivers includes:
 [JMF]:        http://www.oracle.com/technetwork/java/javase/download-142937.html
 [FMJ]:        http://fmj-sf.net/
 [LTI-CIVIL]:  http://lti-civil.org/
-[JavaCV]:     http://code.google.com/p/javacv/
+[JavaCV]:     https://github.com/bytedeco/javacv
 [VLCj]:       http://code.google.com/p/vlcj/
 [FFmpeg]:     http://www.ffmpeg.org/
 [CLI]:        http://en.wikipedia.org/wiki/Command-line_interface
@@ -398,9 +398,19 @@ More details on how to use it, how to install, and where necessary binaries can 
 
 ### JavaCV Driver
 
-This is capture driver which uses [JavaCV][] binding for [OpenCV][] to gain access to the UVC camera device.
+This is capture driver which uses [JavaCV][] binding for [OpenCV](https://opencv.org/) to gain access to the UVC camera device.
 
 Maven dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-driver-opencv</artifactId>
+    <version>{webcam-capture-version-here}</version>
+</dependency>
+```
+
+or if you are using webcam-capture < 0.3.12:
 
 ```xml
 <dependency>
