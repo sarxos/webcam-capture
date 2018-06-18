@@ -14,7 +14,7 @@ import uk.co.caprica.vlcj.medialist.MediaListItem;
 public class WebcamRtspExample {
 
 	static {
-		String name = "Uniview Mini Dome";
+		String name = "Big Buck Bunny";
 		String rtsp = "rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov";
 		Webcam.setDriver(new VlcjDriver(Arrays.asList(new MediaListItem(name, rtsp, new ArrayList<MediaListItem>()))));
 	}
