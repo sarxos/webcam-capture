@@ -28,12 +28,12 @@
     </dependency>
   </dependencies>
 
-  <repositories>
-    <repository>
-      <id>swt-repo</id>
-      <url>https://swt-repo.googlecode.com/svn/repo/</url>
-    </repository>
-  </repositories>
+<repositories>
+	<repository>
+		<id>maven-eclipse-repo</id>
+		<url>http://maven-eclipse.github.io/maven</url>
+	</repository>
+</repositories>
 
   <profiles>
     <profile>
