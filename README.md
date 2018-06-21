@@ -24,14 +24,17 @@ Assume situation when your code depends on some capturing framework, but suddenl
 * Swing component to display video feed from camera,
 * Swing component to choose camera (drop down),
 * Multiple capturing frameworks are supported:
-  * [OpenIMAJ](http://www.openimaj.org/),
-  * [LTI CIVIL](http://sourceforge.net/projects/lti-civil/),
-  * [Java Media Framework (JMF)](http://www.oracle.com/technetwork/java/javase/tech/index-jsp-140239.html),
-  * [Freedom for Media in Java (FMJ)](http://fmj-sf.net/),
-  * [OpenCV](http://opencv.org/) via [JavaCV](https://github.com/bytedeco/javacv),
-  * [VLC](http://www.videolan.org/vlc/) via [vlcj](http://www.capricasoftware.co.uk/projects/vlcj/index.html),
-  * [GStreamer](http://gstreamer.freedesktop.org/) (0.10.x only) via [gstreamer-java](https://code.google.com/p/gstreamer-java/)
-  * MJPEG IP Cameras,
+  * [OpenIMAJ][];
+  * [LTI CIVIL][LTI-CIVIL];
+  * [Java Media Framework (JMF)][JMF];
+  * [Freedom for Media in Java (FMJ)][FMJ];
+  * [OpenCV][] via [JavaCV][];
+  * [VLC][] via [vlcj][];
+  * [V4L][] via [v4l4j][V4L4j];
+  * [GStreamer][] (0.10.x only) via [gstreamer-java][gstreamerj];
+  * [FFmpeg][];
+  * MJPEG IP Cameras;
+  
 
 The latest stable version is: **```0.3.12```**
 
@@ -41,7 +44,7 @@ The latest development version is: **```0.3.13-SNAPSHOT```**
 
 _(and other ARM devices)_
 
-The lates version (0.3.10) does not work on ARM just out of the box. To make it working you need to replace version 0.6.2 of BridJ JAR by the [0.6.3-SNAPHOST](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.nativelibs4java&a=bridj&v=0.6.3-SNAPSHOT) or newer [bridj-0.7-20140918](http://maven.ecs.soton.ac.uk/content/groups/maven.openimaj.org/com/nativelibs4java/bridj/0.7-20140918/bridj-0.7-20140918.jar). Moreover, lately Jonathon Hare from OpenIMAJ team, found a problem described in [bridj #525](https://github.com/ochafik/nativelibs4java/issues/525) which causes problems on armhf architecture.
+The lates version (0.3.10) does not work on ARM just out of the box. To make it working you need to replace version 0.6.2 of BridJ JAR by the [0.6.3-SNAPSHOT](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.nativelibs4java&a=bridj&v=0.6.3-SNAPSHOT) or newer [bridj-0.7-20140918](http://maven.ecs.soton.ac.uk/content/groups/maven.openimaj.org/com/nativelibs4java/bridj/0.7-20140918/bridj-0.7-20140918.jar). Moreover, lately Jonathon Hare from OpenIMAJ team, found a problem described in [bridj #525](https://github.com/ochafik/nativelibs4java/issues/525) which causes problems on armhf architecture.
 
 ## Maven
 
@@ -194,15 +197,19 @@ List of additional capture drivers includes:
 
 [FSWebcam]:   http://www.firestorm.cx/fswebcam/
 [GStreamer]:  http://gstreamer.freedesktop.org/
+[gstreamerj]: https://github.com/gstreamer-java
 [OpenIMAJ]:   http://www.openimaj.org/
 [V4L4j]:      http://code.google.com/p/v4l4j/
 [JMF]:        http://www.oracle.com/technetwork/java/javase/download-142937.html
 [FMJ]:        http://fmj-sf.net/
 [LTI-CIVIL]:  http://lti-civil.org/
-[JavaCV]:     https://github.com/bytedeco/javacv
-[VLCj]:       http://code.google.com/p/vlcj/
+[JavaCV]:     https://github.com/bytedeco/javacv/
+[VLC]:        http://www.videolan.org/vlc/
+[VLCj]:       https://github.com/caprica/vlcj
+[V4L]:        https://en.wikipedia.org/wiki/Video4Linux
 [FFmpeg]:     http://www.ffmpeg.org/
-[CLI]:        http://en.wikipedia.org/wiki/Command-line_interface
+[OpenCV]:     http://opencv.org/
+[CLI]:        http://en.wikipedia.org/wiki/Command-line_interface/
 
 [fswebcam]:   https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-fswebcam
 [ipcam]:      https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-ipcam
@@ -430,7 +437,7 @@ More details on how to use it, how to install, and where necessary binaries can 
 
 ### FFmpeg CLI Driver
 
-This is capture driver which uses ```ffmpeg``` [CLI][] tool from [FFmpeg][] to access UVC camera device. It works on Linux only.
+This is capture driver which uses ```ffmpeg``` [CLI][] tool from [FFmpeg][] to access UVC camera device.
 
 Maven dependency:
 
