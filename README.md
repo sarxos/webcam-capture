@@ -1,6 +1,6 @@
 # Webcam Capture API
 
-This library allows you to use your build-in or external webcam directly from Java. It's designed to abstract commonly used camera features and support various capturing farmeworks.
+This library allows you to use your build-in or external webcam directly from Java. It's designed to abstract commonly used camera features and support various capturing frameworks.
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.sarxos/webcam-capture/badge.svg)](http://search.maven.org/#artifactdetails|com.github.sarxos|webcam-capture|0.3.10|bundle)
 [![Build Status](https://img.shields.io/travis/sarxos/webcam-capture.svg?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
