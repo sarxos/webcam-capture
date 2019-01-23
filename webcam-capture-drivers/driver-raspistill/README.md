@@ -1,24 +1,18 @@
 # webcam-capture-driver-raspistill
 
-This is capture driver is special for raspberrypi. __raspistill__ is the command line tool on raspberrypi for capturing still photographs with the camera module. blash...., Ok, The most important is that command line tool has
+This capture driver is special for raspberrypi. __raspistill__ is the command line tool on raspberrypi for capturing still photographs with the camera module. blash...., Ok, The most important is that command line tool has feature grabbing image repeatly(mock FPS) from camera and print to file or console. They are:
 
-important arguments can let raspistill process can grab image repeatly(mock FPS) from camera and print to file or console. They are:
-
-1.  -o, --output : Output filename <filename> (to write to stdout, use '-o -'). If not specified, no file is saved
+1.  -o, --output : Output filename <filename> (to **write to stdout, use '-o -**'). If not specified, no file is saved
 2.  -tl, --timelapse : Timelapse mode. Takes a picture every <t>ms
 3.  -n, --nopreview : Do not display a preview window
 
-so it is possible use java runtime to launch raspistill extra process and intercept its console output, makes it as
+so it is possible use java Runtime to launch raspistill process and intercept its console output, makes it as
 webcam driver. this is one simple and straightforward approach without native JNI or JNA call, no file system exchange. You will not struggle with performance issue and native code compiling. Enjoy it! 
 
 
 ## Maven
 
 ```xml
-
-Snapshot:
-
-​```xml
 <!--If you want to access snapshot repo, please add this to your pom -->
 <repository>
     <id>Sonatype OSS Snapshot Repository</id>
@@ -51,7 +45,7 @@ import com.github.sarxos.webcam.ds.gstreamer.ScreenCaptureDriver;
 public class WebcamPanelExample {
 
 	static {
-		Webcam.setDriver(new ScreenCaptureDriver());
+		Webcam.setDriver(new RaspistillDriver());
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -85,7 +79,7 @@ public class WebcamPanelExample {
 ```
 The picture below is an effect of the above code running. 
 
-![](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-screencapture/src/etc/resources/screen-1.jpg?raw=true)
+![](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-raspistill/src/etc/resources/screen-1.jpg?raw=true)
 
 ## Known Problems
 
@@ -192,11 +186,11 @@ Preview parameter commands
 -gw, --glwin	: GL window settings <'x,y,w,h'>
 ```
 ## Driver Parameters
-this driver makes above arguments configuable, when driver instance created, it will load arguments step by step as follows,
-1. load built-in parameters in default.properties packaged in jar
-2. search raspistill.properties in classpath, if exists, will merge to default.properties, you can redefine your properties file by -DScreenCaptureDriver.file= in your lauch command
-3. search system properteis which starts with raspistill. then merge to properties
-4. RaspistillDriver class is builder design pattern, you can change configurations when new driver instance like new RaspistillDriver().width(600).height(400)....
+this driver makes above arguments configurable, when driver instance created, it will load arguments step by step as follows,
+1. load built-in parameters in defaults.properties packed in jar. one line one argument
+2. search raspistill.properties in classpath root, if exists, will merge to default.properties.
+3. search system properties which starts with raspistill. then merge to properties
+4. RaspistillDriver class is builder design pattern, you can change configurations when create new driver instance, code as *new RaspistillDriver().width(600).height(400)....*
 
 ## Capture Driver License
 

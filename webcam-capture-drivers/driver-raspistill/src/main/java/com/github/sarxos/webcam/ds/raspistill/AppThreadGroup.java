@@ -5,7 +5,7 @@ class AppThreadGroup {
     private final ThreadGroup group;
     
     private AppThreadGroup(){
-        group=new ThreadGroup("raspistill");
+        group=new ThreadGroup("raspistill-driver");
     }
     
     public static ThreadGroup threadGroup(){
