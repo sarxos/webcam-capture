@@ -1,0 +1,97 @@
+
+raspividyuv Camera App v1.3.15
+
+Display camera output to display, and optionally saves an uncompressed YUV420 file 
+
+NOTE: High resolutions and/or frame rates may exceed the bandwidth of the system due
+to the large amounts of data being moved to the SD card. This will result in undefined
+results in the subsequent file.
+The raw file produced contains all the files. Each image in the files will be of size
+width*height*1.5, unless width and/or height are not divisible by 16. Use the image size
+displayed during the run (in verbose mode) for an accurate value
+The Linux split command can be used to split up the file to individual frames
+
+usage: raspividyuv [options]
+
+Image parameter commands
+
+-?, --help	: This help information
+-w, --width	: Set image width <size>. Default 1920
+-h, --height	: Set image height <size>. Default 1080
+-o, --output	: Output filename <filename> (to write to stdout, use '-o -')
+-v, --verbose	: Output verbose information during run
+-t, --timeout	: Time (in ms) to capture for. If not specified, set to 5s. Zero to disable
+-d, --demo	: Run a demo mode (cycle through range of camera options, no capture)
+-fps, --framerate	: Specify the frames per second to record
+-td, --timed	: Cycle between capture and pause. -cycle on,off where on is record time and off is pause time in ms
+-s, --signal	: Cycle between capture and pause on Signal
+-k, --keypress	: Cycle between capture and pause on ENTER
+-i, --initial	: Initial state. Use 'record' or 'pause'. Default 'record'
+-cs, --camselect	: Select camera <number>. Default 0
+-set, --settings	: Retrieve camera settings and write to stdout
+-md, --mode	: Force sensor mode. 0=auto. See docs for other modes available
+-y, --luma	: Only output the luma / Y of the YUV data'
+-rgb, --rgb	: Save as RGB data rather than YUV
+-pts, --save-pts	: Save Timestamps to file
+-l, --listen	: Listen on a TCP socket
+
+
+Preview parameter commands
+
+-p, --preview	: Preview window settings <'x,y,w,h'>
+-f, --fullscreen	: Fullscreen preview mode
+-op, --opacity	: Preview window opacity (0-255)
+-n, --nopreview	: Do not display a preview window
+
+Image parameter commands
+
+-sh, --sharpness	: Set image sharpness (-100 to 100)
+-co, --contrast	: Set image contrast (-100 to 100)
+-br, --brightness	: Set image brightness (0 to 100)
+-sa, --saturation	: Set image saturation (-100 to 100)
+-ISO, --ISO	: Set capture ISO
+-vs, --vstab	: Turn on video stabilisation
+-ev, --ev	: Set EV compensation - steps of 1/6 stop
+-ex, --exposure	: Set exposure mode (see Notes)
+-fli, --flicker	: Set flicker avoid mode (see Notes)
+-awb, --awb	: Set AWB mode (see Notes)
+-ifx, --imxfx	: Set image effect (see Notes)
+-cfx, --colfx	: Set colour effect (U:V)
+-mm, --metering	: Set metering mode (see Notes)
+-rot, --rotation	: Set image rotation (0-359)
+-hf, --hflip	: Set horizontal flip
+-vf, --vflip	: Set vertical flip
+-roi, --roi	: Set region of interest (x,y,w,d as normalised coordinates [0.0-1.0])
+-ss, --shutter	: Set shutter speed in microseconds
+-awbg, --awbgains	: Set AWB gains - AWB mode must be off
+-drc, --drc	: Set DRC Level (see Notes)
+-st, --stats	: Force recomputation of statistics on stills capture pass
+-a, --annotate	: Enable/Set annotate flags or text
+-3d, --stereo	: Select stereoscopic mode
+-dec, --decimate	: Half width/height of stereo image
+-3dswap, --3dswap	: Swap camera order for stereoscopic
+-ae, --annotateex	: Set extra annotation parameters (text size, text colour(hex YUV), bg colour(hex YUV))
+-ag, --analoggain	: Set the analog gain (floating point)
+-dg, --digitalgain	: Set the digital gain (floating point)
+
+
+Notes
+
+Exposure mode options :
+off,auto,night,nightpreview,backlight,spotlight,sports,snow,beach,verylong,fixedfps,antishake,fireworks
+
+Flicker avoid mode options :
+off,auto,50hz,60hz
+
+AWB mode options :
+off,auto,sun,cloud,shade,tungsten,fluorescent,incandescent,flash,horizon
+
+Image Effect mode options :
+none,negative,solarise,sketch,denoise,emboss,oilpaint,hatch,gpen,pastel,watercolour,film,blur,saturation,colourswap,washedout,posterise,colourpoint,colourbalance,cartoon
+
+Metering Mode options :
+average,spot,backlit,matrix
+
+Dynamic Range Compression (DRC) options :
+off,low,med,high
+
