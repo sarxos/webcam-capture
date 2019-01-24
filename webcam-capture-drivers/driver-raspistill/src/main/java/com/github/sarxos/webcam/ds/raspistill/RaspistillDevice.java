@@ -169,7 +169,12 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
             Thread thread=new Thread(threadGroup(), r, "raspistill-device-"+threadId());
             return thread;
         });
-		
+		/*
+		 * I interchanged the order of "-t 0" and "-s" and tested it.
+			Code: Select all
+			raspistill -t 0 -s -o test.jpg
+			And signal driven event works now as expected! Y E A H :D
+		 */
 		//no preview window, 
 		arguments.remove("preview");
 		arguments.remove("fullscreen");
@@ -178,8 +183,9 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		arguments.remove("set");
 		
 		//override some arguments
-		arguments.put("output", "-");//must be this, then image will be in console!
+		arguments.put("nopreview", "");
 		arguments.put("camselect", Integer.toString(this.cameraSelect));
+		arguments.put("output", "-");//must be this, then image will be in console!
 		try {
 			process=launch();
 		} catch (IOException e) {
