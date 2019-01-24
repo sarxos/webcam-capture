@@ -3,7 +3,14 @@ package com.github.sarxos.webcam.ds.raspistill;
 import static com.github.sarxos.webcam.ds.raspistill.AppThreadGroup.threadGroup;
 import static com.github.sarxos.webcam.ds.raspistill.AppThreadGroup.threadId;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.StringTokenizer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,19 +39,17 @@ import com.github.sarxos.webcam.WebcamDevice;
  */
 class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDevice.Configurable {
 	private final static Logger LOGGER=LoggerFactory.getLogger(RaspistillDevice.class);
-	
 	private final int cameraSelect;
 	private Map<String, String> arguments;
 	private volatile boolean isOpen=false;
 	private Dimension dimension;
 	private ScheduledExecutorService service;
 	private Process process;
-
 	private OutputStream out;
-
 	private InputStream in;
-
 	private InputStream err;
+	private Queue<BufferedImage> doubleBuffer=new CircularListCache<>(2);
+	
 	/** 
 	 * Creates a new instance of RaspistillDevice. 
 	 * 
@@ -95,6 +101,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		if(counter.get()!=0) {
 			LOGGER.debug("device is not shutdown perfactly, there maybe resource link?");
 		}
+		doubleBuffer.clear();
 		isOpen=false;
 	}
 	
@@ -104,10 +111,10 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		service=null;
 		process=null;
 	}
-	//TODO
+	
 	@Override
 	public BufferedImage getImage() {
-		return null;
+		return doubleBuffer.peek();
 	}
 
 	@Override
@@ -115,7 +122,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		if(LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Now only one simple name retrieved, it is not real camera hardware vendor's name.");
 		}
-		return "raspistill Camera App@"+this.cameraSelect;
+		return "raspistill Camera "+this.cameraSelect;
 	}
 	
 	@Override
@@ -143,7 +150,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	 * step 1: check given arguments will introduce native windows. keep raspistill run in quietly
 	 * step 2: create thread fixed size pool(size=2), one for read, one for write
 	 * step 3: override some illegal parameters
-	 * step 4: start process and begin communication
+	 * step 4: start process and begin communication and consume IO
 	 * 
 	 * @see com.github.sarxos.webcam.WebcamDevice#open()
 	 */
@@ -153,6 +160,10 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 			LOGGER.warn("device already opened");
 			return ;
 		}
+		
+		//add one loading image
+		BufferedImage loadingImage=this.drawLoadingImage();
+		doubleBuffer.add(loadingImage);
 		
 		service = Executors.newScheduledThreadPool(2, (Runnable r) -> {
             Thread thread=new Thread(threadGroup(), r, "raspistill-device-"+threadId());
@@ -196,6 +207,28 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 			}
         }, 5, 5, TimeUnit.SECONDS);
         
+        //error must be consumed, if not, too much data blocking will crash process or blocking IO
+        service.scheduleAtFixedRate(()->{
+        	try {
+				int ret=-1;
+				int counter=0;
+				StringBuilder builder=new StringBuilder();
+				do {
+					ret=err.read();
+					counter++;
+					if(ret!=-1) {
+						builder.append((char)ret);
+					}
+				}while(ret!=-1);
+				
+				if(LOGGER.isDebugEnabled()&&counter>1) {
+					LOGGER.debug("raspistill stderr {0}", builder.toString());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }, 1, 3, TimeUnit.SECONDS);
+        //image stream
         service.submit(()->{
         	while (!Thread.currentThread().isInterrupted()) {
         		//TODO read console to split images
@@ -258,5 +291,63 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		for(Entry<String,?> entry:map.entrySet()) {
 			this.arguments.put(entry.getKey(), entry.getValue().toString());
 		}
+	}
+	
+	//
+	private byte r = (byte) (Math.random() * Byte.MAX_VALUE);
+	private byte g = (byte) (Math.random() * Byte.MAX_VALUE);
+	private byte b = (byte) (Math.random() * Byte.MAX_VALUE);
+
+	private void drawRect(Graphics2D g2, int w, int h) {
+
+		int rx = (int) (w * Math.random() / 1.5);
+		int ry = (int) (h * Math.random() / 1.5);
+		int rw = (int) (w * Math.random() / 1.5);
+		int rh = (int) (w * Math.random() / 1.5);
+
+		g2.setColor(new Color((int) (Integer.MAX_VALUE * Math.random())));
+		g2.fillRect(rx, ry, rw, rh);
+	}
+	
+	private BufferedImage drawLoadingImage() {
+		Dimension resolution = getResolution();
+
+		int w = resolution.width;
+		int h = resolution.height;
+
+		String s = getName();
+
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
+		BufferedImage bi = gc.createCompatibleImage(w, h);
+
+		Graphics2D g2 = ge.createGraphics(bi);
+		g2.setBackground(new Color(Math.abs(r++), Math.abs(g++), Math.abs(b++)));
+		g2.clearRect(0, 0, w, h);
+
+		drawRect(g2, w, h);
+		drawRect(g2, w, h);
+		drawRect(g2, w, h);
+		drawRect(g2, w, h);
+		drawRect(g2, w, h);
+
+		Font font = new Font("sans-serif", Font.BOLD, 16);
+
+		g2.setFont(font);
+
+		FontMetrics metrics = g2.getFontMetrics(font);
+		int sw = (w - metrics.stringWidth(s)) / 2;
+		int sh = (h - metrics.getHeight()) / 2 + metrics.getHeight() / 2;
+
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setColor(Color.BLACK);
+		g2.drawString(s, sw + 1, sh + 1);
+		g2.setColor(Color.WHITE);
+		g2.drawString(s, sw, sh);
+
+		g2.dispose();
+		bi.flush();
+
+		return bi;
 	}
 }

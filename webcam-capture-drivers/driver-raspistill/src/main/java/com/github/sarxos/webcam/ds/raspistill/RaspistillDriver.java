@@ -34,6 +34,7 @@ public class RaspistillDriver implements WebcamDriver{
 	private final static Logger LOGGER=LoggerFactory.getLogger(RaspistillDriver.class);
 	private final Options options;
 	private Map<String, String> arguments=new LinkedHashMap<>();
+	private volatile boolean getDeviceCalled;
 	/**
 	 * 
 	 * Creates a new instance of RaspistillDriver. 
@@ -104,25 +105,28 @@ public class RaspistillDriver implements WebcamDriver{
 	 */
 	@Override
 	public List<WebcamDevice> getDevices() {
-		List<String> stdout=CommanderUtil.execute("uname -a");
-		if(stdout.isEmpty()||!stdout.get(0).contains("Linux Raspberrypi")) {
-			LOGGER.warn("RaspistillDriver supposed to run on raspberrypi");
+		synchronized(this) {
+			List<String> stdout=CommanderUtil.execute("uname -a");
+			if(stdout.isEmpty()||!stdout.get(0).contains("Linux Raspberrypi")) {
+				LOGGER.warn("RaspistillDriver supposed to run on raspberrypi");
+			}
+			
+			stdout=CommanderUtil.execute("raspistill --help");
+			if(stdout.isEmpty()||stdout.get(0).toLowerCase().contains("command not found")) {
+				throw new UnsupportedOperationException("raspistill is not found, please run apt-get install raspistill. this driver supposed to run on raspberrypi");
+			}
+			
+			if(LOGGER.isDebugEnabled()) {
+				LOGGER.debug("now raspberrypi only support one camera connector with dual camera, so just retrun camera 0");
+			}
+			
+			List<WebcamDevice> devices=new ArrayList<>(1);
+			//TODO check hardware if hardware is one dual camera module. if dual camera return two devices
+			WebcamDevice device=new RaspistillDevice(0, new LinkedHashMap<>(arguments));
+			devices.add(device);
+			getDeviceCalled=true;
+			return devices;
 		}
-		
-		stdout=CommanderUtil.execute("raspistill --help");
-		if(stdout.isEmpty()||stdout.get(0).toLowerCase().contains("command not found")) {
-			throw new UnsupportedOperationException("raspistill is not found, please run apt-get install raspistill. this driver supposed to run on raspberrypi");
-		}
-		
-		if(LOGGER.isDebugEnabled()) {
-			LOGGER.debug("now raspberrypi only support one camera connector with dual camera, so just retrun camera 0");
-		}
-		
-		List<WebcamDevice> devices=new ArrayList<>(1);
-		//TODO check hardware if hardware is one dual camera module. if dual camera return two devices
-		WebcamDevice device=new RaspistillDevice(0, new LinkedHashMap<>(arguments));
-		devices.add(device);
-		return devices;
 	}
 	
 	@Override
@@ -131,14 +135,23 @@ public class RaspistillDriver implements WebcamDriver{
 	}
 	
 	public RaspistillDriver width(int width) {
+		if(getDeviceCalled) {
+			throw new UnsupportedOperationException("can not change proerty after device already discoveried");
+		}
 		arguments.put("width", width+"");
 		return this;
 	}
 	public RaspistillDriver height(int height) {
+		if(getDeviceCalled) {
+			throw new UnsupportedOperationException("can not change proerty after device already discoveried");
+		}
 		arguments.put("height", height+"");
 		return this;
 	}
 	public RaspistillDriver quality(int quality) {
+		if(getDeviceCalled) {
+			throw new UnsupportedOperationException("can not change proerty after device already discoveried");
+		}
 		arguments.put("quality", quality+"");
 		return this;
 	}
