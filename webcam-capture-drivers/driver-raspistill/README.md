@@ -39,7 +39,7 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamPanel.DrawMode;
 import com.github.sarxos.webcam.WebcamResolution;
-import com.github.sarxos.webcam.ds.gstreamer.ScreenCaptureDriver;
+import com.github.sarxos.webcam.ds.raspistill.RaspistillDriver;
 
 
 public class WebcamPanelExample {

@@ -44,7 +44,7 @@ class CommanderUtil {
 	 * @since JDK 1.8
 	 */
 	public static final List<String> execute(String cmd, final int timeout){
-		ScheduledExecutorService scheduledExecutorService=Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+		final ScheduledExecutorService scheduledExecutorService=Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable r) {
 				Thread t=new Thread(threadGroup(), r, "Commander-watchdog-"+threadId());
@@ -67,6 +67,9 @@ class CommanderUtil {
 				if(refer.get()!=null) {
 					refer.get().destroy();
 				}
+				if(!scheduledExecutorService.isTerminated()) {
+					scheduledExecutorService.shutdownNow();
+				}
 			}
         }, timeout, TimeUnit.MILLISECONDS);
         
@@ -88,6 +91,7 @@ class CommanderUtil {
 			}
 			reader.close();
 			in.close();
+			scheduledExecutorService.shutdownNow();
 			proc.destroy();
 			refer.set(null);
 		} catch (IOException e) {

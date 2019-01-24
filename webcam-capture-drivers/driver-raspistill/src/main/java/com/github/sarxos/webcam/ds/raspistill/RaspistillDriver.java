@@ -98,6 +98,10 @@ public class RaspistillDriver implements WebcamDriver{
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * <a href="https://www.petervis.com/Raspberry_PI/Raspberry_Pi_CSI/raspberry-pi-csi-interface-connector-pinout.html">Raspberrypi camera connector</a>
+	 * @see com.github.sarxos.webcam.WebcamDriver#getDevices()
+	 */
 	@Override
 	public List<WebcamDevice> getDevices() {
 		List<String> stdout=CommanderUtil.execute("uname -a");
@@ -111,11 +115,12 @@ public class RaspistillDriver implements WebcamDriver{
 		}
 		
 		if(LOGGER.isDebugEnabled()) {
-			LOGGER.debug("now raspberrypi only support one camera, so just retrun camera 0");
+			LOGGER.debug("now raspberrypi only support one camera connector with dual camera, so just retrun camera 0");
 		}
 		
 		List<WebcamDevice> devices=new ArrayList<>(1);
-		WebcamDevice device=new RaspistillDevice(0, arguments);//TODO select different camera
+		//TODO check hardware if hardware is one dual camera module. if dual camera return two devices
+		WebcamDevice device=new RaspistillDevice(0, new LinkedHashMap<>(arguments));
 		devices.add(device);
 		return devices;
 	}

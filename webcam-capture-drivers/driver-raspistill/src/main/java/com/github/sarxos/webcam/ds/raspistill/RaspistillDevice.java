@@ -142,6 +142,9 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	 * start raspistill process to open devices 
 	 * step 1: check given arguments will introduce native windows. keep raspistill run in quietly
 	 * step 2: create thread fixed size pool(size=2), one for read, one for write
+	 * step 3: override some illegal parameters
+	 * step 4: start process and begin communication
+	 * 
 	 * @see com.github.sarxos.webcam.WebcamDevice#open()
 	 */
 	@Override
@@ -156,14 +159,16 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
             return thread;
         });
 		
-		//no preview window
+		//no preview window, 
 		arguments.remove("preview");
 		arguments.remove("fullscreen");
 		arguments.remove("opacity");
 		arguments.remove("help");
 		arguments.remove("set");
-		arguments.put("output", "-");//must be this, then image will be in console!
 		
+		//override some arguments
+		arguments.put("output", "-");//must be this, then image will be in console!
+		arguments.put("camselect", Integer.toString(this.cameraSelect));
 		try {
 			process=launch();
 		} catch (IOException e) {
@@ -208,7 +213,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		StringBuilder command=new StringBuilder(12+arguments.size()*8);
 		command.append("raspistill ");
 		for(Entry<String, String> entry:this.arguments.entrySet()) {
-			command.append(entry.getKey()).append(" ");
+			command.append("--").append(entry.getKey()).append(" ");
 			if(entry.getValue()!=null) {
 				command.append(entry.getValue()).append(" ");
 			}
@@ -216,7 +221,12 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		if (command.length() == 0)
             throw new IllegalArgumentException("Empty command");
         
-        StringTokenizer st = new StringTokenizer(command.toString());
+		String commandString=command.toString();
+		if(LOGGER.isDebugEnabled()) {
+			LOGGER.debug("final raspistill command: {}", commandString);
+		}
+        StringTokenizer st = new StringTokenizer(commandString);
+        
         String[] cmdarray = new String[st.countTokens()];
         for (int i = 0; st.hasMoreTokens(); i++)
             cmdarray[i] = st.nextToken();
