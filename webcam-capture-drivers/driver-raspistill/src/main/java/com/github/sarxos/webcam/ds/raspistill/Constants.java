@@ -29,6 +29,9 @@ public interface Constants {
 	 * "value"); the key is raspistill long option name without "--"
 	 */
 	String SYSTEM_PROP_PREFIX = "raspistill.";
+
+	String DEVICE_NAME_PREFIX = "raspistill camera ";
+	
 	// *******************options constants**************
 	/**
 	 * OPT_QUALITY raspistill --quality

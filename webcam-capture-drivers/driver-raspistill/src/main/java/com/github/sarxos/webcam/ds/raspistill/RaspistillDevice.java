@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamResolution;
 
 /**
  * 
@@ -40,9 +41,31 @@ import com.github.sarxos.webcam.WebcamDevice;
  */
 class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDevice.Configurable, Constants {
 	private static final int THREAD_POOL_SIZE = 2;
-	private static final String DEVICE_NAME_PREFIX = "raspistill camera ";
-
 	private final static Logger LOGGER = LoggerFactory.getLogger(RaspistillDevice.class);
+	/**
+	 * Artificial view sizes. raspistill can handle flex dimensions less than QSXGA, if the
+	 * dimension is too high, respberrypi GPU can not affort the computing
+	 */
+	private final static Dimension[] DIMENSIONS = new Dimension[] {
+		WebcamResolution.QQVGA.getSize(),
+		WebcamResolution.HQVGA.getSize(),
+		WebcamResolution.QVGA.getSize(),
+		WebcamResolution.WQVGA.getSize(),
+		WebcamResolution.HVGA.getSize(),
+		WebcamResolution.VGA.getSize(),
+		WebcamResolution.WVGA.getSize(),
+		WebcamResolution.FWVGA.getSize(),
+		WebcamResolution.SVGA.getSize(),
+		WebcamResolution.DVGA.getSize(),
+		WebcamResolution.WSVGA1.getSize(),
+		WebcamResolution.WSVGA2.getSize(),
+		WebcamResolution.XGA.getSize(),
+		WebcamResolution.XGAP.getSize(),
+		WebcamResolution.WXGA1.getSize(),
+		WebcamResolution.WXGAP.getSize(),
+		WebcamResolution.SXGA.getSize()
+	};
+	
 	private final int cameraSelect;
 	private Map<String, String> arguments;
 	private volatile boolean isOpen = false;
@@ -139,11 +162,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 
 	@Override
 	public Dimension[] getResolutions() {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug(
-					"now return one dummy dimension array of current setting, heardware supported dimension will retrieve in next release");
-		}
-		return new Dimension[] { getResolution() };
+		return DIMENSIONS;
 	}
 
 	@Override
