@@ -1,6 +1,7 @@
 package com.github.sarxos.webcam.ds.raspistill;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,17 +27,18 @@ import com.github.sarxos.webcam.WebcamDriver;
  * with it. this driver is special for raspberrypi <br/>
  * according to this raspberrypi frum thead
  * <a href="https://www.raspberrypi.org/forums/viewtopic.php?t=67175">67175</a>,
- * option "output" must be last option when using signal mode
+ * option "output" must be last option when using signal mode.
+ * 
+ * https://www.raspberrypi.org/documentation/raspbian/applications/camera.md
  * 
  * @author maoanapex88@163.com (alexmao86)
  * 
  *         date: Jan 23, 2019 9:57:03 AM <br/>
  */
-public class RaspistillDriver implements WebcamDriver {
-
+public class RaspistillDriver implements WebcamDriver,Constants {
 	private final static Logger LOGGER = LoggerFactory.getLogger(RaspistillDriver.class);
-	private final static String[] DEFAULT_ARGUMENTS = { "--width", "800", "--height", "600", "--quality", "85",
-			"--encoding", "png", "--nopreview", "--signal", "--output", "-" };
+	private final static String[] DEFAULT_ARGUMENTS = { "--width", "640", "--height", "480", "--quality", "50",
+			"--encoding", "png", "--nopreview", "--keypress", "--timeout", "0", "--output", "-" };
 	private final Options options;
 	private Map<String, String> arguments = new LinkedHashMap<>();
 	private volatile boolean getDeviceCalled;
@@ -57,7 +59,7 @@ public class RaspistillDriver implements WebcamDriver {
 		Properties properties = System.getProperties();
 		List<String> cmdLine = new ArrayList<>();
 		for (Entry<Object, Object> entry : properties.entrySet()) {
-			if (!entry.getKey().toString().startsWith(Constants.SYSTEM_PROP_PREFIX)) {
+			if (!entry.getKey().toString().startsWith(SYSTEM_PROP_PREFIX)) {
 				continue;
 			}
 			cmdLine.add(entry.getKey().toString());
@@ -82,7 +84,7 @@ public class RaspistillDriver implements WebcamDriver {
 			}
 		} catch (ParseException e) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(Constants.MSG_WRONG_ARGUMENT);
+				LOGGER.debug(MSG_WRONG_ARGUMENT);
 			}
 			e.printStackTrace();
 		}
@@ -98,25 +100,33 @@ public class RaspistillDriver implements WebcamDriver {
 	@Override
 	public List<WebcamDevice> getDevices() {
 		synchronized (this) {
-			List<String> stdout = CommanderUtil.execute("uname -a");
-			if (stdout.isEmpty() || !stdout.get(0).contains("Linux Raspberrypi")) {
-				LOGGER.warn(Constants.MSG_NOT_SUPPORTED_OS_WARN);
-			}
-
-			stdout = CommanderUtil.execute(Constants.COMMAND_NAME);
-			if (stdout.isEmpty() || stdout.get(0).toLowerCase().contains("command not found")) {
-				throw new UnsupportedOperationException(Constants.MSG_RASPISTILL_NOT_INSTALLED);
+			List<String> stdout = CommanderUtil.execute(COMMAND_CAPTURE);
+			if (stdout.isEmpty() || stdout.get(0).toLowerCase().contains(MSG_COMMAND_NOT_FOUND)) {
+				throw new UnsupportedOperationException(MSG_RASPISTILL_NOT_INSTALLED);
 			}
 
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(Constants.MSG_COMPATIBLE_WARN);
+				LOGGER.debug(MSG_COMPATIBLE_WARN);
 			}
 
-			List<WebcamDevice> devices = new ArrayList<>(1);
-			// TODO check hardware if hardware is one dual camera module. if dual camera
-			// return two devices
-			WebcamDevice device = new RaspistillDevice(0, new LinkedHashMap<>(arguments));
-			devices.add(device);
+			stdout=CommanderUtil.execute(COMMAND_CAMERA_CHECK);
+			if(stdout.size()!=1) {
+				return Collections.emptyList();
+			}
+			String cameraCheckOutput=stdout.get(0).trim();
+			int supported=Integer.parseInt(cameraCheckOutput.substring(cameraCheckOutput.indexOf("=")+1, cameraCheckOutput.indexOf(" ")));
+			if(supported==0) {
+				if(LOGGER.isDebugEnabled()) {
+					LOGGER.debug(MSG_HARDWARE_NOT_FOUND);
+				}
+				return Collections.emptyList();
+			}
+			int detected=Integer.parseInt(cameraCheckOutput.substring(cameraCheckOutput.lastIndexOf("=")+1));
+			List<WebcamDevice> devices = new ArrayList<>(detected);
+			for(int i=0;i<detected;i++) {
+				WebcamDevice device = new RaspistillDevice(i, new LinkedHashMap<>(arguments));//copy map rather than pass reference
+				devices.add(device);
+			}
 			getDeviceCalled = true;
 			return devices;
 		}
@@ -129,25 +139,25 @@ public class RaspistillDriver implements WebcamDriver {
 
 	public RaspistillDriver width(int width) {
 		if (getDeviceCalled) {
-			throw new UnsupportedOperationException(Constants.MSG_CANNOT_CHANGE_PROP);
+			throw new UnsupportedOperationException(MSG_CANNOT_CHANGE_PROP);
 		}
-		arguments.put(Constants.OPT_WIDTH, width + "");
+		arguments.put(OPT_WIDTH, width + "");
 		return this;
 	}
 
 	public RaspistillDriver height(int height) {
 		if (getDeviceCalled) {
-			throw new UnsupportedOperationException(Constants.MSG_CANNOT_CHANGE_PROP);
+			throw new UnsupportedOperationException(MSG_CANNOT_CHANGE_PROP);
 		}
-		arguments.put(Constants.OPT_HEIGHT, height + "");
+		arguments.put(OPT_HEIGHT, height + "");
 		return this;
 	}
 
 	public RaspistillDriver quality(int quality) {
 		if (getDeviceCalled) {
-			throw new UnsupportedOperationException(Constants.MSG_CANNOT_CHANGE_PROP);
+			throw new UnsupportedOperationException(MSG_CANNOT_CHANGE_PROP);
 		}
-		arguments.put(Constants.OPT_QUALITY, quality + "");
+		arguments.put(OPT_QUALITY, quality + "");
 		return this;
 	}
 	// .....more options

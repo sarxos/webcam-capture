@@ -29,7 +29,7 @@
     <module>driver-screencapture</module>
     <module>driver-v4l4j</module>
     <module>driver-vlcj</module>
-	<module>driver-raspistill</module>
+    <module>driver-raspistill</module>
   </modules>
 
   <properties>

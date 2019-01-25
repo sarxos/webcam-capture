@@ -38,7 +38,10 @@ import com.github.sarxos.webcam.WebcamDevice;
  * 
  * @author maoanapex88@163.com (alexmao86)
  */
-class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDevice.Configurable {
+class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDevice.Configurable, Constants {
+	private static final int THREAD_POOL_SIZE = 2;
+	private static final String DEVICE_NAME_PREFIX = "raspistill camera ";
+
 	private final static Logger LOGGER = LoggerFactory.getLogger(RaspistillDevice.class);
 	private final int cameraSelect;
 	private Map<String, String> arguments;
@@ -49,7 +52,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	private OutputStream out;
 	private InputStream in;
 	private InputStream err;
-	private Queue<BufferedImage> frameBuffer = new CircularListCache<>(2);
+	private Queue<BufferedImage> frameBuffer = new CircularListCache<>(2);// 2 double buffer
 
 	/**
 	 * Creates a new instance of RaspistillDevice.
@@ -68,7 +71,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	public void close() {
 		if (!isOpen) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.warn(Constants.MSG_NOT_RUNNING_WARN);
+				LOGGER.warn(MSG_NOT_RUNNING_WARN);
 			}
 			return;
 		}
@@ -102,7 +105,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		counter.getAndDecrement();
 
 		if (counter.get() != 0) {
-			LOGGER.debug(Constants.MSG_NOT_GRACEFUL_DOWN);
+			LOGGER.debug(MSG_NOT_GRACEFUL_DOWN);
 		}
 		frameBuffer.clear();
 		isOpen = false;
@@ -122,17 +125,14 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 
 	@Override
 	public String getName() {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Now only one simple name retrieved, it is not real camera hardware vendor's name.");
-		}
-		return "raspistill Camera " + this.cameraSelect;
+		return DEVICE_NAME_PREFIX + this.cameraSelect;
 	}
 
 	@Override
 	public Dimension getResolution() {
 		if (dimension == null) {
-			dimension = new Dimension(Integer.parseInt(arguments.get("width")),
-					Integer.parseInt(arguments.get("height")));
+			dimension = new Dimension(Integer.parseInt(arguments.get(OPT_WIDTH)),
+					Integer.parseInt(arguments.get(OPT_HEIGHT)));
 		}
 		return dimension;
 	}
@@ -152,12 +152,28 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	}
 
 	/**
-	 * start raspistill process to open devices step 1: check given arguments will
-	 * introduce native windows. keep raspistill run in quietly step 2: create
-	 * thread fixed size pool(size=2), one for read, one for write step 3: override
-	 * some illegal parameters step 4: start process and begin communication and
-	 * consume IO
+	 * start raspistill process to open devices 
+	 * <ul>
+	 * <li>
+	 * step 1: check given arguments will
+	 * introduce native windows. keep raspistill run in quietly 
+	 * </li>
 	 * 
+	 * <li>
+	 * step 2: create
+	 * thread fixed size pool(size=2), one for read, one for write 
+	 * </li>
+	 * 
+	 * <li>
+	 * step 3: override
+	 * some illegal parameters 
+	 * </li>
+	 * 
+	 * <li>
+	 * step 4: start process and begin communication and
+	 * consume IO
+	 * </li>
+	 * </ul>
 	 * @see com.github.sarxos.webcam.WebcamDevice#open()
 	 */
 	@Override
@@ -171,7 +187,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		BufferedImage loadingImage = this.drawLoadingImage();
 		frameBuffer.add(loadingImage);
 
-		service = Executors.newScheduledThreadPool(2, (Runnable r) -> {
+		service = Executors.newScheduledThreadPool(THREAD_POOL_SIZE, (Runnable r) -> {
 			Thread thread = new Thread(threadGroup(), r, "raspistill-device-" + threadId());
 			return thread;
 		});
@@ -256,19 +272,17 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	 */
 	private Process launch() throws IOException {
 		StringBuilder command = new StringBuilder(12 + arguments.size() * 8);
-		command.append("raspistill ");
+		command.append(COMMAND_CAPTURE).append(" ");
 		for (Entry<String, String> entry : this.arguments.entrySet()) {
 			command.append("--").append(entry.getKey()).append(" ");
 			if (entry.getValue() != null) {
 				command.append(entry.getValue()).append(" ");
 			}
 		}
-		if (command.length() == 0)
-			throw new IllegalArgumentException("Empty command");
 
 		String commandString = command.toString();
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("final raspistill command: {}", commandString);
+			LOGGER.debug(commandString);
 		}
 		StringTokenizer st = new StringTokenizer(commandString);
 
@@ -282,8 +296,8 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	@Override
 	public void setResolution(Dimension dimension) {
 		this.dimension = dimension;
-		this.arguments.put("width", dimension.getWidth() + "");
-		this.arguments.put("height", dimension.getHeight() + "");
+		this.arguments.put(OPT_WIDTH, dimension.getWidth() + "");
+		this.arguments.put(OPT_HEIGHT, dimension.getHeight() + "");
 	}
 
 	/**
@@ -293,7 +307,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	 */
 	@Override
 	public double getFPS() {
-		int timelapse = Integer.parseInt(arguments.get("timelapse"));
+		int timelapse = Integer.parseInt(arguments.get(OPT_TIMELAPSE));
 		return 1000d / timelapse;
 	}
 

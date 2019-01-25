@@ -66,7 +66,7 @@ class OptionsBuilder {
 	 */
 	public static Options create() {
 		Options options = new Options();
-		List<String> lines = CommanderUtil.execute(Constants.COMMAND_NAME);
+		List<String> lines = CommanderUtil.execute(Constants.COMMAND_CAPTURE);
 		for (String line : lines) {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug(line);
@@ -75,10 +75,6 @@ class OptionsBuilder {
 				continue;
 			}
 			int indexOfDesc = line.indexOf(":");
-			if (indexOfDesc == -1) {
-				LOGGER.debug("{} is omitted, raspistill changed help text format?", line);
-				continue;
-			}
 			String opts[] = line.substring(0, indexOfDesc).trim().split(",");
 			String desc = line.substring(indexOfDesc + 1).trim();
 			options.addOption(new Option(opts[0].trim().substring(1), opts[1].trim().substring(2), true, desc));
