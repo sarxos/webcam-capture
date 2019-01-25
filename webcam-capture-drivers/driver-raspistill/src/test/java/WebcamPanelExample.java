@@ -9,7 +9,6 @@ import com.github.sarxos.webcam.WebcamPanel.DrawMode;
 import com.github.sarxos.webcam.WebcamResolution;
 import com.github.sarxos.webcam.ds.raspistill.RaspistillDriver;
 
-
 public class WebcamPanelExample {
 
 	static {

@@ -14,7 +14,6 @@ import com.github.sarxos.webcam.WebcamResolution;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDriver;
 import com.github.sarxos.webcam.ds.raspistill.RaspistillDriver;
 
-
 public class WebcamPanelSubViewExample {
 
 	static {

@@ -187,10 +187,9 @@ Preview parameter commands
 ```
 ## Driver Parameters
 this driver makes above arguments configurable, when driver instance created, it will load arguments step by step as follows,
-1. load built-in parameters in defaults.properties packed in jar. one line one argument
-2. search raspistill.properties in classpath root, if exists, will merge to default.properties.
-3. search system properties which starts with raspistill. then merge to properties
-4. RaspistillDriver class is builder design pattern, you can change configurations when create new driver instance, code as *new RaspistillDriver().width(600).height(400)....*
+1. load built-in parameters
+2. search system properties which starts with raspistill. then merge to properties
+3. RaspistillDriver class is designed as fluent API, you can change configurations when create new driver instance, code as *new RaspistillDriver().width(600).height(400)....*
 
 ## Capture Driver License
 
