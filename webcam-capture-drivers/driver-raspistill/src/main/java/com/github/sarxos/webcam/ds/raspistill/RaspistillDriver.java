@@ -37,7 +37,7 @@ import com.github.sarxos.webcam.WebcamDriver;
  * 
  *         date: Jan 23, 2019 9:57:03 AM <br/>
  */
-public class RaspistillDriver implements WebcamDriver,Constants {
+public class RaspistillDriver implements WebcamDriver, Constants {
 	private final static Logger LOGGER = LoggerFactory.getLogger(RaspistillDriver.class);
 	private final static String[] DEFAULT_ARGUMENTS = { "--width", "640", "--height", "480", "--quality", "50",
 			"--encoding", "png", "--nopreview", "--keypress", "--timeout", "0", "--output", "-" };
@@ -111,51 +111,60 @@ public class RaspistillDriver implements WebcamDriver,Constants {
 				LOGGER.debug(MSG_COMPATIBLE_WARN);
 			}
 
-			stdout=CommanderUtil.execute(COMMAND_CAMERA_CHECK);
-			if(stdout.size()!=1) {
+			stdout = CommanderUtil.execute(COMMAND_CAMERA_CHECK);
+			if (stdout.size() != 1) {
 				return Collections.emptyList();
 			}
-			String cameraCheckOutput=stdout.get(0).trim();
-			int supported=Integer.parseInt(cameraCheckOutput.substring(cameraCheckOutput.indexOf("=")+1, cameraCheckOutput.indexOf(" ")));
-			if(supported==0) {
-				if(LOGGER.isDebugEnabled()) {
+			String cameraCheckOutput = stdout.get(0).trim();
+			int supported = Integer.parseInt(
+					cameraCheckOutput.substring(cameraCheckOutput.indexOf("=") + 1, cameraCheckOutput.indexOf(" ")));
+			if (supported == 0) {
+				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug(MSG_HARDWARE_NOT_FOUND);
 				}
 				return Collections.emptyList();
 			}
-			int detected=Integer.parseInt(cameraCheckOutput.substring(cameraCheckOutput.lastIndexOf("=")+1));
+			int detected = Integer.parseInt(cameraCheckOutput.substring(cameraCheckOutput.lastIndexOf("=") + 1));
 			List<WebcamDevice> devices = new ArrayList<>(detected);
-			for(int i=0;i<detected;i++) {
-				WebcamDevice device = new RaspistillDevice(i, this.options, createSortedOptionMap(arguments));//copy map rather than pass reference
+			for (int i = 0; i < detected; i++) {
+				WebcamDevice device = new RaspistillDevice(i, this.options, createSortedOptionMap(arguments));// copy
+																												// map
+																												// rather
+																												// than
+																												// pass
+																												// reference
 				devices.add(device);
 			}
 			getDeviceCalled = true;
 			return devices;
 		}
 	}
+
 	/**
-	 * accroding to some frum thread, output option must be last one,
-	 * so dump all user options to new sorted map
-	 * see <a href="https://www.raspberrypi.org/forums/viewtopic.php?t=67175">thread 67175</a>
+	 * accroding to some frum thread, output option must be last one, so dump all
+	 * user options to new sorted map see
+	 * <a href="https://www.raspberrypi.org/forums/viewtopic.php?t=67175">thread
+	 * 67175</a>
+	 * 
 	 * @param arguments2
 	 * @return
 	 */
 	private Map<String, String> createSortedOptionMap(Map<String, String> arguments) {
-		Map<String, String> sorted=new TreeMap<>(new Comparator<String>() {
+		Map<String, String> sorted = new TreeMap<>(new Comparator<String>() {
 			@Override
 			public int compare(String o1, String o2) {
-				int s1=o1.hashCode();
-				int s2=o2.hashCode();
-				
-				if(o1.equals(OPT_OUTPUT)) {
-					s1=Integer.MAX_VALUE;
+				int s1 = o1.hashCode();
+				int s2 = o2.hashCode();
+
+				if (o1.equals(OPT_OUTPUT)) {
+					s1 = Integer.MAX_VALUE;
 				}
-				
-				if(o2.equals(OPT_OUTPUT)) {
-					s2=Integer.MAX_VALUE;
+
+				if (o2.equals(OPT_OUTPUT)) {
+					s2 = Integer.MAX_VALUE;
 				}
-				
-				return s1-s2;
+
+				return s1 - s2;
 			}
 		});
 		sorted.putAll(arguments);

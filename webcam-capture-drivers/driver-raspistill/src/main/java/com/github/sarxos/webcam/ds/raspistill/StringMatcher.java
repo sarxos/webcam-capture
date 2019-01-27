@@ -2,6 +2,7 @@ package com.github.sarxos.webcam.ds.raspistill;
 
 /**
  * fast circular queue used for string match
+ * 
  * @author maoanapex88@163.com (alexmao86)
  *
  */
@@ -42,14 +43,12 @@ class StringMatcher {
 			return false;
 		int index = 0;
 		for (int i = start; i < cache.length; i++, index++) {
-			if (ignoreCase && cache[i] != target.charAt(index)
-					&& cache[i] - target.charAt(index) != 32
+			if (ignoreCase && cache[i] != target.charAt(index) && cache[i] - target.charAt(index) != 32
 					&& cache[i] - target.charAt(index) != -32)
 				return false;
 		}
 		for (int i = 0; i < start; i++, index++) {
-			if (ignoreCase && cache[i] != target.charAt(index)
-					&& cache[i] - target.charAt(index) != 32
+			if (ignoreCase && cache[i] != target.charAt(index) && cache[i] - target.charAt(index) != 32
 					&& cache[i] - target.charAt(index) != -32)
 				return false;
 		}

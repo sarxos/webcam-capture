@@ -1,5 +1,11 @@
 package com.github.sarxos.webcam.ds.raspistill;
 
+/**
+ * app thread group
+ * 
+ * @author maoanapex88@163.com (alexmao86)
+ *
+ */
 class AppThreadGroup {
 	private static final String THREAD_GROUP_NAME = "raspistill-driver";
 	private static int threadCounter;

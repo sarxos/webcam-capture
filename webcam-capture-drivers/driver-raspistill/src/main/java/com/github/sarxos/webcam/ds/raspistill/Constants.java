@@ -16,12 +16,11 @@ public interface Constants {
 	 */
 	String COMMAND_CAPTURE = "raspistill";
 	/**
-	 * native command to check camera support.
-	 * it will return supported=1 detected=?
-	 * for supported 0 for not support, 1 support
-	 * ? is the number of camera supported.
+	 * native command to check camera support. it will return supported=1 detected=?
+	 * for supported 0 for not support, 1 support ? is the number of camera
+	 * supported.
 	 */
-	String COMMAND_CAMERA_CHECK="vcgencmd get_camera";
+	String COMMAND_CAMERA_CHECK = "vcgencmd get_camera";
 	/**
 	 * system property prefix for raspistill configuation. driver options can be
 	 * configurated globally by passing -Draspistill.${option}=${value} in your java
@@ -32,13 +31,13 @@ public interface Constants {
 
 	String DEVICE_NAME_PREFIX = "raspistill camera ";
 	/**
-	 * extended option, it can be processed by 
-	 * @see com.github.sarxos.webcam.WebcamDevice.Configurable
-	 * but not raspistill argument.
-	 * value type is Integer
+	 * extended option, it can be processed by
+	 * 
+	 * @see com.github.sarxos.webcam.WebcamDevice.Configurable but not raspistill
+	 *      argument. value type is Integer
 	 */
-	String EXTENDED_OPT_FPS="FPS";
-	
+	String EXTENDED_OPT_FPS = "FPS";
+
 	// *******************raspistill options constants**************
 	/**
 	 * OPT_QUALITY raspistill --quality
@@ -94,8 +93,8 @@ public interface Constants {
 	String MSG_COMPATIBLE_WARN = "now raspberrypi only support one camera connector with dual camera, so just retrun camera 0";
 	String MSG_WRONG_ARGUMENT = "wrong raspistill argument";
 	String MSG_NOT_SUPPORTED_OS_WARN = "RaspistillDriver supposed to run on raspberrypi";
-	String MSG_NOT_GRACEFUL_DOWN="device is not shutdown perfactly, there maybe resource link?";
-	String MSG_NOT_RUNNING_WARN="device does not running";
-	String MSG_HARDWARE_NOT_FOUND="camera hardware not found";
+	String MSG_NOT_GRACEFUL_DOWN = "device is not shutdown perfactly, there maybe resource link?";
+	String MSG_NOT_RUNNING_WARN = "device does not running";
+	String MSG_HARDWARE_NOT_FOUND = "camera hardware not found";
 	String MSG_COMMAND_NOT_FOUND = "command not found";
 }

@@ -255,7 +255,8 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 																								// dislike java memory
 																								// copy
 		// send new line char to output to trigger capture stream by mocked fps
-		fpsScheduledFuture = service.scheduleAtFixedRate(new CaptureWorker(), DEFAULT_CAPTURE_DELAY, 1000 / fps, TimeUnit.MILLISECONDS);
+		fpsScheduledFuture = service.scheduleAtFixedRate(new CaptureWorker(), DEFAULT_CAPTURE_DELAY, 1000 / fps,
+				TimeUnit.MILLISECONDS);
 
 		// error must be consumed, if not, too much data blocking will crash process or
 		// blocking IO
@@ -273,12 +274,12 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 				e.printStackTrace();
 			}
 		}, 1, 3, TimeUnit.SECONDS);
-		
+
 		// image stream
 		service.submit(() -> {
 			while (!Thread.currentThread().isInterrupted()) {
 				try {
-					BufferedImage frame=imageInputStream.readBufferedImage();
+					BufferedImage frame = imageInputStream.readBufferedImage();
 					frameBuffer.add(frame);
 				} catch (IOException e) {
 					LOGGER.error(e.getMessage(), e);
@@ -343,23 +344,23 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 			this.fps = (Integer) map.get(EXTENDED_OPT_FPS);
 			if (isOpen) {
 				fpsScheduledFuture.cancel(true);
-				fpsScheduledFuture=null;
-				//create new worker thread again
-				fpsScheduledFuture = service.scheduleAtFixedRate(new CaptureWorker(), DEFAULT_CAPTURE_DELAY, 1000 / fps, TimeUnit.MILLISECONDS);
+				fpsScheduledFuture = null;
+				// create new worker thread again
+				fpsScheduledFuture = service.scheduleAtFixedRate(new CaptureWorker(), DEFAULT_CAPTURE_DELAY, 1000 / fps,
+						TimeUnit.MILLISECONDS);
 			}
-			return ;
+			return;
 		}
-		
-		if(isOpen) {
-			throw new UnsupportedOperationException(MSG_CANNOT_CHANGE_PROP); 
+
+		if (isOpen) {
+			throw new UnsupportedOperationException(MSG_CANNOT_CHANGE_PROP);
 		}
-		
+
 		for (Entry<String, ?> entry : map.entrySet()) {
 			if (options.hasOption(entry.getKey())) {
 				this.arguments.put(entry.getKey(), entry.getValue().toString());
-			}
-			else {
-				throw new UnsupportedOperationException(MSG_WRONG_ARGUMENT); 
+			} else {
+				throw new UnsupportedOperationException(MSG_WRONG_ARGUMENT);
 			}
 		}
 	}
