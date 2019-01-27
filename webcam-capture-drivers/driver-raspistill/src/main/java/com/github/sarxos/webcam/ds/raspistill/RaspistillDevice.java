@@ -22,9 +22,11 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,33 +42,40 @@ import com.github.sarxos.webcam.WebcamResolution;
  * @author maoanapex88@163.com (alexmao86)
  */
 class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDevice.Configurable, Constants {
+
+	private static final String THREAD_NAME_PREFIX = "raspistill-device-";
 	private static final int THREAD_POOL_SIZE = 2;
 	private final static Logger LOGGER = LoggerFactory.getLogger(RaspistillDevice.class);
 	/**
-	 * Artificial view sizes. raspistill can handle flex dimensions less than QSXGA, if the
-	 * dimension is too high, respberrypi GPU can not affort the computing
+	 * Artificial view sizes. raspistill can handle flex dimensions less than QSXGA,
+	 * if the dimension is too high, respberrypi CPU can not afford the computing
 	 */
-	private final static Dimension[] DIMENSIONS = new Dimension[] {
-		WebcamResolution.QQVGA.getSize(),
-		WebcamResolution.HQVGA.getSize(),
-		WebcamResolution.QVGA.getSize(),
-		WebcamResolution.WQVGA.getSize(),
-		WebcamResolution.HVGA.getSize(),
-		WebcamResolution.VGA.getSize(),
-		WebcamResolution.WVGA.getSize(),
-		WebcamResolution.FWVGA.getSize(),
-		WebcamResolution.SVGA.getSize(),
-		WebcamResolution.DVGA.getSize(),
-		WebcamResolution.WSVGA1.getSize(),
-		WebcamResolution.WSVGA2.getSize(),
-		WebcamResolution.XGA.getSize(),
-		WebcamResolution.XGAP.getSize(),
-		WebcamResolution.WXGA1.getSize(),
-		WebcamResolution.WXGAP.getSize(),
-		WebcamResolution.SXGA.getSize()
-	};
-	
+	private final static Dimension[] DIMENSIONS = new Dimension[] { WebcamResolution.QQVGA.getSize(),
+			WebcamResolution.HQVGA.getSize(), WebcamResolution.QVGA.getSize(), WebcamResolution.WQVGA.getSize(),
+			WebcamResolution.HVGA.getSize(), WebcamResolution.VGA.getSize(), WebcamResolution.WVGA.getSize(),
+			WebcamResolution.FWVGA.getSize(), WebcamResolution.SVGA.getSize(), WebcamResolution.DVGA.getSize(),
+			WebcamResolution.WSVGA1.getSize(), WebcamResolution.WSVGA2.getSize(), WebcamResolution.XGA.getSize(),
+			WebcamResolution.XGAP.getSize(), WebcamResolution.WXGA1.getSize(), WebcamResolution.WXGAP.getSize(),
+			WebcamResolution.SXGA.getSize() };
+	/**
+	 * default fps
+	 */
+	private final static int DEFAULT_FPS = 10;
+	/**
+	 * default capture start deley in millsecond
+	 */
+	private final static int DEFAULT_CAPTURE_DELAY = 4096;
+	/**
+	 * raspistill keypress mode, send new line to make capture
+	 */
+	private final static char CAPTRE_TRIGGER_INPUT = '\n';
+	private final static char CAPTRE_TERMINTE_INPUT = 'x';
+
 	private final int cameraSelect;
+
+	private byte r = (byte) (Math.random() * Byte.MAX_VALUE);
+	private byte g = (byte) (Math.random() * Byte.MAX_VALUE);
+	private byte b = (byte) (Math.random() * Byte.MAX_VALUE);
 	private Map<String, String> arguments;
 	private volatile boolean isOpen = false;
 	private Dimension dimension;
@@ -76,6 +85,10 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	private InputStream in;
 	private InputStream err;
 	private Queue<BufferedImage> frameBuffer = new CircularListCache<>(2);// 2 double buffer
+	private int fps = DEFAULT_FPS;
+	private final Options options;
+	private ScheduledFuture<?> fpsScheduledFuture;
+	private BufferedImageInputStream imageInputStream;
 
 	/**
 	 * Creates a new instance of RaspistillDevice.
@@ -85,8 +98,9 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	 * @param arguments
 	 *            the whole process argument list
 	 */
-	RaspistillDevice(int cameraSelect, Map<String, String> arguments) {
+	RaspistillDevice(final int cameraSelect, final Options options, final Map<String, String> arguments) {
 		this.cameraSelect = cameraSelect;
+		this.options = options;
 		this.arguments = arguments;
 	}
 
@@ -98,25 +112,32 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 			}
 			return;
 		}
+		fpsScheduledFuture.cancel(true);
+
 		AtomicInteger counter = new AtomicInteger(5);
 		try {
+			out.write(CAPTRE_TERMINTE_INPUT);
+			out.flush();
 			out.close();
 			counter.getAndDecrement();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 		try {
-			in.close();
+			this.imageInputStream.close();
 			counter.getAndDecrement();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 		try {
 			err.close();
 			counter.getAndDecrement();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 		try {
 			process.destroy();
 			counter.getAndDecrement();
@@ -171,34 +192,24 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	}
 
 	/**
-	 * start raspistill process to open devices 
+	 * start raspistill process to open devices
 	 * <ul>
-	 * <li>
-	 * step 1: check given arguments will
-	 * introduce native windows. keep raspistill run in quietly 
-	 * </li>
+	 * <li>step 1: check given arguments will introduce native windows. keep
+	 * raspistill run in quietly</li>
 	 * 
-	 * <li>
-	 * step 2: create
-	 * thread fixed size pool(size=2), one for read, one for write 
-	 * </li>
+	 * <li>step 2: create thread fixed size pool(size=2), one for read, one for
+	 * write</li>
 	 * 
-	 * <li>
-	 * step 3: override
-	 * some illegal parameters 
-	 * </li>
+	 * <li>step 3: override some illegal parameters</li>
 	 * 
-	 * <li>
-	 * step 4: start process and begin communication and
-	 * consume IO
-	 * </li>
+	 * <li>step 4: start process and begin communication and consume IO</li>
 	 * </ul>
+	 * 
 	 * @see com.github.sarxos.webcam.WebcamDevice#open()
 	 */
 	@Override
 	public void open() {
 		if (isOpen()) {
-			LOGGER.warn("device already opened");
 			return;
 		}
 
@@ -207,7 +218,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		frameBuffer.add(loadingImage);
 
 		service = Executors.newScheduledThreadPool(THREAD_POOL_SIZE, (Runnable r) -> {
-			Thread thread = new Thread(threadGroup(), r, "raspistill-device-" + threadId());
+			Thread thread = new Thread(threadGroup(), r, THREAD_NAME_PREFIX + threadId());
 			return thread;
 		});
 		/*
@@ -216,27 +227,20 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		 * Y E A H :D
 		 */
 		// no preview window,
-		arguments.remove("preview");
-		arguments.remove("fullscreen");
-		arguments.remove("opacity");
-		arguments.remove("help");
-		arguments.remove("set");
+		arguments.remove(OPT_PREVIEW);
+		arguments.remove(OPT_FULLSCREEN);
+		arguments.remove(OPT_OPACITY);
+		arguments.remove(OPT_HELP);
+		arguments.remove(OPT_SETTINGS);
 
 		// override some arguments
-		arguments.put("nopreview", "");
-		arguments.put("camselect", Integer.toString(this.cameraSelect));
-		arguments.put("output", "-");// must be this, then image will be in console!
+		arguments.put(OPT_NOPREVIEW, "");
+		arguments.put(OPT_CAMSELECT, Integer.toString(this.cameraSelect));
+		arguments.put(OPT_OUTPUT, "-");// must be this, then image will be in console!
 		try {
 			process = launch();
 		} catch (IOException e) {
-			if (process != null) {
-				try {
-					process.destroy();
-				} catch (Exception e1) {
-					LOGGER.warn("there maybe resource link, please report to issue list");
-					e1.printStackTrace();
-				}
-			}
+			LOGGER.error(e.toString(), e);
 			e.printStackTrace();
 		}
 
@@ -244,41 +248,42 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		in = process.getInputStream();
 		err = process.getErrorStream();
 
-		// this is one dummy work content that flash the process output stream
-		service.scheduleAtFixedRate(() -> {
-			try {
-				out.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}, 5, 5, TimeUnit.SECONDS);
+		Dimension size = this.getResolution();
+		imageInputStream = new BufferedImageInputStream(in, (size.height * size.height) << 24);// make buffer a little
+																								// bigger to reduce
+																								// memory copy, I
+																								// dislike java memory
+																								// copy
+		// send new line char to output to trigger capture stream by mocked fps
+		fpsScheduledFuture = service.scheduleAtFixedRate(new CaptureWorker(), DEFAULT_CAPTURE_DELAY, 1000 / fps, TimeUnit.MILLISECONDS);
 
 		// error must be consumed, if not, too much data blocking will crash process or
 		// blocking IO
 		service.scheduleAtFixedRate(() -> {
 			try {
 				int ret = -1;
-				int counter = 0;
 				StringBuilder builder = new StringBuilder();
 				do {
 					ret = err.read();
-					counter++;
 					if (ret != -1) {
 						builder.append((char) ret);
 					}
 				} while (ret != -1);
-
-				if (LOGGER.isDebugEnabled() && counter > 1) {
-					LOGGER.debug("raspistill stderr {0}", builder.toString());
-				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}, 1, 3, TimeUnit.SECONDS);
+		
 		// image stream
 		service.submit(() -> {
 			while (!Thread.currentThread().isInterrupted()) {
-				// TODO read console to split images
+				try {
+					BufferedImage frame=imageInputStream.readBufferedImage();
+					frameBuffer.add(frame);
+				} catch (IOException e) {
+					LOGGER.error(e.getMessage(), e);
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -326,21 +331,38 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	 */
 	@Override
 	public double getFPS() {
-		int timelapse = Integer.parseInt(arguments.get(OPT_TIMELAPSE));
-		return 1000d / timelapse;
+		return fps;
 	}
 
+	/**
+	 * support change FPS at runtime.
+	 */
 	@Override
 	public void setParameters(Map<String, ?> map) {
+		if (map.containsKey(EXTENDED_OPT_FPS)) {
+			this.fps = (Integer) map.get(EXTENDED_OPT_FPS);
+			if (isOpen) {
+				fpsScheduledFuture.cancel(true);
+				fpsScheduledFuture=null;
+				//create new worker thread again
+				fpsScheduledFuture = service.scheduleAtFixedRate(new CaptureWorker(), DEFAULT_CAPTURE_DELAY, 1000 / fps, TimeUnit.MILLISECONDS);
+			}
+			return ;
+		}
+		
+		if(isOpen) {
+			throw new UnsupportedOperationException(MSG_CANNOT_CHANGE_PROP); 
+		}
+		
 		for (Entry<String, ?> entry : map.entrySet()) {
-			this.arguments.put(entry.getKey(), entry.getValue().toString());
+			if (options.hasOption(entry.getKey())) {
+				this.arguments.put(entry.getKey(), entry.getValue().toString());
+			}
+			else {
+				throw new UnsupportedOperationException(MSG_WRONG_ARGUMENT); 
+			}
 		}
 	}
-
-	//
-	private byte r = (byte) (Math.random() * Byte.MAX_VALUE);
-	private byte g = (byte) (Math.random() * Byte.MAX_VALUE);
-	private byte b = (byte) (Math.random() * Byte.MAX_VALUE);
 
 	private void drawRect(Graphics2D g2, int w, int h) {
 
@@ -353,6 +375,11 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		g2.fillRect(rx, ry, rw, rh);
 	}
 
+	/**
+	 * draw dummy wating images
+	 * 
+	 * @return
+	 */
 	private BufferedImage drawLoadingImage() {
 		Dimension resolution = getResolution();
 
@@ -393,5 +420,19 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		bi.flush();
 
 		return bi;
+	}
+
+	// inner classes
+	class CaptureWorker implements Runnable {
+		@Override
+		public void run() {
+			try {
+				out.write(CAPTRE_TRIGGER_INPUT);
+				out.flush();
+			} catch (IOException e) {
+				LOGGER.error(e.toString());
+				e.printStackTrace();
+			}
+		}
 	}
 }

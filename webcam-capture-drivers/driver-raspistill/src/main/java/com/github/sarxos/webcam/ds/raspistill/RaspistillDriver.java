@@ -2,11 +2,13 @@ package com.github.sarxos.webcam.ds.raspistill;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -124,12 +126,40 @@ public class RaspistillDriver implements WebcamDriver,Constants {
 			int detected=Integer.parseInt(cameraCheckOutput.substring(cameraCheckOutput.lastIndexOf("=")+1));
 			List<WebcamDevice> devices = new ArrayList<>(detected);
 			for(int i=0;i<detected;i++) {
-				WebcamDevice device = new RaspistillDevice(i, new LinkedHashMap<>(arguments));//copy map rather than pass reference
+				WebcamDevice device = new RaspistillDevice(i, this.options, createSortedOptionMap(arguments));//copy map rather than pass reference
 				devices.add(device);
 			}
 			getDeviceCalled = true;
 			return devices;
 		}
+	}
+	/**
+	 * accroding to some frum thread, output option must be last one,
+	 * so dump all user options to new sorted map
+	 * see <a href="https://www.raspberrypi.org/forums/viewtopic.php?t=67175">thread 67175</a>
+	 * @param arguments2
+	 * @return
+	 */
+	private Map<String, String> createSortedOptionMap(Map<String, String> arguments) {
+		Map<String, String> sorted=new TreeMap<>(new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				int s1=o1.hashCode();
+				int s2=o2.hashCode();
+				
+				if(o1.equals(OPT_OUTPUT)) {
+					s1=Integer.MAX_VALUE;
+				}
+				
+				if(o2.equals(OPT_OUTPUT)) {
+					s2=Integer.MAX_VALUE;
+				}
+				
+				return s1-s2;
+			}
+		});
+		sorted.putAll(arguments);
+		return sorted;
 	}
 
 	@Override

@@ -31,8 +31,15 @@ public interface Constants {
 	String SYSTEM_PROP_PREFIX = "raspistill.";
 
 	String DEVICE_NAME_PREFIX = "raspistill camera ";
+	/**
+	 * extended option, it can be processed by 
+	 * @see com.github.sarxos.webcam.WebcamDevice.Configurable
+	 * but not raspistill argument.
+	 * value type is Integer
+	 */
+	String EXTENDED_OPT_FPS="FPS";
 	
-	// *******************options constants**************
+	// *******************raspistill options constants**************
 	/**
 	 * OPT_QUALITY raspistill --quality
 	 */
@@ -49,6 +56,38 @@ public interface Constants {
 	 * OPT_TIMELAPSE --timelapse
 	 */
 	String OPT_TIMELAPSE = "timelapse";
+	/**
+	 * OPT_OUTPUT --output
+	 */
+	String OPT_OUTPUT = "output";
+	/**
+	 * OPT_CAMSELECT --camselect
+	 */
+	String OPT_CAMSELECT = "camselect";
+	/**
+	 * OPT_NOPREVIEW --nopreview
+	 */
+	String OPT_NOPREVIEW = "nopreview";
+	/**
+	 * OPT_SETTINGS -settings
+	 */
+	String OPT_SETTINGS = "settings";
+	/**
+	 * OPT_HELP --help
+	 */
+	String OPT_HELP = "help";
+	/**
+	 * OPT_OPACITY --opacity
+	 */
+	String OPT_OPACITY = "opacity";
+	/**
+	 * OPT_FULLSCREEN --fullscreen
+	 */
+	String OPT_FULLSCREEN = "fullscreen";
+	/**
+	 * OPT_PREVIEW --preview
+	 */
+	String OPT_PREVIEW = "preview";
 	// *******************message templates**************
 	String MSG_CANNOT_CHANGE_PROP = "can not change property after device already discoveried";
 	String MSG_RASPISTILL_NOT_INSTALLED = "raspistill is not found, please run apt-get install raspistill. this driver supposed to run on raspberrypi";
