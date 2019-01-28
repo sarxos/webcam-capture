@@ -16,7 +16,6 @@ public class WebcamPanelExample {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-
 		final JFrame window = new JFrame("Raspistill Capture Example");
 		window.setResizable(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

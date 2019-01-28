@@ -26,6 +26,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +46,7 @@ import com.github.sarxos.webcam.WebcamResolution;
 class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDevice.Configurable, Constants {
 
 	private static final String THREAD_NAME_PREFIX = "raspistill-device-";
-	private static final int THREAD_POOL_SIZE = 2;
+	private static final int THREAD_POOL_SIZE = 4;
 	private final static Logger LOGGER = LoggerFactory.getLogger(RaspistillDevice.class);
 	/**
 	 * Artificial view sizes. raspistill can handle flex dimensions less than QSXGA,
@@ -64,7 +66,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	/**
 	 * default capture start deley in millsecond
 	 */
-	private final static int DEFAULT_CAPTURE_DELAY = 4096;
+	private final static int DEFAULT_CAPTURE_DELAY = 1000;
 	/**
 	 * raspistill keypress mode, send new line to make capture
 	 */
@@ -88,7 +90,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	private int fps = DEFAULT_FPS;
 	private final Options options;
 	private ScheduledFuture<?> fpsScheduledFuture;
-	private BufferedImageInputStream imageInputStream;
+	//private BufferedImageInputStream imageInputStream;
 
 	/**
 	 * Creates a new instance of RaspistillDevice.
@@ -125,7 +127,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		}
 
 		try {
-			this.imageInputStream.close();
+			this.in.close();
 			counter.getAndDecrement();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -247,17 +249,10 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		out = process.getOutputStream();
 		in = process.getInputStream();
 		err = process.getErrorStream();
-
-		Dimension size = this.getResolution();
-		imageInputStream = new BufferedImageInputStream(in, (size.height * size.height) << 24);// make buffer a little
-																								// bigger to reduce
-																								// memory copy, I
-																								// dislike java memory
-																								// copy
+		
 		// send new line char to output to trigger capture stream by mocked fps
 		fpsScheduledFuture = service.scheduleAtFixedRate(new CaptureWorker(), DEFAULT_CAPTURE_DELAY, 1000 / fps,
 				TimeUnit.MILLISECONDS);
-
 		// error must be consumed, if not, too much data blocking will crash process or
 		// blocking IO
 		service.scheduleAtFixedRate(() -> {
@@ -274,20 +269,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 				e.printStackTrace();
 			}
 		}, 1, 3, TimeUnit.SECONDS);
-
-		// image stream
-		service.submit(() -> {
-			while (!Thread.currentThread().isInterrupted()) {
-				try {
-					BufferedImage frame = imageInputStream.readBufferedImage();
-					frameBuffer.add(frame);
-				} catch (IOException e) {
-					LOGGER.error(e.getMessage(), e);
-					e.printStackTrace();
-				}
-			}
-		});
-
+		
 		isOpen = true;
 	}
 
@@ -430,10 +412,13 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 			try {
 				out.write(CAPTRE_TRIGGER_INPUT);
 				out.flush();
+				
+				BufferedImage frame = ImageIO.read(in);
+				LOGGER.debug(frame.toString());
+				frameBuffer.add(frame);
 			} catch (IOException e) {
-				LOGGER.error(e.toString());
-				e.printStackTrace();
-			}
+				LOGGER.error(e.toString(), e);
+			} 
 		}
 	}
 }
