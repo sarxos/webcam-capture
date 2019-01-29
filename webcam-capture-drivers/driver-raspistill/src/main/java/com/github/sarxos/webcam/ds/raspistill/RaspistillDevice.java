@@ -413,7 +413,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 				out.write(CAPTRE_TRIGGER_INPUT);
 				out.flush();
 				
-				BufferedImage frame = ImageIO.read(in);
+				BufferedImage frame = ImageIO.read(new PNGImagesInputStream(in));
 				LOGGER.debug(frame.toString());
 				frameBuffer.add(frame);
 			} catch (IOException e) {
