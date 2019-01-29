@@ -16,16 +16,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 
 /**
- * An abstract class implementing the <code>ImageInputStream</code> interface.
- * This class is designed to reduce the number of methods that must
- * be implemented by subclasses.
- *
- * <p> In particular, this class handles most or all of the details of
- * byte order interpretation, buffering, mark/reset, discarding,
- * closing, and disposing.
- * 
- * 
- * 
+ * default jre uses file cache ImageInputStream which is low performance. this class is used to read sequential images from raspistill stdout
  * this class supposed to support png, gif, bmp and jpg. but there is one bug in oracle jre jpeg image reader,
  * please check <a href="https://github.com/haraldk/TwelveMonkeys/issues/202">12 monkeys issue</a>.
  * 
