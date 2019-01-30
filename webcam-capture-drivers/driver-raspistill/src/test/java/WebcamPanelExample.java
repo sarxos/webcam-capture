@@ -1,7 +1,9 @@
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import com.github.sarxos.webcam.Webcam;
@@ -12,8 +14,7 @@ import com.github.sarxos.webcam.ds.raspistill.RaspistillDriver;
 
 public class WebcamPanelExample {
 	static {
-		Webcam.setAutoOpenMode(false);
-		Webcam.setDriver(new RaspistillDriver());
+		//Webcam.setDriver(new RaspistillDriver());
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -24,8 +25,7 @@ public class WebcamPanelExample {
 		
 		final Dimension resolution = WebcamResolution.QVGA.getSize();
 
-		List<Webcam> cams=Webcam.getWebcams();
-		for (final Webcam webcam : cams) {
+		for (final Webcam webcam : Webcam.getWebcams()) {
 			webcam.setCustomViewSizes(resolution);
 			webcam.setViewSize(resolution);
 			webcam.open();
@@ -39,9 +39,40 @@ public class WebcamPanelExample {
 			window.getContentPane().add(panel);
 		}
 		
-		OptionsPanel optionsPanel=new OptionsPanel(cams);
+		OptionsPanel optionsPanel=new OptionsPanel();
 		window.getContentPane().add(optionsPanel);
 
+		JButton startButton=new JButton("Start");
+		window.getContentPane().add(startButton);
+		JButton stopButton=new JButton("Stop");
+		window.getContentPane().add(stopButton);
+		
+		startButton.setEnabled(false);
+		startButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				WebcamPanel webcamPanel=(WebcamPanel)window.getContentPane().getComponent(0);
+				if(!(webcamPanel.isStarted()||webcamPanel.isStarting())) {
+					webcamPanel.getWebcam().setParameters(optionsPanel.getOptionMap());
+					webcamPanel.start();
+				}
+				startButton.setEnabled(false);
+				stopButton.setEnabled(true);
+			}
+		});
+		
+		stopButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				WebcamPanel webcamPanel=(WebcamPanel)window.getContentPane().getComponent(0);
+				if(webcamPanel.isStarted()) {
+					webcamPanel.stop();
+				}
+				startButton.setEnabled(true);
+				stopButton.setEnabled(false);
+			}
+		});
+		
 		window.pack();
 		window.setVisible(true);
 	}
