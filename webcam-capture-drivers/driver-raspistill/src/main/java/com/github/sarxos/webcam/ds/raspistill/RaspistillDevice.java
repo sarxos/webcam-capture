@@ -35,9 +35,9 @@ import com.github.sarxos.webcam.WebcamResolution;
  * 
  * ClassName: RaspistillDevice <br/>
  * Function: device descriptor of raspistil <br/>
- * after many performance testing, png is the best balanced format on compress rate and IO volume.
- * this device capture png format from raspistill.
- * date: Jan 23, 2019 9:57:03 AM <br/>
+ * after many performance testing, png is the best balanced format on compress
+ * rate and IO volume. this device capture png format from raspistill. date: Jan
+ * 23, 2019 9:57:03 AM <br/>
  * 
  * @author maoanapex88@163.com (alexmao86)
  */
@@ -282,7 +282,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 		this.arguments.put(OPT_WIDTH, dimension.getWidth() + "");
 		this.arguments.put(OPT_HEIGHT, dimension.getHeight() + "");
 	}
-	
+
 	/**
 	 * support change FPS at runtime.
 	 */

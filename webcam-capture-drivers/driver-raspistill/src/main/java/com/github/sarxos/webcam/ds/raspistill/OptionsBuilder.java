@@ -66,8 +66,8 @@ class OptionsBuilder {
 	 * configurate zero long options
 	 */
 	public static Options create() {
-		synchronized(ZERO_LONG_OPTIONS) {
-			if(SINGLETON==null) {
+		synchronized (ZERO_LONG_OPTIONS) {
+			if (SINGLETON == null) {
 				Options options = new Options();
 				List<String> lines = CommanderUtil.execute(Constants.COMMAND_CAPTURE);
 				for (String line : lines) {
@@ -86,7 +86,7 @@ class OptionsBuilder {
 				for (String optionName : ZERO_LONG_OPTIONS) {
 					options.getOption(optionName).setArgs(0);
 				}
-				SINGLETON=options;
+				SINGLETON = options;
 			}
 			return SINGLETON;
 		}
