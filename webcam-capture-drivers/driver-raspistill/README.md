@@ -9,6 +9,14 @@ This capture driver is special for raspberrypi. __raspistill__ is the command li
 so it is possible use java Runtime to launch raspistill process and intercept its console output, makes it as
 webcam driver. this is one simple and straightforward approach without native JNI or JNA call, no file system exchange. You will not struggle with performance issue and native code compiling. Enjoy it! 
 
+##Install
+
+sudo apt-get update
+
+sudo apt-get install raspistill
+
+raspistill --help //to check installation
+
 
 ## Maven
 
@@ -27,7 +35,7 @@ webcam driver. this is one simple and straightforward approach without native JN
 
 ## How To Use
 
-Set capture driver before you start using Webcam class.
+Set capture driver before you start using Webcam class. this is one basic demo, check test source for demo with option panel.
 
 ```java
 import java.awt.Dimension;
@@ -79,9 +87,11 @@ public class WebcamPanelExample {
 ```
 The picture below is an effect of the above code running. 
 
-![](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-raspistill/src/etc/resources/screen-1.jpg?raw=true)
+![](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-raspistill/src/etc/resources/snapshot.png?raw=true)
 
 ## Known Problems
+
+fps is not correct, because of the IO performance, the actually fps is very low. According to test, about 500ms for PNG decoder to decode 640x480 image from raspistill stream.
 
 ##Raspistill Arguments
 ```Raspberry Pi Camera Board - RaspiStill Command List
