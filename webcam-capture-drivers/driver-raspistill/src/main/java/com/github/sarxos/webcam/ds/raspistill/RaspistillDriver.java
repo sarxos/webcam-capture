@@ -40,7 +40,7 @@ import com.github.sarxos.webcam.WebcamDriver;
 public class RaspistillDriver implements WebcamDriver, Constants {
 	private final static Logger LOGGER = LoggerFactory.getLogger(RaspistillDriver.class);
 	private final static String[] DEFAULT_ARGUMENTS = { "--width", "640", "--height", "480", "--quality", "50",
-			"--encoding", "png", /*"--verbose", */"--nopreview", "--keypress", "--timeout", "0", "--output", "-" };
+			"--encoding", "png", /* "--verbose", */"--nopreview", "--keypress", "--timeout", "0", "--output", "-" };
 	private final Options options;
 	private Map<String, String> arguments = new LinkedHashMap<>();
 	private volatile boolean getDeviceCalled;

@@ -80,8 +80,8 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	private InputStream err;
 	private Queue<BufferedImage> frameBuffer = new CircularListCache<>(2);// 2 double buffer
 	private int fps = DEFAULT_FPS;
-	private int captureInterval=1000/fps;
-	
+	private int captureInterval = 1000 / fps;
+
 	private final Options options;
 
 	/**
@@ -108,10 +108,10 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		}
 
 		AtomicInteger counter = new AtomicInteger(5);
-		
+
 		service.shutdownNow();
 		counter.getAndDecrement();
-		
+
 		try {
 			out.write(CAPTRE_TERMINTE_INPUT);
 			out.flush();
@@ -213,7 +213,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 
 		service = Executors.newFixedThreadPool(THREAD_POOL_SIZE, (Runnable r) -> {
 			Thread thread = new Thread(threadGroup(), r, THREAD_NAME_PREFIX + threadId());
-			thread.setPriority(7);//high priority to acquire CPU
+			thread.setPriority(7);// high priority to acquire CPU
 			return thread;
 		});
 		/*
@@ -243,13 +243,13 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		out = process.getOutputStream();
 		in = process.getInputStream();
 		err = process.getErrorStream();
-		
+
 		// send new line char to output to trigger capture stream by mocked fps
 		service.submit(new CaptureWorker());
 		// error must be consumed, if not, too much data blocking will crash process or
 		// blocking IO
 		service.submit(new ErrorConsumeWorker());
-		
+
 		isOpen = true;
 	}
 
@@ -304,14 +304,14 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	public void setParameters(Map<String, ?> map) {
 		if (map.containsKey(EXTENDED_OPT_FPS)) {
 			this.fps = (Integer) map.get(EXTENDED_OPT_FPS);
-			this.captureInterval=1000/fps;
+			this.captureInterval = 1000 / fps;
 			return;
 		}
 
 		if (isOpen) {
 			throw new UnsupportedOperationException(MSG_CANNOT_CHANGE_PROP);
 		}
-		
+
 		for (Entry<String, ?> entry : map.entrySet()) {
 			if (options.hasOption(entry.getKey())) {
 				this.arguments.put(entry.getKey(), entry.getValue().toString());
@@ -383,7 +383,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	class CaptureWorker implements Runnable {
 		@Override
 		public void run() {
-			while(!Thread.currentThread().isInterrupted()) {
+			while (!Thread.currentThread().isInterrupted()) {
 				try {
 					Thread.sleep(captureInterval);
 				} catch (InterruptedException e) {
@@ -393,20 +393,21 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 				try {
 					out.write(CAPTRE_TRIGGER_INPUT);
 					out.flush();
-					
+
 					BufferedImage frame = new PNGDecoder(in).decode();
-					in.skip(16);//each time of decode, there will be 16 bytes should be skipped
+					in.skip(16);// each time of decode, there will be 16 bytes should be skipped
 					frameBuffer.add(frame);
 				} catch (IOException e) {
 					LOGGER.error(e.toString(), e);
-				} 
+				}
 			}
 		}
 	}
+
 	class ErrorConsumeWorker implements Runnable {
 		@Override
 		public void run() {
-			while(!Thread.currentThread().isInterrupted()) {
+			while (!Thread.currentThread().isInterrupted()) {
 				try {
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {

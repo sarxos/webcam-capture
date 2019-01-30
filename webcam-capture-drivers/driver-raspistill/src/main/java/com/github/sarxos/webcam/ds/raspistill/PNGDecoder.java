@@ -46,7 +46,9 @@ import java.util.zip.Inflater;
  */
 /**
  * 
- * ClassName: PNGDecoder <br/> one compact PNG deconder.
+ * ClassName: PNGDecoder <br/>
+ * one compact PNG deconder.
+ * 
  * @author Matthias Mann
  * @author maoanapex88@163.com (alexmao86)
  */
