@@ -87,7 +87,7 @@ public class WebcamPanelExample {
 ```
 The picture below is an effect of the above code running. 
 
-![](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-drivers/driver-raspistill/src/etc/resources/snapshot.png?raw=true)
+![](https://raw.githubusercontent.com/alexmao86/webcam-capture/master/webcam-capture-drivers/driver-raspistill/src/etc/resources/snapshot.png)
 
 ## Known Problems
 
