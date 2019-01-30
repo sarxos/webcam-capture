@@ -87,6 +87,10 @@ public interface Constants {
 	 * OPT_PREVIEW --preview
 	 */
 	String OPT_PREVIEW = "preview";
+	/**
+	 * OPT_ENCODING --encoding
+	 */
+	String OPT_ENCODING = "encoding";
 	// *******************message templates**************
 	String MSG_CANNOT_CHANGE_PROP = "can not change property after device already discoveried";
 	String MSG_RASPISTILL_NOT_INSTALLED = "raspistill is not found, please run apt-get install raspistill. this driver supposed to run on raspberrypi";

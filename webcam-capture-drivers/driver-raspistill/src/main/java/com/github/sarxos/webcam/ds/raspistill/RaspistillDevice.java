@@ -20,13 +20,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.imageio.ImageIO;
 
 import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
@@ -64,10 +60,6 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	 */
 	private final static int DEFAULT_FPS = 10;
 	/**
-	 * default capture start deley in millsecond
-	 */
-	private final static int DEFAULT_CAPTURE_DELAY = 1000;
-	/**
 	 * raspistill keypress mode, send new line to make capture
 	 */
 	private final static char CAPTRE_TRIGGER_INPUT = '\n';
@@ -81,16 +73,16 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	private Map<String, String> arguments;
 	private volatile boolean isOpen = false;
 	private Dimension dimension;
-	private ScheduledExecutorService service;
+	private ExecutorService service;
 	private Process process;
 	private OutputStream out;
 	private InputStream in;
 	private InputStream err;
 	private Queue<BufferedImage> frameBuffer = new CircularListCache<>(2);// 2 double buffer
 	private int fps = DEFAULT_FPS;
+	private int captureInterval=1000/fps;
+	
 	private final Options options;
-	private ScheduledFuture<?> fpsScheduledFuture;
-	//private BufferedImageInputStream imageInputStream;
 
 	/**
 	 * Creates a new instance of RaspistillDevice.
@@ -114,9 +106,12 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 			}
 			return;
 		}
-		fpsScheduledFuture.cancel(true);
 
 		AtomicInteger counter = new AtomicInteger(5);
+		
+		service.shutdownNow();
+		counter.getAndDecrement();
+		
 		try {
 			out.write(CAPTRE_TERMINTE_INPUT);
 			out.flush();
@@ -146,9 +141,6 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		service.shutdownNow();
-		counter.getAndDecrement();
 
 		if (counter.get() != 0) {
 			LOGGER.debug(MSG_NOT_GRACEFUL_DOWN);
@@ -219,8 +211,9 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		BufferedImage loadingImage = this.drawLoadingImage();
 		frameBuffer.add(loadingImage);
 
-		service = Executors.newScheduledThreadPool(THREAD_POOL_SIZE, (Runnable r) -> {
+		service = Executors.newFixedThreadPool(THREAD_POOL_SIZE, (Runnable r) -> {
 			Thread thread = new Thread(threadGroup(), r, THREAD_NAME_PREFIX + threadId());
+			thread.setPriority(7);//high priority to acquire CPU
 			return thread;
 		});
 		/*
@@ -236,6 +229,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		arguments.remove(OPT_SETTINGS);
 
 		// override some arguments
+		arguments.put(OPT_ENCODING, "png");
 		arguments.put(OPT_NOPREVIEW, "");
 		arguments.put(OPT_CAMSELECT, Integer.toString(this.cameraSelect));
 		arguments.put(OPT_OUTPUT, "-");// must be this, then image will be in console!
@@ -251,24 +245,10 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		err = process.getErrorStream();
 		
 		// send new line char to output to trigger capture stream by mocked fps
-		fpsScheduledFuture = service.scheduleAtFixedRate(new CaptureWorker(), DEFAULT_CAPTURE_DELAY, 1000 / fps,
-				TimeUnit.MILLISECONDS);
+		service.submit(new CaptureWorker());
 		// error must be consumed, if not, too much data blocking will crash process or
 		// blocking IO
-		service.scheduleAtFixedRate(() -> {
-			try {
-				int ret = -1;
-				StringBuilder builder = new StringBuilder();
-				do {
-					ret = err.read();
-					if (ret != -1) {
-						builder.append((char) ret);
-					}
-				} while (ret != -1);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}, 1, 3, TimeUnit.SECONDS);
+		service.submit(new ErrorConsumeWorker());
 		
 		isOpen = true;
 	}
@@ -324,20 +304,14 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	public void setParameters(Map<String, ?> map) {
 		if (map.containsKey(EXTENDED_OPT_FPS)) {
 			this.fps = (Integer) map.get(EXTENDED_OPT_FPS);
-			if (isOpen) {
-				fpsScheduledFuture.cancel(true);
-				fpsScheduledFuture = null;
-				// create new worker thread again
-				fpsScheduledFuture = service.scheduleAtFixedRate(new CaptureWorker(), DEFAULT_CAPTURE_DELAY, 1000 / fps,
-						TimeUnit.MILLISECONDS);
-			}
+			this.captureInterval=1000/fps;
 			return;
 		}
 
 		if (isOpen) {
 			throw new UnsupportedOperationException(MSG_CANNOT_CHANGE_PROP);
 		}
-
+		
 		for (Entry<String, ?> entry : map.entrySet()) {
 			if (options.hasOption(entry.getKey())) {
 				this.arguments.put(entry.getKey(), entry.getValue().toString());
@@ -409,16 +383,49 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	class CaptureWorker implements Runnable {
 		@Override
 		public void run() {
-			try {
-				out.write(CAPTRE_TRIGGER_INPUT);
-				out.flush();
-				
-				BufferedImage frame = ImageIO.read(new PNGImagesInputStream(in));
-				LOGGER.debug(frame.toString());
-				frameBuffer.add(frame);
-			} catch (IOException e) {
-				LOGGER.error(e.toString(), e);
-			} 
+			while(!Thread.currentThread().isInterrupted()) {
+				try {
+					Thread.sleep(captureInterval);
+				} catch (InterruptedException e) {
+					LOGGER.warn(e.toString(), e);
+					break;
+				}
+				try {
+					out.write(CAPTRE_TRIGGER_INPUT);
+					out.flush();
+					
+					BufferedImage frame = new PNGDecoder(in).decode();
+					in.skip(16);//each time of decode, there will be 16 bytes should be skipped
+					frameBuffer.add(frame);
+				} catch (IOException e) {
+					LOGGER.error(e.toString(), e);
+				} 
+			}
+		}
+	}
+	class ErrorConsumeWorker implements Runnable {
+		@Override
+		public void run() {
+			while(!Thread.currentThread().isInterrupted()) {
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					LOGGER.warn(e.toString(), e);
+					break;
+				}
+				try {
+					int ret = -1;
+					StringBuilder builder = new StringBuilder();
+					do {
+						ret = err.read();
+						if (ret != -1) {
+							builder.append((char) ret);
+						}
+					} while (ret != -1);
+				} catch (IOException e) {
+					LOGGER.error(e.toString(), e);
+				}
+			}
 		}
 	}
 }

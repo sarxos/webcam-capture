@@ -16,6 +16,9 @@ import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
 
 /**
+ * this is experimental! after test, using java imageio is really low in performance. it is almost can not decode images in 1 second on raspberrypi.
+ * and also buggy!
+ * 
  * default jre uses file cache ImageInputStream which is low performance. this class is used to read sequential images from raspistill stdout
  * this class supposed to support png, gif, bmp and jpg. but there is one bug in oracle jre jpeg image reader,
  * please check <a href="https://github.com/haraldk/TwelveMonkeys/issues/202">12 monkeys issue</a>.
