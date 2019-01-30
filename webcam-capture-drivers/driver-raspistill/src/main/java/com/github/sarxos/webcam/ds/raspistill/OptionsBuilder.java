@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 class OptionsBuilder {
 	private final static Logger LOGGER = LoggerFactory.getLogger(OptionsBuilder.class);
 	private final static Set<String> ZERO_LONG_OPTIONS = new HashSet<>();
+	private static Options SINGLETON;
 	static {
 		// using short option
 		ZERO_LONG_OPTIONS.add("r");
@@ -65,25 +66,29 @@ class OptionsBuilder {
 	 * configurate zero long options
 	 */
 	public static Options create() {
-		Options options = new Options();
-		List<String> lines = CommanderUtil.execute(Constants.COMMAND_CAPTURE);
-		for (String line : lines) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(line);
+		synchronized(ZERO_LONG_OPTIONS) {
+			if(SINGLETON==null) {
+				Options options = new Options();
+				List<String> lines = CommanderUtil.execute(Constants.COMMAND_CAPTURE);
+				for (String line : lines) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug(line);
+					}
+					if (!line.startsWith("-")) {
+						continue;
+					}
+					int indexOfDesc = line.indexOf(":");
+					String opts[] = line.substring(0, indexOfDesc).trim().split(",");
+					String desc = line.substring(indexOfDesc + 1).trim();
+					options.addOption(new Option(opts[0].trim().substring(1), opts[1].trim().substring(2), true, desc));
+				}
+				// no argument parameters
+				for (String optionName : ZERO_LONG_OPTIONS) {
+					options.getOption(optionName).setArgs(0);
+				}
+				SINGLETON=options;
 			}
-			if (!line.startsWith("-")) {
-				continue;
-			}
-			int indexOfDesc = line.indexOf(":");
-			String opts[] = line.substring(0, indexOfDesc).trim().split(",");
-			String desc = line.substring(indexOfDesc + 1).trim();
-			options.addOption(new Option(opts[0].trim().substring(1), opts[1].trim().substring(2), true, desc));
+			return SINGLETON;
 		}
-		// no argument parameters
-		for (String optionName : ZERO_LONG_OPTIONS) {
-			options.getOption(optionName).setArgs(0);
-		}
-
-		return options;
 	}
 }

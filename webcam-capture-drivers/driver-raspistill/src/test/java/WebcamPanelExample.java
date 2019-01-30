@@ -1,5 +1,6 @@
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -10,8 +11,8 @@ import com.github.sarxos.webcam.WebcamResolution;
 import com.github.sarxos.webcam.ds.raspistill.RaspistillDriver;
 
 public class WebcamPanelExample {
-
 	static {
+		Webcam.setAutoOpenMode(false);
 		Webcam.setDriver(new RaspistillDriver());
 	}
 
@@ -20,11 +21,11 @@ public class WebcamPanelExample {
 		window.setResizable(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.getContentPane().setLayout(new FlowLayout());
-
+		
 		final Dimension resolution = WebcamResolution.QVGA.getSize();
 
-		for (final Webcam webcam : Webcam.getWebcams()) {
-
+		List<Webcam> cams=Webcam.getWebcams();
+		for (final Webcam webcam : cams) {
 			webcam.setCustomViewSizes(resolution);
 			webcam.setViewSize(resolution);
 			webcam.open();
@@ -37,6 +38,9 @@ public class WebcamPanelExample {
 
 			window.getContentPane().add(panel);
 		}
+		
+		OptionsPanel optionsPanel=new OptionsPanel(cams);
+		window.getContentPane().add(optionsPanel);
 
 		window.pack();
 		window.setVisible(true);
