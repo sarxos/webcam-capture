@@ -50,13 +50,6 @@
 			<artifactId>logback-classic</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout -->
-		<dependency>
-		    <groupId>com.miglayout</groupId>
-		    <artifactId>miglayout</artifactId>
-		    <version>3.7.4</version>
-		    <scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
