@@ -39,7 +39,7 @@ import com.github.sarxos.webcam.WebcamResolution;
  * 
  * @author maoanapex88@163.com (alexmao86)
  */
-class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDevice.Configurable, Constants {
+class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Constants {
 
 	private static final String THREAD_NAME_PREFIX = "raspistill-device-";
 	private static final int THREAD_POOL_SIZE = 4;
@@ -55,10 +55,6 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 			WebcamResolution.WSVGA1.getSize(), WebcamResolution.WSVGA2.getSize(), WebcamResolution.XGA.getSize(),
 			WebcamResolution.XGAP.getSize(), WebcamResolution.WXGA1.getSize(), WebcamResolution.WXGAP.getSize(),
 			WebcamResolution.SXGA.getSize() };
-	/**
-	 * default fps
-	 */
-	private final static int DEFAULT_FPS = 10;
 	/**
 	 * raspistill keypress mode, send new line to make capture
 	 */
@@ -79,8 +75,6 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 	private InputStream in;
 	private InputStream err;
 	private Queue<BufferedImage> frameBuffer = new CircularListCache<>(2);// 2 double buffer
-	private int fps = DEFAULT_FPS;
-	private int captureInterval = 1000 / fps;
 
 	private final Options options;
 
@@ -286,28 +280,12 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		this.arguments.put(OPT_WIDTH, dimension.getWidth() + "");
 		this.arguments.put(OPT_HEIGHT, dimension.getHeight() + "");
 	}
-
-	/**
-	 * calculate pseudo fps
-	 * 
-	 * @see com.github.sarxos.webcam.WebcamDevice.FPSSource#getFPS()
-	 */
-	@Override
-	public double getFPS() {
-		return fps;
-	}
-
+	
 	/**
 	 * support change FPS at runtime.
 	 */
 	@Override
 	public void setParameters(Map<String, ?> map) {
-		if (map.containsKey(EXTENDED_OPT_FPS)) {
-			this.fps = (Integer) map.get(EXTENDED_OPT_FPS);
-			this.captureInterval = 1000 / fps;
-			return;
-		}
-
 		if (isOpen) {
 			throw new UnsupportedOperationException(MSG_CANNOT_CHANGE_PROP);
 		}
@@ -384,12 +362,6 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.FPSSource, WebcamDe
 		@Override
 		public void run() {
 			while (!Thread.currentThread().isInterrupted()) {
-				try {
-					Thread.sleep(captureInterval);
-				} catch (InterruptedException e) {
-					LOGGER.warn(e.toString(), e);
-					break;
-				}
 				try {
 					out.write(CAPTRE_TRIGGER_INPUT);
 					out.flush();
