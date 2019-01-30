@@ -14,7 +14,7 @@ import com.github.sarxos.webcam.ds.raspistill.RaspistillDriver;
 
 public class WebcamPanelExample {
 	static {
-		//Webcam.setDriver(new RaspistillDriver());
+		Webcam.setDriver(new RaspistillDriver());
 	}
 
 	public static void main(String[] args) throws InterruptedException {
