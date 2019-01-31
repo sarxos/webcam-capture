@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2017, Robert Bosch (Suzhou) All Rights Reserved.
+ * This software is property of Robert Bosch (Suzhou). 
+ * Unauthorized duplication and disclosure to third parties is prohibited.
+ */
 package com.github.sarxos.webcam.ds.raspberrypi;
 
 import static com.github.sarxos.webcam.ds.raspberrypi.RaspiThreadGroup.threadGroup;
@@ -26,28 +31,30 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamResolution;
 
-/**
+/** 
+ * ClassName: IPCDevice <br/> 
+ * date: Jan 31, 2019 10:50:46 AM <br/> 
+ * interactive process communication abstraction. This class is designed to reduce the number of methods that must
+ * be implemented by subclasses.
  * 
- * ClassName: RaspistillDevice <br/>
- * Function: device descriptor of raspistil <br/>
- * after many performance testing, png is the best balanced format on compress
- * rate and IO volume. this device capture png format from raspistill. date: Jan
- * 23, 2019 9:57:03 AM <br/>
+ * the process IO management and lifecycle are prepared in this process.
+ * https://www.raspberrypi.org/documentation/raspbian/applications/camera.md
  * 
  * @author maoanapex88@163.com (alexmao86)
+ * @version  
+ * @since JDK 1.8
  */
-class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Constants {
+public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurable, Constants {
 	private static final int POLL_TIMEOUT = 40;
 	private static final String THREAD_NAME_PREFIX = "raspistill-device-";
-	private static final int THREAD_POOL_SIZE = 2;
-	private final static Logger LOGGER = LoggerFactory.getLogger(RaspistillDevice.class);
+	private static final int DEFAULT_THREADPOOL_SIZE = 2;
+	private final static Logger LOGGER = LoggerFactory.getLogger(IPCDevice.class);
 	/**
 	 * Artificial view sizes. raspistill can handle flex dimensions less than QSXGA,
 	 * if the dimension is too high, respberrypi CPU can not afford the computing
@@ -59,43 +66,85 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 			WebcamResolution.WSVGA1.getSize(), WebcamResolution.WSVGA2.getSize(), WebcamResolution.XGA.getSize(),
 			WebcamResolution.XGAP.getSize(), WebcamResolution.WXGA1.getSize(), WebcamResolution.WXGAP.getSize(),
 			WebcamResolution.SXGA.getSize() };
-	/**
-	 * raspistill keypress mode, send new line to make capture
-	 */
-	private final static char CAPTRE_TRIGGER_INPUT = '\n';
-	private final static char CAPTRE_TERMINTE_INPUT = 'x';
-
-	private final int cameraSelect;
-
-	private byte r = (byte) (Math.random() * Byte.MAX_VALUE);
-	private byte g = (byte) (Math.random() * Byte.MAX_VALUE);
-	private byte b = (byte) (Math.random() * Byte.MAX_VALUE);
-	private Map<String, String> arguments;
+	
+	private final int camSelect;
+	protected Map<String, String> parameters;
+	
 	private volatile boolean isOpen = false;
 	private Dimension dimension;
 	private ExecutorService service;
-	private Process process;
-	private OutputStream out;
-	private InputStream in;
-	private InputStream err;
-	private BlockingQueue<BufferedImage> frameBuffer = new ArrayBlockingQueue<>(2);
-
-	private final Options options;
-
-	/**
-	 * Creates a new instance of RaspistillDevice.
-	 * 
-	 * @param cameraSelect
-	 *            the camera selection, default is zero
-	 * @param arguments
-	 *            the whole process argument list
-	 */
-	RaspistillDevice(final int cameraSelect, final Options options, final Map<String, String> arguments) {
-		this.cameraSelect = cameraSelect;
-		this.options = options;
-		this.arguments = arguments;
+	
+	protected Process process;
+	protected OutputStream out;
+	protected InputStream in;
+	protected InputStream err;
+	protected final BlockingQueue<BufferedImage> frameBuffer = new ArrayBlockingQueue<>(2);
+	protected final IPCDriver driver;
+	
+	public IPCDevice(int camSelect, Map<String, String> parameters, IPCDriver driver) {
+		super();
+		this.camSelect = camSelect;
+		this.parameters = parameters;
+		this.driver=driver;
 	}
+	
+	@Override
+	public BufferedImage getImage() {
+		try {
+			return frameBuffer.poll(POLL_TIMEOUT, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			return null;
+		}
+	}
+	@Override
+	public String getName() {
+		return DEVICE_NAME_PREFIX + this.camSelect;
+	}
+	@Override
+	public boolean isOpen() {
+		return isOpen;
+	}
+	@Override
+	public Dimension getResolution() {
+		if (dimension == null) {
+			dimension = new Dimension(Integer.parseInt(parameters.get(OPT_WIDTH)),
+					Integer.parseInt(parameters.get(OPT_HEIGHT)));
+		}
+		return dimension;
+	}
+	@Override
+	public void setResolution(Dimension dimension) {
+		this.dimension = dimension;
+		this.parameters.put(OPT_WIDTH, dimension.getWidth() + "");
+		this.parameters.put(OPT_HEIGHT, dimension.getHeight() + "");
+	}
+	@Override
+	public Dimension[] getResolutions() {
+		return DIMENSIONS;
+	}
+	@Override
+	public void dispose() {
+		parameters = null;
+		service = null;
+		process = null;
+	}
+	/**
+	 * support change FPS at runtime.
+	 */
+	@Override
+	public void setParameters(Map<String, ?> map) {
+		if (isOpen) {
+			throw new UnsupportedOperationException(MSG_CANNOT_CHANGE_PROP);
+		}
 
+		for (Entry<String, ?> entry : map.entrySet()) {
+			if (this.driver.getOptions().hasOption(entry.getKey())) {
+				this.parameters.put(entry.getKey(), entry.getValue().toString());
+			} else {
+				throw new UnsupportedOperationException(MSG_WRONG_ARGUMENT);
+			}
+		}
+	}
 	@Override
 	public void close() {
 		if (!isOpen) {
@@ -104,15 +153,13 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 			}
 			return;
 		}
-
+		beforeClose();
 		AtomicInteger counter = new AtomicInteger(5);
 
 		service.shutdownNow();
 		counter.getAndDecrement();
 
 		try {
-			out.write(CAPTRE_TERMINTE_INPUT);
-			out.flush();
 			out.close();
 			counter.getAndDecrement();
 		} catch (IOException e) {
@@ -145,50 +192,18 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 		}
 		frameBuffer.clear();
 		isOpen = false;
+		afterClose();
+	}
+	protected void afterClose() {
+		
 	}
 
-	@Override
-	public void dispose() {
-		arguments = null;
-		service = null;
-		process = null;
-	}
-
-	@Override
-	public BufferedImage getImage() {
-		try {
-			return frameBuffer.poll(POLL_TIMEOUT, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			return null;
-		}
-	}
-
-	@Override
-	public String getName() {
-		return DEVICE_NAME_PREFIX + this.cameraSelect;
-	}
-
-	@Override
-	public Dimension getResolution() {
-		if (dimension == null) {
-			dimension = new Dimension(Integer.parseInt(arguments.get(OPT_WIDTH)),
-					Integer.parseInt(arguments.get(OPT_HEIGHT)));
-		}
-		return dimension;
-	}
-
-	@Override
-	public Dimension[] getResolutions() {
-		return DIMENSIONS;
-	}
-
-	@Override
-	public boolean isOpen() {
-		return isOpen;
+	protected void beforeClose() {
+		
 	}
 
 	/**
-	 * start raspistill process to open devices
+	 * start raspi??? process to open devices
 	 * <ul>
 	 * <li>step 1: check given arguments will introduce native windows. keep
 	 * raspistill run in quietly</li>
@@ -208,33 +223,13 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 		if (isOpen()) {
 			return;
 		}
-
+		beforeOpen();
 		// add one loading image
 		BufferedImage loadingImage = this.drawLoadingImage();
 		frameBuffer.add(loadingImage);
 
-		service = Executors.newFixedThreadPool(THREAD_POOL_SIZE, (Runnable r) -> {
-			Thread thread = new Thread(threadGroup(), r, THREAD_NAME_PREFIX + threadId());
-			thread.setPriority(7);// high priority to acquire CPU
-			return thread;
-		});
-		/*
-		 * I interchanged the order of "-t 0" and "-s" and tested it. Code: Select all
-		 * raspistill -t 0 -s -o test.jpg And signal driven event works now as expected!
-		 * Y E A H :D
-		 */
-		// no preview window,
-		arguments.remove(OPT_PREVIEW);
-		arguments.remove(OPT_FULLSCREEN);
-		arguments.remove(OPT_OPACITY);
-		arguments.remove(OPT_HELP);
-		arguments.remove(OPT_SETTINGS);
-
-		// override some arguments
-		arguments.put(OPT_ENCODING, "png");
-		arguments.put(OPT_NOPREVIEW, "");
-		arguments.put(OPT_CAMSELECT, Integer.toString(this.cameraSelect));
-		arguments.put(OPT_OUTPUT, "-");// must be this, then image will be in console!
+		service = newExecutorService();
+		validateParameters();
 		try {
 			process = launch();
 		} catch (IOException e) {
@@ -247,22 +242,66 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 		err = process.getErrorStream();
 
 		// send new line char to output to trigger capture stream by mocked fps
-		service.submit(new CaptureWorker());
+		service.submit(newCaptureWorker());
 		// error must be consumed, if not, too much data blocking will crash process or
 		// blocking IO
-		service.submit(new ErrorConsumeWorker());
+		service.submit(newErrorConsumeWorker());
 
 		isOpen = true;
+		afterOpen();
 	}
 
+	protected void afterOpen() {
+	}
+
+	protected void beforeOpen() {
+	}
+
+	protected void validateParameters() {
+		/*
+		 * I interchanged the order of "-t 0" and "-s" and tested it. Code: Select all
+		 * raspistill -t 0 -s -o test.jpg And signal driven event works now as expected!
+		 * Y E A H :D
+		 */
+		// no preview window,
+		parameters.remove(OPT_PREVIEW);
+		parameters.remove(OPT_FULLSCREEN);
+		parameters.remove(OPT_OPACITY);
+		parameters.remove(OPT_HELP);
+		parameters.remove(OPT_SETTINGS);
+
+		// override some arguments
+		parameters.put(OPT_ENCODING, "png");
+		parameters.put(OPT_NOPREVIEW, "");
+		parameters.put(OPT_CAMSELECT, Integer.toString(this.camSelect));
+		parameters.put(OPT_OUTPUT, "-");// must be this, then image will be in console!
+	}
+	
+	/**
+	 * thread content to consume stderr inputstream
+	 */
+	protected abstract Runnable newErrorConsumeWorker();
+	/**
+	 * image capture worker, it is designed to consume stdout and stdin
+	 */
+	protected abstract Runnable newCaptureWorker();
+
+	protected ExecutorService newExecutorService() {
+		return Executors.newFixedThreadPool(DEFAULT_THREADPOOL_SIZE, (Runnable r) -> {
+			Thread thread = new Thread(threadGroup(), r, THREAD_NAME_PREFIX + threadId());
+			thread.setPriority(7);// high priority to acquire CPU
+			return thread;
+		});
+	}
+	
 	/**
 	 * @throws IOException
 	 * 
 	 */
 	private Process launch() throws IOException {
-		StringBuilder command = new StringBuilder(12 + arguments.size() * 8);
-		command.append(COMMAND_RASPISTILL).append(" ");
-		for (Entry<String, String> entry : this.arguments.entrySet()) {
+		StringBuilder command = new StringBuilder(12 + parameters.size() * 8);
+		command.append(this.driver.getCommand()).append(" ");
+		for (Entry<String, String> entry : this.parameters.entrySet()) {
 			command.append("--").append(entry.getKey()).append(" ");
 			if (entry.getValue() != null) {
 				command.append(entry.getValue()).append(" ");
@@ -279,45 +318,13 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 		for (int i = 0; st.hasMoreTokens(); i++)
 			cmdarray[i] = st.nextToken();
 
-		return new ProcessBuilder(cmdarray).directory(new File(".")).redirectErrorStream(true).start();
+		return new ProcessBuilder(cmdarray).directory(new File(".")).redirectErrorStream(false).start();
 	}
-
-	@Override
-	public void setResolution(Dimension dimension) {
-		this.dimension = dimension;
-		this.arguments.put(OPT_WIDTH, dimension.getWidth() + "");
-		this.arguments.put(OPT_HEIGHT, dimension.getHeight() + "");
-	}
-
-	/**
-	 * support change FPS at runtime.
-	 */
-	@Override
-	public void setParameters(Map<String, ?> map) {
-		if (isOpen) {
-			throw new UnsupportedOperationException(MSG_CANNOT_CHANGE_PROP);
-		}
-
-		for (Entry<String, ?> entry : map.entrySet()) {
-			if (options.hasOption(entry.getKey())) {
-				this.arguments.put(entry.getKey(), entry.getValue().toString());
-			} else {
-				throw new UnsupportedOperationException(MSG_WRONG_ARGUMENT);
-			}
-		}
-	}
-
-	private void drawRect(Graphics2D g2, int w, int h) {
-
-		int rx = (int) (w * Math.random() / 1.5);
-		int ry = (int) (h * Math.random() / 1.5);
-		int rw = (int) (w * Math.random() / 1.5);
-		int rh = (int) (w * Math.random() / 1.5);
-
-		g2.setColor(new Color((int) (Integer.MAX_VALUE * Math.random())));
-		g2.fillRect(rx, ry, rw, rh);
-	}
-
+	
+	//********************************************************
+	private byte r = (byte) (Math.random() * Byte.MAX_VALUE);
+	private byte g = (byte) (Math.random() * Byte.MAX_VALUE);
+	private byte b = (byte) (Math.random() * Byte.MAX_VALUE);
 	/**
 	 * draw dummy wating images
 	 * 
@@ -364,45 +371,14 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 
 		return bi;
 	}
+	private void drawRect(Graphics2D g2, int w, int h) {
 
-	// inner classes
-	class CaptureWorker implements Runnable {
-		@Override
-		public void run() {
-			while (!Thread.currentThread().isInterrupted()) {
-				try {
-					out.write(CAPTRE_TRIGGER_INPUT);
-					out.flush();
+		int rx = (int) (w * Math.random() / 1.5);
+		int ry = (int) (h * Math.random() / 1.5);
+		int rw = (int) (w * Math.random() / 1.5);
+		int rh = (int) (w * Math.random() / 1.5);
 
-					BufferedImage frame = new PNGDecoder(in).decode();
-					in.skip(16);// each time of decode, there will be 16 bytes should be skipped
-					frameBuffer.add(frame);
-				} catch (IOException e) {
-					LOGGER.error(e.toString(), e);
-				}
-			}
-		}
-	}
-
-	class ErrorConsumeWorker implements Runnable {
-		@Override
-		public void run() {
-			while (!Thread.currentThread().isInterrupted()) {
-				try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					LOGGER.warn(e.toString(), e);
-					break;
-				}
-				try {
-					int ret = -1;
-					do {
-						ret = err.read();
-					} while (ret != -1);
-				} catch (IOException e) {
-					LOGGER.error(e.toString(), e);
-				}
-			}
-		}
+		g2.setColor(new Color((int) (Integer.MAX_VALUE * Math.random())));
+		g2.fillRect(rx, ry, rw, rh);
 	}
 }

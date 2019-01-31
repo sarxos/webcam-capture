@@ -22,10 +22,10 @@ public interface Constants {
 	 */
 	String COMMAND_VCGENCMD = "vcgencmd get_camera";
 	/**
-	 * system property prefix for raspistill configuation. driver options can be
-	 * configurated globally by passing -Draspistill.${option}=${value} in your java
+	 * system property prefix for raspi(still|vid|...) configuation. driver options can be
+	 * configurated globally by passing -Draspi.${option}=${value} in your java
 	 * launch arguments. or programmatically <code>System.setProperty("key",
-	 * "value"); the key is raspistill long option name without "--"
+	 * "value"); the key is raspi??? long option name without "--"
 	 */
 	String SYSTEM_PROP_PREFIX = "raspi.";
 
@@ -91,12 +91,13 @@ public interface Constants {
 	 * OPT_ENCODING --encoding
 	 */
 	String OPT_ENCODING = "encoding";
+	
 	// *******************message templates**************
 	String MSG_CANNOT_CHANGE_PROP = "can not change property after device already discoveried";
-	String MSG_RASPISTILL_NOT_INSTALLED = "raspistill is not found, please run apt-get install raspistill. this driver supposed to run on raspberrypi";
+	String MSG_RASPI_NOT_INSTALLED = "{} is not found, please run apt-get install {}. this driver supposed to run on raspberrypi";
 	String MSG_COMPATIBLE_WARN = "now raspberrypi only support one camera connector with dual camera, so just retrun camera 0";
 	String MSG_WRONG_ARGUMENT = "wrong raspistill argument";
-	String MSG_NOT_SUPPORTED_OS_WARN = "RaspistillDriver supposed to run on raspberrypi";
+	String MSG_NOT_SUPPORTED_OS_WARN = "Driver supposed to run on raspberrypi";
 	String MSG_NOT_GRACEFUL_DOWN = "device is not shutdown perfactly, there maybe resource link?";
 	String MSG_NOT_RUNNING_WARN = "device does not running";
 	String MSG_HARDWARE_NOT_FOUND = "camera hardware not found";
