@@ -44,7 +44,7 @@ import com.github.sarxos.webcam.WebcamResolution;
 class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Constants {
 
 	private static final String THREAD_NAME_PREFIX = "raspistill-device-";
-	private static final int THREAD_POOL_SIZE = 4;
+	private static final int THREAD_POOL_SIZE = 2;
 	private final static Logger LOGGER = LoggerFactory.getLogger(RaspistillDevice.class);
 	/**
 	 * Artificial view sizes. raspistill can handle flex dimensions less than QSXGA,
@@ -390,12 +390,8 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 				}
 				try {
 					int ret = -1;
-					StringBuilder builder = new StringBuilder();
 					do {
 						ret = err.read();
-						if (ret != -1) {
-							builder.append((char) ret);
-						}
 					} while (ret != -1);
 				} catch (IOException e) {
 					LOGGER.error(e.toString(), e);
