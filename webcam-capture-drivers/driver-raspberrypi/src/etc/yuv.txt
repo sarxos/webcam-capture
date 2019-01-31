@@ -21,6 +21,7 @@ Image parameter commands
 -k, --keypress	: Wait between captures for a ENTER, X then ENTER to exit
 -s, --signal	: Wait between captures for a SIGUSR1 from another process
 -set, --settings	: Retrieve camera settings and write to stdout
+
 -bm, --burst	: Enable 'burst capture mode'
 -y, --luma	: Only output the luma / Y of the YUV data'
 

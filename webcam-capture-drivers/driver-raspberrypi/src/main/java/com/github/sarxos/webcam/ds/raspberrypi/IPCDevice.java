@@ -67,7 +67,7 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 			WebcamResolution.XGAP.getSize(), WebcamResolution.WXGA1.getSize(), WebcamResolution.WXGAP.getSize(),
 			WebcamResolution.SXGA.getSize() };
 	
-	private final int camSelect;
+	protected final int camSelect;
 	protected Map<String, String> parameters;
 	
 	private volatile boolean isOpen = false;
@@ -139,7 +139,8 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 
 		for (Entry<String, ?> entry : map.entrySet()) {
 			if (this.driver.getOptions().hasOption(entry.getKey())) {
-				this.parameters.put(entry.getKey(), entry.getValue().toString());
+				String longKey=this.driver.getOptions().getOption(entry.getKey()).getLongOpt();
+				this.parameters.put(longKey, entry.getValue()==null?"":entry.getValue().toString());
 			} else {
 				throw new UnsupportedOperationException(MSG_WRONG_ARGUMENT);
 			}
@@ -258,11 +259,6 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 	}
 
 	protected void validateParameters() {
-		/*
-		 * I interchanged the order of "-t 0" and "-s" and tested it. Code: Select all
-		 * raspistill -t 0 -s -o test.jpg And signal driven event works now as expected!
-		 * Y E A H :D
-		 */
 		// no preview window,
 		parameters.remove(OPT_PREVIEW);
 		parameters.remove(OPT_FULLSCREEN);
@@ -270,11 +266,6 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 		parameters.remove(OPT_HELP);
 		parameters.remove(OPT_SETTINGS);
 
-		// override some arguments
-		parameters.put(OPT_ENCODING, "png");
-		parameters.put(OPT_NOPREVIEW, "");
-		parameters.put(OPT_CAMSELECT, Integer.toString(this.camSelect));
-		parameters.put(OPT_OUTPUT, "-");// must be this, then image will be in console!
 	}
 	
 	/**

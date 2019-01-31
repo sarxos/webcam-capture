@@ -54,6 +54,21 @@ public class RaspistillDevice extends IPCDevice {
 	protected Runnable newCaptureWorker() {
 		return new CaptureWorker();
 	}
+	/**
+	 * One github story: I interchanged the order of "-t 0" and "-s" and tested it. Code: Select all
+	 * raspistill -t 0 -s -o test.jpg And signal driven event works now as expected!
+	 * Y E A H :D
+	 */
+	@Override
+	protected void validateParameters() {
+		super.validateParameters();
+		
+		// override some arguments
+		parameters.put(OPT_ENCODING, "png");
+		parameters.put(OPT_NOPREVIEW, "");
+		parameters.put(OPT_CAMSELECT, Integer.toString(this.camSelect));
+		parameters.put(OPT_OUTPUT, "-");// must be this, then image will be in console!
+	}
 
 	// inner classes
 	class CaptureWorker implements Runnable {

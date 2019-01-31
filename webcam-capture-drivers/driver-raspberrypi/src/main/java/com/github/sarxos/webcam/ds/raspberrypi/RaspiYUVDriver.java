@@ -5,22 +5,23 @@ import java.util.Map;
 import com.github.sarxos.webcam.WebcamDevice;
 
 /** 
- * ClassName: RaspistillDriver <br/> 
+ * ClassName: RaspiyuvDriver <br/> 
+ * Runs camera for specific time, and take uncompressed YUV/RGB capture at end if requested.
  * date: Jan 31, 2019 10:57:58 AM <br/> 
- * java wrapper for raspistill
+ * java wrapper for raspiyuv
  * @author maoanapex88@163.com alexmao86
  * @version  
  * @since JDK 1.8
  */
-public class RaspistillDriver extends IPCDriver {
+public class RaspiYUVDriver extends IPCDriver {
 	private final static String[] DEFAULT_ARGUMENTS = { "--width", "320", "--height", "240", "--quality", "36",
-			"--encoding", "png", "--nopreview", "--keypress", "--timeout", "0", "--output", "-" };
+			"--rgb", "--nopreview", "--keypress", "--timeout", "0", "--output", "-" };
 	/** 
 	 * Creates a new instance of RaspistillDriver. 
 	 * 
 	 * @param command 
 	 */ 
-	public RaspistillDriver() {
+	public RaspiYUVDriver() {
 		super(Constants.COMMAND_RASPISTILL);
 	}
 

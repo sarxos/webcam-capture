@@ -6,9 +6,9 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -92,7 +92,7 @@ public abstract class IPCDriver implements WebcamDriver, Constants {
 			CommandLine cmd = parser.parse(options, cmdArray);
 			Option[] opts = cmd.getOptions();
 			for (Option o : opts) {
-				arguments.put(o.getLongOpt(), o.getArgs() == 0 ? "" : o.getValue());
+				arguments.put(o.getLongOpt(), o.getValue()==null?"":o.getValue());
 			}
 		} catch (ParseException e) {
 			if (LOGGER.isDebugEnabled()) {
