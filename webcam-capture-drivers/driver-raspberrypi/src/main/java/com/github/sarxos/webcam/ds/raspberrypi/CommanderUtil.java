@@ -1,4 +1,6 @@
-package com.github.sarxos.webcam.ds.raspistill;
+package com.github.sarxos.webcam.ds.raspberrypi;
+
+import static com.github.sarxos.webcam.ds.raspberrypi.RaspiThreadGroup.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,7 +15,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import static com.github.sarxos.webcam.ds.raspistill.AppThreadGroup.*;
 
 /**
  * 

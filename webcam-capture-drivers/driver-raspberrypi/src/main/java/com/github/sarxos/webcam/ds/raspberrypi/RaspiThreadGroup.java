@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.raspistill;
+package com.github.sarxos.webcam.ds.raspberrypi;
 
 /**
  * app thread group
@@ -6,13 +6,13 @@ package com.github.sarxos.webcam.ds.raspistill;
  * @author maoanapex88@163.com (alexmao86)
  *
  */
-class AppThreadGroup {
+class RaspiThreadGroup {
 	private static final String THREAD_GROUP_NAME = "raspistill-driver";
 	private static int threadCounter;
-	private final static AppThreadGroup INSTANCE = new AppThreadGroup();
+	private final static RaspiThreadGroup INSTANCE = new RaspiThreadGroup();
 	private final ThreadGroup group;
 
-	private AppThreadGroup() {
+	private RaspiThreadGroup() {
 		group = new ThreadGroup(THREAD_GROUP_NAME);
 	}
 

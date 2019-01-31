@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.raspistill;
+package com.github.sarxos.webcam.ds.raspberrypi;
 
 import java.util.HashSet;
 import java.util.List;
@@ -69,7 +69,7 @@ class OptionsBuilder {
 		synchronized (ZERO_LONG_OPTIONS) {
 			if (SINGLETON == null) {
 				Options options = new Options();
-				List<String> lines = CommanderUtil.execute(Constants.COMMAND_CAPTURE);
+				List<String> lines = CommanderUtil.execute(Constants.COMMAND_RASPISTILL);
 				for (String line : lines) {
 					if (LOGGER.isDebugEnabled()) {
 						LOGGER.debug(line);

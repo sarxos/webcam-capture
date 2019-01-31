@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.raspistill;
+package com.github.sarxos.webcam.ds.raspberrypi;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -9,6 +9,8 @@ import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+
+import com.github.sarxos.webcam.ds.raspberrypi.PNGDecoder;
 
 import junit.framework.TestCase;
 

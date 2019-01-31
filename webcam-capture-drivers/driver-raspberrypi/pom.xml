@@ -9,10 +9,10 @@
     <version>0.3.13-SNAPSHOT</version>
   </parent>
 
-  <artifactId>webcam-capture-driver-raspistill</artifactId>
+  <artifactId>webcam-capture-driver-raspberrypi</artifactId>
   <packaging>jar</packaging>
 
-  <name>Webcam Capture - Raspberry Pi raspistill Driver</name>
+  <name>Webcam Capture - Raspberry Pi camera Driver</name>
   <description>Webcam Capture driver for capturing images for raspberrypi camera</description>
   <developers>
     <developer>

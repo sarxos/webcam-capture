@@ -3,7 +3,7 @@
  * This software is property of Robert Bosch (Suzhou). 
  * Unauthorized duplication and disclosure to third parties is prohibited.
  */
-package com.github.sarxos.webcam.ds.raspistill;
+package com.github.sarxos.webcam.ds.raspberrypi;
 
 /**
  * ClassName: Constants <br/>
@@ -14,22 +14,22 @@ public interface Constants {
 	/**
 	 * the raspistill command name
 	 */
-	String COMMAND_CAPTURE = "raspistill";
+	String COMMAND_RASPISTILL = "raspistill";
 	/**
 	 * native command to check camera support. it will return supported=1 detected=?
 	 * for supported 0 for not support, 1 support ? is the number of camera
 	 * supported.
 	 */
-	String COMMAND_CAMERA_CHECK = "vcgencmd get_camera";
+	String COMMAND_VCGENCMD = "vcgencmd get_camera";
 	/**
 	 * system property prefix for raspistill configuation. driver options can be
 	 * configurated globally by passing -Draspistill.${option}=${value} in your java
 	 * launch arguments. or programmatically <code>System.setProperty("key",
 	 * "value"); the key is raspistill long option name without "--"
 	 */
-	String SYSTEM_PROP_PREFIX = "raspistill.";
+	String SYSTEM_PROP_PREFIX = "raspi.";
 
-	String DEVICE_NAME_PREFIX = "raspistill camera ";
+	String DEVICE_NAME_PREFIX = "raspberrypi camera ";
 	/**
 	 * extended option, it can be processed by
 	 * 

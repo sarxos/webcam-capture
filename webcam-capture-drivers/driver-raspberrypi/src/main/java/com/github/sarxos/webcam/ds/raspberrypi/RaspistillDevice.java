@@ -1,7 +1,7 @@
-package com.github.sarxos.webcam.ds.raspistill;
+package com.github.sarxos.webcam.ds.raspberrypi;
 
-import static com.github.sarxos.webcam.ds.raspistill.AppThreadGroup.threadGroup;
-import static com.github.sarxos.webcam.ds.raspistill.AppThreadGroup.threadId;
+import static com.github.sarxos.webcam.ds.raspberrypi.RaspiThreadGroup.threadGroup;
+import static com.github.sarxos.webcam.ds.raspberrypi.RaspiThreadGroup.threadId;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,10 +18,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.StringTokenizer;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.cli.Options;
@@ -42,7 +44,7 @@ import com.github.sarxos.webcam.WebcamResolution;
  * @author maoanapex88@163.com (alexmao86)
  */
 class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Constants {
-
+	private static final int POLL_TIMEOUT = 40;
 	private static final String THREAD_NAME_PREFIX = "raspistill-device-";
 	private static final int THREAD_POOL_SIZE = 2;
 	private final static Logger LOGGER = LoggerFactory.getLogger(RaspistillDevice.class);
@@ -76,7 +78,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 	private OutputStream out;
 	private InputStream in;
 	private InputStream err;
-	private Queue<BufferedImage> frameBuffer = new CircularListCache<>(2);// 2 double buffer
+	private BlockingQueue<BufferedImage> frameBuffer = new ArrayBlockingQueue<>(2);
 
 	private final Options options;
 
@@ -154,7 +156,11 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 
 	@Override
 	public BufferedImage getImage() {
-		return frameBuffer.peek();
+		try {
+			return frameBuffer.poll(POLL_TIMEOUT, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -255,7 +261,7 @@ class RaspistillDevice implements WebcamDevice, WebcamDevice.Configurable, Const
 	 */
 	private Process launch() throws IOException {
 		StringBuilder command = new StringBuilder(12 + arguments.size() * 8);
-		command.append(COMMAND_CAPTURE).append(" ");
+		command.append(COMMAND_RASPISTILL).append(" ");
 		for (Entry<String, String> entry : this.arguments.entrySet()) {
 			command.append("--").append(entry.getKey()).append(" ");
 			if (entry.getValue() != null) {

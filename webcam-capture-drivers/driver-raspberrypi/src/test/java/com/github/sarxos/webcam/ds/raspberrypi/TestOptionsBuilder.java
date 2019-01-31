@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.raspistill;
+package com.github.sarxos.webcam.ds.raspberrypi;
 
 import org.apache.commons.cli.Options;
 

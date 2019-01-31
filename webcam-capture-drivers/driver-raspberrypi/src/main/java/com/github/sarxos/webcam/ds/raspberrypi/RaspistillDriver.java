@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.raspistill;
+package com.github.sarxos.webcam.ds.raspberrypi;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,7 +102,7 @@ public class RaspistillDriver implements WebcamDriver, Constants {
 	@Override
 	public List<WebcamDevice> getDevices() {
 		synchronized (this) {
-			List<String> stdout = CommanderUtil.execute(COMMAND_CAPTURE);
+			List<String> stdout = CommanderUtil.execute(COMMAND_RASPISTILL);
 			if (stdout.isEmpty() || stdout.get(0).toLowerCase().contains(MSG_COMMAND_NOT_FOUND)) {
 				throw new UnsupportedOperationException(MSG_RASPISTILL_NOT_INSTALLED);
 			}
@@ -111,7 +111,7 @@ public class RaspistillDriver implements WebcamDriver, Constants {
 				LOGGER.debug(MSG_COMPATIBLE_WARN);
 			}
 
-			stdout = CommanderUtil.execute(COMMAND_CAMERA_CHECK);
+			stdout = CommanderUtil.execute(COMMAND_VCGENCMD);
 			if (stdout.size() != 1) {
 				return Collections.emptyList();
 			}
