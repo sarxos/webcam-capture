@@ -33,18 +33,20 @@ public class TestImageInputStream extends TestCase {
 		// testType("png");
 	}
 
-	/*
-	 * public void testBasePNGDecoder() throws Exception {
-	 * 
-	 * File f=new File("src/etc/resources/1.png"); InputStream in = new
-	 * FileInputStream(f); PNGDecoder decoder=new PNGDecoder(in);
-	 * 
-	 * BufferedImage bi = decoder.decode(); bi.flush(); assertNotNull(bi);
-	 * in.close();
-	 * 
-	 * //checked image is so good! //ImageIO.write(bi, "png", new File("out.png"));
-	 * }
-	 */
+	public void testBasePNGDecoder() throws Exception {
+
+		File f = new File("src/etc/resources/1.png");
+		InputStream in = new FileInputStream(f);
+		PNGDecoder decoder = new PNGDecoder(in);
+
+		BufferedImage bi = decoder.decode();
+		bi.flush();
+		assertNotNull(bi);
+		in.close();
+
+		// checked image is so good! //ImageIO.write(bi, "png", new File("out.png"));
+	}
+
 	/*
 	 * public void testPNGDecoderPerformance() throws Exception { File f=new
 	 * File("src/etc/resources/kc.png"); InputStream in = new FileInputStream(f);

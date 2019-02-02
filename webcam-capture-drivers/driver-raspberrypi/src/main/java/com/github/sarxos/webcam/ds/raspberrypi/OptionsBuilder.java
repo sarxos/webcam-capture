@@ -30,7 +30,7 @@ class OptionsBuilder implements Constants{
 	private static Map<String, Options> SINGLETONS=new ConcurrentHashMap<>();
 
 	private static Set<String> NO_VALUE_OPTIONS=new HashSet<>();
-	private OptionsBuilder() {
+	static {
 		NO_VALUE_OPTIONS.add(OPT_RAW);
 		NO_VALUE_OPTIONS.add(OPT_LATEST);
 		NO_VALUE_OPTIONS.add(OPT_VERBOSE);
@@ -61,7 +61,8 @@ class OptionsBuilder implements Constants{
 		NO_VALUE_OPTIONS.add(OPT_CIRCULAR);
 		NO_VALUE_OPTIONS.add(OPT_FLUSH);
 		NO_VALUE_OPTIONS.add(OPT_SAVE_PTS);
-		
+	}
+	private OptionsBuilder() {
 	}
 
 	/**
