@@ -93,7 +93,10 @@ class OptionsBuilder implements Constants{
 			}
 			SINGLETONS.put(name, options);
 			for(String opt:NO_VALUE_OPTIONS) {
-				options.getOption(opt).setArgs(0);
+				Option option=options.getOption(opt);
+				if(option!=null) {
+					option.setArgs(0);
+				}
 			}
 			return options;
 		}
