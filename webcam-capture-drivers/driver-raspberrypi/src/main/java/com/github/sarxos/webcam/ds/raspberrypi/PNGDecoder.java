@@ -1,12 +1,22 @@
 package com.github.sarxos.webcam.ds.raspberrypi;
 
+import java.awt.Transparency;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.ComponentSampleModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.zip.CRC32;
+import java.util.Iterator;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -42,38 +52,37 @@ import java.util.zip.Inflater;
  * 2010-05-15: void256
  * Removed LWJGL name dependencies and instead added TextureFormat enum so that
  * it's now really independent.
- *
- */
-/**
- * 
- * ClassName: PNGDecoder <br/>
- * one compact PNG deconder.
- * 
- * @author Matthias Mann
- * @author maoanapex88@163.com (alexmao86)
  */
 public class PNGDecoder {
 	public enum TextureFormat {
 		ALPHA, LUMINANCE, RGB, RGBA, ABGR
 	}
 
-	private static final byte[] SIGNATURE = { (byte) 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a };
+	private static final byte[] SIGNATURE = { (byte) 137, 80, 78, 71, 13, 10, 26, 10 };
 
-	public static final int IHDR = 0x49484452;
-	public static final int PLTE = 0x504C5445;
-	public static final int tRNS = 0x74524E53;
-	public static final int IDAT = 0x49444154;
-	public static final int IEND = 0x49454E44;
+	private static final int IHDR = 0x49484452;
+	private static final int PLTE = 0x504C5445;
+	private static final int tRNS = 0x74524E53;
+	private static final int IDAT = 0x49444154;
+	private static final int IEND = 0x49454E44;
 
 	public static final byte COLOR_GREYSCALE = 0;
 	public static final byte COLOR_TRUECOLOR = 2;
 	public static final byte COLOR_INDEXED = 3;
 	public static final byte COLOR_GREYALPHA = 4;
 	public static final byte COLOR_TRUEALPHA = 6;
+	
+	//************************default decode image settings********************
+	private static final int DATA_TYPE = DataBuffer.TYPE_BYTE;
+	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+	private static int[] OFFSET = new int[] { 0 };
+	private static final int[] BITS = { 8, 8, 8 };
+	private static int[] BAND_OFFSETS = new int[] { 0, 1, 2 };
+	//************************************************************************
 
 	private final InputStream input;
-	private final CRC32 crc;
-	private final byte[] buf;
+	//private final CRC32 crc;
+	private final byte[] buffer;
 
 	private int chunkLength;
 	private int chunkType;
@@ -88,16 +97,39 @@ public class PNGDecoder {
 	private byte[] paletteA;
 	private byte[] transPixel;
 
+	//decode buffer willed used
+	private byte[] curLine;
+	private byte[] prevLine;
+	private ComponentColorModel cmodel;
+	private ComponentSampleModel smodel;
+	
+	/**
+	 * 
+	 * Creates a new instance of PNGDecoder. 
+	 * 
+	 * @param input png stream
+	 * @throws IOException
+	 */
 	public PNGDecoder(InputStream input) throws IOException {
 		this.input = input;
-		this.crc = new CRC32();
-		this.buf = new byte[4096];
+		//this.crc = new CRC32();
+		this.buffer = new byte[4096];
 
-		int read = input.read(buf, 0, SIGNATURE.length);
-		if (read != SIGNATURE.length || !checkSignatur(buf)) {
+		readMetadata(input);
+		
+		curLine = new byte[width * bytesPerPixel + 1];
+		prevLine = new byte[width * bytesPerPixel + 1];
+		cmodel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
+		smodel = new ComponentSampleModel(DATA_TYPE, width, height, 3, width * 3, BAND_OFFSETS);
+	}
+
+	private void readMetadata(InputStream input) throws IOException {
+		/*int read = */input.read(buffer, 0, SIGNATURE.length);//just skip sign
+		/* no check
+		if (read != SIGNATURE.length || !checkSignatur(buffer)) {
 			throw new IOException("Not a valid PNG file");
 		}
-
+		 */
 		openChunk(IHDR);
 		readIHDR();
 		closeChunk();
@@ -137,32 +169,95 @@ public class PNGDecoder {
 	public boolean isRGB() {
 		return colorType == COLOR_TRUEALPHA || colorType == COLOR_TRUECOLOR || colorType == COLOR_INDEXED;
 	}
-
-	public BufferedImage decode() throws IOException {
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		ByteBuffer buffer = ByteBuffer.allocate(height * width * 3);
-		int stride = 1;
-		TextureFormat fmt = TextureFormat.RGB;
-
-		final int offset = buffer.position();
-		byte[] curLine = new byte[width * bytesPerPixel + 1];
-		byte[] prevLine = new byte[width * bytesPerPixel + 1];
-
+	public static void main(String args[]) throws Exception {
+		File f = new File("src/etc/resources/1.png");
+		InputStream in = new FileInputStream(f);
+		PNGDecoder decoder = new PNGDecoder(in);
+		decoder.decode();
+	}
+	/**
+	 * read just one png file
+	 * @return
+	 * @throws IOException 
+	 */
+	public final BufferedImage decode() throws IOException {
+		byte[] bytes = new byte[width * height * 3];//must new each time!
+		byte[][] data = new byte[][] { bytes };
+		ByteBuffer buffer = ByteBuffer.wrap(bytes);
+		decode(buffer, TextureFormat.RGB);
+		DataBufferByte dbuf = new DataBufferByte(data, bytes.length, OFFSET);
+		WritableRaster raster = Raster.createWritableRaster(smodel, dbuf, null);
+		
+		BufferedImage bi = new BufferedImage(cmodel, raster, false, null);
+		bi.flush();
+		return bi;
+	}
+	/**
+	 * read png for png stream
+	 * @return
+	 * @throws IOException 
+	 */
+	public BufferedImage nextFrame() throws IOException {
+		BufferedImage next=decode();
+		input.skip(16);// each time of decode, there will be 16 bytes should be skipped
+		readMetadata(input);
+		return next;
+	}
+	public Iterator<BufferedImage> iterator(){
+		return new Iterator<BufferedImage>() {
+			@Override
+			public BufferedImage next() {
+				BufferedImage next=null;
+				try {
+					next = decode();
+					input.skip(16);
+					readMetadata(input);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return next;
+			}
+			
+			@Override
+			public boolean hasNext() {
+				try {
+					return input.available()>0;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return false;
+			}
+		};
+	}
+	/**
+	 * decode image data to buffer, mapping to awt type byte.
+	 * if rgb, r,g,b,r,g,b...,r,g,b,...
+	 * if abgr, a,b,g,r....
+	 * if rgba, r,g,b,a....
+	 * 
+	 * @param buffer
+	 * @param stride
+	 * @param fmt
+	 * @throws IOException 
+	 */
+	private final void decode(ByteBuffer buffer, TextureFormat fmt) throws IOException {
 		final Inflater inflater = new Inflater();
 		try {
 			for (int y = 0; y < height; y++) {
 				readChunkUnzip(inflater, curLine, 0, curLine.length);
 				unfilter(curLine, prevLine);
-
-				buffer.position(offset + y * stride);
-
+				
 				switch (colorType) {
 				case COLOR_TRUECOLOR:
 					switch (fmt) {
 					case ABGR:
+						copyRGBtoABGR(buffer, curLine);
+						break;
 					case RGBA:
+						copyRGBtoRGBA(buffer, curLine);
+						break;
 					case RGB:
-						fillRGBToRGBImage(curLine, image, y);
+						copy(buffer, curLine);
 						break;
 					default:
 						throw new UnsupportedOperationException("Unsupported format for this image");
@@ -171,9 +266,13 @@ public class PNGDecoder {
 				case COLOR_TRUEALPHA:
 					switch (fmt) {
 					case ABGR:
+						copyRGBAtoABGR(buffer, curLine);
+						break;
 					case RGBA:
+						copy(buffer, curLine);
+						break;
 					case RGB:
-						fillRGBAToRGBImage(curLine, image, y);
+						copyRGBAtoRGB(buffer, curLine);
 						break;
 					default:
 						throw new UnsupportedOperationException("Unsupported format for this image");
@@ -183,14 +282,19 @@ public class PNGDecoder {
 					switch (fmt) {
 					case LUMINANCE:
 					case ALPHA:
+						copy(buffer, curLine);
+						break;
 					default:
 						throw new UnsupportedOperationException("Unsupported format for this image");
 					}
+					break;
 				case COLOR_INDEXED:
 					switch (fmt) {
 					case ABGR:
+						copyPALtoABGR(buffer, curLine);
+						break;
 					case RGBA:
-						fillPALToRGBImage(curLine, image, y);
+						copyPALtoRGBA(buffer, curLine);
 						break;
 					default:
 						throw new UnsupportedOperationException("Unsupported format for this image");
@@ -207,44 +311,109 @@ public class PNGDecoder {
 		} finally {
 			inflater.end();
 		}
-		return image;
 	}
 
-	private void fillPALToRGBImage(byte[] curLine, BufferedImage image, int y) {
-		byte[] table = paletteA;
-		if (paletteA != null) {
-			table = paletteA;
+	private void copy(ByteBuffer buffer, byte[] curLine) {
+		buffer.put(curLine, 1, curLine.length - 1);
+	}
+
+	private void copyRGBtoABGR(ByteBuffer buffer, byte[] curLine) {
+		if (transPixel != null) {
+			byte tr = transPixel[1];
+			byte tg = transPixel[3];
+			byte tb = transPixel[5];
+			for (int i = 1, n = curLine.length; i < n; i += 3) {
+				byte r = curLine[i];
+				byte g = curLine[i + 1];
+				byte b = curLine[i + 2];
+				byte a = (byte) 0xFF;
+				if (r == tr && g == tg && b == tb) {
+					a = 0;
+				}
+				buffer.put(a).put(b).put(g).put(r);
+			}
 		} else {
-			table = palette;
-		}
-
-		for (int i = 1, n = curLine.length; i < n; i += 1) {
-			int idx = curLine[i] & 255;
-			int baseIdx = idx * 3;
-			int rgb = table[baseIdx];
-			rgb = (rgb << 8) + table[baseIdx + 1];
-			rgb = (baseIdx << 8) + table[baseIdx + 2];
-			image.setRGB(i - 1/* TODO is this correct?? */, y, rgb);
+			for (int i = 1, n = curLine.length; i < n; i += 3) {
+				buffer.put((byte) 0xFF).put(curLine[i + 2]).put(curLine[i + 1]).put(curLine[i]);
+			}
 		}
 	}
 
-	private void fillRGBAToRGBImage(byte[] curLine, BufferedImage image, int y) {
+	private void copyRGBtoRGBA(ByteBuffer buffer, byte[] curLine) {
+		if (transPixel != null) {
+			byte tr = transPixel[1];
+			byte tg = transPixel[3];
+			byte tb = transPixel[5];
+			for (int i = 1, n = curLine.length; i < n; i += 3) {
+				byte r = curLine[i];
+				byte g = curLine[i + 1];
+				byte b = curLine[i + 2];
+				byte a = (byte) 0xFF;
+				if (r == tr && g == tg && b == tb) {
+					a = 0;
+				}
+				buffer.put(r).put(g).put(b).put(a);
+			}
+		} else {
+			for (int i = 1, n = curLine.length; i < n; i += 3) {
+				buffer.put(curLine[i]).put(curLine[i + 1]).put(curLine[i + 2]).put((byte) 0xFF);
+			}
+		}
+	}
+
+	private void copyRGBAtoABGR(ByteBuffer buffer, byte[] curLine) {
 		for (int i = 1, n = curLine.length; i < n; i += 4) {
-			int x = i / 4;
-			int rgb = curLine[i];
-			rgb = (rgb << 8) + curLine[i + 1];
-			rgb = (rgb << 8) + curLine[i + 2];
-			image.setRGB(x, y, rgb);
+			buffer.put(curLine[i + 3]).put(curLine[i + 2]).put(curLine[i + 1]).put(curLine[i]);
 		}
 	}
 
-	private void fillRGBToRGBImage(byte[] curLine, BufferedImage image, int y) {
-		for (int i = 0; i < curLine.length; i += 3) {
-			int x = i / 3;
-			int rgb = curLine[i];
-			rgb = (rgb << 8) + curLine[i + 1];
-			rgb = (rgb << 8) + curLine[i + 2];
-			image.setRGB(x, y, rgb);
+	private void copyRGBAtoRGB(ByteBuffer buffer, byte[] curLine) {
+		for (int i = 1, n = curLine.length; i < n; i += 4) {
+			buffer.put(curLine[i]).put(curLine[i + 1]).put(curLine[i + 2]);
+		}
+	}
+
+	private void copyPALtoABGR(ByteBuffer buffer, byte[] curLine) {
+		if (paletteA != null) {
+			for (int i = 1, n = curLine.length; i < n; i += 1) {
+				int idx = curLine[i] & 255;
+				byte r = palette[idx * 3 + 0];
+				byte g = palette[idx * 3 + 1];
+				byte b = palette[idx * 3 + 2];
+				byte a = paletteA[idx];
+				buffer.put(a).put(b).put(g).put(r);
+			}
+		} else {
+			for (int i = 1, n = curLine.length; i < n; i += 1) {
+				int idx = curLine[i] & 255;
+				byte r = palette[idx * 3 + 0];
+				byte g = palette[idx * 3 + 1];
+				byte b = palette[idx * 3 + 2];
+				byte a = (byte) 0xFF;
+				buffer.put(a).put(b).put(g).put(r);
+			}
+		}
+	}
+
+	private void copyPALtoRGBA(ByteBuffer buffer, byte[] curLine) {
+		if (paletteA != null) {
+			for (int i = 1, n = curLine.length; i < n; i += 1) {
+				int idx = curLine[i] & 255;
+				byte r = palette[idx * 3 + 0];
+				byte g = palette[idx * 3 + 1];
+				byte b = palette[idx * 3 + 2];
+				byte a = paletteA[idx];
+				buffer.put(r).put(g).put(b).put(a);
+			}
+		} else {
+			for (int i = 1, n = curLine.length; i < n; i += 1) {
+				int idx = curLine[i] & 255;
+				byte r = palette[idx * 3 + 0];
+				byte g = palette[idx * 3 + 1];
+				byte b = palette[idx * 3 + 2];
+				byte a = (byte) 0xFF;
+				buffer.put(r).put(g).put(b).put(a);
+			}
 		}
 	}
 
@@ -332,11 +501,11 @@ public class PNGDecoder {
 
 	private void readIHDR() throws IOException {
 		checkChunkLength(13);
-		readChunk(buf, 0, 13);
-		width = readInt(buf, 0);
-		height = readInt(buf, 4);
-		bitdepth = buf[8] & 255;
-		colorType = buf[9] & 255;
+		readChunk(buffer, 0, 13);
+		width = readInt(buffer, 0);
+		height = readInt(buffer, 4);
+		bitdepth = buffer[8] & 255;
+		colorType = buffer[9] & 255;
 
 		if (bitdepth != 8) {
 			throw new IOException("Unsupported bit depth: " + bitdepth);
@@ -359,13 +528,13 @@ public class PNGDecoder {
 			throw new IOException("unsupported color format");
 		}
 
-		if (buf[10] != 0) {
+		if (buffer[10] != 0) {
 			throw new IOException("unsupported compression method");
 		}
-		if (buf[11] != 0) {
+		if (buffer[11] != 0) {
 			throw new IOException("unsupported filtering method");
 		}
-		if (buf[12] != 0) {
+		if (buffer[12] != 0) {
 			throw new IOException("unsupported interlace method");
 		}
 	}
@@ -409,12 +578,14 @@ public class PNGDecoder {
 			// just skip the rest and the CRC
 			skip(chunkRemaining + 4);
 		} else {
-			readFully(buf, 0, 4);
-			int expectedCrc = readInt(buf, 0);
+			readFully(buffer, 0, 4);//read crc
+			/*int expectedCrc = */readInt(buffer, 0);
+			/*
 			int computedCrc = (int) crc.getValue();
 			if (computedCrc != expectedCrc) {
 				throw new IOException("Invalid CRC");
 			}
+			*/
 		}
 		chunkRemaining = 0;
 		chunkLength = 0;
@@ -422,12 +593,12 @@ public class PNGDecoder {
 	}
 
 	private void openChunk() throws IOException {
-		readFully(buf, 0, 8);
-		chunkLength = readInt(buf, 0);
-		chunkType = readInt(buf, 4);
+		readFully(buffer, 0, 8);
+		chunkLength = readInt(buffer, 0);
+		chunkType = readInt(buffer, 4);
 		chunkRemaining = chunkLength;
-		crc.reset();
-		crc.update(buf, 4, 4); // only chunkType
+		//crc.reset();
+		//crc.update(buffer, 4, 4); // only chunkType
 	}
 
 	private void openChunk(int expected) throws IOException {
@@ -448,7 +619,7 @@ public class PNGDecoder {
 			length = chunkRemaining;
 		}
 		readFully(buffer, offset, length);
-		crc.update(buffer, offset, length);
+		//crc.update(buffer, offset, length);
 		chunkRemaining -= length;
 		return length;
 	}
@@ -458,12 +629,12 @@ public class PNGDecoder {
 			closeChunk();
 			openChunk(IDAT);
 		}
-		int read = readChunk(buf, 0, buf.length);
-		inflater.setInput(buf, 0, read);
+		int read = readChunk(buffer, 0, buffer.length);
+		inflater.setInput(buffer, 0, read);
 	}
 
 	private void readChunkUnzip(Inflater inflater, byte[] buffer, int offset, int length) throws IOException {
-		assert (buffer != this.buf);
+		assert (buffer != this.buffer);
 		try {
 			do {
 				int read = inflater.inflate(buffer, offset, length);
@@ -511,7 +682,7 @@ public class PNGDecoder {
 			amount -= skipped;
 		}
 	}
-
+	/*
 	private static boolean checkSignatur(byte[] buffer) {
 		for (int i = 0; i < SIGNATURE.length; i++) {
 			if (buffer[i] != SIGNATURE[i]) {
@@ -520,4 +691,5 @@ public class PNGDecoder {
 		}
 		return true;
 	}
+	*/
 }
