@@ -3,56 +3,22 @@ package com.github.sarxos.webcam.ds.raspberrypi;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.ComponentSampleModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
+import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-/*
- * Copyright (c) 2008-2010, Matthias Mann
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Matthias Mann nor the names of its contributors may
- *       be used to endorse or promote products derived from this software
- *       without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * 2010-05-15: void256
- * Removed LWJGL name dependencies and instead added TextureFormat enum so that
- * it's now really independent.
- */
 public class PNGDecoder {
 	public enum TextureFormat {
 		ALPHA, LUMINANCE, RGB, RGBA, ABGR
@@ -96,12 +62,6 @@ public class PNGDecoder {
 	private byte[] palette;
 	private byte[] paletteA;
 	private byte[] transPixel;
-
-	//decode buffer willed used
-	private byte[] curLine;
-	private byte[] prevLine;
-	private ComponentColorModel cmodel;
-	private ComponentSampleModel smodel;
 	
 	/**
 	 * 
@@ -115,15 +75,6 @@ public class PNGDecoder {
 		//this.crc = new CRC32();
 		this.buffer = new byte[4096];
 
-		readMetadata(input);
-		
-		curLine = new byte[width * bytesPerPixel + 1];
-		prevLine = new byte[width * bytesPerPixel + 1];
-		cmodel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
-		smodel = new ComponentSampleModel(DATA_TYPE, width, height, 3, width * 3, BAND_OFFSETS);
-	}
-
-	private void readMetadata(InputStream input) throws IOException {
 		/*int read = */input.read(buffer, 0, SIGNATURE.length);//just skip sign
 		/* no check
 		if (read != SIGNATURE.length || !checkSignatur(buffer)) {
@@ -169,18 +120,15 @@ public class PNGDecoder {
 	public boolean isRGB() {
 		return colorType == COLOR_TRUEALPHA || colorType == COLOR_TRUECOLOR || colorType == COLOR_INDEXED;
 	}
-	public static void main(String args[]) throws Exception {
-		File f = new File("src/etc/resources/1.png");
-		InputStream in = new FileInputStream(f);
-		PNGDecoder decoder = new PNGDecoder(in);
-		decoder.decode();
-	}
 	/**
 	 * read just one png file
 	 * @return
 	 * @throws IOException 
 	 */
 	public final BufferedImage decode() throws IOException {
+		ColorModel cmodel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
+		SampleModel smodel = new ComponentSampleModel(DATA_TYPE, width, height, 3, width * 3, BAND_OFFSETS);
+		
 		byte[] bytes = new byte[width * height * 3];//must new each time!
 		byte[][] data = new byte[][] { bytes };
 		ByteBuffer buffer = ByteBuffer.wrap(bytes);
@@ -191,43 +139,6 @@ public class PNGDecoder {
 		BufferedImage bi = new BufferedImage(cmodel, raster, false, null);
 		bi.flush();
 		return bi;
-	}
-	/**
-	 * read png for png stream
-	 * @return
-	 * @throws IOException 
-	 */
-	public BufferedImage nextFrame() throws IOException {
-		BufferedImage next=decode();
-		input.skip(16);// each time of decode, there will be 16 bytes should be skipped
-		readMetadata(input);
-		return next;
-	}
-	public Iterator<BufferedImage> iterator(){
-		return new Iterator<BufferedImage>() {
-			@Override
-			public BufferedImage next() {
-				BufferedImage next=null;
-				try {
-					next = decode();
-					input.skip(16);
-					readMetadata(input);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return next;
-			}
-			
-			@Override
-			public boolean hasNext() {
-				try {
-					return input.available()>0;
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return false;
-			}
-		};
 	}
 	/**
 	 * decode image data to buffer, mapping to awt type byte.
@@ -241,6 +152,8 @@ public class PNGDecoder {
 	 * @throws IOException 
 	 */
 	private final void decode(ByteBuffer buffer, TextureFormat fmt) throws IOException {
+		byte[] curLine = new byte[width * bytesPerPixel + 1];
+		byte[] prevLine = new byte[width * bytesPerPixel + 1];
 		final Inflater inflater = new Inflater();
 		try {
 			for (int y = 0; y < height; y++) {

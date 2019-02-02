@@ -18,7 +18,6 @@ public class RaspistillDevice extends IPCDevice {
 	 */
 	private final static char CAPTRE_TRIGGER_INPUT = '\n';
 	private final static char CAPTRE_TERMINTE_INPUT = 'x';
-	private PNGDecoder decoder=null;
 	/**
 	 * Creates a new instance of RaspistillDevice.
 	 * 
@@ -64,18 +63,10 @@ public class RaspistillDevice extends IPCDevice {
 
 	@Override
 	public BufferedImage getImage() {
-		if(decoder==null) {
-			try {
-				decoder=new PNGDecoder(in);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		try {
 			out.write(CAPTRE_TRIGGER_INPUT);
 			out.flush();
-			BufferedImage frame = decoder.nextFrame();
+			BufferedImage frame = new PNGDecoder(in).decode();
 			return frame;
 		} catch (IOException e) {
 			e.printStackTrace();
