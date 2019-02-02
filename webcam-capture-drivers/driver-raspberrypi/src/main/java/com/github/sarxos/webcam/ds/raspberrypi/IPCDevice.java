@@ -8,15 +8,7 @@ package com.github.sarxos.webcam.ds.raspberrypi;
 import static com.github.sarxos.webcam.ds.raspberrypi.RaspiThreadGroup.threadGroup;
 import static com.github.sarxos.webcam.ds.raspberrypi.RaspiThreadGroup.threadId;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,11 +16,8 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
@@ -51,7 +40,6 @@ import com.github.sarxos.webcam.WebcamResolution;
  * @since JDK 1.8
  */
 public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurable, Constants {
-	private static final int POLL_TIMEOUT = 40;
 	private static final String THREAD_NAME_PREFIX = "raspistill-device-";
 	private static final int DEFAULT_THREADPOOL_SIZE = 2;
 	private final static Logger LOGGER = LoggerFactory.getLogger(IPCDevice.class);
@@ -78,7 +66,6 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 	protected OutputStream out;
 	protected InputStream in;
 	protected InputStream err;
-	protected final BlockingQueue<BufferedImage> frameBuffer = new ArrayBlockingQueue<>(2);
 	protected final IPCDriver driver;
 	
 	public IPCDevice(int camSelect, Map<String, String> parameters, IPCDriver driver) {
@@ -86,15 +73,6 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 		this.camSelect = camSelect;
 		this.parameters = parameters;
 		this.driver=driver;
-	}
-	
-	@Override
-	public BufferedImage getImage() {
-		try {
-			return frameBuffer.poll(POLL_TIMEOUT, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			return null;
-		}
 	}
 	@Override
 	public String getName() {
@@ -191,7 +169,7 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 		if (counter.get() != 0) {
 			LOGGER.debug(MSG_NOT_GRACEFUL_DOWN);
 		}
-		frameBuffer.clear();
+		
 		isOpen = false;
 		afterClose();
 	}
@@ -225,9 +203,6 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 			return;
 		}
 		beforeOpen();
-		// add one loading image
-		BufferedImage loadingImage = this.drawLoadingImage();
-		frameBuffer.add(loadingImage);
 
 		service = newExecutorService();
 		validateParameters();
@@ -241,9 +216,7 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 		out = process.getOutputStream();
 		in = process.getInputStream();
 		err = process.getErrorStream();
-
-		// send new line char to output to trigger capture stream by mocked fps
-		service.submit(newCaptureWorker());
+		
 		// error must be consumed, if not, too much data blocking will crash process or
 		// blocking IO
 		service.submit(newErrorConsumeWorker());
@@ -271,12 +244,10 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 	/**
 	 * thread content to consume stderr inputstream
 	 */
-	protected abstract Runnable newErrorConsumeWorker();
-	/**
-	 * image capture worker, it is designed to consume stdout and stdin
-	 */
-	protected abstract Runnable newCaptureWorker();
-
+	protected Runnable newErrorConsumeWorker() {
+		return new ErrorConsumeWorker();
+	}
+	
 	protected ExecutorService newExecutorService() {
 		return Executors.newFixedThreadPool(DEFAULT_THREADPOOL_SIZE, (Runnable r) -> {
 			Thread thread = new Thread(threadGroup(), r, THREAD_NAME_PREFIX + threadId());
@@ -311,65 +282,25 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 
 		return new ProcessBuilder(cmdarray).directory(new File(".")).redirectErrorStream(false).start();
 	}
-	
-	//********************************************************
-	private byte r = (byte) (Math.random() * Byte.MAX_VALUE);
-	private byte g = (byte) (Math.random() * Byte.MAX_VALUE);
-	private byte b = (byte) (Math.random() * Byte.MAX_VALUE);
-	/**
-	 * draw dummy wating images
-	 * 
-	 * @return
-	 */
-	private BufferedImage drawLoadingImage() {
-		Dimension resolution = getResolution();
-
-		int w = resolution.width;
-		int h = resolution.height;
-
-		String s = getName();
-
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
-		BufferedImage bi = gc.createCompatibleImage(w, h);
-
-		Graphics2D g2 = ge.createGraphics(bi);
-		g2.setBackground(new Color(Math.abs(r++), Math.abs(g++), Math.abs(b++)));
-		g2.clearRect(0, 0, w, h);
-
-		drawRect(g2, w, h);
-		drawRect(g2, w, h);
-		drawRect(g2, w, h);
-		drawRect(g2, w, h);
-		drawRect(g2, w, h);
-
-		Font font = new Font("sans-serif", Font.BOLD, 16);
-
-		g2.setFont(font);
-
-		FontMetrics metrics = g2.getFontMetrics(font);
-		int sw = (w - metrics.stringWidth(s)) / 2;
-		int sh = (h - metrics.getHeight()) / 2 + metrics.getHeight() / 2;
-
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setColor(Color.BLACK);
-		g2.drawString(s, sw + 1, sh + 1);
-		g2.setColor(Color.WHITE);
-		g2.drawString(s, sw, sh);
-
-		g2.dispose();
-		bi.flush();
-
-		return bi;
-	}
-	private void drawRect(Graphics2D g2, int w, int h) {
-
-		int rx = (int) (w * Math.random() / 1.5);
-		int ry = (int) (h * Math.random() / 1.5);
-		int rw = (int) (w * Math.random() / 1.5);
-		int rh = (int) (w * Math.random() / 1.5);
-
-		g2.setColor(new Color((int) (Integer.MAX_VALUE * Math.random())));
-		g2.fillRect(rx, ry, rw, rh);
+	class ErrorConsumeWorker implements Runnable {
+		@Override
+		public void run() {
+			while (!Thread.currentThread().isInterrupted()) {
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					LOGGER.info(e.toString(), e);
+					break;
+				}
+				try {
+					int ret = -1;
+					do {
+						ret = err.read();
+					} while (ret != -1);
+				} catch (IOException e) {
+					LOGGER.info(e.toString(), e);
+				}
+			}
+		}
 	}
 }
