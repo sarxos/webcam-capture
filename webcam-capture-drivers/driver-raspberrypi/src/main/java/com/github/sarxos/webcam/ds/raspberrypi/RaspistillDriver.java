@@ -14,7 +14,7 @@ import com.github.sarxos.webcam.WebcamDevice;
  */
 public class RaspistillDriver extends IPCDriver {
 	private final static String[] DEFAULT_ARGUMENTS = { "--width", "320", "--height", "240", "--quality", "36",
-			"--encoding", "png", "--nopreview", "--timelapse", "100", "--timeout", "0", "--output", "-" };
+			"--encoding", "png", "--nopreview", "--keypress", "--timeout", "0", "--output", "-" };
 	/** 
 	 * Creates a new instance of RaspistillDriver. 
 	 * 

@@ -62,7 +62,7 @@ public class PNGDecoder {
 	private byte[] palette;
 	private byte[] paletteA;
 	private byte[] transPixel;
-	
+	private boolean validPNG=false;
 	/**
 	 * 
 	 * Creates a new instance of PNGDecoder. 
@@ -74,13 +74,16 @@ public class PNGDecoder {
 		this.input = input;
 		//this.crc = new CRC32();
 		this.buffer = new byte[4096];
-
-		/*int read = */input.read(buffer, 0, SIGNATURE.length);//just skip sign
-		/* no check
+		int read = input.read(buffer, 0, SIGNATURE.length);//just skip sign
+		// no check
 		if (read != SIGNATURE.length || !checkSignatur(buffer)) {
-			throw new IOException("Not a valid PNG file");
+			//throw new IOException("Not a valid PNG file");
+			return ;
 		}
-		 */
+		else {
+			validPNG=true;
+		}
+		 
 		openChunk(IHDR);
 		readIHDR();
 		closeChunk();
@@ -121,11 +124,14 @@ public class PNGDecoder {
 		return colorType == COLOR_TRUEALPHA || colorType == COLOR_TRUECOLOR || colorType == COLOR_INDEXED;
 	}
 	/**
-	 * read just one png file
+	 * read just one png file, if invalid, return null
 	 * @return
 	 * @throws IOException 
 	 */
 	public final BufferedImage decode() throws IOException {
+		if(!validPNG) {
+			return null;
+		}
 		ColorModel cmodel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
 		SampleModel smodel = new ComponentSampleModel(DATA_TYPE, width, height, 3, width * 3, BAND_OFFSETS);
 		
@@ -595,7 +601,7 @@ public class PNGDecoder {
 			amount -= skipped;
 		}
 	}
-	/*
+	
 	private static boolean checkSignatur(byte[] buffer) {
 		for (int i = 0; i < SIGNATURE.length; i++) {
 			if (buffer[i] != SIGNATURE[i]) {
@@ -604,5 +610,5 @@ public class PNGDecoder {
 		}
 		return true;
 	}
-	*/
+	
 }
