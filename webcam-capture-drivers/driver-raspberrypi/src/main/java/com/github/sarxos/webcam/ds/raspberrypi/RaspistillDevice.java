@@ -64,8 +64,8 @@ public class RaspistillDevice extends IPCDevice {
 	@Override
 	public BufferedImage getImage() {
 		try {
-			out.write(CAPTRE_TRIGGER_INPUT);
-			out.flush();
+			//out.write(CAPTRE_TRIGGER_INPUT);
+			//out.flush();
 			BufferedImage frame = new PNGDecoder(in).decode();
 			return frame;
 		} catch (IOException e) {
