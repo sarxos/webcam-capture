@@ -14,7 +14,7 @@ import com.github.sarxos.webcam.ds.raspberrypi.RaspiYUVDriver;
 
 public class WebcamPanelExample {
 	static {
-		//Webcam.setDriver(new RaspiYUVDriver());
+		Webcam.setDriver(new RaspiYUVDriver());
 	}
 
 	public static void main(String[] args) throws InterruptedException {

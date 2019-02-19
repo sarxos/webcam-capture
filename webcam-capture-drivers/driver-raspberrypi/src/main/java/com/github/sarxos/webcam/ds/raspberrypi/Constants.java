@@ -20,6 +20,10 @@ public interface Constants {
 	 */
 	String COMMAND_RASPIYUV = "raspiyuv";
 	/**
+	 * the raspivid command name
+	 */
+	String COMMAND_RASPIVID = "raspivid";
+	/**
 	 * native command to check camera support. it will return supported=1 detected=?
 	 * for supported 0 for not support, 1 support ? is the number of camera
 	 * supported.
