@@ -18,14 +18,16 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 
-public class TestRGBDecoder {
+import junit.framework.TestCase;
+
+public class TestRGBDecoder extends TestCase {
 	private static final int DATA_TYPE = DataBuffer.TYPE_BYTE;
 	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 	private static int[] OFFSET = new int[] { 0 };
 	private static final int[] BITS = { 8, 8, 8 };
 	private static int[] BAND_OFFSETS = new int[] { 0, 1, 2 };
 
-	public static void main(String args[]) throws IOException {
+	public void testDecodeRawRgb() throws IOException {
 		int width = 320;
 		int height = 240;
 
@@ -37,6 +39,7 @@ public class TestRGBDecoder {
 
 		byte[] bytes = new byte[width * height * 3];// must new each time!
 		System.out.println(bytes.length);
+		assertEquals(raw.length, bytes.length);
 
 		System.arraycopy(raw, 0, bytes, 0, bytes.length);
 		byte[][] data = new byte[][] { bytes };
@@ -46,18 +49,7 @@ public class TestRGBDecoder {
 
 		BufferedImage bi = new BufferedImage(cmodel, raster, false, null);
 		bi.flush();
-
+		assertNotNull(bi);
 		ImageIO.write(bi, "png", new File("test.png"));
-		/*
-		int[] intarray=new int[bytes.length];
-		for(int i=0;i<bytes.length;i++) {
-			intarray[i]=bytes[i];
-		}
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		WritableRaster raster1 = (WritableRaster) image.getData();
-		raster1.setPixels(0, 0, width, height, intarray);
-		image.setData(raster1);
-		ImageIO.write(bi, "png", new File("test1.png"));
-		*/
 	}
 }

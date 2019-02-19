@@ -99,8 +99,8 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 	@Override
 	public void setResolution(Dimension dimension) {
 		this.dimension = dimension;
-		this.parameters.put(OPT_WIDTH, dimension.getWidth() + "");
-		this.parameters.put(OPT_HEIGHT, dimension.getHeight() + "");
+		this.parameters.put(OPT_WIDTH, (int)dimension.getWidth() + "");
+		this.parameters.put(OPT_HEIGHT, (int)dimension.getHeight() + "");
 	}
 	@Override
 	public Dimension[] getResolutions() {
