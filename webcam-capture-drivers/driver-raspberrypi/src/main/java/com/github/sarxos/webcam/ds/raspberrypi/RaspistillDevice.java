@@ -14,11 +14,6 @@ import java.util.Map;
  */
 public class RaspistillDevice extends IPCDevice {
 	/**
-	 * raspistill keypress mode, send new line to make capture
-	 */
-	private final static char CAPTRE_TRIGGER_INPUT = '\n';
-	private final static char CAPTRE_TERMINTE_INPUT = 'x';
-	/**
 	 * Creates a new instance of RaspistillDevice.
 	 * 
 	 * @param camSelect
@@ -40,11 +35,6 @@ public class RaspistillDevice extends IPCDevice {
 		}
 	}
 	
-	@Override
-	protected Runnable newErrorConsumeWorker() {
-		return new ErrorConsumeWorker();
-	}
-	
 	/**
 	 * One github story: I interchanged the order of "-t 0" and "-s" and tested it. Code: Select all
 	 * raspistill -t 0 -s -o test.jpg And signal driven event works now as expected!
@@ -64,8 +54,8 @@ public class RaspistillDevice extends IPCDevice {
 	@Override
 	public BufferedImage getImage() {
 		try {
-			out.write(CAPTRE_TRIGGER_INPUT);
-			out.flush();
+			//out.write(CAPTRE_TRIGGER_INPUT);
+			//out.flush();
 			BufferedImage frame = new PNGDecoder(in).decode();
 			return frame;
 		} catch (IOException e) {

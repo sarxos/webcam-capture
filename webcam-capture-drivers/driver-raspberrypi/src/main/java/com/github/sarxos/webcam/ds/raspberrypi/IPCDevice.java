@@ -40,6 +40,12 @@ import com.github.sarxos.webcam.WebcamResolution;
  * @since JDK 1.8
  */
 public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurable, Constants {
+	/**
+	 * raspi keypress mode, send new line to make capture
+	 */
+	protected final static char CAPTRE_TRIGGER_INPUT = '\n';
+	protected final static char CAPTRE_TERMINTE_INPUT = 'x';
+	
 	private static final String THREAD_NAME_PREFIX = "raspistill-device-";
 	private static final int DEFAULT_THREADPOOL_SIZE = 2;
 	private final static Logger LOGGER = LoggerFactory.getLogger(IPCDevice.class);
