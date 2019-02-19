@@ -16,7 +16,7 @@ import java.util.Map;
 
 /** 
  * ClassName: RaspividDevice <br/>  
- * 
+ * --raw-format rgb is still yuv values, see https://www.raspberrypi.org/forums/viewtopic.php?t=189830
  * @author maoanapex88@163.com alexmao86 
  */
 public class RaspividDevice extends IPCDevice {
@@ -55,7 +55,6 @@ public class RaspividDevice extends IPCDevice {
 	@Override
 	protected void beforeOpen() {
 		super.beforeOpen();
-		System.out.println(parameters);
 		this.width=Integer.parseInt(parameters.get(OPT_WIDTH));
 		this.height=Integer.parseInt(parameters.get(OPT_HEIGHT));
 		smodel = new ComponentSampleModel(DATA_TYPE, width, height, 3, width * 3, BAND_OFFSETS);

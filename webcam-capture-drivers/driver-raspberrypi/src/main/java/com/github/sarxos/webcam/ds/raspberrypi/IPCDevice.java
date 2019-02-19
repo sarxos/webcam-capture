@@ -13,9 +13,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -216,7 +218,7 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 			process = launch();
 		} catch (IOException e) {
 			LOGGER.error(e.toString(), e);
-			e.printStackTrace();
+			return ;
 		}
 
 		out = process.getOutputStream();
@@ -261,7 +263,42 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 			return thread;
 		});
 	}
-	
+	/**
+	 * accroding to some frum thread, output option must be last one, so dump all
+	 * user options to new sorted map see
+	 * <a href="https://www.raspberrypi.org/forums/viewtopic.php?t=67175">thread
+	 * 67175</a>
+	 * 
+	 * @param arguments2
+	 * @return
+	 */
+	protected static Map<String, String> sortParameters(final Map<String, String> arguments) {
+		Map<String, String> sorted = new TreeMap<>(new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				int s1 = o1.hashCode();
+				int s2 = o2.hashCode();
+
+				if (o1.equals(OPT_OUTPUT)) {
+					s1 = Integer.MAX_VALUE;
+				}
+				else if (o1.equals(OPT_RAW)) {
+					s1 = Integer.MAX_VALUE-1;
+				}
+				
+				if (o2.equals(OPT_OUTPUT)) {
+					s2 = Integer.MAX_VALUE;
+				}
+				else if (o2.equals(OPT_RAW)) {
+					s2 = Integer.MAX_VALUE-1;
+				}
+
+				return s1 - s2;
+			}
+		});
+		sorted.putAll(arguments);
+		return sorted;
+	}
 	/**
 	 * @throws IOException
 	 * 
@@ -269,7 +306,7 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 	private Process launch() throws IOException {
 		StringBuilder command = new StringBuilder(12 + parameters.size() * 8);
 		command.append(this.driver.getCommand()).append(" ");
-		for (Entry<String, String> entry : this.parameters.entrySet()) {
+		for (Entry<String, String> entry : sortParameters(parameters).entrySet()) {
 			command.append("--").append(entry.getKey()).append(" ");
 			if (entry.getValue() != null) {
 				command.append(entry.getValue()).append(" ");

@@ -30,7 +30,7 @@ public class PNGDecoder {
 	private static final int PLTE = 0x504C5445;
 	private static final int tRNS = 0x74524E53;
 	private static final int IDAT = 0x49444154;
-	private static final int IEND = 0x49454E44;
+	//private static final int IEND = 0x49454E44;
 
 	public static final byte COLOR_GREYSCALE = 0;
 	public static final byte COLOR_TRUECOLOR = 2;
