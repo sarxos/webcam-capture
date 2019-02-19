@@ -120,9 +120,15 @@ public abstract class IPCDriver implements WebcamDriver, Constants {
 				if (o1.equals(OPT_OUTPUT)) {
 					s1 = Integer.MAX_VALUE;
 				}
-
+				else if (o1.equals(OPT_RAW)) {
+					s1 = Integer.MAX_VALUE-1;
+				}
+				
 				if (o2.equals(OPT_OUTPUT)) {
 					s2 = Integer.MAX_VALUE;
+				}
+				else if (o2.equals(OPT_RAW)) {
+					s2 = Integer.MAX_VALUE-1;
 				}
 
 				return s1 - s2;

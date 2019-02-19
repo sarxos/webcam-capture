@@ -10,11 +10,11 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamPanel.DrawMode;
 import com.github.sarxos.webcam.WebcamResolution;
-import com.github.sarxos.webcam.ds.raspberrypi.RaspiYUVDriver;
+import com.github.sarxos.webcam.ds.raspberrypi.RaspividDriver;
 
 public class WebcamPanelExample {
 	static {
-		Webcam.setDriver(new RaspiYUVDriver());
+		Webcam.setDriver(new RaspividDriver());
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -23,7 +23,7 @@ public class WebcamPanelExample {
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.getContentPane().setLayout(new FlowLayout());
 
-		final Dimension resolution = WebcamResolution.SVGA.getSize();
+		final Dimension resolution = WebcamResolution.QVGA.getSize();
 
 		for (final Webcam webcam : Webcam.getWebcams()) {
 			webcam.setCustomViewSizes(resolution);

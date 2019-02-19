@@ -55,6 +55,7 @@ public class RaspividDevice extends IPCDevice {
 	@Override
 	protected void beforeOpen() {
 		super.beforeOpen();
+		System.out.println(parameters);
 		this.width=Integer.parseInt(parameters.get(OPT_WIDTH));
 		this.height=Integer.parseInt(parameters.get(OPT_HEIGHT));
 		smodel = new ComponentSampleModel(DATA_TYPE, width, height, 3, width * 3, BAND_OFFSETS);
@@ -62,12 +63,12 @@ public class RaspividDevice extends IPCDevice {
 	@Override
 	protected void validateParameters() {
 		super.validateParameters();
-		parameters.remove(OPT_OUTPUT);
 		// override some arguments
 		parameters.put(OPT_RAW_FORMAT, "rgb");//only support rgb
 		parameters.put(OPT_NOPREVIEW, "");
 		parameters.put(OPT_CAMSELECT, Integer.toString(this.camSelect));
 		parameters.put(OPT_RAW, "-");// must be this, then image will be in console!
+		parameters.put(OPT_OUTPUT, "/tmp/cache.h264");
 	}
 	
 	@Override
