@@ -14,16 +14,16 @@ import com.github.sarxos.webcam.ds.raspberrypi.RaspiYUVDriver;
 
 public class WebcamPanelExample {
 	static {
-		Webcam.setDriver(new RaspiYUVDriver());
+		//Webcam.setDriver(new RaspiYUVDriver());
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		final JFrame window = new JFrame("Raspistill Capture Example");
+		final JFrame window = new JFrame("Raspberrypi Capture Example");
 		window.setResizable(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.getContentPane().setLayout(new FlowLayout());
 
-		final Dimension resolution = WebcamResolution.QVGA.getSize();
+		final Dimension resolution = WebcamResolution.SVGA.getSize();
 
 		for (final Webcam webcam : Webcam.getWebcams()) {
 			webcam.setCustomViewSizes(resolution);

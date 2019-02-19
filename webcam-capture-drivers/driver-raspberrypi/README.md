@@ -1,13 +1,13 @@
 # webcam-capture-driver-raspistill
 
-This capture driver is special for raspberrypi. __raspistill__ is the command line tool on raspberrypi for capturing still photographs with the camera module. blash...., Ok, The most important is that command line tool has feature grabbing image repeatly(mock FPS) from camera and print to file or console. They are:
+This capture driver is special for raspberrypi. __raspistill， raspiyuv, ...__ is the command line tool on raspberrypi for capturing photographs or vedios with the camera module. The most important is that command line tool has feature grabbing image repeatly(mock FPS) from camera and print to file or console. They are:
 
 1.  -o, --output : Output filename <filename> (to **write to stdout, use '-o -**'). If not specified, no file is saved
 2.  -tl, --timelapse : Timelapse mode. Takes a picture every <t>ms
 3.  -n, --nopreview : Do not display a preview window
 
-so it is possible use java Runtime to launch raspistill process and intercept its console output, makes it as
-webcam driver. this is one simple and straightforward approach without native JNI or JNA call, no file system exchange. You will not struggle with performance issue and native code compiling. Enjoy it! 
+so it is possible use java Runtime to launch raspixxx process and intercept its console output, makes it as
+webcam driver. this is one simple and straightforward approach without native JNI or JNA call, no file system exchange. You will not struggle with performance issue and native code compiling. 
 
 ##Install
 
@@ -28,7 +28,7 @@ raspistill --help //to check installation
 </repository>
 <dependency>
     <groupId>com.github.sarxos</groupId>
-    <artifactId>webcam-capture-driver-raspistill</artifactId>
+    <artifactId>webcam-capture-driver-raspberrypi</artifactId>
     <version>${your version}</version>
 </dependency>
 ```
@@ -47,13 +47,14 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamPanel.DrawMode;
 import com.github.sarxos.webcam.WebcamResolution;
-import com.github.sarxos.webcam.ds.raspistill.RaspistillDriver;
+import com.github.sarxos.webcam.ds.raspistill.*;
 
 
 public class WebcamPanelExample {
 
 	static {
-		Webcam.setDriver(new RaspistillDriver());
+		//Webcam.setDriver(new RaspistillDriver());
+		Webcam.setDriver(new RaspiYUVDriver());
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -85,13 +86,13 @@ public class WebcamPanelExample {
 	}
 }
 ```
-One demo snapshot as follows, 
+One demo snapshot as follows, please check WebcamPanelExample.java for detail.
 
 ![](https://raw.githubusercontent.com/alexmao86/webcam-capture/master/webcam-capture-drivers/driver-raspistill/src/etc/resources/snapshot.png)
 
 ## Known Problems
 
-Becuase is pure java image processing, so performance is not good. The actually fps is very low. According to test, about 500ms for PNG decoder to decode 640x480 image from raspistill stream.
+Becuase is pure java image processing, so performance is not good. The actually fps is low. According to test, about 500ms for PNG decoder to decode 640x480 image from raspistill stream.
 
 ## Driver Parameters
 this driver makes above arguments configurable, when driver instance created, it will load arguments step by step as follows,
