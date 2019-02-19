@@ -61,6 +61,7 @@ class OptionsBuilder implements Constants{
 		NO_VALUE_OPTIONS.add(OPT_CIRCULAR);
 		NO_VALUE_OPTIONS.add(OPT_FLUSH);
 		NO_VALUE_OPTIONS.add(OPT_SAVE_PTS);
+		NO_VALUE_OPTIONS.add(OPT_RGB);
 	}
 	private OptionsBuilder() {
 	}
