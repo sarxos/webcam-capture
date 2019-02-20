@@ -58,9 +58,9 @@ public class RaspiYUVDevice extends IPCDevice {
 		super.validateParameters();
 		
 		// override some arguments
+		parameters.put(OPT_CAMSELECT, Integer.toString(this.camSelect));
 		parameters.put(OPT_RGB, "");
 		parameters.put(OPT_NOPREVIEW, "");
-		parameters.put(OPT_CAMSELECT, Integer.toString(this.camSelect));
 		parameters.put(OPT_OUTPUT, "-");// must be this, then image will be in console!
 	}
 	
