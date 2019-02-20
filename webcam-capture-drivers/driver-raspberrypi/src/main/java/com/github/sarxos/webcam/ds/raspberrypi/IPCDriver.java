@@ -116,10 +116,6 @@ public abstract class IPCDriver implements WebcamDriver, Constants {
 				throw new UnsupportedOperationException(MSG_RASPI_NOT_INSTALLED);
 			}
 
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug(MSG_COMPATIBLE_WARN);
-			}
-
 			stdout = CommanderUtil.execute(COMMAND_VCGENCMD);
 			if (stdout.size() != 1) {
 				return Collections.emptyList();

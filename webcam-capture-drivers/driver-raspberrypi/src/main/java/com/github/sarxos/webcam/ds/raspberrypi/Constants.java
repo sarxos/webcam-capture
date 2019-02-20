@@ -305,7 +305,7 @@ public interface Constants {
 	// *******************message templates**************
 	String MSG_CANNOT_CHANGE_PROP = "can not change property after device already discoveried";
 	String MSG_RASPI_NOT_INSTALLED = "{} is not found, please run apt-get install {}. this driver supposed to run on raspberrypi";
-	String MSG_COMPATIBLE_WARN = "now raspberrypi only support one camera connector with dual camera, so just retrun camera 0";
+	
 	String MSG_WRONG_ARGUMENT = "wrong raspistill argument";
 	String MSG_NOT_SUPPORTED_OS_WARN = "Driver supposed to run on raspberrypi";
 	String MSG_NOT_GRACEFUL_DOWN = "device is not shutdown perfactly, there maybe resource link?";
