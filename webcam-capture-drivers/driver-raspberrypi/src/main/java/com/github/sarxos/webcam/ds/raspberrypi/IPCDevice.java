@@ -252,7 +252,7 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 		parameters.remove(OPT_DEMO);
 	}
 
-	/**
+	/*
 	 * thread content to consume stderr inputstream
 	 */
 	protected Runnable newErrorConsumeWorker() {
@@ -267,7 +267,7 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 		});
 	}
 
-	/**
+	/*
 	 * @throws IOException
 	 * 
 	 */
