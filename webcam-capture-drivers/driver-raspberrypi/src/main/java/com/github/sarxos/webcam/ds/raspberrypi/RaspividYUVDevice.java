@@ -92,22 +92,23 @@ public class RaspividYUVDevice extends IPCDevice implements WebcamDevice.FPSSour
 		super.validateParameters();
 		// override some arguments
 		parameters.put(OPT_NOPREVIEW, "");
-		parameters.put(OPT_RGB, "");// only support rgb
+		//parameters.put(OPT_RGB, "");// only support rgb
 		parameters.put(OPT_CAMSELECT, Integer.toString(this.camSelect));
 		parameters.put(OPT_OUTPUT, "-");
 	}
 
 	@Override
 	public BufferedImage getImage() {
-		byte[] bytes = new byte[width * height * 3];// must new each time!
-
+		byte[] bytes = new byte[(width * height * 3) / 2];// must new each time!
+		
 		try {
 			this.in.read(bytes);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
-
+		bytes=ColorUtils.convertYUVtoRGB(bytes, width, height);
+		
 		byte[][] data = new byte[][] { bytes };
 		DataBufferByte dbuf = new DataBufferByte(data, bytes.length, OFFSET);
 		WritableRaster raster = Raster.createWritableRaster(smodel, dbuf, null);
