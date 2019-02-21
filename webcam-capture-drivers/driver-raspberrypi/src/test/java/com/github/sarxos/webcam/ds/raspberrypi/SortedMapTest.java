@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-/** 
- * ClassName: SortedMapTest <br/> 
- * date: Feb 19, 2019 5:11:25 PM <br/> 
+/**
+ * ClassName: SortedMapTest <br/>
+ * date: Feb 19, 2019 5:11:25 PM <br/>
  * 
- * @author maoanapex88@163.com alexmao86 
- * @version  
+ * @author maoanapex88@163.com alexmao86
+ * @version
  * @since JDK 1.8
  */
 public class SortedMapTest {
@@ -24,23 +24,21 @@ public class SortedMapTest {
 
 				if (o1.equals("output")) {
 					s1 = Integer.MAX_VALUE;
+				} else if (o1.equals("raw")) {
+					s1 = Integer.MAX_VALUE - 1;
 				}
-				else if (o1.equals("raw")) {
-					s1 = Integer.MAX_VALUE-1;
-				}
-				
+
 				if (o2.equals("output")) {
 					s2 = Integer.MAX_VALUE;
-				}
-				else if (o2.equals("raw")) {
-					s2 = Integer.MAX_VALUE-1;
+				} else if (o2.equals("raw")) {
+					s2 = Integer.MAX_VALUE - 1;
 				}
 
 				return s1 - s2;
 			}
 		});
-		Map<String, String> map=new HashMap<>();
-		
+		Map<String, String> map = new HashMap<>();
+
 		map.put("output", "value o");
 		map.put("raw", "value raw");
 		map.put("width", "value a");
@@ -48,7 +46,7 @@ public class SortedMapTest {
 		map.put("d", "value d");
 		map.put("c", "value c");
 		sorted.putAll(map);
-		
+
 		System.out.println(sorted);
 		sorted.put("e", "value e");
 		StringBuilder command = new StringBuilder(128);
@@ -61,6 +59,6 @@ public class SortedMapTest {
 
 		String commandString = command.toString();
 		System.out.println(commandString);
-		System.out.println(1>>1);
+		System.out.println(1 >> 1);
 	}
 }

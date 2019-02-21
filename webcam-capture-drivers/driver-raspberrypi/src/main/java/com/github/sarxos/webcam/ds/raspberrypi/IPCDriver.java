@@ -20,26 +20,26 @@ import org.slf4j.LoggerFactory;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
 
-/** 
- * ClassName: IPCDriver <br/> 
- * interactive process communication abstraction. This class is designed to reduce the number of methods that must
- * be implemented by subclasses.
+/**
+ * ClassName: IPCDriver <br/>
+ * interactive process communication abstraction. This class is designed to
+ * reduce the number of methods that must be implemented by subclasses.
  * 
- * date: Jan 31, 2019 9:52:59 AM <br/> 
+ * date: Jan 31, 2019 9:52:59 AM <br/>
  * 
- * @author maoanapex88@163.com (alexmao86) 
+ * @author maoanapex88@163.com (alexmao86)
  */
 public abstract class IPCDriver implements WebcamDriver, Constants {
-	private final static Logger LOGGER=LoggerFactory.getLogger(IPCDriver.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(IPCDriver.class);
 	private Map<String, String> arguments = new LinkedHashMap<>();
 	private volatile boolean deviceCalled;
 	private final Options options;
 	private final String command;
-	
+
 	public IPCDriver(String command) {
 		super();
 		this.command = command;
-		
+
 		options = OptionsBuilder.create(command);
 
 		parseArguments(options, getDefaultOptions());
@@ -60,7 +60,7 @@ public abstract class IPCDriver implements WebcamDriver, Constants {
 			parseArguments(options, cmdArray);
 		}
 	}
-	
+
 	protected boolean isDeviceCalled() {
 		return deviceCalled;
 	}
@@ -70,8 +70,9 @@ public abstract class IPCDriver implements WebcamDriver, Constants {
 	}
 
 	/**
-	 *	get default options
-	 * @param options 
+	 * get default options
+	 * 
+	 * @param options
 	 */
 	protected abstract String[] getDefaultOptions();
 
@@ -79,10 +80,12 @@ public abstract class IPCDriver implements WebcamDriver, Constants {
 	public boolean isThreadSafe() {
 		return false;
 	}
+
 	/**
 	 * parse arguments and add to arguments
+	 * 
 	 * @param options
-	 * @param cmdArray 
+	 * @param cmdArray
 	 */
 	protected void parseArguments(final Options options, String[] cmdArray) {
 		CommandLineParser parser = new PosixParser();
@@ -90,7 +93,7 @@ public abstract class IPCDriver implements WebcamDriver, Constants {
 			CommandLine cmd = parser.parse(options, cmdArray);
 			Option[] opts = cmd.getOptions();
 			for (Option o : opts) {
-				arguments.put(o.getLongOpt(), o.getValue()==null?"":o.getValue());
+				arguments.put(o.getLongOpt(), o.getValue() == null ? "" : o.getValue());
 			}
 		} catch (ParseException e) {
 			if (LOGGER.isDebugEnabled()) {
@@ -99,8 +102,7 @@ public abstract class IPCDriver implements WebcamDriver, Constants {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	/**
 	 * <a href=
 	 * "https://www.petervis.com/Raspberry_PI/Raspberry_Pi_CSI/raspberry-pi-csi-interface-connector-pinout.html">Raspberrypi
@@ -139,7 +141,7 @@ public abstract class IPCDriver implements WebcamDriver, Constants {
 			return devices;
 		}
 	}
-	
+
 	protected Options getOptions() {
 		return options;
 	}

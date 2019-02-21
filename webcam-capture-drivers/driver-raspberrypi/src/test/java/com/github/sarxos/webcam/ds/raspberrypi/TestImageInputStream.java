@@ -55,7 +55,7 @@ public class TestImageInputStream extends TestCase {
 			assertNotNull(image);
 			System.out.println("decoded No." + i + " image");
 		}
-		
+
 		in.close();
 	}
 

@@ -21,17 +21,17 @@ import org.slf4j.LoggerFactory;
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamResolution;
 
-/** 
- * ClassName: IPCDevice <br/> 
- * date: Jan 31, 2019 10:50:46 AM <br/> 
- * interactive process communication abstraction. This class is designed to reduce the number of methods that must
- * be implemented by subclasses.
+/**
+ * ClassName: IPCDevice <br/>
+ * date: Jan 31, 2019 10:50:46 AM <br/>
+ * interactive process communication abstraction. This class is designed to
+ * reduce the number of methods that must be implemented by subclasses.
  * 
  * the process IO management and lifecycle are prepared in this process.
  * https://www.raspberrypi.org/documentation/raspbian/applications/camera.md
  * 
  * @author maoanapex88@163.com (alexmao86)
- * @version  
+ * @version
  * @since JDK 1.8
  */
 public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurable, Constants {
@@ -40,7 +40,7 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 	 */
 	protected final static char CAPTRE_TRIGGER_INPUT = '\n';
 	protected final static char CAPTRE_TERMINTE_INPUT = 'x';
-	
+
 	private static final String THREAD_NAME_PREFIX = "raspistill-device-";
 	private static final int DEFAULT_THREADPOOL_SIZE = 2;
 	private final static Logger LOGGER = LoggerFactory.getLogger(IPCDevice.class);
@@ -55,34 +55,37 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 			WebcamResolution.WSVGA1.getSize(), WebcamResolution.WSVGA2.getSize(), WebcamResolution.XGA.getSize(),
 			WebcamResolution.XGAP.getSize(), WebcamResolution.WXGA1.getSize(), WebcamResolution.WXGAP.getSize(),
 			WebcamResolution.SXGA.getSize() };
-	
+
 	protected final int camSelect;
 	protected Map<String, String> parameters;
-	
+
 	private volatile boolean isOpen = false;
 	private Dimension dimension;
 	private ExecutorService service;
-	
+
 	protected Process process;
 	protected OutputStream out;
 	protected InputStream in;
 	protected InputStream err;
 	protected final IPCDriver driver;
-	
+
 	public IPCDevice(int camSelect, Map<String, String> parameters, IPCDriver driver) {
 		super();
 		this.camSelect = camSelect;
 		this.parameters = parameters;
-		this.driver=driver;
+		this.driver = driver;
 	}
+
 	@Override
 	public String getName() {
 		return DEVICE_NAME_PREFIX + this.camSelect;
 	}
+
 	@Override
 	public boolean isOpen() {
 		return isOpen;
 	}
+
 	@Override
 	public Dimension getResolution() {
 		if (dimension == null) {
@@ -91,22 +94,26 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 		}
 		return dimension;
 	}
+
 	@Override
 	public void setResolution(Dimension dimension) {
 		this.dimension = dimension;
-		this.parameters.put(OPT_WIDTH, (int)dimension.getWidth() + "");
-		this.parameters.put(OPT_HEIGHT, (int)dimension.getHeight() + "");
+		this.parameters.put(OPT_WIDTH, (int) dimension.getWidth() + "");
+		this.parameters.put(OPT_HEIGHT, (int) dimension.getHeight() + "");
 	}
+
 	@Override
 	public Dimension[] getResolutions() {
 		return DIMENSIONS;
 	}
+
 	@Override
 	public void dispose() {
 		parameters = null;
 		service = null;
 		process = null;
 	}
+
 	/**
 	 * support change FPS at runtime.
 	 */
@@ -118,13 +125,14 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 
 		for (Entry<String, ?> entry : map.entrySet()) {
 			if (this.driver.getOptions().hasOption(entry.getKey())) {
-				String longKey=this.driver.getOptions().getOption(entry.getKey()).getLongOpt();
-				this.parameters.put(longKey, entry.getValue()==null?"":entry.getValue().toString());
+				String longKey = this.driver.getOptions().getOption(entry.getKey()).getLongOpt();
+				this.parameters.put(longKey, entry.getValue() == null ? "" : entry.getValue().toString());
 			} else {
 				throw new UnsupportedOperationException(MSG_WRONG_ARGUMENT);
 			}
 		}
 	}
+
 	@Override
 	public void close() {
 		if (!isOpen) {
@@ -170,16 +178,17 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 		if (counter.get() != 0) {
 			LOGGER.debug(MSG_NOT_GRACEFUL_DOWN);
 		}
-		
+
 		isOpen = false;
 		afterClose();
 	}
+
 	protected void afterClose() {
-		
+
 	}
 
 	protected void beforeClose() {
-		
+
 	}
 
 	/**
@@ -211,13 +220,13 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 			process = launch();
 		} catch (IOException e) {
 			LOGGER.error(e.toString(), e);
-			return ;
+			return;
 		}
 
 		out = process.getOutputStream();
 		in = process.getInputStream();
 		err = process.getErrorStream();
-		
+
 		// error must be consumed, if not, too much data blocking will crash process or
 		// blocking IO
 		service.submit(newErrorConsumeWorker());
@@ -242,14 +251,14 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 		parameters.remove(OPT_VERBOSE);
 		parameters.remove(OPT_DEMO);
 	}
-	
+
 	/**
 	 * thread content to consume stderr inputstream
 	 */
 	protected Runnable newErrorConsumeWorker() {
 		return new ErrorConsumeWorker();
 	}
-	
+
 	protected ExecutorService newExecutorService() {
 		return Executors.newFixedThreadPool(DEFAULT_THREADPOOL_SIZE, (Runnable r) -> {
 			Thread thread = new Thread(threadGroup(), r, THREAD_NAME_PREFIX + threadId());
@@ -257,13 +266,13 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 			return thread;
 		});
 	}
-	
+
 	/**
 	 * @throws IOException
 	 * 
 	 */
 	private Process launch() throws IOException {
-		StringBuilder command = new StringBuilder(12 + (parameters.size()<<3));
+		StringBuilder command = new StringBuilder(12 + (parameters.size() << 3));
 		command.append(this.driver.getCommand()).append(" ");
 		for (Entry<String, String> entry : parameters.entrySet()) {
 			command.append("--").append(entry.getKey()).append(" ");
@@ -284,6 +293,7 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 
 		return new ProcessBuilder(cmdarray).directory(new File(".")).redirectErrorStream(false).start();
 	}
+
 	class ErrorConsumeWorker implements Runnable {
 		@Override
 		public void run() {

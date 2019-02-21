@@ -30,24 +30,24 @@ public class PNGDecoder {
 	private static final int PLTE = 0x504C5445;
 	private static final int tRNS = 0x74524E53;
 	private static final int IDAT = 0x49444154;
-	//private static final int IEND = 0x49454E44;
+	// private static final int IEND = 0x49454E44;
 
 	public static final byte COLOR_GREYSCALE = 0;
 	public static final byte COLOR_TRUECOLOR = 2;
 	public static final byte COLOR_INDEXED = 3;
 	public static final byte COLOR_GREYALPHA = 4;
 	public static final byte COLOR_TRUEALPHA = 6;
-	
-	//************************default decode image settings********************
+
+	// ************************default decode image settings********************
 	private static final int DATA_TYPE = DataBuffer.TYPE_BYTE;
 	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 	private static int[] OFFSET = new int[] { 0 };
 	private static final int[] BITS = { 8, 8, 8 };
 	private static int[] BAND_OFFSETS = new int[] { 0, 1, 2 };
-	//************************************************************************
+	// ************************************************************************
 
 	private final InputStream input;
-	//private final CRC32 crc;
+	// private final CRC32 crc;
 	private final byte[] buffer;
 
 	private int chunkLength;
@@ -62,28 +62,29 @@ public class PNGDecoder {
 	private byte[] palette;
 	private byte[] paletteA;
 	private byte[] transPixel;
-	private boolean validPNG=false;
+	private boolean validPNG = false;
+
 	/**
 	 * 
-	 * Creates a new instance of PNGDecoder. 
+	 * Creates a new instance of PNGDecoder.
 	 * 
-	 * @param input png stream
+	 * @param input
+	 *            png stream
 	 * @throws IOException
 	 */
 	public PNGDecoder(InputStream input) throws IOException {
 		this.input = input;
-		//this.crc = new CRC32();
+		// this.crc = new CRC32();
 		this.buffer = new byte[4096];
-		int read = input.read(buffer, 0, SIGNATURE.length);//just skip sign
+		int read = input.read(buffer, 0, SIGNATURE.length);// just skip sign
 		// no check
 		if (read != SIGNATURE.length || !checkSignatur(buffer)) {
-			//throw new IOException("Not a valid PNG file");
-			return ;
+			// throw new IOException("Not a valid PNG file");
+			return;
+		} else {
+			validPNG = true;
 		}
-		else {
-			validPNG=true;
-		}
-		 
+
 		openChunk(IHDR);
 		readIHDR();
 		closeChunk();
@@ -123,39 +124,40 @@ public class PNGDecoder {
 	public boolean isRGB() {
 		return colorType == COLOR_TRUEALPHA || colorType == COLOR_TRUECOLOR || colorType == COLOR_INDEXED;
 	}
+
 	/**
 	 * read just one png file, if invalid, return null
+	 * 
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public final BufferedImage decode() throws IOException {
-		if(!validPNG) {
+		if (!validPNG) {
 			return null;
 		}
 		ColorModel cmodel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
 		SampleModel smodel = new ComponentSampleModel(DATA_TYPE, width, height, 3, width * 3, BAND_OFFSETS);
-		
-		byte[] bytes = new byte[width * height * 3];//must new each time!
+
+		byte[] bytes = new byte[width * height * 3];// must new each time!
 		byte[][] data = new byte[][] { bytes };
 		ByteBuffer buffer = ByteBuffer.wrap(bytes);
 		decode(buffer, TextureFormat.RGB);
 		DataBufferByte dbuf = new DataBufferByte(data, bytes.length, OFFSET);
 		WritableRaster raster = Raster.createWritableRaster(smodel, dbuf, null);
-		
+
 		BufferedImage bi = new BufferedImage(cmodel, raster, false, null);
 		bi.flush();
 		return bi;
 	}
+
 	/**
-	 * decode image data to buffer, mapping to awt type byte.
-	 * if rgb, r,g,b,r,g,b...,r,g,b,...
-	 * if abgr, a,b,g,r....
-	 * if rgba, r,g,b,a....
+	 * decode image data to buffer, mapping to awt type byte. if rgb,
+	 * r,g,b,r,g,b...,r,g,b,... if abgr, a,b,g,r.... if rgba, r,g,b,a....
 	 * 
 	 * @param buffer
 	 * @param stride
 	 * @param fmt
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private final void decode(ByteBuffer buffer, TextureFormat fmt) throws IOException {
 		byte[] curLine = new byte[width * bytesPerPixel + 1];
@@ -165,7 +167,7 @@ public class PNGDecoder {
 			for (int y = 0; y < height; y++) {
 				readChunkUnzip(inflater, curLine, 0, curLine.length);
 				unfilter(curLine, prevLine);
-				
+
 				switch (colorType) {
 				case COLOR_TRUECOLOR:
 					switch (fmt) {
@@ -497,14 +499,13 @@ public class PNGDecoder {
 			// just skip the rest and the CRC
 			skip(chunkRemaining + 4);
 		} else {
-			readFully(buffer, 0, 4);//read crc
-			/*int expectedCrc = */readInt(buffer, 0);
+			readFully(buffer, 0, 4);
+			// read crc
+			/* int expectedCrc = */readInt(buffer, 0);
 			/*
-			int computedCrc = (int) crc.getValue();
-			if (computedCrc != expectedCrc) {
-				throw new IOException("Invalid CRC");
-			}
-			*/
+			 * int computedCrc = (int) crc.getValue(); if (computedCrc != expectedCrc) {
+			 * throw new IOException("Invalid CRC"); }
+			 */
 		}
 		chunkRemaining = 0;
 		chunkLength = 0;
@@ -516,8 +517,8 @@ public class PNGDecoder {
 		chunkLength = readInt(buffer, 0);
 		chunkType = readInt(buffer, 4);
 		chunkRemaining = chunkLength;
-		//crc.reset();
-		//crc.update(buffer, 4, 4); // only chunkType
+		// crc.reset();
+		// crc.update(buffer, 4, 4); // only chunkType
 	}
 
 	private void openChunk(int expected) throws IOException {
@@ -538,7 +539,7 @@ public class PNGDecoder {
 			length = chunkRemaining;
 		}
 		readFully(buffer, offset, length);
-		//crc.update(buffer, offset, length);
+		// crc.update(buffer, offset, length);
 		chunkRemaining -= length;
 		return length;
 	}
@@ -601,7 +602,7 @@ public class PNGDecoder {
 			amount -= skipped;
 		}
 	}
-	
+
 	private static boolean checkSignatur(byte[] buffer) {
 		for (int i = 0; i < SIGNATURE.length; i++) {
 			if (buffer[i] != SIGNATURE[i]) {
@@ -610,5 +611,5 @@ public class PNGDecoder {
 		}
 		return true;
 	}
-	
+
 }

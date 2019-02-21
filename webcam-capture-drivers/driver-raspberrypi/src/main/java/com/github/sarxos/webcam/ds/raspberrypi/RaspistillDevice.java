@@ -23,7 +23,7 @@ public class RaspistillDevice extends IPCDevice {
 	public RaspistillDevice(int camSelect, Map<String, String> parameters, IPCDriver driver) {
 		super(camSelect, parameters, driver);
 	}
-	
+
 	@Override
 	protected void beforeClose() {
 		try {
@@ -34,16 +34,16 @@ public class RaspistillDevice extends IPCDevice {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * One github story: I interchanged the order of "-t 0" and "-s" and tested it. Code: Select all
-	 * raspistill -t 0 -s -o test.jpg And signal driven event works now as expected!
-	 * Y E A H :D
+	 * One github story: I interchanged the order of "-t 0" and "-s" and tested it.
+	 * Code: Select all raspistill -t 0 -s -o test.jpg And signal driven event works
+	 * now as expected! Y E A H :D
 	 */
 	@Override
 	protected void validateParameters() {
 		super.validateParameters();
-		
+
 		// override some arguments
 		parameters.put(OPT_ENCODING, "png");
 		parameters.put(OPT_NOPREVIEW, "");
@@ -54,8 +54,8 @@ public class RaspistillDevice extends IPCDevice {
 	@Override
 	public BufferedImage getImage() {
 		try {
-			//out.write(CAPTRE_TRIGGER_INPUT);
-			//out.flush();
+			// out.write(CAPTRE_TRIGGER_INPUT);
+			// out.flush();
 			BufferedImage frame = new PNGDecoder(in).decode();
 			return frame;
 		} catch (IOException e) {

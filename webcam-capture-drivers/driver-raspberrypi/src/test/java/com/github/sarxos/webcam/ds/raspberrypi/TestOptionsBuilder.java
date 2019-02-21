@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 public class TestOptionsBuilder extends TestCase {
 	public void testBuilder() {
-		
+
 		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
 			System.out.println("this in on on board test, can not run on windows host. thanks");
 		} else {
@@ -16,6 +16,6 @@ public class TestOptionsBuilder extends TestCase {
 			assertEquals(options.hasOption("keypress"), true);
 			assertEquals(options.hasOption("cs"), true);
 		}
-		
+
 	}
 }

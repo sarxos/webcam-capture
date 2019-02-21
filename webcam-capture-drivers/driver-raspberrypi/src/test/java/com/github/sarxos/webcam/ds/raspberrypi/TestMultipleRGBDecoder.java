@@ -31,13 +31,13 @@ public class TestMultipleRGBDecoder extends TestCase {
 		int width = 320;
 		int height = 240;
 
-		InputStream in=new FileInputStream(new File("src/etc/resources/test.raw"));
+		InputStream in = new FileInputStream(new File("src/etc/resources/test.raw"));
 
 		ColorModel cmodel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE, DATA_TYPE);
 		SampleModel smodel = new ComponentSampleModel(DATA_TYPE, width, height, 3, width * 3, BAND_OFFSETS);
 
-		int i=0;
-		while(in.available()>0) {
+		int i = 0;
+		while (in.available() > 0) {
 			byte[] bytes = new byte[width * height * 3];// must new each time!
 			in.read(bytes, 0, bytes.length);
 			byte[][] data = new byte[][] { bytes };
@@ -48,10 +48,10 @@ public class TestMultipleRGBDecoder extends TestCase {
 			BufferedImage bi = new BufferedImage(cmodel, raster, false, null);
 			bi.flush();
 			assertNotNull(bi);
-			//ImageIO.write(bi, "png", new File("test"+(i++)+".png"));
+			// ImageIO.write(bi, "png", new File("test"+(i++)+".png"));
 		}
-		
+
 		in.close();
-		
+
 	}
 }

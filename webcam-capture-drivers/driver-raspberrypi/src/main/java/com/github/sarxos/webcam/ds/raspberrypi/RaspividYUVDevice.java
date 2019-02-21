@@ -98,14 +98,14 @@ public class RaspividYUVDevice extends IPCDevice {
 	@Override
 	public BufferedImage getImage() {
 		byte[] bytes = new byte[width * height * 3];// must new each time!
-		
+
 		try {
 			this.in.read(bytes);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		byte[][] data = new byte[][] { bytes };
 		DataBufferByte dbuf = new DataBufferByte(data, bytes.length, OFFSET);
 		WritableRaster raster = Raster.createWritableRaster(smodel, dbuf, null);
