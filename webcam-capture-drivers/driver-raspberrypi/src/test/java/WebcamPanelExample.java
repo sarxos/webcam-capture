@@ -10,11 +10,11 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamPanel.DrawMode;
 import com.github.sarxos.webcam.WebcamResolution;
-import com.github.sarxos.webcam.ds.raspberrypi.RaspividDriver;
+import com.github.sarxos.webcam.ds.raspberrypi.RaspividYUVDriver;
 
 public class WebcamPanelExample {
 	static {
-		Webcam.setDriver(new RaspividDriver());
+		Webcam.setDriver(new RaspividYUVDriver());
 	}
 
 	public static void main(String[] args) throws InterruptedException {

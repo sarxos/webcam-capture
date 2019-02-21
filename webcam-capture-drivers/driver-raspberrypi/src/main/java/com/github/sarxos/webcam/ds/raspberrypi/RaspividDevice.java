@@ -95,7 +95,7 @@ public class RaspividDevice extends IPCDevice implements WebcamDevice.FPSSource 
 		parameters.put(OPT_RAW, "-");// must be this, then image will be in console!
 		parameters.put(OPT_RAW_FORMAT, "rgb");// only support rgb
 		parameters.put(OPT_CAMSELECT, Integer.toString(this.camSelect));
-		parameters.put(OPT_OUTPUT, "/tmp/cache.h264");
+		parameters.put(OPT_OUTPUT, "/dev/null");
 	}
 
 	@Override
