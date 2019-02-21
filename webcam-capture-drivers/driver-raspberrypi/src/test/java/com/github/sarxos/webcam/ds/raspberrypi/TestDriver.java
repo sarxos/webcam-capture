@@ -10,7 +10,7 @@ public class TestDriver extends TestCase{
 	public void testDriver() {
 		MockIPCDriver driver=new MockIPCDriver();
 		assertEquals(driver.isDeviceCalled(), false);
-		assertEquals(driver.getCommand(), "top");
+		assertEquals(driver.getCommand(), "cat src/etc/still.txt");
 		assertEquals(driver.isThreadSafe(), false);
 		
 		WebcamDevice device=driver.createIPCDevice(0, new HashMap<String, String>());

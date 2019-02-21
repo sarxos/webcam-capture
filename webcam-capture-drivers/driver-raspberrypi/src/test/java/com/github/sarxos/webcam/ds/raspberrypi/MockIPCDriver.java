@@ -5,18 +5,19 @@ import java.util.Map;
 import com.github.sarxos.webcam.WebcamDevice;
 
 public class MockIPCDriver extends IPCDriver {
+	private final static String[] DEFAULT_ARGUMENTS = { "--width", "320", "--height", "240", "--quality", "36", "--timelapse", "10", "--timeout", "0"};
 	/** 
 	 * Creates a new instance of TestIPCDriver. 
 	 * 
 	 * @param command 
 	 */ 
 	public MockIPCDriver() {
-		super("top");
+		super("cat src/etc/still.txt");
 	}
 	
 	@Override
 	protected String[] getDefaultOptions() {
-		return new String[] {"-n", "1"};
+		return DEFAULT_ARGUMENTS;
 	}
 
 	@Override
