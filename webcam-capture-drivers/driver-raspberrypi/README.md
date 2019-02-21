@@ -1,4 +1,4 @@
-# webcam-capture-driver-raspistill
+# webcam-capture-driver-raspberrypi
 
 This capture driver is special for raspberrypi. __raspistill， raspiyuv, ...__ is the command line tool on raspberrypi for capturing photographs or vedios with the camera module. The most important is that command line tool has feature grabbing image repeatly(mock FPS) from camera and print to file or console. They are:
 
@@ -15,7 +15,7 @@ sudo apt-get update
 
 sudo apt-get install raspistill
 
-raspistill --help //to check installation
+raspistill
 
 
 ## Maven
@@ -55,6 +55,8 @@ public class WebcamPanelExample {
 	static {
 		//Webcam.setDriver(new RaspistillDriver());
 		Webcam.setDriver(new RaspiYUVDriver());
+		//Webcam.setDriver(new RaspividDriver());
+		//Webcam.setDriver(new RaspividYUVDriver());
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -92,7 +94,7 @@ One demo snapshot as follows, please check WebcamPanelExample.java for detail.
 
 ## Known Problems
 
-Becuase is pure java image processing, so performance is not good. The actually fps is low. According to test, about 500ms for PNG decoder to decode 640x480 image from raspistill stream.
+Becuase is pure java image processing, so performance is not good. The actually fps is low. According to test, about 500ms for PNG decoder to decode 640x480 image from raspistill stream. I will change userland raspixxx command program later for better performance.
 
 ## Driver Parameters
 this driver makes above arguments configurable, when driver instance created, it will load arguments step by step as follows,
