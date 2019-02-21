@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2017, Robert Bosch (Suzhou) All Rights Reserved.
- * This software is property of Robert Bosch (Suzhou). 
- * Unauthorized duplication and disclosure to third parties is prohibited.
- */
 package com.github.sarxos.webcam.ds.raspberrypi;
 
 /**

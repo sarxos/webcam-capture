@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2017, Robert Bosch (Suzhou) All Rights Reserved.
- * This software is property of Robert Bosch (Suzhou). 
- * Unauthorized duplication and disclosure to third parties is prohibited.
- */
 package com.github.sarxos.webcam.ds.raspberrypi;
 
 import java.util.Comparator;
@@ -13,8 +8,6 @@ import java.util.Map.Entry;
 
 /** 
  * ClassName: SortedMapTest <br/> 
- * Function: TODO FUNCTION description of this class. <br/> 
- * Reason: TODO why you add this class?(Optional). <br/> 
  * date: Feb 19, 2019 5:11:25 PM <br/> 
  * 
  * @author maoanapex88@163.com alexmao86 
