@@ -68,5 +68,6 @@ public class SortedMapTest {
 
 		String commandString = command.toString();
 		System.out.println(commandString);
+		System.out.println(1>>1);
 	}
 }

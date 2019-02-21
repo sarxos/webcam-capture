@@ -48,9 +48,10 @@ public class TestMultipleRGBDecoder extends TestCase {
 			BufferedImage bi = new BufferedImage(cmodel, raster, false, null);
 			bi.flush();
 			assertNotNull(bi);
-			ImageIO.write(bi, "png", new File("test"+(i++)+".png"));
+			//ImageIO.write(bi, "png", new File("test"+(i++)+".png"));
 		}
 		
 		in.close();
+		
 	}
 }

@@ -14,8 +14,6 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.Map;
 
-import com.github.sarxos.webcam.WebcamDevice;
-
 /**
  * ClassName: RaspividDevice <br/>
  * --raw-format rgb is still yuv values, see
@@ -40,7 +38,7 @@ import com.github.sarxos.webcam.WebcamDevice;
  * 
  * @author maoanapex88@163.com alexmao86
  */
-public class RaspividYUVDevice extends IPCDevice implements WebcamDevice.FPSSource {
+public class RaspividYUVDevice extends IPCDevice {
 	private static final int DATA_TYPE = DataBuffer.TYPE_BYTE;
 	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 	private static int[] OFFSET = new int[] { 0 };
@@ -92,14 +90,14 @@ public class RaspividYUVDevice extends IPCDevice implements WebcamDevice.FPSSour
 		super.validateParameters();
 		// override some arguments
 		parameters.put(OPT_NOPREVIEW, "");
-		//parameters.put(OPT_RGB, "");// only support rgb
+		parameters.put(OPT_RGB, "");// only support rgb
 		parameters.put(OPT_CAMSELECT, Integer.toString(this.camSelect));
 		parameters.put(OPT_OUTPUT, "-");
 	}
 
 	@Override
 	public BufferedImage getImage() {
-		byte[] bytes = new byte[(width * height * 3) / 2];// must new each time!
+		byte[] bytes = new byte[width * height * 3];// must new each time!
 		
 		try {
 			this.in.read(bytes);
@@ -107,7 +105,6 @@ public class RaspividYUVDevice extends IPCDevice implements WebcamDevice.FPSSour
 			e.printStackTrace();
 			return null;
 		}
-		bytes=ColorUtils.convertYUVtoRGB(bytes, width, height);
 		
 		byte[][] data = new byte[][] { bytes };
 		DataBufferByte dbuf = new DataBufferByte(data, bytes.length, OFFSET);
@@ -117,10 +114,5 @@ public class RaspividYUVDevice extends IPCDevice implements WebcamDevice.FPSSour
 		bi.flush();
 
 		return bi;
-	}
-	
-	@Override
-	public double getFPS() {
-		return Integer.parseInt(this.parameters.get(OPT_FRAMERATE));
 	}
 }

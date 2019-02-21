@@ -14,8 +14,6 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.Map;
 
-import com.github.sarxos.webcam.WebcamDevice;
-
 /**
  * ClassName: RaspividDevice <br/>
  * --raw-format rgb is still yuv values, see
@@ -40,7 +38,7 @@ import com.github.sarxos.webcam.WebcamDevice;
  * 
  * @author maoanapex88@163.com alexmao86
  */
-public class RaspividDevice extends IPCDevice implements WebcamDevice.FPSSource {
+public class RaspividDevice extends IPCDevice {
 	private static final int DATA_TYPE = DataBuffer.TYPE_BYTE;
 	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 	private static int[] OFFSET = new int[] { 0 };
@@ -117,10 +115,5 @@ public class RaspividDevice extends IPCDevice implements WebcamDevice.FPSSource 
 		bi.flush();
 
 		return bi;
-	}
-	
-	@Override
-	public double getFPS() {
-		return Integer.parseInt(this.parameters.get(OPT_FRAMERATE));
 	}
 }

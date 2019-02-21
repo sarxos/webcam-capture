@@ -1,6 +1,6 @@
 package com.github.sarxos.webcam.ds.raspberrypi;
 
-public class ColorUtils {
+public class ColorUtil {
 	/**
 	 * Change raw YUV420 color to RGB color. Colours could be 0-255.
 	 *
@@ -8,7 +8,7 @@ public class ColorUtils {
 	 *            The array of YUV components to convert
 	 * @param rgb
 	 *            An array to return the colour values with
-	 */
+	 
 	public static byte[] convertYUVtoRGB(byte[] yuv, int width, int height) {
 		int size=width*height;
 		int uOffset=size;
@@ -22,8 +22,8 @@ public class ColorUtils {
 				int pos=y*width+x;
 				
 				float Y=yuv[pos];
-				float U = yuv[(y>>1) * (width>>1) + (x>>1) + uOffset];
-				float V = yuv[(y>>1) * (width>>1) + (x>>1) + vOffset];
+				float U = yuv[(y/2) * (width/2) + (x/2) + uOffset];
+				float V = yuv[(y/2) * (width/2) + (x/2) + vOffset];
 				
 				rgb[index++]= (byte)(Y + 1.140f * V);
 				rgb[index++]= (byte)(Y - 0.394f * U - 0.581f * V);
@@ -32,4 +32,6 @@ public class ColorUtils {
 		}
 		return rgb;
 	}
+	*/
+	
 }

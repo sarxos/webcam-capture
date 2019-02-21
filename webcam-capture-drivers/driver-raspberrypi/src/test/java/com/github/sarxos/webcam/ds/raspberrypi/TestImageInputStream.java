@@ -1,16 +1,12 @@
 package com.github.sarxos.webcam.ds.raspberrypi;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
-import com.github.sarxos.webcam.ds.raspberrypi.PNGDecoder;
 
 import junit.framework.TestCase;
 
@@ -21,16 +17,10 @@ public class TestImageInputStream extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		mockMultiImageForStream("png");
-		// mockMultiImageForStream("bmp");
-		// mockMultiImageForStream("gif");
-		// mockMultiImageForStream("jpg");
 	}
 
 	public void testPNG() throws Exception {
-		// testType("jpg");
-		// testType("bmp");
-		// testType("gif");
-		// testType("png");
+		testType("png");
 	}
 
 	public void testBasePNGDecoder() throws Exception {
@@ -47,18 +37,6 @@ public class TestImageInputStream extends TestCase {
 		// checked image is so good! //ImageIO.write(bi, "png", new File("out.png"));
 	}
 
-	/*
-	 * public void testPNGDecoderPerformance() throws Exception { File f=new
-	 * File("src/etc/resources/kc.png"); InputStream in = new FileInputStream(f);
-	 * byte[] array=IOUtils.toByteArray(in); in.close();
-	 * 
-	 * long acc=0; for(int i=0;i<RUN;i++) { long start=System.currentTimeMillis();
-	 * ByteArrayInputStream bin=new ByteArrayInputStream(array); BufferedImage
-	 * image=new PNGDecoder(bin).decode(); long end=System.currentTimeMillis(); long
-	 * onetime=(end-start); acc+=onetime; assertNotNull(image);
-	 * System.out.println("onetime="+onetime); }
-	 * System.out.printf("total=%d, avg=%f", acc, acc*1f/RUN); }
-	 */
 	public void testPNGStream() throws Exception {
 		testType("png");
 	}
@@ -74,9 +52,10 @@ public class TestImageInputStream extends TestCase {
 		for (int i = 0; i < 10; i++) {
 			BufferedImage image = new PNGDecoder(in).decode();
 			in.skip(16);
+			assertNotNull(image);
 			System.out.println("decoded No." + i + " image");
 		}
-
+		
 		in.close();
 	}
 
@@ -84,9 +63,6 @@ public class TestImageInputStream extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		deleteChunk("png");
-		// deleteChunk("jpg");
-		// deleteChunk("bmp");
-		// deleteChunk("gif");
 	}
 
 	private static void mockMultiImageForStream(String type) throws IOException {

@@ -4,24 +4,24 @@ import java.util.Map;
 
 import com.github.sarxos.webcam.WebcamDevice;
 
-public class TestIPCDriver extends IPCDriver {
+public class MockIPCDriver extends IPCDriver {
 	/** 
 	 * Creates a new instance of TestIPCDriver. 
 	 * 
 	 * @param command 
 	 */ 
-	public TestIPCDriver(String command) {
+	public MockIPCDriver() {
 		super("top");
 	}
 	
 	@Override
 	protected String[] getDefaultOptions() {
-		return new String[] {};
+		return new String[] {"-n", "1"};
 	}
 
 	@Override
 	protected WebcamDevice createIPCDevice(int camSelect, Map<String, String> parameters) {
-		return new TestIPCDevice(camSelect, parameters, this);
+		return new MockIPCDevice(camSelect, parameters, this);
 	}
 
 }

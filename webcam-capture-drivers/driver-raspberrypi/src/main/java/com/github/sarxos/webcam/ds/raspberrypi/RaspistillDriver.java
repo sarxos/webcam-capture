@@ -13,7 +13,7 @@ import com.github.sarxos.webcam.WebcamDevice;
  * @since JDK 1.8
  */
 public class RaspistillDriver extends IPCDriver {
-	private final static String[] DEFAULT_ARGUMENTS = { "--width", "320", "--height", "240", "--quality", "36", "--timelapse", "100", "--timeout", "0"};
+	private final static String[] DEFAULT_ARGUMENTS = { "--width", "320", "--height", "240", "--quality", "36", "--timelapse", "10", "--timeout", "0"};
 	/** 
 	 * Creates a new instance of RaspistillDriver. 
 	 * 

@@ -14,7 +14,7 @@ import com.github.sarxos.webcam.WebcamDevice;
  */
 public class RaspividYUVDriver extends IPCDriver {
 	private final static String[] DEFAULT_ARGUMENTS = { "--width", "320", "--height", "240",
-			"--framerate", "10", "--timeout", "0"};
+			"--framerate", "3", "--timeout", "0"};
 	/** 
 	 * Creates a new instance of RaspiYUVDriver. 
 	 * 

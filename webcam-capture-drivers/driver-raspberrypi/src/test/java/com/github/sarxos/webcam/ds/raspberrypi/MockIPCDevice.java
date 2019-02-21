@@ -3,7 +3,7 @@ package com.github.sarxos.webcam.ds.raspberrypi;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
-public class TestIPCDevice extends IPCDevice {
+public class MockIPCDevice extends IPCDevice {
 	
 	/** 
 	 * Creates a new instance of TestIPCDevice. 
@@ -12,7 +12,7 @@ public class TestIPCDevice extends IPCDevice {
 	 * @param parameters
 	 * @param driver 
 	 */ 
-	public TestIPCDevice(int camSelect, Map<String, String> parameters, IPCDriver driver) {
+	public MockIPCDevice(int camSelect, Map<String, String> parameters, IPCDriver driver) {
 		super(camSelect, parameters, driver);
 	}
 
