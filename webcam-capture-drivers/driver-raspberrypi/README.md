@@ -94,7 +94,7 @@ One demo snapshot as follows, please check WebcamPanelExample.java for detail.
 
 ## Known Problems
 
-Becuase is pure java image processing, so performance is not good. The actually fps is low. According to test, about 500ms for PNG decoder to decode 640x480 image from raspistill stream. I will change userland raspixxx command program later for better performance.
+Becuase is pure java image processing, so performance RaspistillDriver and RaspiYUVDriver is not good. The actually fps is low. According to test, about 500ms for PNG decoder to decode 640x480 image from raspistill stream. But RaspividDriver and RaspividYUVDriver is very good, because java code is comsuming raw rgb24 data, it is almost in realtime following native process STDOUT.
 
 ## Driver Parameters
 this driver makes above arguments configurable, when driver instance created, it will load arguments step by step as follows,

@@ -16,8 +16,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.imageio.ImageIO;
-
 import junit.framework.TestCase;
 
 public class TestMultipleRGBDecoder extends TestCase {
@@ -29,7 +27,7 @@ public class TestMultipleRGBDecoder extends TestCase {
 
 	public void testDecodeRawRgb() throws IOException {
 		int width = 320;
-		int height = 240;
+		int height = 320;
 
 		InputStream in = new FileInputStream(new File("src/etc/resources/test.raw"));
 
