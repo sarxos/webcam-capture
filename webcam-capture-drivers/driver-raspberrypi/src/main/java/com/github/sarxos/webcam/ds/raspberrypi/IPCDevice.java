@@ -4,13 +4,11 @@ import static com.github.sarxos.webcam.ds.raspberrypi.RaspiThreadGroup.threadGro
 import static com.github.sarxos.webcam.ds.raspberrypi.RaspiThreadGroup.threadId;
 
 import java.awt.Dimension;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -285,13 +283,13 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug(commandString);
 		}
-		StringTokenizer st = new StringTokenizer(commandString);
-
-		String[] cmdarray = new String[st.countTokens()];
-		for (int i = 0; st.hasMoreTokens(); i++)
-			cmdarray[i] = st.nextToken();
-
-		return new ProcessBuilder(cmdarray).directory(new File(".")).redirectErrorStream(false).start();
+		return Runtime.getRuntime().exec(commandString);
+	}
+	
+	protected final void readFully(byte[] buffer) throws IOException {
+		for(int i=0;i<buffer.length;i++) {
+			buffer[i]=(byte)in.read();
+		}
 	}
 
 	class ErrorConsumeWorker implements Runnable {

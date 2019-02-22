@@ -83,7 +83,7 @@ public class RaspiYUVDevice extends IPCDevice {
 		byte[] bytes = new byte[width * height * 3];// must new each time!
 
 		try {
-			this.in.read(bytes);
+			readFully(bytes);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
