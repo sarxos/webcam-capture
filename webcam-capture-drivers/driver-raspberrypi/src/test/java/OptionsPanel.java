@@ -42,15 +42,6 @@ public class OptionsPanel extends JPanel {
 		add(heightField);
 		heightField.setColumns(10);
 
-		JLabel lblQuality = new JLabel("quality");
-		add(lblQuality);
-
-		JSlider qualitySlider = new JSlider();
-		qualitySlider.setMajorTickSpacing(1);
-		qualitySlider.setSnapToTicks(true);
-		qualitySlider.setToolTipText("quality");
-		add(qualitySlider);
-
 		JLabel lblSharpness = new JLabel("sharpness ");
 		add(lblSharpness);
 

@@ -1,22 +1,19 @@
 # webcam-capture-driver-raspberrypi
 
-This capture driver is special for raspberrypi. __raspistill， raspiyuv, ...__ is the command line tool on raspberrypi for capturing photographs or vedios with the camera module. The most important is that command line tool has feature grabbing image repeatly(mock FPS) from camera and print to file or console. They are:
+This capture driver is special for raspberrypi. __raspistill， raspiyuv, ...__ are the command line tools on raspberrypi for capturing photographs or vedios with the camera module. The most important is that command line tools have feature grabbing image repeatly(mock FPS) from camera and print to file or console. They are:
 
 1.  -o, --output : Output filename <filename> (to **write to stdout, use '-o -**'). If not specified, no file is saved
 2.  -tl, --timelapse : Timelapse mode. Takes a picture every <t>ms
 3.  -n, --nopreview : Do not display a preview window
 
-so it is possible use java Runtime to launch raspixxx process and intercept its console output, makes it as
-webcam driver. this is one simple and straightforward approach without native JNI or JNA call, no file system exchange. You will not struggle with performance issue and native code compiling. 
+so it is possible use java Runtime.execute() to launch raspixxx process and intercept its console output, makes them as
+webcam driver. this is one simple and straightforward approach without native JNI or JNA call, no file system exchange. You will not struggle with performance issue and native code compiling. Because raspberrypi camera is connected to GPU directly, the only CPU usage of drivers is converting rgb24 data to java BufferedImage, the system average CPU loading is 30% when driver and Swing panel running.
 
 ##Install
 
 sudo apt-get update
 
-sudo apt-get install raspistill
-
-raspistill
-
+sudo apt-get install raspistill raspivid raspiyuv raspividyuv
 
 ## Maven
 
@@ -47,7 +44,7 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamPanel.DrawMode;
 import com.github.sarxos.webcam.WebcamResolution;
-import com.github.sarxos.webcam.ds.raspistill.*;
+import com.github.sarxos.webcam.ds.raspberrypi.*;
 
 
 public class WebcamPanelExample {
@@ -61,7 +58,7 @@ public class WebcamPanelExample {
 
 	public static void main(String[] args) throws InterruptedException {
 
-		final JFrame window = new JFrame("Screen Capture Example");
+		final JFrame window = new JFrame("Raspberrypi Capture Example");
 		window.setResizable(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.getContentPane().setLayout(new FlowLayout());
@@ -88,9 +85,7 @@ public class WebcamPanelExample {
 	}
 }
 ```
-One demo snapshot as follows, please check WebcamPanelExample.java for detail.
-
-![](https://raw.githubusercontent.com/alexmao86/webcam-capture/master/webcam-capture-drivers/driver-raspistill/src/etc/resources/snapshot.png)
+Please check WebcamPanelExample.java in src/test/java for detail.
 
 ## Known Problems
 
