@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
@@ -32,7 +33,8 @@ import com.github.sarxos.webcam.WebcamResolution;
  * @version
  * @since JDK 1.8
  */
-public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurable, Constants {
+public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurable, WebcamDevice.BufferAccess, Constants {
+	private final static Logger LOGGER = LoggerFactory.getLogger(IPCDevice.class);
 	/**
 	 * raspi keypress mode, send new line to make capture
 	 */
@@ -41,7 +43,10 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 
 	private static final String THREAD_NAME_PREFIX = "raspistill-device-";
 	private static final int DEFAULT_THREADPOOL_SIZE = 2;
-	private final static Logger LOGGER = LoggerFactory.getLogger(IPCDevice.class);
+	
+	protected int width = 320;
+	protected int height = 240;
+	
 	/**
 	 * Artificial view sizes. raspistill can handle flex dimensions less than QSXGA,
 	 * if the dimension is too high, respberrypi CPU can not afford the computing
@@ -286,10 +291,27 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 		return Runtime.getRuntime().exec(commandString);
 	}
 	
-	protected final void readFully(byte[] buffer) throws IOException {
+	protected synchronized final void readFully(byte[] buffer) throws IOException {
 		for(int i=0;i<buffer.length;i++) {
 			buffer[i]=(byte)in.read();
 		}
+	}
+
+	@Override
+	public ByteBuffer getImageBytes() {
+		byte[] bytes = new byte[width * height * 3];// must new each time!
+		try {
+			readFully(bytes);
+		} catch (IOException e) {
+			LOGGER.error("can not access camera", e);
+			throw new RuntimeException(e);
+		}
+		return ByteBuffer.wrap(bytes);
+	}
+
+	@Override
+	public void getImageBytes(ByteBuffer buffer) {
+		buffer.put(getImageBytes().array());
 	}
 
 	class ErrorConsumeWorker implements Runnable {

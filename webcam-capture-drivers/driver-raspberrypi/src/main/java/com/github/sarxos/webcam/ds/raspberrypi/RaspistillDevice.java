@@ -2,6 +2,7 @@ package com.github.sarxos.webcam.ds.raspberrypi;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
@@ -54,13 +55,21 @@ public class RaspistillDevice extends IPCDevice {
 	@Override
 	public BufferedImage getImage() {
 		try {
-			// out.write(CAPTRE_TRIGGER_INPUT);
-			// out.flush();
 			BufferedImage frame = new PNGDecoder(in).decode();
 			return frame;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public ByteBuffer getImageBytes() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void getImageBytes(ByteBuffer buffer) {
+		throw new UnsupportedOperationException();
 	}
 }

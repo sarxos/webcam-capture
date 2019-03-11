@@ -45,8 +45,7 @@ public class RaspividDevice extends IPCDevice {
 	private static final int[] BITS = { 8, 8, 8 };
 	private static int[] BAND_OFFSETS = new int[] { 0, 1, 2 };
 
-	private int width = 320;
-	private int height = 240;
+	
 	private final ColorModel cmodel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE,
 			DATA_TYPE);
 	private SampleModel smodel;
