@@ -16,6 +16,5 @@ public class TestOptionsBuilder extends TestCase {
 			assertEquals(options.hasOption("keypress"), true);
 			assertEquals(options.hasOption("cs"), true);
 		}
-
 	}
 }

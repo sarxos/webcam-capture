@@ -78,7 +78,7 @@ public class PNGDecoder {
 		this.buffer = new byte[4096];
 		int read = input.read(buffer, 0, SIGNATURE.length);// just skip sign
 		// no check
-		if (read != SIGNATURE.length || !checkSignatur(buffer)) {
+		if (read != SIGNATURE.length || !checkSignature(buffer)) {
 			// throw new IOException("Not a valid PNG file");
 			return;
 		} else {
@@ -603,7 +603,7 @@ public class PNGDecoder {
 		}
 	}
 
-	private static boolean checkSignatur(byte[] buffer) {
+	private static boolean checkSignature(byte[] buffer) {
 		for (int i = 0; i < SIGNATURE.length; i++) {
 			if (buffer[i] != SIGNATURE[i]) {
 				return false;

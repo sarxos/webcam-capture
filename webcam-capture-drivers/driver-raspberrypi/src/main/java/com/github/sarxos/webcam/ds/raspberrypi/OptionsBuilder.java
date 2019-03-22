@@ -65,9 +65,6 @@ class OptionsBuilder implements Constants {
 		NO_VALUE_OPTIONS.add(OPT_FLUSH);
 	}
 
-	private OptionsBuilder() {
-	}
-
 	/**
 	 * load supported options from command output. then modify some options
 	 * manually. step 1: launch raspistill command to load supported options step 2:

@@ -5,8 +5,7 @@ import java.util.Map;
 import com.github.sarxos.webcam.WebcamDevice;
 
 public class MockIPCDriver extends IPCDriver {
-	private final static String[] DEFAULT_ARGUMENTS = { "--width", "320", "--height", "240", "--quality", "36",
-			"--timelapse", "10", "--timeout", "0" };
+	private final static String[] DEFAULT_ARGUMENTS = {};
 
 	/**
 	 * Creates a new instance of TestIPCDriver.
@@ -25,6 +24,11 @@ public class MockIPCDriver extends IPCDriver {
 	@Override
 	protected WebcamDevice createIPCDevice(int camSelect, Map<String, String> parameters) {
 		return new MockIPCDevice(camSelect, parameters, this);
+	}
+
+	@Override
+	protected String getCommand() {
+		return "ping localhost"+(System.getProperty("os.name").toLowerCase().contains("windows")?" -t":"");
 	}
 
 }
