@@ -16,6 +16,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 
  * ClassName: CommanderUtil <br/>
@@ -25,14 +28,11 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author maoanapex88@163.com alexmao86
  */
 class CommanderUtil {
+	private final static Logger LOGGER=LoggerFactory.getLogger(CommanderUtil.class);
 	/**
 	 * DEFAULT_TIMEOUT: default timeout of process execution
 	 */
 	private static final int DEFAULT_TIMEOUT = 5000;
-
-	private CommanderUtil() {
-
-	}
 
 	/**
 	 * execute given command, the default timeout is 5 seconds
@@ -109,7 +109,10 @@ class CommanderUtil {
 			proc.destroy();
 			refer.set(null);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.warn(e.getMessage());
+			if(LOGGER.isDebugEnabled()) {
+				LOGGER.debug(e.getMessage(), e);
+			}
 		}
 
 		return ret;

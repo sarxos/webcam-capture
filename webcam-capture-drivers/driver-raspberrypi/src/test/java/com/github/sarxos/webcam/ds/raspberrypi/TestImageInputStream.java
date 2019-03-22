@@ -25,16 +25,20 @@ public class TestImageInputStream extends TestCase {
 
 	public void testBasePNGDecoder() throws Exception {
 
-		File f = new File("src/etc/resources/1.png");
+		File f = new File("src/etc/resources/test.png");
 		InputStream in = new FileInputStream(f);
 		PNGDecoder decoder = new PNGDecoder(in);
 
 		BufferedImage bi = decoder.decode();
 		bi.flush();
 		assertNotNull(bi);
+		assertEquals(210, bi.getWidth());
+		assertEquals(111, bi.getHeight());
+		assertEquals(210, decoder.getWidth());
+		assertEquals(111, decoder.getHeight());
+		assertEquals(true, decoder.isRGB());
+		assertEquals(true, decoder.hasAlpha());
 		in.close();
-
-		// checked image is so good! //ImageIO.write(bi, "png", new File("out.png"));
 	}
 
 	public void testPNGStream() throws Exception {
@@ -45,7 +49,7 @@ public class TestImageInputStream extends TestCase {
 		File mutilImage = new File("src/etc/resources/" + type + ".chunk");
 
 		InputStream in = new FileInputStream(mutilImage);
-		byte[] bytes = FileUtils.readFileToByteArray(new File("src/etc/resources/kc." + type));
+		byte[] bytes = FileUtils.readFileToByteArray(new File("src/etc/resources/test." + type));
 		byte[] chunkBytes = FileUtils.readFileToByteArray(mutilImage);
 		assertEquals(bytes.length, chunkBytes.length / 10);
 
@@ -53,6 +57,8 @@ public class TestImageInputStream extends TestCase {
 			BufferedImage image = new PNGDecoder(in).decode();
 			in.skip(16);
 			assertNotNull(image);
+			assertEquals(210, image.getWidth());
+			assertEquals(111, image.getHeight());
 			System.out.println("decoded No." + i + " image");
 		}
 
@@ -67,7 +73,7 @@ public class TestImageInputStream extends TestCase {
 
 	private static void mockMultiImageForStream(String type) throws IOException {
 		File mutilImage = deleteChunk(type);
-		byte[] bytes = FileUtils.readFileToByteArray(new File("src/etc/resources/kc." + type));
+		byte[] bytes = FileUtils.readFileToByteArray(new File("src/etc/resources/test." + type));
 		for (int i = 0; i < 10; i++) {
 			FileUtils.writeByteArrayToFile(mutilImage, bytes, true);
 		}

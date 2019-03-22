@@ -20,5 +20,4 @@ public class MockIPCDevice extends IPCDevice {
 	public BufferedImage getImage() {
 		return null;
 	}
-
 }
