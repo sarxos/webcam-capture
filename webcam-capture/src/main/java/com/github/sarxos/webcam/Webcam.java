@@ -195,6 +195,12 @@ public class Webcam {
         this.lock = new WebcamLock(this);
     }
 
+    public void disableLock() {
+        if (this.lock != null) {
+            lock.disable();
+        }
+    }
+
     /**
      * Asynchronously start new thread which will notify all webcam listeners about the new image
      * available.

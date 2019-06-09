@@ -60,6 +60,9 @@ public class WebcamProcessor {
          * @throws InterruptedException when thread has been interrupted
          */
         public void process(WebcamTask task) throws InterruptedException {
+            if (task == null) {
+                throw new IllegalArgumentException("null WebcamTask");
+            }
             inbound.put(task);
 
             Throwable t = outbound.take().getThrowable();
