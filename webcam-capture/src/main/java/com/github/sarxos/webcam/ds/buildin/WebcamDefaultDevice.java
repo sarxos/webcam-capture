@@ -244,7 +244,7 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 		int minSize = size.width * size.height * 3;
 		int curSize = target.remaining();
 
-		if (minSize < curSize) {
+		if (minSize > curSize) {
 			throw new IllegalArgumentException(String.format("Not enough remaining space in target buffer (%d necessary vs %d remaining)", minSize, curSize));
 		}
 

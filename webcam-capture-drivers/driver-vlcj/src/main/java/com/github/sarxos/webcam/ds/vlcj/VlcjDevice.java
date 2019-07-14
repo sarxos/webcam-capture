@@ -18,6 +18,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamDevice.FPSSource;
+import com.github.sarxos.webcam.WebcamException;
+import com.github.sarxos.webcam.WebcamResolution;
+import com.github.sarxos.webcam.util.OsUtils;
+import com.sun.jna.Memory;
+
 import uk.co.caprica.vlcj.medialist.MediaListItem;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
@@ -26,13 +33,6 @@ import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallback;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
-
-import com.github.sarxos.webcam.WebcamDevice;
-import com.github.sarxos.webcam.WebcamDevice.FPSSource;
-import com.github.sarxos.webcam.WebcamException;
-import com.github.sarxos.webcam.WebcamResolution;
-import com.github.sarxos.webcam.util.OsUtils;
-import com.sun.jna.Memory;
 
 
 /**
@@ -206,9 +206,6 @@ public class VlcjDevice implements WebcamDevice, BufferFormatCallback, RenderCal
 	 * http://fivedots.coe.psu.ac.th/~ad/jg/nui025/snapsWithoutJMF.pdf
 	 */
 	private final static String[] VLC_ARGS = {
-		"--intf", "dummy", // no interface
-		"--vout", "dummy", // no video output
-		"--no-audio", // no audio decoding
 		"--no-video-title-show", // do not display title
 		"--no-stats", // no stats
 		"--no-sub-autodetect-file", // no subtitles
