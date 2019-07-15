@@ -37,7 +37,13 @@ public class JavaCvDriver implements WebcamDriver {
 	private List<WebcamDevice> getDevicesLinux() {
 		final List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
 		for (File vfile : NixVideoDevUtils.getVideoFiles()) {
-			devices.add(new JavaCvDevice(vfile));
+			final JavaCvDevice device = new JavaCvDevice(vfile);
+			try {
+				device.getResolution();
+				devices.add(device);
+			} catch (final ArrayIndexOutOfBoundsException ignored) {
+
+			}
 		}
 		return devices;
 	}
