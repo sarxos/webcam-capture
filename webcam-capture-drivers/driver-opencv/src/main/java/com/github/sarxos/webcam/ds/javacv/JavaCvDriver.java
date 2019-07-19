@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bytedeco.javacpp.opencv_videoio.VideoCapture;
-import org.bytedeco.javacpp.videoInputLib.videoInput;
+import org.bytedeco.opencv.opencv_videoio.VideoCapture;
+import org.bytedeco.videoinput.videoInput;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
@@ -37,7 +37,13 @@ public class JavaCvDriver implements WebcamDriver {
 	private List<WebcamDevice> getDevicesLinux() {
 		final List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
 		for (File vfile : NixVideoDevUtils.getVideoFiles()) {
-			devices.add(new JavaCvDevice(vfile));
+			final JavaCvDevice device = new JavaCvDevice(vfile);
+			try {
+				device.getResolution();
+				devices.add(device);
+			} catch (final ArrayIndexOutOfBoundsException ignored) {
+
+			}
 		}
 		return devices;
 	}

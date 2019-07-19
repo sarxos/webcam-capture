@@ -1,7 +1,7 @@
 package com.github.sarxos.webcam.ds.javacv;
 
-import static org.bytedeco.javacpp.opencv_videoio.CV_CAP_PROP_FRAME_HEIGHT;
-import static org.bytedeco.javacpp.opencv_videoio.CV_CAP_PROP_FRAME_WIDTH;
+import static org.bytedeco.opencv.global.opencv_videoio.CAP_PROP_FRAME_HEIGHT;
+import static org.bytedeco.opencv.global.opencv_videoio.CAP_PROP_FRAME_WIDTH;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -9,12 +9,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bytedeco.javacpp.opencv_videoio.VideoCapture;
-import org.bytedeco.javacpp.videoInputLib.videoInput;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.bytedeco.javacv.OpenCVFrameGrabber;
+import org.bytedeco.opencv.opencv_videoio.VideoCapture;
+import org.bytedeco.videoinput.videoInput;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamException;
@@ -114,11 +114,11 @@ public class JavaCvDevice implements WebcamDevice {
 				final double w1 = r.getWidth();
 				final double h1 = r.getHeight();
 
-				vc.set(CV_CAP_PROP_FRAME_WIDTH, w1);
-				vc.set(CV_CAP_PROP_FRAME_HEIGHT, h1);
+				vc.set(CAP_PROP_FRAME_WIDTH, w1);
+				vc.set(CAP_PROP_FRAME_HEIGHT, h1);
 
-				final double w2 = vc.get(CV_CAP_PROP_FRAME_WIDTH);
-				final double h2 = vc.get(CV_CAP_PROP_FRAME_HEIGHT);
+				final double w2 = vc.get(CAP_PROP_FRAME_WIDTH);
+				final double h2 = vc.get(CAP_PROP_FRAME_HEIGHT);
 
 				if (w1 == w2 && h1 == h2) {
 					supported.add(r.getSize());
