@@ -128,7 +128,7 @@ public class WebcamDriverUtils {
 		File[] files = dir.listFiles();
 		for (File file : Objects.requireNonNull(files)) {
 			if (file.isDirectory() && !flat) {
-				classes.addAll(findClasses(file, pkgname + "." + file.getName(), flat));
+				classes.addAll(findClasses(file, pkgname + "." + file.getName(), false));
 			} else if (file.getName().endsWith(".class")) {
 				classes.add(Class.forName(pkgname + '.' + file.getName().substring(0, file.getName().length() - 6)));
 			}

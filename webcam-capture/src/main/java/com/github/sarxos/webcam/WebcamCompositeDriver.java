@@ -34,14 +34,12 @@ public class WebcamCompositeDriver implements WebcamDriver, WebcamDiscoverySuppo
 
 	@Override
 	public boolean isThreadSafe() {
-		boolean safe = true;
 		for (WebcamDriver driver : drivers) {
-			safe &= driver.isThreadSafe();
-			if (!safe) {
-				break;
+			if (!driver.isThreadSafe()) {
+				return false;
 			}
 		}
-		return safe;
+		return true;
 	}
 
 	public void setScanInterval(int scanInterval) {

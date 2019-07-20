@@ -159,7 +159,7 @@ public class GStreamerDriver implements WebcamDriver {
 					} else {
 						break;
 					}
-				} while (i < m);
+				} while (i++ < m);
 
 			} else if (Platform.isLinux()) {
 				for (File vfile : NixVideoDevUtils.getVideoFiles()) {
