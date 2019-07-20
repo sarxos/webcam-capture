@@ -3,6 +3,7 @@ package us.sosia.video.stream.agent;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +30,11 @@ public class StreamClient {
 	
 	
 	protected static class StreamFrameListenerIMPL implements StreamFrameListener{
-		private volatile long count = 0;
+		private final AtomicLong count = new AtomicLong(0);
+
 		@Override
 		public void onFrameReceived(BufferedImage image) {
-			logger.info("frame received :{}",count++);
+			logger.info("frame received :{}", count.getAndIncrement());
 			displayWindow.updateImage(image);			
 		}
 		

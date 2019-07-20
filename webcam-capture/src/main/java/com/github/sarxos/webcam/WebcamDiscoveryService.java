@@ -249,7 +249,7 @@ public class WebcamDiscoveryService implements Runnable {
 		// wait initial time interval since devices has been initially
 		// discovered
 
-		Object monitor = new Object();
+		final Object monitor = new Object();
 		do {
 
 			synchronized (monitor) {

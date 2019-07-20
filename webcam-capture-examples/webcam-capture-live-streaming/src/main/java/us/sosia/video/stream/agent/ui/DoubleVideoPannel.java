@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -28,7 +29,7 @@ public class DoubleVideoPannel extends JPanel{
  	protected final int smallImageWidth = 160;
  	protected final int smallImageHeight = 120;
  	protected final JButton exchange = new JButton("swap");
- 	protected volatile boolean swap = false;
+	protected final AtomicBoolean swap = new AtomicBoolean(false);
  	
  	public void close(){
  		worker.shutdown();
@@ -44,7 +45,7 @@ public class DoubleVideoPannel extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				//
 				//here start to swap the image
-				swap = !swap;
+				swap.set(!swap.get());
 				worker.execute(new Runnable() {
 					
 					@Override

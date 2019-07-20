@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -131,13 +132,13 @@ public class StreamServerAgent implements IStreamServerAgent{
 		
 	}
 	
-	protected volatile long frameCount = 0;
+	protected final AtomicLong frameCount = new AtomicLong(0);
 	
 	private class ImageGrabTask implements Runnable{
 
 		@Override
 		public void run() {
-			logger.info("image grabed ,count :{}",frameCount++);
+			logger.info("image grabed ,count :{}", frameCount.getAndIncrement());
 			BufferedImage bufferedImage = webcam.getImage();
 			/**
 			 * using this when the h264 encoder is added to the pipeline
