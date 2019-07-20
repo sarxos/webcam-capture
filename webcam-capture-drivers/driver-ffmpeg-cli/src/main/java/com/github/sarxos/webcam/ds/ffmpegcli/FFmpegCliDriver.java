@@ -123,13 +123,8 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 		Set<String> resolutions = new LinkedHashSet<>();
 
-		InputStream is = null;
-		BufferedReader br;
 		String line;
-		try {
-			is = listDevicesProcess.getInputStream();
-			br = new BufferedReader(new InputStreamReader(is));
-
+		try (final BufferedReader br = new BufferedReader(new InputStreamReader(listDevicesProcess.getInputStream()))) {
 			while ((line = br.readLine()) != null) {
 				if (line.startsWith(STARTER) && line.contains(MARKER)) {
 					int begin = line.indexOf(MARKER) + MARKER.length();
@@ -137,15 +132,8 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 					resolutions.add(resolution);
 				}
 			}
-
 		} catch (IOException e) {
 			throw new RuntimeException(e);
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
 		}
 
 		StringBuilder vinfo = new StringBuilder();
@@ -169,13 +157,8 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 		boolean startDevices = false;
 
-		InputStream is = null;
-		BufferedReader br;
 		String line;
-		try {
-			is = listDevicesProcess.getInputStream();
-			br = new BufferedReader(new InputStreamReader(is));
-
+		try (final BufferedReader br = new BufferedReader(new InputStreamReader(listDevicesProcess.getInputStream()))) {
 			while ((line = br.readLine()) != null) {
 				if (line.startsWith(STARTER) && line.contains(VIDEO_MARKER)) {
 					startDevices = true;
@@ -194,15 +177,8 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 					}
 				}
 			}
-
 		} catch (IOException e) {
 			throw new RuntimeException(e);
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
 		}
 
 		return devicesNames;

@@ -341,7 +341,9 @@ public class FsWebcamDevice implements WebcamDevice, Configurable {
 		} catch (InterruptedException e) {
 			return;
 		} finally {
-			p.destroy();
+			if (p != null) {
+				p.destroy();
+			}
 		}
 	}
 
@@ -362,12 +364,11 @@ public class FsWebcamDevice implements WebcamDevice, Configurable {
 
 		if (process != null) {
 			process.destroy();
-		}
-
-		try {
-			process.waitFor();
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
+			try {
+				process.waitFor();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		if (!pipe.delete()) {
