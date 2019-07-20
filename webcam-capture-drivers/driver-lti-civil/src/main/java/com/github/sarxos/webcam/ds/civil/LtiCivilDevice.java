@@ -97,7 +97,7 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver, WebcamDevi
 			});
 		}
 
-		return dimensions.toArray(new Dimension[dimensions.size()]);
+		return dimensions.toArray(new Dimension[0]);
 	}
 
 	@Override

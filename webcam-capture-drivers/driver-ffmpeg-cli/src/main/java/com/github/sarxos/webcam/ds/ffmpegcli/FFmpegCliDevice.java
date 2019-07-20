@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -108,7 +109,7 @@ public class FFmpegCliDevice implements WebcamDevice, WebcamDevice.BufferAccess 
 			resolutions.add(new Dimension(Integer.parseInt(xy[0]), Integer.parseInt(xy[1])));
 		}
 
-		return resolutions.toArray(new Dimension[resolutions.size()]);
+		return resolutions.toArray(new Dimension[0]);
 	}
 
 	@Override

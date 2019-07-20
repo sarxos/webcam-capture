@@ -104,7 +104,7 @@ public class WebcamDriverUtils {
 			}
 		}
 
-		return classes.toArray(new Class<?>[classes.size()]);
+		return classes.toArray(new Class<?>[0]);
 	}
 
 	/**

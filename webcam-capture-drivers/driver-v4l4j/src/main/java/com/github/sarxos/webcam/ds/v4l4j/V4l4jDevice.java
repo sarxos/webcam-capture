@@ -262,7 +262,7 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 
 	@Override
 	public Dimension[] getResolutions() {
-		return videoResolutions.toArray(new Dimension[videoResolutions.size()]);
+		return videoResolutions.toArray(new Dimension[0]);
 	}
 
 	@Override

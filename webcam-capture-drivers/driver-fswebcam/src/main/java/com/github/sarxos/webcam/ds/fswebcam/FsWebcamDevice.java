@@ -288,7 +288,7 @@ public class FsWebcamDevice implements WebcamDevice, Configurable {
 		c.add(pipe.getAbsolutePath());			// output file (pipe)
 		//@formatter:on
 
-		String[] cmd = c.toArray(new String[c.size()]);
+		String[] cmd = c.toArray(new String[0]);
 		
 		if (LOG.isDebugEnabled()) {
 			StringBuilder sb = new StringBuilder();

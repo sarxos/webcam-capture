@@ -131,7 +131,7 @@ public class WebcamDiscoveryService implements Runnable {
 				tmp = new ArrayList<Webcam>(webcams);
 
 				if (Webcam.isHandleTermSignal()) {
-					WebcamDeallocator.store(webcams.toArray(new Webcam[webcams.size()]));
+					WebcamDeallocator.store(webcams.toArray(new Webcam[0]));
 				}
 			}
 		}
@@ -273,7 +273,7 @@ public class WebcamDiscoveryService implements Runnable {
 		webcams = toWebcams(devices);
 		if (Webcam.isHandleTermSignal()) {
 			WebcamDeallocator.unstore();
-			WebcamDeallocator.store(webcams.toArray(new Webcam[webcams.size()]));
+			WebcamDeallocator.store(webcams.toArray(new Webcam[0]));
 		}
 	}
 

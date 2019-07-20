@@ -10,7 +10,7 @@ public class WebcamPickerModel extends DefaultComboBoxModel<Webcam> {
 	private static final long serialVersionUID = 1L;
 
 	public WebcamPickerModel(List<Webcam> webcams) {
-		super(webcams.toArray(new Webcam[webcams.size()]));
+		super(webcams.toArray(new Webcam[0]));
 	}
 
 	@Override

@@ -257,7 +257,7 @@ public class JmfDevice implements WebcamDevice {
 			});
 		}
 
-		return dimensions.toArray(new Dimension[dimensions.size()]);
+		return dimensions.toArray(new Dimension[0]);
 	}
 
 	@Override

@@ -298,7 +298,7 @@ public class WebcamMotionDetector {
 	 * @return All motion listeners as array
 	 */
 	public WebcamMotionListener[] getMotionListeners() {
-		return listeners.toArray(new WebcamMotionListener[listeners.size()]);
+		return listeners.toArray(new WebcamMotionListener[0]);
 	}
 
 	/**

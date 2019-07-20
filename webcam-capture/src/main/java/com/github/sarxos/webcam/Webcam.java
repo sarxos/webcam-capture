@@ -558,7 +558,7 @@ public class Webcam {
 
 	public Dimension[] getCustomViewSizes() {
 		assert customSizes != null;
-		return customSizes.toArray(new Dimension[customSizes.size()]);
+		return customSizes.toArray(new Dimension[0]);
 	}
 
 	/**
@@ -1004,7 +1004,7 @@ public class Webcam {
 	 */
 	public WebcamListener[] getWebcamListeners() {
 		assert listeners != null;
-		return listeners.toArray(new WebcamListener[listeners.size()]);
+		return listeners.toArray(new WebcamListener[0]);
 	}
 
 	/**
@@ -1209,7 +1209,7 @@ public class Webcam {
 	}
 
 	public static WebcamDiscoveryListener[] getDiscoveryListeners() {
-		return DISCOVERY_LISTENERS.toArray(new WebcamDiscoveryListener[DISCOVERY_LISTENERS.size()]);
+		return DISCOVERY_LISTENERS.toArray(new WebcamDiscoveryListener[0]);
 	}
 
 	/**
