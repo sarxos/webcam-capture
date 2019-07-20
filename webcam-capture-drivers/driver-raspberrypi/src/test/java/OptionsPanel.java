@@ -97,17 +97,17 @@ public class OptionsPanel extends JPanel {
 		JLabel lblExposure = new JLabel("exposure");
 		add(lblExposure);
 
-		JComboBox comboBox = new JComboBox();
+		JComboBox<String> comboBox = new JComboBox<>();
 		comboBox.setToolTipText("exposure");
-		comboBox.setModel(new DefaultComboBoxModel(new String[] { "off", "auto", "night", "nightpreview", "backlight",
+		comboBox.setModel(new DefaultComboBoxModel<>(new String[] { "off", "auto", "night", "nightpreview", "backlight",
 				"spotlight", "sports", "snow", "beach", "verylong", "fixedfps", "antishake", "fireworks" }));
 		add(comboBox);
 
 		JLabel lblAwb = new JLabel("awb ");
 		add(lblAwb);
 
-		JComboBox awbcomboBox = new JComboBox();
-		awbcomboBox.setModel(new DefaultComboBoxModel(new String[] { "off", "auto", "sun", "cloud", "shade", "tungsten",
+		JComboBox<String> awbcomboBox = new JComboBox<String>();
+		awbcomboBox.setModel(new DefaultComboBoxModel<>(new String[] { "off", "auto", "sun", "cloud", "shade", "tungsten",
 				"fluorescent", "incandescent", "flash", "horizon" }));
 		awbcomboBox.setToolTipText("awb");
 		add(awbcomboBox);
@@ -115,8 +115,8 @@ public class OptionsPanel extends JPanel {
 		JLabel lblImxfx = new JLabel("imxfx");
 		add(lblImxfx);
 
-		JComboBox imxfxCB = new JComboBox();
-		imxfxCB.setModel(new DefaultComboBoxModel(new String[] { "none", "negative", "solarise", "sketch", "denoise",
+		JComboBox<String> imxfxCB = new JComboBox<String>();
+		imxfxCB.setModel(new DefaultComboBoxModel<>(new String[] { "none", "negative", "solarise", "sketch", "denoise",
 				"emboss", "oilpaint", "hatch", "gpen", "pastel", "watercolour", "film", "blur", "saturation",
 				"colourswap", "washedout", "posterise", "colourpoint", "colourbalance", "cartoon" }));
 		imxfxCB.setToolTipText("imxfx");
@@ -125,16 +125,16 @@ public class OptionsPanel extends JPanel {
 		JLabel lblColfx = new JLabel("colfx ");
 		add(lblColfx);
 
-		JComboBox colfxCB = new JComboBox();
-		colfxCB.setModel(new DefaultComboBoxModel(new String[] { "U", "V" }));
+		JComboBox<String> colfxCB = new JComboBox<>();
+		colfxCB.setModel(new DefaultComboBoxModel<>(new String[] { "U", "V" }));
 		colfxCB.setToolTipText("colfx ");
 		add(colfxCB);
 
 		JLabel lblMetering = new JLabel("metering ");
 		add(lblMetering);
 
-		JComboBox meteringCB = new JComboBox();
-		meteringCB.setModel(new DefaultComboBoxModel(new String[] { "average", "spot", "backlit", "matrix" }));
+		JComboBox<String> meteringCB = new JComboBox<>();
+		meteringCB.setModel(new DefaultComboBoxModel<>(new String[] { "average", "spot", "backlit", "matrix" }));
 		meteringCB.setToolTipText("metering ");
 		add(meteringCB);
 
