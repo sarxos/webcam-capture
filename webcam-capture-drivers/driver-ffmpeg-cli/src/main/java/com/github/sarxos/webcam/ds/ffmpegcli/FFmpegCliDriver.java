@@ -3,9 +3,7 @@ package com.github.sarxos.webcam.ds.ffmpegcli;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -48,9 +46,6 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 		List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
 
-		String line = null;
-		BufferedReader br = null;
-
 		for (File vfile : vfiles) {
 
 			String[] cmd = new String[] {
@@ -63,13 +58,11 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 			Process process = startProcess(cmd);
 
-			InputStream is = process.getInputStream();
-			br = new BufferedReader(new InputStreamReader(is));
-
 			final String STARTER = "[" + FFmpegCliDriver.getCaptureDriver();
 			final String MARKER = "] Raw";
 
-			try {
+			String line = null;
+			try (final BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 				while ((line = br.readLine()) != null) {
 					if (line.startsWith(STARTER) && line.contains(MARKER)) {
 						LOG.debug("Command stdout line: {}", line);
@@ -78,21 +71,15 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 						break;
 					}
 				}
-
 			} catch (IOException e) {
 				throw new WebcamException(e);
-			} finally {
-				try {
-					is.close();
-				} catch (IOException e) {
-					throw new WebcamException(e);
-				}
-				process.destroy();
-				try {
-					process.waitFor();
-				} catch (InterruptedException e) {
-					throw new WebcamException(e);
-				}
+			}
+
+			process.destroy();
+			try {
+				process.waitFor();
+			} catch (InterruptedException e) {
+				throw new WebcamException(e);
 			}
 		}
 		return devices;

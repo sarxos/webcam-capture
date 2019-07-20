@@ -5,6 +5,7 @@ import java.awt.image.DataBufferByte;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
@@ -46,40 +47,21 @@ public class ImageUtils {
 	 * @return New array of bytes
 	 */
 	public static byte[] toByteArray(BufferedImage image, String format) {
-
 		byte[] bytes = null;
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		try {
+		try (final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 			ImageIO.write(image, format, baos);
 			bytes = baos.toByteArray();
 		} catch (IOException e) {
 			throw new WebcamException(e);
-		} finally {
-			try {
-				baos.close();
-			} catch (IOException e) {
-				throw new WebcamException(e);
-			}
 		}
-
 		return bytes;
 	}
 
 	public static BufferedImage readFromResource(String resource) {
-		InputStream is = null;
-		try {
-			return ImageIO.read(is = ImageUtils.class.getClassLoader().getResourceAsStream(resource));
+		try (final InputStream is = ImageUtils.class.getClassLoader().getResourceAsStream(resource)) {
+			return ImageIO.read(Objects.requireNonNull(is));
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
-		} finally {
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					throw new IllegalStateException(e);
-				}
-			}
 		}
 	}
 

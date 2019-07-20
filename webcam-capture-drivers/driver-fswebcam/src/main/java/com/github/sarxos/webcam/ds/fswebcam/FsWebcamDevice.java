@@ -213,18 +213,11 @@ public class FsWebcamDevice implements WebcamDevice, Configurable {
 				throw new RuntimeException(e);
 			}
 
-			ByteArrayInputStream bais = new ByteArrayInputStream(Objects.requireNonNull(readBytes()));
-			try {
+			try (final ByteArrayInputStream bais = new ByteArrayInputStream(Objects.requireNonNull(readBytes()))) {
 				image = ImageIO.read(bais);
 			} catch (IOException e) {
 				process.destroy();
 				throw new RuntimeException(e);
-			} finally {
-				try {
-					bais.close();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
 			}
 
 			process.waitFor();

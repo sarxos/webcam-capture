@@ -123,33 +123,24 @@ public class LtiCivilLoader {
 
 		LOG.debug("Library resource in JAR is {}", resource);
 
-		InputStream in = LtiCivilDriver.class.getResourceAsStream(resource);
-		if (in == null) {
-			throw new RuntimeException("Resource not found: " + resource);
-		}
-
-		FileOutputStream fos = null;
-
-		try {
-			fos = new FileOutputStream(file);
-			copy(in, fos);
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException("File not found " + file, e);
-		} catch (IOException e) {
-			throw new RuntimeException("IO exception", e);
-		} finally {
-			try {
-				in.close();
-			} catch (IOException e) {
-				throw new RuntimeException("Cannot close input stream", e);
+		try (final InputStream in = LtiCivilDriver.class.getResourceAsStream(resource)) {
+			if (in == null) {
+				throw new RuntimeException("Resource not found: " + resource);
 			}
-			if (fos != null) {
+
+			try (final FileOutputStream fos = new FileOutputStream(file)) {
 				try {
-					fos.close();
+					copy(in, fos);
 				} catch (IOException e) {
-					throw new RuntimeException("Cannot close file output stream", e);
+					throw new RuntimeException("IO exception", e);
 				}
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException("File not found " + file, e);
+			} catch (IOException e) {
+				throw new RuntimeException("Cannot close file output stream", e);
 			}
+		} catch (IOException e) {
+			throw new RuntimeException("Cannot close input stream", e);
 		}
 
 		LOG.debug("Loading library from file {}", file);
