@@ -14,7 +14,7 @@ import com.github.sarxos.webcam.util.ImageUtils;
 
 public class WebcamUtils {
 
-	public static final void capture(Webcam webcam, File file) {
+	public static void capture(Webcam webcam, File file) {
 		if (!webcam.isOpen()) {
 			webcam.open();
 		}
@@ -25,7 +25,7 @@ public class WebcamUtils {
 		}
 	}
 
-	public static final void capture(Webcam webcam, File file, String format) {
+	public static void capture(Webcam webcam, File file, String format) {
 		if (!webcam.isOpen()) {
 			webcam.open();
 		}
@@ -36,14 +36,14 @@ public class WebcamUtils {
 		}
 	}
 
-	public static final void capture(Webcam webcam, String filename) {
+	public static void capture(Webcam webcam, String filename) {
 		if (!filename.endsWith(".jpg")) {
 			filename = filename + ".jpg";
 		}
 		capture(webcam, new File(filename));
 	}
 
-	public static final void capture(Webcam webcam, String filename, String format) {
+	public static void capture(Webcam webcam, String filename, String format) {
 		String ext = "." + format.toLowerCase();
 		if (!filename.endsWith(ext)) {
 			filename = filename + ext;
@@ -51,7 +51,7 @@ public class WebcamUtils {
 		capture(webcam, new File(filename), format);
 	}
 
-	public static final byte[] getImageBytes(Webcam webcam, String format) {
+	public static byte[] getImageBytes(Webcam webcam, String format) {
 		return ImageUtils.toByteArray(webcam.getImage(), format);
 	}
 
@@ -62,7 +62,7 @@ public class WebcamUtils {
 	 * @param format the file format
 	 * @return Byte buffer
 	 */
-	public static final ByteBuffer getImageByteBuffer(Webcam webcam, String format) {
+	public static ByteBuffer getImageByteBuffer(Webcam webcam, String format) {
 		return ByteBuffer.wrap(getImageBytes(webcam, format));
 	}
 
@@ -73,7 +73,7 @@ public class WebcamUtils {
 	 * @param locale the {@link Locale} object
 	 * @return Resource bundle
 	 */
-	public static final ResourceBundle loadRB(Class<?> clazz, Locale locale) {
+	public static ResourceBundle loadRB(Class<?> clazz, Locale locale) {
 		String pkg = WebcamUtils.class.getPackage().getName().replaceAll("\\.", "/");
 		return PropertyResourceBundle.getBundle(String.format("%s/i18n/%s", pkg, clazz.getSimpleName()));
 	}

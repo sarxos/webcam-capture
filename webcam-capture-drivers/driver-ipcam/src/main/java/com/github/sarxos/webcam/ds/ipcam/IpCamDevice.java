@@ -220,7 +220,7 @@ public class IpCamDevice implements WebcamDevice, FPSSource, BufferAccess {
 
 	}
 
-	protected static final URL toURL(String url) {
+	protected static URL toURL(String url) {
 		if (!url.startsWith("http://")) {
 			url = "http://" + url;
 		}
@@ -231,7 +231,7 @@ public class IpCamDevice implements WebcamDevice, FPSSource, BufferAccess {
 		}
 	}
 
-	private static final URI toURI(URL url) {
+	private static URI toURI(URL url) {
 		try {
 			return url.toURI();
 		} catch (URISyntaxException e) {

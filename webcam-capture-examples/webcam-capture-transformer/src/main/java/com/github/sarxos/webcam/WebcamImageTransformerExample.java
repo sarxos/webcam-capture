@@ -78,7 +78,7 @@ public class WebcamImageTransformerExample implements WebcamImageTransformer {
 		return modified;
 	}
 
-	private static final BufferedImage getImage(String image) {
+	private static BufferedImage getImage(String image) {
 		try {
 			return ImageIO.read(WebcamImageTransformerExample.class.getResourceAsStream("/" + image));
 		} catch (IOException e) {

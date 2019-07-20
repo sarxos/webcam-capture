@@ -37,7 +37,7 @@ public class WebcamExceptionHandler implements UncaughtExceptionHandler {
 		INSTANCE.uncaughtException(Thread.currentThread(), e);
 	}
 
-	public static final WebcamExceptionHandler getInstance() {
+	public static WebcamExceptionHandler getInstance() {
 		return INSTANCE;
 	}
 }

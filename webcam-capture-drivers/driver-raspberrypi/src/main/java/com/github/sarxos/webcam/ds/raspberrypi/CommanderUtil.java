@@ -41,7 +41,7 @@ class CommanderUtil {
 	 * @return
 	 * @since JDK 1.8
 	 */
-	static final List<String> execute(String cmd) {
+	static List<String> execute(String cmd) {
 		return execute(cmd, DEFAULT_TIMEOUT);
 	}
 
@@ -58,7 +58,7 @@ class CommanderUtil {
 	 * @return
 	 * @since JDK 1.8
 	 */
-	public static final List<String> execute(String cmd, final int timeout) {
+	public static List<String> execute(String cmd, final int timeout) {
 		final ScheduledExecutorService scheduledExecutorService = Executors
 				.newSingleThreadScheduledExecutor(new ThreadFactory() {
 					@Override

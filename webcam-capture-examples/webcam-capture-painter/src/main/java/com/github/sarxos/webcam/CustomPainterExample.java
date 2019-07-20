@@ -254,7 +254,7 @@ public class CustomPainterExample extends JFrame {
 		setVisible(true);
 	}
 
-	private static final Image getImage(String image) {
+	private static Image getImage(String image) {
 		try {
 			return ImageIO.read(StartAction.class.getResourceAsStream("/" + image));
 		} catch (IOException e) {

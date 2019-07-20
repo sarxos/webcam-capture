@@ -159,7 +159,7 @@ public class PNGDecoder {
 	 * @param fmt
 	 * @throws IOException
 	 */
-	private final void decode(ByteBuffer buffer, TextureFormat fmt) throws IOException {
+	private void decode(ByteBuffer buffer, TextureFormat fmt) throws IOException {
 		byte[] curLine = new byte[width * bytesPerPixel + 1];
 		byte[] prevLine = new byte[width * bytesPerPixel + 1];
 		final Inflater inflater = new Inflater();

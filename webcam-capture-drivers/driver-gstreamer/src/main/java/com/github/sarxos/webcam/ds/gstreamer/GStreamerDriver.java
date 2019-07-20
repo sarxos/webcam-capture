@@ -55,7 +55,7 @@ public class GStreamerDriver implements WebcamDriver {
 		setPreferredFormats(preferredFormats);
 	}
 
-	private static final void init() {
+	private static void init() {
 
 		if (!INITIALIZED.compareAndSet(false, true)) {
 			return;

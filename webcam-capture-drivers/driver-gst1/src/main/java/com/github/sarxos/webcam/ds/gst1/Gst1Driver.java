@@ -56,7 +56,7 @@ public class Gst1Driver implements WebcamDriver {
 		}
 	}
 
-	private static final void init() {
+	private static void init() {
 		String[] args = new String[] {};
 		Gst.init(Gst1Driver.class.getSimpleName(), args);
 		Runtime.getRuntime().addShutdownHook(new GStreamerShutdownHook());

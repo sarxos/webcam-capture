@@ -30,7 +30,7 @@ public enum OsUtils {
 	 * 
 	 * @return OS
 	 */
-	public static final OsUtils getOS() {
+	public static OsUtils getOS() {
 		if (os == null) {
 			String osp = System.getProperty("os.name").toLowerCase();
 			if (osp.indexOf("win") >= 0) {

@@ -8,7 +8,7 @@ package com.github.sarxos.webcam;
  */
 public class WebcamCaptureFrameworkDestroyer {
 
-	public static final void destroy() {
+	public static void destroy() {
 		Webcam.shutdown();
 	}
 }
