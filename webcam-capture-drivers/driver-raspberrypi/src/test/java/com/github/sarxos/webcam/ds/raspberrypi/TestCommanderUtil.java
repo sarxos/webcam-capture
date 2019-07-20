@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 public class TestCommanderUtil extends TestCase {
 	public void testNormalExecution() {
 		List<String> ret=CommanderUtil.execute("hostname");
-		assertEquals(true, ret.size()!=0);
+		assertTrue(ret.size() != 0);
 	}
 	
 	public void testExecutionWithTimeout() {
@@ -21,6 +21,6 @@ public class TestCommanderUtil extends TestCase {
 		List<String> ret=CommanderUtil.execute(cmd, timeout);
 		long after=System.currentTimeMillis();
 		System.out.println(ret);
-		assertEquals(true, after-before>=timeout);//java is not RTOS, offset is allowed
+		assertTrue(after - before >= timeout);//java is not RTOS, offset is allowed
 	}
 }

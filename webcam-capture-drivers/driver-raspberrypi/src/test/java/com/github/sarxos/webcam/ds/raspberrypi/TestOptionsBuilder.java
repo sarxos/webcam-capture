@@ -11,10 +11,10 @@ public class TestOptionsBuilder extends TestCase {
 			System.out.println("this in on on board test, can not run on windows host. thanks");
 		} else {
 			Options options = OptionsBuilder.create("cat src/etc/still.txt");
-			assertEquals(options.hasOption("w"), true);
-			assertEquals(options.hasOption("height"), true);
-			assertEquals(options.hasOption("keypress"), true);
-			assertEquals(options.hasOption("cs"), true);
+			assertTrue(options.hasOption("w"));
+			assertTrue(options.hasOption("height"));
+			assertTrue(options.hasOption("keypress"));
+			assertTrue(options.hasOption("cs"));
 		}
 	}
 }

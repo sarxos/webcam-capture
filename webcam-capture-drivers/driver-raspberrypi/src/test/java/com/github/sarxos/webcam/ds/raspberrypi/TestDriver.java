@@ -21,17 +21,17 @@ public class TestDriver extends TestCase {
 
 	public void testIPCDriver() {
 		MockIPCDriver driver = new MockIPCDriver();
-		assertEquals(driver.isDeviceCalled(), false);
-		assertEquals(true, driver.getCommand().startsWith("ping"));
-		assertEquals(driver.isThreadSafe(), false);
-		
-		assertEquals(driver.getOptions().hasOption("width"), true);
+		assertFalse(driver.isDeviceCalled());
+		assertTrue(driver.getCommand().startsWith("ping"));
+		assertFalse(driver.isThreadSafe());
+
+		assertTrue(driver.getOptions().hasOption("width"));
 		
 		List<WebcamDevice> devices=driver.getDevices();
 		assertEquals(0, devices.size());
 
 		WebcamDevice device = driver.createIPCDevice(0, new HashMap<String, String>());
-		assertEquals(device instanceof MockIPCDevice, true);
+		assertTrue(device instanceof MockIPCDevice);
 	}
 
 	public void testIPCDevice() {
@@ -42,13 +42,13 @@ public class TestDriver extends TestCase {
 		parameters.put(Constants.OPT_HEIGHT, "240");
 		
 		MockIPCDevice device = new MockIPCDevice(0, parameters, driver);
-		assertEquals(device.getName().endsWith("0"), true);
-		assertEquals(device.isOpen(), false);
+		assertTrue(device.getName().endsWith("0"));
+		assertFalse(device.isOpen());
 		
 		Dimension dim=device.getResolution();
 		assertEquals(240, dim.height);
 		assertEquals(320, dim.width);
-		assertEquals(true, device.getResolutions().length>0);
+		assertTrue(device.getResolutions().length > 0);
 		
 		device.setResolution(new Dimension(640, 480));
 		dim=device.getResolution();
@@ -60,9 +60,9 @@ public class TestDriver extends TestCase {
 		assertEquals("480", device.parameters.get("height"));
 		
 		device.setParameters(Collections.singletonMap("help", ""));
-		assertEquals(true, device.parameters.containsKey("help"));
+		assertTrue(device.parameters.containsKey("help"));
 		device.validateParameters();
-		assertEquals(false, device.parameters.containsKey("help"));
+		assertFalse(device.parameters.containsKey("help"));
 		
 		device.parameters.clear();
 		

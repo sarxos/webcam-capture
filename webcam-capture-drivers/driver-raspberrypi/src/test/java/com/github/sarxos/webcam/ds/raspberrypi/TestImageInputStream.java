@@ -36,8 +36,8 @@ public class TestImageInputStream extends TestCase {
 		assertEquals(111, bi.getHeight());
 		assertEquals(210, decoder.getWidth());
 		assertEquals(111, decoder.getHeight());
-		assertEquals(true, decoder.isRGB());
-		assertEquals(true, decoder.hasAlpha());
+		assertTrue(decoder.isRGB());
+		assertTrue(decoder.hasAlpha());
 		in.close();
 	}
 
