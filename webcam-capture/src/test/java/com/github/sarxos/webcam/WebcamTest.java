@@ -3,6 +3,7 @@ package com.github.sarxos.webcam;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.easymock.EasyMock;
 import org.easymock.EasyMockRunner;
@@ -51,7 +52,7 @@ public class WebcamTest extends EasyMockSupport {
 
 		EasyMock
 			.expect(driver.getDevices())
-			.andReturn(new ArrayList<WebcamDevice>(Arrays.asList(device)))
+			.andReturn(new ArrayList<WebcamDevice>(Collections.singletonList(device)))
 			.anyTimes();
 
 		EasyMock

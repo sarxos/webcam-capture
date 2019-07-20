@@ -1,6 +1,7 @@
 package com.github.sarxos.webcam;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -11,9 +12,7 @@ public class WebcamCompositeDriver implements WebcamDriver, WebcamDiscoverySuppo
 	private int scanInterval = -1;
 
 	public WebcamCompositeDriver(WebcamDriver... drivers) {
-		for (WebcamDriver driver : drivers) {
-			this.drivers.add(driver);
-		}
+		this.drivers.addAll(Arrays.asList(drivers));
 	}
 
 	public void add(WebcamDriver driver) {
