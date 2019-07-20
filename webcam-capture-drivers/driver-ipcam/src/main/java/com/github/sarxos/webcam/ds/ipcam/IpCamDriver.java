@@ -40,7 +40,7 @@ public class IpCamDriver implements WebcamDriver, WebcamDiscoverySupport {
 		/**
 		 * Next number for created thread.
 		 */
-		private AtomicInteger number = new AtomicInteger();
+		private final AtomicInteger number = new AtomicInteger();
 
 		@Override
 		public Thread newThread(Runnable r) {

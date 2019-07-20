@@ -30,8 +30,8 @@ public class FFmpegCliDevice implements WebcamDevice, WebcamDevice.BufferAccess 
 	private Dimension[] resolutions = null;
 	private Dimension resolution = null;
 
-	private AtomicBoolean open = new AtomicBoolean(false);
-	private AtomicBoolean disposed = new AtomicBoolean(false);
+	private final AtomicBoolean open = new AtomicBoolean(false);
+	private final AtomicBoolean disposed = new AtomicBoolean(false);
 
 	protected FFmpegCliDevice(String path, File vfile, String resolutions) {
 		this(path, vfile.getAbsolutePath(), resolutions);

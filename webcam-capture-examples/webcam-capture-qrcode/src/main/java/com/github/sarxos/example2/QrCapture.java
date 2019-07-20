@@ -27,7 +27,7 @@ public class QrCapture extends JFrame implements Closeable {
 	private Webcam webcam = null;
 	private BufferedImage image = null;
 	private Result result = null;
-	private Exchanger<String> exchanger = new Exchanger<String>();
+	private final Exchanger<String> exchanger = new Exchanger<String>();
 
 	public QrCapture() {
 

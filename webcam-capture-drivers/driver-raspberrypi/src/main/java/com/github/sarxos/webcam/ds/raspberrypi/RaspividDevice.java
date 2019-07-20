@@ -41,9 +41,9 @@ import java.util.Map;
 public class RaspividDevice extends IPCDevice {
 	private static final int DATA_TYPE = DataBuffer.TYPE_BYTE;
 	private static final ColorSpace COLOR_SPACE = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-	private static int[] OFFSET = new int[] { 0 };
+	private static final int[] OFFSET = new int[] { 0 };
 	private static final int[] BITS = { 8, 8, 8 };
-	private static int[] BAND_OFFSETS = new int[] { 0, 1, 2 };
+	private static final int[] BAND_OFFSETS = new int[] { 0, 1, 2 };
 
 	
 	private final ColorModel cmodel = new ComponentColorModel(COLOR_SPACE, BITS, false, false, Transparency.OPAQUE,

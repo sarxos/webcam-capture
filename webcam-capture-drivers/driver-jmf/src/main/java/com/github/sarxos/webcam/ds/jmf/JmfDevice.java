@@ -125,7 +125,7 @@ public class JmfDevice implements WebcamDevice {
 	private volatile boolean disposed = false;
 
 	private PlayerStarter starter = null;
-	private Semaphore semaphore = new Semaphore(0, true);
+	private final Semaphore semaphore = new Semaphore(0, true);
 
 	private CaptureDeviceInfo cdi = null;
 	private List<Dimension> dimensions = null;

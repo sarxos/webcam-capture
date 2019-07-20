@@ -67,8 +67,8 @@ public class V4l4jDevice implements WebcamDevice, CaptureCallback, WebcamDevice.
 	// private final List<ImageFormat> formats;
 	private Dimension resolution = null;
 
-	private AtomicBoolean open = new AtomicBoolean(false);
-	private AtomicBoolean disposed = new AtomicBoolean(false);
+	private final AtomicBoolean open = new AtomicBoolean(false);
+	private final AtomicBoolean disposed = new AtomicBoolean(false);
 
 	private final Exchanger<BufferedImage> exchanger = new Exchanger<BufferedImage>();
 	private volatile V4L4JException exception = null;

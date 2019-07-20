@@ -33,8 +33,8 @@ public class StreamServerAgent implements IStreamServerAgent{
 	//I just move the stream encoder out of the channel pipeline for the performance
 	protected final H264StreamEncoder h264StreamEncoder;
 	protected volatile boolean isStreaming;
-	protected ScheduledExecutorService timeWorker;
-	protected ExecutorService encodeWorker;
+	protected final ScheduledExecutorService timeWorker;
+	protected final ExecutorService encodeWorker;
 	protected int FPS = 25;
 	protected ScheduledFuture<?> imageGrabTaskFuture;
 	public StreamServerAgent(Webcam webcam, Dimension dimension) {

@@ -18,7 +18,7 @@ public class DummyDevice implements WebcamDevice {
 		new Dimension(400, 300),
 	};
 
-	private String name = DummyDevice.class.getSimpleName() + "-" + INSTANCE_NUM.incrementAndGet();
+	private final String name = DummyDevice.class.getSimpleName() + "-" + INSTANCE_NUM.incrementAndGet();
 	private Dimension size = DIMENSIONS[0];
 	private boolean open = false;
 
@@ -44,7 +44,7 @@ public class DummyDevice implements WebcamDevice {
 
 	private int mx = 1;
 	private int my = 1;
-	private int r = 10;
+	private final int r = 10;
 	private int x = r;
 	private int y = r;
 

@@ -31,7 +31,7 @@ import com.github.sarxos.webcam.WebcamDriver;
  */
 public abstract class IPCDriver implements WebcamDriver, Constants {
 	private final static Logger LOGGER = LoggerFactory.getLogger(IPCDriver.class);
-	private Map<String, String> arguments = new LinkedHashMap<>();
+	private final Map<String, String> arguments = new LinkedHashMap<>();
 	private volatile boolean deviceCalled;
 	private final Options options;
 	private final String command;

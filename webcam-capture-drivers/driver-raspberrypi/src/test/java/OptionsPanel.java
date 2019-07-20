@@ -14,8 +14,8 @@ import javax.swing.JTextField;
 
 public class OptionsPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
-	private JTextField widthField;
-	private JTextField heightField;
+	private final JTextField widthField;
+	private final JTextField heightField;
 
 	/**
 	 * Create the panel.

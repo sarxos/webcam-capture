@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 class OptionsBuilder implements Constants {
 	private final static Logger LOGGER = LoggerFactory.getLogger(OptionsBuilder.class);
 	// raspi??? to options
-	private static Map<String, Options> SINGLETONS = new ConcurrentHashMap<>();
+	private static final Map<String, Options> SINGLETONS = new ConcurrentHashMap<>();
 
-	private static Set<String> NO_VALUE_OPTIONS = new HashSet<>();
+	private static final Set<String> NO_VALUE_OPTIONS = new HashSet<>();
 	static {
 		NO_VALUE_OPTIONS.add(OPT_RAW);
 		NO_VALUE_OPTIONS.add(OPT_LATEST);

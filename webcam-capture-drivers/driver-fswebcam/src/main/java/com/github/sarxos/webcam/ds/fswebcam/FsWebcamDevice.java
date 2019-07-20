@@ -105,11 +105,11 @@ public class FsWebcamDevice implements WebcamDevice, Configurable {
 	private Dimension resolution = null;
 	private Process process = null;
 	private File pipe = null;
-	private ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	private DataInputStream dis = null;
 
-	private AtomicBoolean open = new AtomicBoolean(false);
-	private AtomicBoolean disposed = new AtomicBoolean(false);
+	private final AtomicBoolean open = new AtomicBoolean(false);
+	private final AtomicBoolean disposed = new AtomicBoolean(false);
 
 	private String logFilePathString;
 	private int frames = 1;

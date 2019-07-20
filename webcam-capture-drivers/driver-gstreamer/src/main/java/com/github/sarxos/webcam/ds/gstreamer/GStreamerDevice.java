@@ -76,10 +76,10 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 
 	/* logic */
 
-	private AtomicBoolean open = new AtomicBoolean(false);
-	private AtomicBoolean disposed = new AtomicBoolean(false);
-	private AtomicBoolean starting = new AtomicBoolean(false);
-	private AtomicBoolean initialized = new AtomicBoolean(false);
+	private final AtomicBoolean open = new AtomicBoolean(false);
+	private final AtomicBoolean disposed = new AtomicBoolean(false);
+	private final AtomicBoolean starting = new AtomicBoolean(false);
+	private final AtomicBoolean initialized = new AtomicBoolean(false);
 	private Dimension resolution = WebcamResolution.VGA.getSize();
 	private BufferedImage image = null;
 

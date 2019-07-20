@@ -139,7 +139,7 @@ public class Webcam {
 	/**
 	 * Webcam listeners.
 	 */
-	private List<WebcamListener> listeners = new CopyOnWriteArrayList<WebcamListener>();
+	private final List<WebcamListener> listeners = new CopyOnWriteArrayList<WebcamListener>();
 
 	/**
 	 * List of custom resolution sizes supported by webcam instance.
@@ -159,12 +159,12 @@ public class Webcam {
 	/**
 	 * Is webcam open?
 	 */
-	private AtomicBoolean open = new AtomicBoolean(false);
+	private final AtomicBoolean open = new AtomicBoolean(false);
 
 	/**
 	 * Is webcam already disposed?
 	 */
-	private AtomicBoolean disposed = new AtomicBoolean(false);
+	private final AtomicBoolean disposed = new AtomicBoolean(false);
 
 	/**
 	 * Is non-blocking (asynchronous) access enabled?

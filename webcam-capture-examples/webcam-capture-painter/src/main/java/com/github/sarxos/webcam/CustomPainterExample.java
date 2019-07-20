@@ -200,7 +200,7 @@ public class CustomPainterExample extends JFrame {
 	private JButton start = null;
 	private JButton stop = null;
 	private JMenuBar menu = null;
-	private JMenu filterMenu = new JMenu("Filter");
+	private final JMenu filterMenu = new JMenu("Filter");
 
 	public CustomPainterExample() {
 		super();

@@ -40,7 +40,7 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver, WebcamDevi
 	private Image image = null;
 	private CaptureStream stream = null;
 
-	private AtomicBoolean open = new AtomicBoolean(false);
+	private final AtomicBoolean open = new AtomicBoolean(false);
 
 	private volatile boolean capturing = false;
 	private volatile boolean disposed = false;
@@ -155,10 +155,7 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver, WebcamDevi
 			}
 		}
 
-		while (true) {
-			if (capturing) {
-				break;
-			}
+		while (!capturing) {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {

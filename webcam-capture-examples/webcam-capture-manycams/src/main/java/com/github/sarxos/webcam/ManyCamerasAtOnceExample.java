@@ -11,7 +11,7 @@ import javax.swing.SwingUtilities;
 @SuppressWarnings("serial")
 public class ManyCamerasAtOnceExample extends JFrame {
 
-	private List<WebcamPanel> panels = new ArrayList<WebcamPanel>();
+	private final List<WebcamPanel> panels = new ArrayList<WebcamPanel>();
 
 	public ManyCamerasAtOnceExample() {
 

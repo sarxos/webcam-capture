@@ -55,7 +55,7 @@ import javax.swing.SwingUtilities;
  */
 public class ScreenImage {
 
-	private static List<String> types = Arrays.asList(ImageIO.getWriterFileSuffixes());
+	private static final List<String> types = Arrays.asList(ImageIO.getWriterFileSuffixes());
 
 	/*
 	 * Create a BufferedImage for Swing components. The entire component will be captured to an
