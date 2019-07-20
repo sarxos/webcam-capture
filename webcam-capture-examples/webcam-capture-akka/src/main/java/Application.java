@@ -33,18 +33,18 @@ public class Application {
 		}
 
 		@Override
-		public void preStart() throws Exception {
+		public void preStart() {
 			webcam.setViewSize(WebcamResolution.VGA.getSize());
 			webcam.open();
 		}
 
 		@Override
-		public void postStop() throws Exception {
+		public void postStop() {
 			webcam.close();
 		}
 
 		@Override
-		public void onReceive(Object msg) throws Exception {
+		public void onReceive(Object msg) {
 			if (msg instanceof GetImageMsg) {
 				sender().tell(getImage(), self());
 			} else {

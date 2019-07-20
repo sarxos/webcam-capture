@@ -262,7 +262,7 @@ public class CustomPainterExample extends JFrame {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 
 		JFrame.setDefaultLookAndFeelDecorated(true);
 

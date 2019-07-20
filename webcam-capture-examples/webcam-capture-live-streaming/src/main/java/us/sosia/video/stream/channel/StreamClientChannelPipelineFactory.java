@@ -31,7 +31,7 @@ public class StreamClientChannelPipelineFactory implements ChannelPipelineFactor
 
 
 	@Override
-	public ChannelPipeline getPipeline() throws Exception {
+	public ChannelPipeline getPipeline() {
 		ChannelPipeline pipeline = Channels.pipeline();
 		//add an simple indicator handler
 		pipeline.addLast("stream client handler", new StreamClientHandler(streamClientListener));

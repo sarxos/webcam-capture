@@ -23,7 +23,7 @@ public class StreamServerChannelPipelineFactory implements ChannelPipelineFactor
 
 
 	@Override
-	public ChannelPipeline getPipeline() throws Exception {
+	public ChannelPipeline getPipeline() {
 		ChannelPipeline pipeline = Channels.pipeline();
 		//comment the netty's frame encoder ,if want to use the build in h264 encoder
 		pipeline.addLast("frame encoder", new LengthFieldPrepender(4,false));

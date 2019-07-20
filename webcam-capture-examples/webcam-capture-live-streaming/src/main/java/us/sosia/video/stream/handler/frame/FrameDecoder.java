@@ -16,7 +16,7 @@ public class FrameDecoder{
 
 	}
 
-	public ChannelBuffer decode(ChannelBuffer channelBuffer) throws Exception {
+	public ChannelBuffer decode(ChannelBuffer channelBuffer) {
 		dataSink.writeBytes(channelBuffer);
         int actualLengthFieldOffset = dataSink.readerIndex();
         long frameLength;

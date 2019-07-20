@@ -1,6 +1,5 @@
 package com.lti.civil.impl.jni;
 
-import com.lti.civil.CaptureException;
 import com.lti.civil.CaptureSystem;
 import com.lti.civil.CaptureSystemFactory;
 
@@ -15,7 +14,7 @@ import com.lti.civil.CaptureSystemFactory;
 public class NativeCaptureSystemFactory implements CaptureSystemFactory {
 
 	@Override
-	public CaptureSystem createCaptureSystem() throws CaptureException {
+	public CaptureSystem createCaptureSystem() {
 		return newCaptureSystemObj();
 	}
 

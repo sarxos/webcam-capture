@@ -19,7 +19,7 @@ public class DummyDriver2 implements WebcamDriver {
 
 	private static DummyDriver2 instance = null;
 
-	public DummyDriver2() throws InstantiationException {
+	public DummyDriver2() {
 		if (instance == null) {
 			instance = this;
 		}

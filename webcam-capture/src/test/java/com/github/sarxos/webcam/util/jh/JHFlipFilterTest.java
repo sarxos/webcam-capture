@@ -5,7 +5,6 @@ import static com.github.sarxos.webcam.util.jh.JHFlipFilter.FLIP_90CCW;
 import static com.github.sarxos.webcam.util.jh.JHFlipFilter.FLIP_90CW;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -18,7 +17,7 @@ public class JHFlipFilterTest {
 	final BufferedImage original = ImageUtils.readFromResource("tv-test-pattern.png");
 
 	@Test
-	public void test_FLIP_90CW() throws IOException {
+	public void test_FLIP_90CW() {
 		final JHFlipFilter filter = new JHFlipFilter(FLIP_90CW);
 		final BufferedImage rotated = filter.filter(original, null);
 		Assertions
@@ -33,7 +32,7 @@ public class JHFlipFilterTest {
 	}
 
 	@Test
-	public void test_FLIP_90CCW() throws IOException {
+	public void test_FLIP_90CCW() {
 		final JHFlipFilter filter = new JHFlipFilter(FLIP_90CCW);
 		final BufferedImage rotated = filter.filter(original, null);
 		Assertions
@@ -48,7 +47,7 @@ public class JHFlipFilterTest {
 	}
 
 	@Test
-	public void test_FLIP_180() throws IOException {
+	public void test_FLIP_180() {
 		final JHFlipFilter filter = new JHFlipFilter(FLIP_180);
 		final BufferedImage rotated = filter.filter(original, null);
 		Assertions
@@ -63,7 +62,7 @@ public class JHFlipFilterTest {
 	}
 
 	@Test
-	public void test_default() throws IOException {
+	public void test_default() {
 		final JHFlipFilter filter = new JHFlipFilter();
 		Assertions
 			.assertThat(filter.getOperation())
@@ -71,7 +70,7 @@ public class JHFlipFilterTest {
 	}
 
 	@Test
-	public void test_setOperation() throws IOException {
+	public void test_setOperation() {
 		final JHFlipFilter filter = new JHFlipFilter();
 		filter.setOperation(888);
 		Assertions

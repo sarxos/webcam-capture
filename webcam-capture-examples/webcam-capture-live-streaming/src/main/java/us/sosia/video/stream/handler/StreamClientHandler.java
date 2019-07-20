@@ -22,8 +22,7 @@ public class StreamClientHandler extends SimpleChannelHandler{
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-			throws Exception {
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
 		Channel channel = e.getChannel();
 		Throwable t = e.getCause();
 		logger.debug("exception at :{}",channel);

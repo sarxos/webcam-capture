@@ -113,17 +113,17 @@ public class IpCamDeviceRegistryTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void test_isRegisteredURIIllegal() throws MalformedURLException, URISyntaxException {
+	public void test_isRegisteredURIIllegal() {
 		Assert.assertTrue(IpCamDeviceRegistry.isRegistered((URI) null));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void test_isRegisteredURLIllegal() throws MalformedURLException, URISyntaxException {
+	public void test_isRegisteredURLIllegal() {
 		Assert.assertTrue(IpCamDeviceRegistry.isRegistered((URL) null));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void test_isRegisteredDeviceIllegal() throws MalformedURLException, URISyntaxException {
+	public void test_isRegisteredDeviceIllegal() {
 		Assert.assertTrue(IpCamDeviceRegistry.isRegistered((IpCamDevice) null));
 	}
 }

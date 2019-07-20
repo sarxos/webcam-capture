@@ -12,7 +12,7 @@ public class FrameEncoder{
 	}
 
 
-	public ChannelBuffer encode(ChannelBuffer channelBuffer) throws Exception {
+	public ChannelBuffer encode(ChannelBuffer channelBuffer) {
 		int length = channelBuffer.readableBytes();
 		//System.out.println("message length :"+length);
 		ChannelBuffer header = ChannelBuffers.buffer(headLength);

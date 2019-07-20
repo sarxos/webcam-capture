@@ -1,4 +1,5 @@
 package com.github.sarxos.webcam;
+
 import java.awt.AWTException;
 import java.awt.Component;
 import java.awt.Container;
@@ -122,8 +123,7 @@ public class ScreenImage {
 	 * @exception AWTException see Robot class constructors
 	 * @exception IOException if an error occurs during writing
 	 */
-	public static BufferedImage createDesktopImage()
-		throws AWTException, IOException {
+	public static BufferedImage createDesktopImage() throws AWTException {
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		Rectangle region = new Rectangle(0, 0, d.width, d.height);
 		return ScreenImage.createImage(region);

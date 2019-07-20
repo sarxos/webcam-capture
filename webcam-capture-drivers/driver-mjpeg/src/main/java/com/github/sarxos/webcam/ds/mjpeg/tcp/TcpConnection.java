@@ -79,7 +79,7 @@ public class TcpConnection extends URLConnection implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() {
 		disconnect();
 	}
 }

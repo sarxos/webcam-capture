@@ -21,8 +21,7 @@ public class StreamServerHandler extends SimpleChannelHandler{
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-			throws Exception {
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
 		Channel channel = e.getChannel();
 		Throwable t = e.getCause();
 		logger.debug("exception caught at :{},exception :{}",channel,t);
@@ -33,8 +32,7 @@ public class StreamServerHandler extends SimpleChannelHandler{
 	
 
 	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e)
-			throws Exception {
+	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
 		Channel channel = e.getChannel();
 		logger.info("channel connected :{}",channel);
 		streamServerListener.onClientConnectedIn(channel);
@@ -42,8 +40,7 @@ public class StreamServerHandler extends SimpleChannelHandler{
 	}
 
 	@Override
-	public void channelDisconnected(ChannelHandlerContext ctx,
-			ChannelStateEvent e) throws Exception {
+	public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
 		Channel channel = e.getChannel();
 		logger.info("channel disconnected :{}",channel);
 		streamServerListener.onClientDisconnected(channel);
@@ -51,15 +48,10 @@ public class StreamServerHandler extends SimpleChannelHandler{
 	}
 
 	@Override
-	public void writeComplete(ChannelHandlerContext ctx, WriteCompletionEvent e)
-			throws Exception {
+	public void writeComplete(ChannelHandlerContext ctx, WriteCompletionEvent e) throws Exception {
 		Channel channel = e.getChannel();
 		long size = e.getWrittenAmount();
 		logger.info("frame send at :{} size :{}",channel,size);
 		super.writeComplete(ctx, e);
 	}
-	
-	
-	
-	
 }

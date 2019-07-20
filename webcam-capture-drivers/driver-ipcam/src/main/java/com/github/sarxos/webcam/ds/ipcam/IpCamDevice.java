@@ -139,7 +139,7 @@ public class IpCamDevice implements WebcamDevice, FPSSource, BufferAccess {
 		}
 
 		@Override
-		public BufferedImage readImage() throws InterruptedException {
+		public BufferedImage readImage() {
 
 			long t1;
 			long t2;

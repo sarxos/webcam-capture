@@ -60,7 +60,7 @@ public class DetectMotionExample extends JFrame implements Runnable {
 		setVisible(true);
 	}
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
 		new DetectMotionExample();
 	}
 

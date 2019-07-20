@@ -88,7 +88,7 @@ public class IpCamDriver implements WebcamDriver, WebcamDiscoverySupport {
 		}
 
 		@Override
-		public IpCamDevice call() throws Exception {
+		public IpCamDevice call() {
 			try {
 				return device.isOnline() ? device : null;
 			} finally {
