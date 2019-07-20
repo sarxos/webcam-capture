@@ -350,14 +350,12 @@ public enum WebcamResolution {
 		final int rw = ratio.width;
 		final int rh = ratio.height;
 
-		return new StringBuilder()
-			.append(super.toString())
-			.append(' ')
-			.append(w).append('x').append(h)
-			.append(" (")
-			.append(rw).append(':').append(rh)
-			.append(')')
-			.toString();
+		return super.toString() +
+				' ' +
+				w + 'x' + h +
+				" (" +
+				rw + ':' + rh +
+				')';
 	}
 
 	public static void main(String[] args) {

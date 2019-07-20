@@ -111,11 +111,10 @@ public class Gst1Device implements WebcamDevice, Initializable {
 
 		final String name = getName();
 		final Dimension resolution = getResolution();
-		final String str = new StringBuilder(MIME_VIDEO_X_RAW)
-			.append(",")
-			.append("width=").append(resolution.width).append(",")
-			.append("height").append(resolution.height)
-			.toString();
+		final String str = MIME_VIDEO_X_RAW +
+				"," +
+				"width=" + resolution.width + "," +
+				"height" + resolution.height;
 		final Caps caps = Caps.fromString(str);
 
 		LOG.debug("Opening device {} with caps {}", name, caps);
