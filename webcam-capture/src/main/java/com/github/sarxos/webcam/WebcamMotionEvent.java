@@ -95,7 +95,7 @@ public class WebcamMotionEvent extends EventObject {
 	}
 
 	public Webcam getWebcam() {
-		return ((WebcamMotionDetector) getSource()).getWebcam();
+		return getSource().getWebcam();
 	}
 
 	/**
