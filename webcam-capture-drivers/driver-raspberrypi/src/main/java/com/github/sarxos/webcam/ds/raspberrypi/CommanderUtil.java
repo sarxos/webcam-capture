@@ -63,8 +63,7 @@ class CommanderUtil {
 				.newSingleThreadScheduledExecutor(new ThreadFactory() {
 					@Override
 					public Thread newThread(Runnable r) {
-						Thread t = new Thread(threadGroup(), r, "Commander-watchdog-" + threadId());
-						return t;
+						return new Thread(threadGroup(), r, "Commander-watchdog-" + threadId());
 					}
 				});
 

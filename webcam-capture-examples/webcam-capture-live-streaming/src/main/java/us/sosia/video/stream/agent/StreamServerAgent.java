@@ -91,12 +91,12 @@ public class StreamServerAgent implements IStreamServerAgent{
 			if (!isStreaming) {
 				//do some thing
 				Runnable imageGrabTask = new ImageGrabTask();
-				ScheduledFuture<?> imageGrabFuture = 
-						timeWorker.scheduleWithFixedDelay(imageGrabTask,
+				imageGrabTaskFuture = timeWorker.scheduleWithFixedDelay(
+						imageGrabTask,
 						0,
 						1000/FPS,
-						TimeUnit.MILLISECONDS);
-				imageGrabTaskFuture = imageGrabFuture;
+						TimeUnit.MILLISECONDS
+				);
 				isStreaming = true;
 			}
 			logger.info("current connected clients :{}",channelGroup.size());

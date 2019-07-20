@@ -155,8 +155,7 @@ public class ScreenImage {
 	 */
 	public static BufferedImage createImage(Rectangle region)
 		throws AWTException {
-		BufferedImage image = new Robot().createScreenCapture(region);
-		return image;
+		return new Robot().createScreenCapture(region);
 	}
 
 	/**

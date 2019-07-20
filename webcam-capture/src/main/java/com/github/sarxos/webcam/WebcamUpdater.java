@@ -59,8 +59,7 @@ public class WebcamUpdater implements Runnable {
 			// so maximum FPS will be the one supported
 			// by camera device in the moment.
 
-			long delay = Math.max((1000 / TARGET_FPS) - snapshotDuration, 0);
-			return delay;
+			return Math.max((1000 / TARGET_FPS) - snapshotDuration, 0);
 		}
 	}
 

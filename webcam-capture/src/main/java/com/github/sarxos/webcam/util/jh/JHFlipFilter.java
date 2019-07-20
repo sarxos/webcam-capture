@@ -85,19 +85,16 @@ public class JHFlipFilter extends JHFilter {
 
 		int[] inPixels = getRGB(src, 0, 0, width, height, null);
 
-		int w = width;
-		int h = height;
-
-		int newW = w;
-		int newH = h;
+		int newW = width;
+		int newH = height;
 		switch (operation) {
 			case FLIP_90CW:
-				newW = h;
-				newH = w;
+				newW = height;
+				newH = width;
 				break;
 			case FLIP_90CCW:
-				newW = h;
-				newH = w;
+				newW = height;
+				newH = width;
 				break;
 			case FLIP_180:
 				break;
@@ -105,24 +102,24 @@ public class JHFlipFilter extends JHFilter {
 
 		int[] newPixels = new int[newW * newH];
 
-		for (int row = 0; row < h; row++) {
-			for (int col = 0; col < w; col++) {
+		for (int row = 0; row < height; row++) {
+			for (int col = 0; col < width; col++) {
 				int index = row * width + col;
 				int newRow = row;
 				int newCol = col;
 				switch (operation) {
 					case FLIP_90CW:
 						newRow = col;
-						newCol = h - row - 1;
+						newCol = height - row - 1;
 						;
 						break;
 					case FLIP_90CCW:
-						newRow = w - col - 1;
+						newRow = width - col - 1;
 						newCol = row;
 						break;
 					case FLIP_180:
-						newRow = h - row - 1;
-						newCol = w - col - 1;
+						newRow = height - row - 1;
+						newCol = width - col - 1;
 						break;
 				}
 				int newIndex = newRow * newW + newCol;
