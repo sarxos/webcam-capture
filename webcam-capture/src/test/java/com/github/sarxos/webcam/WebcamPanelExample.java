@@ -1,16 +1,10 @@
 package com.github.sarxos.webcam;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 
-import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamPanel.DrawMode;
-import com.github.sarxos.webcam.WebcamResolution;
 
 public class WebcamPanelExample {
 	static {
