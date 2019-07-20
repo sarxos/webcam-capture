@@ -433,20 +433,18 @@ public class PNGDecoder {
 		}
 
 		switch (colorType) {
-		case COLOR_GREYSCALE:
-			bytesPerPixel = 1;
-			break;
-		case COLOR_TRUECOLOR:
-			bytesPerPixel = 3;
-			break;
-		case COLOR_TRUEALPHA:
-			bytesPerPixel = 4;
-			break;
-		case COLOR_INDEXED:
-			bytesPerPixel = 1;
-			break;
-		default:
-			throw new IOException("unsupported color format");
+			case COLOR_INDEXED:
+			case COLOR_GREYSCALE:
+				bytesPerPixel = 1;
+				break;
+			case COLOR_TRUECOLOR:
+				bytesPerPixel = 3;
+				break;
+			case COLOR_TRUEALPHA:
+				bytesPerPixel = 4;
+				break;
+			default:
+				throw new IOException("unsupported color format");
 		}
 
 		if (buffer[10] != 0) {

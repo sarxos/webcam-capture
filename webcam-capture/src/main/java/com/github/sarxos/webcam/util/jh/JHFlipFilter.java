@@ -89,9 +89,6 @@ public class JHFlipFilter extends JHFilter {
 		int newH = height;
 		switch (operation) {
 			case FLIP_90CW:
-				newW = height;
-				newH = width;
-				break;
 			case FLIP_90CCW:
 				newW = height;
 				newH = width;
