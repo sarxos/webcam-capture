@@ -10,6 +10,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -124,7 +125,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 		if (Platform.isWindows()) {
 			source.set("device-index", deviceIndex);
 		} else if (Platform.isLinux()) {
-			source.set("device", videoFile.getAbsolutePath());
+			source.set("device", Objects.requireNonNull(videoFile).getAbsolutePath());
 		} else if (Platform.isMacOSX()) {
 			throw new IllegalStateException("not yet implemented");
 		}
@@ -229,7 +230,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 		if (Platform.isWindows()) {
 			return Integer.toString(deviceIndex);
 		} else if (Platform.isLinux()) {
-			return videoFile.getAbsolutePath();
+			return Objects.requireNonNull(videoFile).getAbsolutePath();
 		} else {
 			throw new RuntimeException("Platform not supported by GStreamer capture driver");
 		}

@@ -211,7 +211,6 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 	private Process startProcess(String[] cmd) {
 		Process process = null;
 
-		OutputStream os;
 		if (LOG.isDebugEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			for (String c : cmd) {
@@ -224,16 +223,9 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 			ProcessBuilder builder = new ProcessBuilder(cmd);
 			builder.redirectErrorStream(true);
 			process = builder.start();
+			process.getOutputStream().close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-
-		os = process.getOutputStream();
-
-		try {
-			os.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
 		}
 
 		return process;

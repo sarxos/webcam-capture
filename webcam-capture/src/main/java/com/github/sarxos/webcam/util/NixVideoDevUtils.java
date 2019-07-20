@@ -16,6 +16,7 @@ public class NixVideoDevUtils implements FilenameFilter {
 	public static File[] getVideoFiles() {
 
 		String[] names = DEV.list(new NixVideoDevUtils());
+		assert names != null;
 		File[] files = new File[names.length];
 
 		for (int i = 0; i < names.length; i++) {

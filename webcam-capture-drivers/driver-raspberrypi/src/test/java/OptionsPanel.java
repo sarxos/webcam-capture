@@ -2,6 +2,7 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -173,7 +174,7 @@ public class OptionsPanel extends JPanel {
 			if (c instanceof JSlider) {
 				map.put(c.getToolTipText().trim(), ((JSlider) c).getValue() + "");
 			} else if (c instanceof JComboBox) {
-				map.put(c.getToolTipText().trim(), ((JComboBox<?>) c).getSelectedItem().toString());
+				map.put(c.getToolTipText().trim(), Objects.requireNonNull(((JComboBox<?>) c).getSelectedItem()).toString());
 			} else if (c instanceof JCheckBox) {
 				if (((JCheckBox) c).isSelected()) {
 					map.put(c.getToolTipText().trim(), "");

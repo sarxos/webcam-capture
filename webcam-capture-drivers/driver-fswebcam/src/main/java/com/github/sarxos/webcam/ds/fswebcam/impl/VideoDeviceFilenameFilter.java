@@ -16,6 +16,7 @@ public class VideoDeviceFilenameFilter implements FilenameFilter {
 	public File[] getVideoFiles() {
 
 		String[] names = DEV.list(this);
+		assert names != null;
 		File[] files = new File[names.length];
 
 		for (int i = 0; i < names.length; i++) {

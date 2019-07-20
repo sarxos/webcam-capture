@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -212,7 +213,7 @@ public class FsWebcamDevice implements WebcamDevice, Configurable {
 				throw new RuntimeException(e);
 			}
 
-			ByteArrayInputStream bais = new ByteArrayInputStream(readBytes());
+			ByteArrayInputStream bais = new ByteArrayInputStream(Objects.requireNonNull(readBytes()));
 			try {
 				image = ImageIO.read(bais);
 			} catch (IOException e) {

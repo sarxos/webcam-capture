@@ -3,6 +3,7 @@ package com.github.sarxos.webcam;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -171,7 +172,7 @@ public class WebcamStaticsTest {
 	public void test_GetWebcamByName() throws InstantiationException {
 		Webcam.setDriver(new DummyDriver());
 		for (Webcam webcam : Webcam.getWebcams()) {
-			Assert.assertEquals(webcam.getName(), Webcam.getWebcamByName(webcam.getName()).getName());
+			Assert.assertEquals(webcam.getName(), Objects.requireNonNull(Webcam.getWebcamByName(webcam.getName())).getName());
 		}
 	}
 

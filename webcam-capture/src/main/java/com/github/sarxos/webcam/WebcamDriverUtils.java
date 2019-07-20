@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +126,7 @@ public class WebcamDriverUtils {
 		}
 
 		File[] files = dir.listFiles();
-		for (File file : files) {
+		for (File file : Objects.requireNonNull(files)) {
 			if (file.isDirectory() && !flat) {
 				classes.addAll(findClasses(file, pkgname + "." + file.getName(), flat));
 			} else if (file.getName().endsWith(".class")) {

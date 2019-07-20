@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
 
@@ -30,7 +31,7 @@ public class TestImageInputStream extends TestCase {
 		PNGDecoder decoder = new PNGDecoder(in);
 
 		BufferedImage bi = decoder.decode();
-		bi.flush();
+		Objects.requireNonNull(bi).flush();
 		assertNotNull(bi);
 		assertEquals(210, bi.getWidth());
 		assertEquals(111, bi.getHeight());

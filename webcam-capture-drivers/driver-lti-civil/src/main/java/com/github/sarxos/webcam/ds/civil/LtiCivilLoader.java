@@ -138,12 +138,10 @@ public class LtiCivilLoader {
 		} catch (IOException e) {
 			throw new RuntimeException("IO exception", e);
 		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					throw new RuntimeException("Cannot close input stream", e);
-				}
+			try {
+				in.close();
+			} catch (IOException e) {
+				throw new RuntimeException("Cannot close input stream", e);
 			}
 			if (fos != null) {
 				try {

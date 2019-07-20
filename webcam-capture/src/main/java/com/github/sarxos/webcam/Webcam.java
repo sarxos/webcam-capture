@@ -442,11 +442,8 @@ public class Webcam {
 	 */
 	protected void dispose() {
 
-		assert disposed != null;
-		assert open != null;
 		assert driver != null;
 		assert device != null;
-		assert listeners != null;
 
 		if (!disposed.compareAndSet(false, true)) {
 			return;
@@ -810,9 +807,6 @@ public class Webcam {
 	 */
 	private boolean isReady() {
 
-		assert disposed != null;
-		assert open != null;
-
 		if (disposed.get()) {
 			LOG.warn("Cannot get image, webcam has been already disposed");
 			return false;
@@ -995,7 +989,6 @@ public class Webcam {
 		if (l == null) {
 			throw new IllegalArgumentException("Webcam listener cannot be null!");
 		}
-		assert listeners != null;
 		return listeners.add(l);
 	}
 
@@ -1003,7 +996,6 @@ public class Webcam {
 	 * @return All webcam listeners
 	 */
 	public WebcamListener[] getWebcamListeners() {
-		assert listeners != null;
 		return listeners.toArray(new WebcamListener[0]);
 	}
 
@@ -1011,7 +1003,6 @@ public class Webcam {
 	 * @return Number of webcam listeners
 	 */
 	public int getWebcamListenersCount() {
-		assert listeners != null;
 		return listeners.size();
 	}
 
@@ -1022,7 +1013,6 @@ public class Webcam {
 	 * @return True if listener has been removed, false otherwise
 	 */
 	public boolean removeWebcamListener(WebcamListener l) {
-		assert listeners != null;
 		return listeners.remove(l);
 	}
 

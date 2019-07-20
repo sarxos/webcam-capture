@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.bytedeco.javacpp.opencv_videoio.VideoCapture;
 import org.bytedeco.javacpp.videoInputLib.videoInput;
@@ -74,7 +75,7 @@ public class JavaCvDevice implements WebcamDevice {
 			case OSX:
 				return "Webcam " + address; // XXX: any clues how to get webcam name on mac?
 			case NIX:
-				return vfile.getAbsolutePath();
+				return Objects.requireNonNull(vfile).getAbsolutePath();
 			default:
 				throw new UnsupportedOperationException("Unsupported operating system");
 		}
@@ -86,7 +87,7 @@ public class JavaCvDevice implements WebcamDevice {
 			case OSX:
 				return new VideoCapture(address);
 			case NIX:
-				return new VideoCapture(vfile.getAbsolutePath());
+				return new VideoCapture(Objects.requireNonNull(vfile).getAbsolutePath());
 			default:
 				throw new UnsupportedOperationException("Unsupported operating system");
 		}
@@ -169,7 +170,7 @@ public class JavaCvDevice implements WebcamDevice {
 			case OSX:
 				return OpenCVFrameGrabber.createDefault(address);
 			case NIX:
-				return OpenCVFrameGrabber.createDefault(vfile);
+				return OpenCVFrameGrabber.createDefault(Objects.requireNonNull(vfile));
 			default:
 				throw new UnsupportedOperationException("Current OS is not supported");
 		}
