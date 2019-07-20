@@ -10,12 +10,12 @@ import com.github.sarxos.webcam.WebcamDriver;
 
 public class DummyDriver implements WebcamDriver {
 
-	private static final List<WebcamDevice> DEVICES = new ArrayList<WebcamDevice>(Arrays.asList(new WebcamDevice[] {
-		new DummyDevice(),
-		new DummyDevice(),
-		new DummyDevice(),
-		new DummyDevice(),
-	}));
+	private static final List<WebcamDevice> DEVICES = new ArrayList<WebcamDevice>(Arrays.asList(
+			new DummyDevice(),
+			new DummyDevice(),
+			new DummyDevice(),
+			new DummyDevice()
+	));
 
 	private static DummyDriver instance = null;
 
