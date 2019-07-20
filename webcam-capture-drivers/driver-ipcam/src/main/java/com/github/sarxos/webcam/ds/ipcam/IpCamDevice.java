@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.imageio.ImageIO;
 
@@ -69,7 +70,7 @@ public class IpCamDevice implements WebcamDevice, FPSSource, BufferAccess {
 		private volatile boolean running = true;
 		private volatile BufferedImage image = null;
 		private BufferedImage tmp;
-		private volatile double fps = 0;
+		private final AtomicReference<Double> fps = new AtomicReference<Double>(0.0);
 
 		public PushImageReader(final URI uri) {
 			this.uri = uri;
@@ -98,7 +99,7 @@ public class IpCamDevice implements WebcamDevice, FPSSource, BufferAccess {
 							image = tmp;
 						}
 						t2 = System.currentTimeMillis();
-						fps = (double) 1000 / (t2 - t1 + 1);
+						fps.set((double) 1000 / (t2 - t1 + 1));
 					} while (running && !stream.isClosed());
 				} catch (IOException e) {
 					if (e instanceof EOFException) { // EOF, ignore error and recreate stream
@@ -124,7 +125,7 @@ public class IpCamDevice implements WebcamDevice, FPSSource, BufferAccess {
 
 		@Override
 		public double getFPS() {
-			return fps;
+			return fps.get();
 		}
 	}
 

@@ -232,7 +232,7 @@ public class VlcjDevice implements WebcamDevice, BufferFormatCallback, RenderCal
 	/**
 	 * Current FPS.
 	 */
-	private final AtomicReference<Double> fps = new AtomicReference<Double>((double) 0);
+	private final AtomicReference<Double> fps = new AtomicReference<Double>(0.0);
 
 	private final MediaListItem item;
 	private final MediaListItem sub;

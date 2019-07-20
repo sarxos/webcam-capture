@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver, WebcamDevi
 	private long t1 = -1;
 	private long t2 = -1;
 
-	private volatile double fps = 0;
+	private final AtomicReference<Double> fps = new AtomicReference<Double>(0.0);
 
 	protected LtiCivilDevice(CaptureDeviceInfo cdi) {
 		this.cdi = cdi;
@@ -132,7 +133,7 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver, WebcamDevi
 		t1 = t2;
 		t2 = System.currentTimeMillis();
 
-		fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+		fps.set((4 * fps.get() + 1000 / (t2 - t1 + 1)) / 5);
 	}
 
 	@Override
@@ -223,6 +224,6 @@ public class LtiCivilDevice implements WebcamDevice, CaptureObserver, WebcamDevi
 
 	@Override
 	public double getFPS() {
-		return fps;
+		return fps.get();
 	}
 }

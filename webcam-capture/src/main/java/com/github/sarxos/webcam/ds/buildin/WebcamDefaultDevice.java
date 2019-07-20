@@ -14,6 +14,7 @@ import java.awt.image.WritableRaster;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.bridj.Pointer;
 import org.slf4j.Logger;
@@ -139,7 +140,7 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 	/**
 	 * Current FPS.
 	 */
-	private volatile double fps = 0;
+	private final AtomicReference<Double> fps = new AtomicReference<Double>(0.0);
 
 	protected WebcamDefaultDevice(Device device) {
 		this.device = device;
@@ -480,7 +481,7 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 		t1 = t2;
 		t2 = System.currentTimeMillis();
 
-		fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+		fps.set((4 * fps.get() + 1000 / (t2 - t1 + 1)) / 5);
 
 		if (result == -1) {
 			LOG.error("Timeout when requesting image!");
@@ -511,6 +512,6 @@ public class WebcamDefaultDevice implements WebcamDevice, BufferAccess, Runnable
 
 	@Override
 	public double getFPS() {
-		return fps;
+		return fps.get();
 	}
 }

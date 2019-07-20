@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,7 +174,7 @@ public class Webcam {
 	/**
 	 * Current FPS.
 	 */
-	private volatile double fps = 0;
+	private final AtomicReference<Double> fps = new AtomicReference<Double>(0.0);
 
 	/**
 	 * Webcam image updater.
@@ -668,10 +669,10 @@ public class Webcam {
 			// get FPS
 
 			if (device instanceof WebcamDevice.FPSSource) {
-				fps = ((WebcamDevice.FPSSource) device).getFPS();
+				fps.set(((WebcamDevice.FPSSource) device).getFPS());
 			} else {
 				// +1 to avoid division by zero
-				fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+				fps.set((4 * fps.get() + 1000 / (t2 - t1 + 1)) / 5);
 			}
 
 			// notify webcam listeners about new image available
@@ -693,7 +694,7 @@ public class Webcam {
 		if (asynchronous) {
 			return updater.getFPS();
 		} else {
-			return fps;
+			return fps.get();
 		}
 	}
 
@@ -731,9 +732,9 @@ public class Webcam {
 			} finally {
 				t2 = System.currentTimeMillis();
 				if (device instanceof WebcamDevice.FPSSource) {
-					fps = ((WebcamDevice.FPSSource) device).getFPS();
+					fps.set(((WebcamDevice.FPSSource) device).getFPS());
 				} else {
-					fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+					fps.set((4 * fps.get() + 1000 / (t2 - t1 + 1)) / 5);
 				}
 			}
 		} else {
@@ -775,9 +776,9 @@ public class Webcam {
 			} finally {
 				t2 = System.currentTimeMillis();
 				if (device instanceof WebcamDevice.FPSSource) {
-					fps = ((WebcamDevice.FPSSource) device).getFPS();
+					fps.set(((WebcamDevice.FPSSource) device).getFPS());
 				} else {
-					fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+					fps.set((4 * fps.get() + 1000 / (t2 - t1 + 1)) / 5);
 				}
 			}
 		} else {
@@ -1091,9 +1092,7 @@ public class Webcam {
 
 		try {
 			driver = driverClass.newInstance();
-		} catch (InstantiationException e) {
-			throw new WebcamException(e);
-		} catch (IllegalAccessException e) {
+		} catch (final InstantiationException | IllegalAccessException e) {
 			throw new WebcamException(e);
 		}
 	}

@@ -113,7 +113,7 @@ public class WebcamUpdater implements Runnable {
 	/**
 	 * Current FPS rate.
 	 */
-	private volatile double fps = 0;
+	private final AtomicReference<Double> fps = new AtomicReference<Double>(0.0);
 
 	/**
 	 * Is updater running.
@@ -239,9 +239,9 @@ public class WebcamUpdater implements Runnable {
 
 		long delta = duration + 1; // +1 to avoid division by zero
 		if (deviceFps >= 0) {
-			fps = deviceFps;
+			fps.set(deviceFps);
 		} else {
-			fps = (4 * fps + 1000 / delta) / 5;
+			fps.set((4 * fps.get() + 1000 / delta) / 5);
 		}
 
 		// reschedule task
@@ -309,6 +309,6 @@ public class WebcamUpdater implements Runnable {
 	 * @return FPS number
 	 */
 	public double getFPS() {
-		return fps;
+		return fps.get();
 	}
 }

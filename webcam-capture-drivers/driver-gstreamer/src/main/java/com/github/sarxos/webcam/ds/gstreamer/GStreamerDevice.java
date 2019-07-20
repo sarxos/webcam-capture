@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.bridj.Platform;
 import org.gstreamer.Caps;
@@ -87,7 +88,7 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 	private long t1 = -1;
 	private long t2 = -1;
 
-	private volatile double fps = 0;
+	private final AtomicReference<Double> fps = new AtomicReference<Double>(0.0);
 
 	/**
 	 * Create GStreamer webcam device.
@@ -409,12 +410,12 @@ public class GStreamerDevice implements WebcamDevice, RGBDataSink.Listener, Webc
 		t1 = t2;
 		t2 = System.currentTimeMillis();
 
-		fps = (4 * fps + 1000 / (t2 - t1 + 1)) / 5;
+		fps.set((4 * fps.get() + 1000 / (t2 - t1 + 1)) / 5);
 	}
 
 	@Override
 	public double getFPS() {
-		return fps;
+		return fps.get();
 	}
 
 	public Pipeline getPipe() {
