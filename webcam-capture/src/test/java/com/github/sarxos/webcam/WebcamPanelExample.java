@@ -1,4 +1,5 @@
 package com.github.sarxos.webcam;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
@@ -11,7 +12,7 @@ public class WebcamPanelExample {
 		//Webcam.setDriver(new RaspividDriver());
 	}
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
 		final JFrame window = new JFrame("Raspberrypi Capture Example");
 		window.setResizable(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

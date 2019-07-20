@@ -833,7 +833,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		final SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
 			@Override
-			protected Void doInBackground() throws Exception {
+			protected Void doInBackground() {
 
 				try {
 					if (!webcam.isOpen()) {
@@ -877,7 +877,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		final SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
 			@Override
-			protected Void doInBackground() throws Exception {
+			protected Void doInBackground() {
 
 				try {
 					if (webcam.isOpen()) {

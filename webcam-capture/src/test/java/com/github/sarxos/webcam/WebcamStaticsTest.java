@@ -143,7 +143,7 @@ public class WebcamStaticsTest {
 	}
 
 	@Test
-	public void test_setDriver() throws InstantiationException {
+	public void test_setDriver() {
 
 		Webcam.setDriver(DummyDriver2.class);
 		WebcamDriver driver2 = Webcam.getDriver();
@@ -169,7 +169,7 @@ public class WebcamStaticsTest {
 	}
 
 	@Test
-	public void test_GetWebcamByName() throws InstantiationException {
+	public void test_GetWebcamByName() {
 		Webcam.setDriver(new DummyDriver());
 		for (Webcam webcam : Webcam.getWebcams()) {
 			Assert.assertEquals(webcam.getName(), Objects.requireNonNull(Webcam.getWebcamByName(webcam.getName())).getName());
@@ -177,13 +177,13 @@ public class WebcamStaticsTest {
 	}
 
 	@Test
-	public void test_GetWebcamByNameWithNotExistingWebcamName() throws InstantiationException {
+	public void test_GetWebcamByNameWithNotExistingWebcamName() {
 		Webcam.setDriver(new DummyDriver());
 		Assert.assertNull(Webcam.getWebcamByName("DatCameraDoesNotExist"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void test_GetWebcamByNameWithNullArgument() throws InstantiationException {
+	public void test_GetWebcamByNameWithNullArgument() {
 		Webcam.setDriver(new DummyDriver());
 		Webcam.getWebcamByName(null);
 	}

@@ -171,7 +171,7 @@ public class WebCamAppLauncher extends Application {
 		Task<Void> webCamTask = new Task<Void>() {
 
 			@Override
-			protected Void call() throws Exception {
+			protected Void call() {
 
 				if (webCam != null) {
 					disposeWebCamCamera();
@@ -201,7 +201,7 @@ public class WebCamAppLauncher extends Application {
 		Task<Void> task = new Task<Void>() {
 
 			@Override
-			protected Void call() throws Exception {
+			protected Void call() {
 
 				final AtomicReference<WritableImage> ref = new AtomicReference<>();
 				BufferedImage img = null;

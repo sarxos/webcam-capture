@@ -80,7 +80,7 @@ public class H264StreamEncoder extends OneToOneEncoder{
 		return encode(msg);
 	}
 
-	public Object encode(Object msg) throws Exception {
+	public Object encode(Object msg) {
 		if (msg == null) {
 			return null;
 		}

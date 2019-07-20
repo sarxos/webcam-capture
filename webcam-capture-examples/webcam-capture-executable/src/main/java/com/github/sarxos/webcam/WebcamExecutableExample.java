@@ -67,7 +67,7 @@ public class WebcamExecutableExample extends JFrame implements ActionListener {
 
 	boolean running = false;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override

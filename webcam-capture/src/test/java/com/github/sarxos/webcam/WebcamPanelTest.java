@@ -13,7 +13,7 @@ import com.github.sarxos.webcam.ds.test.DummyDriver;
 public class WebcamPanelTest {
 
 	@Test
-	public void test_size() throws InterruptedException {
+	public void test_size() {
 
 		Webcam.setDriver(new DummyDriver());
 
@@ -38,7 +38,7 @@ public class WebcamPanelTest {
 	}
 
 	@Test
-	public void test_sizeSpecified() throws InterruptedException {
+	public void test_sizeSpecified() {
 
 		Webcam.setDriver(new DummyDriver());
 

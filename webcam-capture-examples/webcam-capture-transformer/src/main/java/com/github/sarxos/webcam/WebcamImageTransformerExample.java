@@ -86,7 +86,7 @@ public class WebcamImageTransformerExample implements WebcamImageTransformer {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 
 		JFrame.setDefaultLookAndFeelDecorated(true);
 

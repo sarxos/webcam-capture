@@ -90,7 +90,7 @@ public class H264StreamDecoder extends OneToOneDecoder {
 	}
 
 	@Override
-	protected Object decode(ChannelHandlerContext ctx, Channel channel, final Object msg) throws Exception {
+	protected Object decode(ChannelHandlerContext ctx, Channel channel, final Object msg) {
 
 		if (decodeWorker != null) {
 			decodeWorker.execute(new decodeTask(msg));

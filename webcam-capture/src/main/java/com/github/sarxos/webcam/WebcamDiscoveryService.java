@@ -32,7 +32,7 @@ public class WebcamDiscoveryService implements Runnable {
 		}
 
 		@Override
-		public List<Webcam> call() throws Exception {
+		public List<Webcam> call() {
 			return toWebcams(driver.getDevices());
 		}
 

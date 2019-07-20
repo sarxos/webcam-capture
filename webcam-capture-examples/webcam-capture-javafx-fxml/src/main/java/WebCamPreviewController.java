@@ -138,7 +138,7 @@ public class WebCamPreviewController implements Initializable {
 		Task<Void> webCamIntilizer = new Task<Void>() {
 
 			@Override
-			protected Void call() throws Exception {
+			protected Void call() {
 
 				if (selWebCam == null) {
 					selWebCam = Webcam.getWebcams().get(webCamIndex);
@@ -165,7 +165,7 @@ public class WebCamPreviewController implements Initializable {
 		Task<Void> task = new Task<Void>() {
 
 			@Override
-			protected Void call() throws Exception {
+			protected Void call() {
 
 				while (!stopCamera) {
 					try {
