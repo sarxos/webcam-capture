@@ -47,9 +47,7 @@ public class WebcamLogConfigurator {
 			context.reset();
 			configurator.doConfigure(is);
 
-		} catch (ClassNotFoundException e) {
-			System.err.println("WLogC: Logback JARs are missing in classpath");
-		} catch (NoClassDefFoundError e) {
+		} catch (final ClassNotFoundException | NoClassDefFoundError e) {
 			System.err.println("WLogC: Logback JARs are missing in classpath");
 		} catch (Throwable e) {
 			e.printStackTrace();

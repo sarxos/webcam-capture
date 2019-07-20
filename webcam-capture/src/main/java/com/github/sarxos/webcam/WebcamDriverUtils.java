@@ -58,9 +58,7 @@ public class WebcamDriverUtils {
 
 			try {
 				return (WebcamDriver) clazz.newInstance();
-			} catch (InstantiationException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
+			} catch (final InstantiationException | IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
 		}
