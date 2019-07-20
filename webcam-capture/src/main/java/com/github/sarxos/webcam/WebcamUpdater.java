@@ -30,7 +30,7 @@ public class WebcamUpdater implements Runnable {
 	 * Implementation of this interface is responsible for calculating the delay between 2 image
 	 * fetching, when the non-blocking (asynchronous) access to the webcam is enabled.
 	 */
-	public static interface DelayCalculator {
+	public interface DelayCalculator {
 
 		/**
 		 * Calculates delay before the next image will be fetched from the webcam. Must return

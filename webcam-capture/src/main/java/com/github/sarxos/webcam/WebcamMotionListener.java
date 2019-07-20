@@ -12,6 +12,6 @@ public interface WebcamMotionListener {
 	 * 
 	 * @param wme motion event
 	 */
-	public void motionDetected(WebcamMotionEvent wme);
+	void motionDetected(WebcamMotionEvent wme);
 
 }

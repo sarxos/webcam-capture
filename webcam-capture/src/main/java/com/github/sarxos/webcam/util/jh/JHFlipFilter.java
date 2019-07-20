@@ -111,7 +111,6 @@ public class JHFlipFilter extends JHFilter {
 					case FLIP_90CW:
 						newRow = col;
 						newCol = height - row - 1;
-						;
 						break;
 					case FLIP_90CCW:
 						newRow = width - col - 1;

@@ -20,7 +20,7 @@ public interface WebcamDevice {
 	 * 
 	 * @author Bartosz Firyn (SarXos)
 	 */
-	public static interface BufferAccess {
+	interface BufferAccess {
 
 		/**
 		 * Read the underlying image memory buffer. This method will return new
@@ -46,7 +46,7 @@ public interface WebcamDevice {
 
 	}
 
-	public static interface FPSSource {
+	interface FPSSource {
 
 		/**
 		 * Get current device FPS.
@@ -63,7 +63,7 @@ public interface WebcamDevice {
 	 * 
 	 * @author Martin Krok (krok32) 
 	 */
-	public static interface Configurable {
+	interface Configurable {
 
 		/**
 		 * Sets device parameters. Each device implementation may accept its own

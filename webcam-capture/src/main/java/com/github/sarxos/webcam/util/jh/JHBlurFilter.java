@@ -113,7 +113,7 @@ public class JHBlurFilter extends JHFilter {
 		int widthMinus1 = width - 1;
 		int r = (int) radius;
 		int tableSize = 2 * r + 1;
-		int divide[] = new int[256 * tableSize];
+		final int[] divide = new int[256 * tableSize];
 
 		for (int i = 0; i < 256 * tableSize; i++) {
 			divide[i] = i / tableSize;

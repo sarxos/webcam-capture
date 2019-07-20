@@ -2,6 +2,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,11 +89,7 @@ public class WebcamWebSocketHandler {
 		}
 
 		String base64 = null;
-		try {
-			base64 = new String(Base64.getEncoder().encode(baos.toByteArray()), "UTF8");
-		} catch (UnsupportedEncodingException e) {
-			LOG.error(e.getMessage(), e);
-		}
+		base64 = new String(Base64.getEncoder().encode(baos.toByteArray()), StandardCharsets.UTF_8);
 
 		Map<String, Object> message = new HashMap<String, Object>();
 		message.put("type", "image");

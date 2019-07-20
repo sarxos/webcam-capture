@@ -305,7 +305,7 @@ public enum WebcamResolution {
 	 * @param width the resolution width
 	 * @param height the resolution height
 	 */
-	private WebcamResolution(int width, int height) {
+	WebcamResolution(int width, int height) {
 		this.size = new Dimension(width, height);
 	}
 

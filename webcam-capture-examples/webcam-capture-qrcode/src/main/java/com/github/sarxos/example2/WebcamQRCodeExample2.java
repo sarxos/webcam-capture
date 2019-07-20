@@ -31,7 +31,7 @@ public class WebcamQRCodeExample2 extends JFrame {
 						} catch (InterruptedException ex) {
 							ex.printStackTrace();
 						}
-					};
+					}
 				});
 				thread.setDaemon(true);
 				thread.start();

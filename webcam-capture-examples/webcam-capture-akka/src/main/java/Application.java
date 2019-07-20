@@ -20,8 +20,8 @@ import com.typesafe.config.ConfigFactory;
 
 public class Application {
 
-	static enum GetImageMsg {
-		OBJECT;
+	enum GetImageMsg {
+		OBJECT
 	}
 
 	static class WebcamActor extends UntypedActor {

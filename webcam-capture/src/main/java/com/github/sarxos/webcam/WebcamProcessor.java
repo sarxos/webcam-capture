@@ -118,7 +118,7 @@ public class WebcamProcessor {
 	/**
 	 * Singleton instance.
 	 */
-	private static final WebcamProcessor INSTANCE = new WebcamProcessor();;
+	private static final WebcamProcessor INSTANCE = new WebcamProcessor();
 
 	private WebcamProcessor() {
 	}

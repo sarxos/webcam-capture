@@ -18,7 +18,7 @@ import org.apache.commons.io.FileUtils;
  * @since JDK 1.8
  */
 public class GenerateInstances {
-	public static void main(String args[]) throws IOException {
+	public static void main(final String[] args) throws IOException {
 		Map<String, String> longOpt = new HashMap<>();
 		load("still.txt", longOpt);
 		load("vid.txt", longOpt);
@@ -39,7 +39,7 @@ public class GenerateInstances {
 				continue;
 			}
 			int indexOfDesc = line.indexOf(":");
-			String opts[] = line.substring(0, indexOfDesc).trim().split(",");
+			final String[] opts = line.substring(0, indexOfDesc).trim().split(",");
 
 			String key = opts[1].replaceFirst("--", "").trim();
 			if (longOpt.containsKey(key)) {

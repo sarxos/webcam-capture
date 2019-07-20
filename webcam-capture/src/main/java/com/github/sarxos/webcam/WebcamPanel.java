@@ -84,7 +84,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		/**
 		 * @return {@link BufferedImage} to be displayed in {@link WebcamPanel}
 		 */
-		public BufferedImage get();
+		BufferedImage get();
 	}
 
 	/**

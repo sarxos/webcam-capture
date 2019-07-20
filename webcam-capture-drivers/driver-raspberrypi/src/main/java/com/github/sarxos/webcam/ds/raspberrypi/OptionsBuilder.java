@@ -89,7 +89,7 @@ class OptionsBuilder implements Constants {
 					continue;
 				}
 				int indexOfDesc = line.indexOf(":");
-				String opts[] = line.substring(0, indexOfDesc).trim().split(",");
+				final String[] opts = line.substring(0, indexOfDesc).trim().split(",");
 				String desc = line.substring(indexOfDesc + 1).trim();
 				options.addOption(new Option(opts[0].trim().substring(1), opts[1].trim().substring(2), true, desc));
 			}

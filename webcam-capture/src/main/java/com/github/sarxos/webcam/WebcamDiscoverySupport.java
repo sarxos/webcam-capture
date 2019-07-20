@@ -11,7 +11,7 @@ public interface WebcamDiscoverySupport {
 	/**
 	 * Default webcam discovery scan interval in milliseconds.
 	 */
-	public static final long DEFAULT_SCAN_INTERVAL = 3000;
+	long DEFAULT_SCAN_INTERVAL = 3000;
 
 	/**
 	 * Get interval between next discovery scans. Time interval is given in milliseconds.
