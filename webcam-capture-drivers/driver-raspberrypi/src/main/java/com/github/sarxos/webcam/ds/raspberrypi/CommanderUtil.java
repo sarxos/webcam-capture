@@ -60,12 +60,7 @@ class CommanderUtil {
 	 */
 	public static List<String> execute(String cmd, final int timeout) {
 		final ScheduledExecutorService scheduledExecutorService = Executors
-				.newSingleThreadScheduledExecutor(new ThreadFactory() {
-					@Override
-					public Thread newThread(Runnable r) {
-						return new Thread(threadGroup(), r, "Commander-watchdog-" + threadId());
-					}
-				});
+				.newSingleThreadScheduledExecutor(r -> new Thread(threadGroup(), r, "Commander-watchdog-" + threadId()));
 
 		List<String> ret = new ArrayList<String>();
 
@@ -76,15 +71,12 @@ class CommanderUtil {
 		}
 
 		final AtomicReference<Process> refer = new AtomicReference<>();
-		scheduledExecutorService.schedule(new Runnable() {
-			@Override
-			public void run() {
-				if (refer.get() != null) {
-					refer.get().destroy();
-				}
-				if (!scheduledExecutorService.isTerminated()) {
-					scheduledExecutorService.shutdownNow();
-				}
+		scheduledExecutorService.schedule(() -> {
+			if (refer.get() != null) {
+				refer.get().destroy();
+			}
+			if (!scheduledExecutorService.isTerminated()) {
+				scheduledExecutorService.shutdownNow();
 			}
 		}, timeout, TimeUnit.MILLISECONDS);
 

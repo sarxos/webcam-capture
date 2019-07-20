@@ -572,8 +572,8 @@ public class PNGDecoder {
 					length -= read;
 				}
 			} while (length > 0);
-		} catch (DataFormatException ex) {
-			throw (IOException) (new IOException("inflate error").initCause(ex));
+		} catch (final DataFormatException ex) {
+			throw new IOException("inflate error", ex);
 		}
 	}
 

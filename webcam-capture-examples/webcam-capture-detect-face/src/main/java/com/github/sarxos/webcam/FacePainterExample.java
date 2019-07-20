@@ -98,10 +98,8 @@ public class FacePainterExample extends JFrame implements Runnable, WebcamPanel.
 			return;
 		}
 
-		Iterator<DetectedFace> dfi = faces.iterator();
-		while (dfi.hasNext()) {
+		for (final DetectedFace face : faces) {
 
-			DetectedFace face = dfi.next();
 			Rectangle bounds = face.getBounds();
 
 			int dx = (int) (0.1 * bounds.width);

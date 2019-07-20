@@ -86,13 +86,11 @@ public class IpCamDeviceRegistry {
 			throw new IllegalArgumentException("IP camera device cannot be null");
 		}
 
-		Iterator<IpCamDevice> di = DEVICES.iterator();
-		while (di.hasNext()) {
-			if (di.next().getName().equals(ipcam.getName())) {
+		for (final IpCamDevice device : DEVICES) {
+			if (device.getName().equals(ipcam.getName())) {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -108,13 +106,11 @@ public class IpCamDeviceRegistry {
 			throw new IllegalArgumentException("Device name cannot be null");
 		}
 
-		Iterator<IpCamDevice> di = DEVICES.iterator();
-		while (di.hasNext()) {
-			if (di.next().getName().equals(name)) {
+		for (final IpCamDevice device : DEVICES) {
+			if (device.getName().equals(name)) {
 				return true;
 			}
 		}
-
 		return false;
 	}
 

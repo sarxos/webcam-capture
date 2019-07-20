@@ -25,11 +25,9 @@ public class JmfDriver implements WebcamDriver {
 			devices = new ArrayList<WebcamDevice>();
 
 			@SuppressWarnings("unchecked")
-			Vector<Object> cdis = CaptureDeviceManager.getDeviceList(new Format("RGB"));
-			Iterator<Object> di = cdis.iterator();
+			Vector<CaptureDeviceInfo> cdis = CaptureDeviceManager.getDeviceList(new Format("RGB"));
 
-			while (di.hasNext()) {
-				CaptureDeviceInfo cdi = (CaptureDeviceInfo) di.next();
+			for (final CaptureDeviceInfo cdi : cdis) {
 				devices.add(new JmfDevice(cdi));
 			}
 		}

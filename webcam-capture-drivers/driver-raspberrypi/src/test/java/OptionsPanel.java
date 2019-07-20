@@ -168,9 +168,8 @@ public class OptionsPanel extends JPanel {
 
 	public Map<String, String> getOptionMap() {
 		Map<String, String> map = new LinkedHashMap<String, String>();
-		Component[] components = this.getComponents();
-		for (int i = 0; i < components.length; i++) {
-			JComponent c = (JComponent) components[i];
+		for (final Component component : this.getComponents()) {
+			JComponent c = (JComponent) component;
 			if (c instanceof JSlider) {
 				map.put(c.getToolTipText().trim(), ((JSlider) c).getValue() + "");
 			} else if (c instanceof JComboBox) {

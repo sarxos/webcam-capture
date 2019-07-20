@@ -75,7 +75,7 @@ public class GStreamerDriver implements WebcamDriver {
 
 			for (String p : path.split(";")) {
 				LOG.trace("Search %PATH% for gstreamer bin {}", p);
-				if (p.indexOf("GStreamer\\v0.10.") != -1) {
+				if (p.contains("GStreamer\\v0.10.")) {
 					gpath = p;
 					break;
 				}

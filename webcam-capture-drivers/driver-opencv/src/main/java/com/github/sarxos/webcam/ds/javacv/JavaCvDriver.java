@@ -45,18 +45,12 @@ public class JavaCvDriver implements WebcamDriver {
 	private List<WebcamDevice> getDevicesMacOs() {
 		final List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
 		for (int i = 0; i < 100; i++) {
-			VideoCapture vc = null;
-			try {
-				vc = new VideoCapture();
+			try (final VideoCapture vc = new VideoCapture()) {
 				vc.open(i);
 				if (!vc.isOpened()) {
 					break;
 				} else {
 					devices.add(new JavaCvDevice(i));
-				}
-			} finally {
-				if (vc != null) {
-					vc.close();
 				}
 			}
 		}

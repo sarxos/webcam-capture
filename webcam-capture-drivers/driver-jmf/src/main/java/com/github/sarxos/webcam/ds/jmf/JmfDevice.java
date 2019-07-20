@@ -252,13 +252,7 @@ public class JmfDevice implements WebcamDevice {
 				public int compare(Dimension a, Dimension b) {
 					int apx = a.width * a.height;
 					int bpx = b.width * b.height;
-					if (apx > bpx) {
-						return 1;
-					} else if (apx < bpx) {
-						return -1;
-					} else {
-						return 0;
-					}
+					return Integer.compare(apx, bpx);
 				}
 			});
 		}

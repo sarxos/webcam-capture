@@ -386,9 +386,7 @@ public class WebcamDiscoveryService implements Runnable {
 
 		// dispose all webcams
 
-		Iterator<Webcam> wi = webcams.iterator();
-		while (wi.hasNext()) {
-			Webcam webcam = wi.next();
+		for (final Webcam webcam : webcams) {
 			webcam.dispose();
 		}
 

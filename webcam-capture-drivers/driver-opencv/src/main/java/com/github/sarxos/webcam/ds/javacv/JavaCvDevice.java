@@ -101,9 +101,7 @@ public class JavaCvDevice implements WebcamDevice {
 
 		final List<Dimension> supported = new ArrayList<Dimension>();
 
-		VideoCapture vc = null;
-		try {
-			vc = getVideoCaptureForOs();
+		try (final VideoCapture vc = getVideoCaptureForOs()) {
 
 			for (WebcamResolution r : WebcamResolution.values()) {
 
@@ -123,10 +121,6 @@ public class JavaCvDevice implements WebcamDevice {
 				if (w1 == w2 && h1 == h2) {
 					supported.add(r.getSize());
 				}
-			}
-		} finally {
-			if (vc != null) {
-				vc.close();
 			}
 		}
 

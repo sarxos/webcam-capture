@@ -58,29 +58,23 @@ public class WebcamPanelExample {
 		window.getContentPane().add(stopButton);
 
 		startButton.setEnabled(false);
-		startButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				WebcamPanel webcamPanel = (WebcamPanel) window.getContentPane().getComponent(0);
-				if (!(webcamPanel.isStarted() || webcamPanel.isStarting())) {
-					webcamPanel.getWebcam().setParameters(optionsPanel.getOptionMap());
-					webcamPanel.start();
-				}
-				startButton.setEnabled(false);
-				stopButton.setEnabled(true);
+		startButton.addActionListener(e -> {
+			WebcamPanel webcamPanel = (WebcamPanel) window.getContentPane().getComponent(0);
+			if (!(webcamPanel.isStarted() || webcamPanel.isStarting())) {
+				webcamPanel.getWebcam().setParameters(optionsPanel.getOptionMap());
+				webcamPanel.start();
 			}
+			startButton.setEnabled(false);
+			stopButton.setEnabled(true);
 		});
 
-		stopButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				WebcamPanel webcamPanel = (WebcamPanel) window.getContentPane().getComponent(0);
-				if (webcamPanel.isStarted()) {
-					webcamPanel.stop();
-				}
-				startButton.setEnabled(true);
-				stopButton.setEnabled(false);
+		stopButton.addActionListener(e -> {
+			WebcamPanel webcamPanel = (WebcamPanel) window.getContentPane().getComponent(0);
+			if (webcamPanel.isStarted()) {
+				webcamPanel.stop();
 			}
+			startButton.setEnabled(true);
+			stopButton.setEnabled(false);
 		});
 
 		window.pack();

@@ -71,7 +71,7 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 
 			try {
 				while ((line = br.readLine()) != null) {
-					if (line.startsWith(STARTER) && line.indexOf(MARKER) != -1) {
+					if (line.startsWith(STARTER) && line.contains(MARKER)) {
 						LOG.debug("Command stdout line: {}", line);
 						String resolutions = line.split(" : ")[3].trim();
 						devices.add(new FFmpegCliDevice(path, vfile, resolutions));
@@ -131,7 +131,7 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 			br = new BufferedReader(new InputStreamReader(is));
 
 			while ((line = br.readLine()) != null) {
-				if (line.startsWith(STARTER) && line.indexOf(MARKER) != -1) {
+				if (line.startsWith(STARTER) && line.contains(MARKER)) {
 					int begin = line.indexOf(MARKER) + MARKER.length();
 					String resolution = line.substring(begin, line.indexOf(" ", begin));
 					resolutions.add(resolution);
@@ -177,19 +177,19 @@ public class FFmpegCliDriver implements WebcamDriver, WebcamDiscoverySupport {
 			br = new BufferedReader(new InputStreamReader(is));
 
 			while ((line = br.readLine()) != null) {
-				if (line.startsWith(STARTER) && line.indexOf(VIDEO_MARKER) != -1) {
+				if (line.startsWith(STARTER) && line.contains(VIDEO_MARKER)) {
 					startDevices = true;
 					continue;
 				}
 				if (startDevices) {
-					if (line.startsWith(STARTER) && line.indexOf(NAME_MARKER) != -1) {
+					if (line.startsWith(STARTER) && line.contains(NAME_MARKER)) {
 						String deviceName = line.substring(line.indexOf(NAME_MARKER) + NAME_MARKER.length());
 						// Remove final double quotes
 						deviceName = deviceName.substring(0, deviceName.length() - 1);
 						devicesNames.add(deviceName);
 						continue;
 					}
-					if (line.startsWith(STARTER) && line.indexOf(AUDIO_MARKER) != -1) {
+					if (line.startsWith(STARTER) && line.contains(AUDIO_MARKER)) {
 						break;
 					}
 				}

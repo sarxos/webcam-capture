@@ -85,8 +85,8 @@ public class LtiCivilLoader {
 		String libpath = null;
 		String libfile = null;
 
-		boolean arch64 = System.getProperty("os.arch").indexOf("64") != -1;
-		boolean linux = System.getProperty("os.name").toLowerCase().indexOf("linux") != -1;
+		boolean arch64 = System.getProperty("os.arch").contains("64");
+		boolean linux = System.getProperty("os.name").toLowerCase().contains("linux");
 
 		if (linux) {
 			libpath = libroot + (arch64 ? "/linux64/" : "/linux32/");
