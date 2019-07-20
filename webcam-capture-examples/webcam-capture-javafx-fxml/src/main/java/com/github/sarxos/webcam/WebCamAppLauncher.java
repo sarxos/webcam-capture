@@ -1,3 +1,5 @@
+package com.github.sarxos.webcam;
+
 import java.io.IOException;
 
 import javafx.application.Application;

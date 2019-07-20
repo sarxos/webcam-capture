@@ -16,52 +16,52 @@
     <dependency>
       <groupId>com.github.sarxos</groupId>
       <artifactId>webcam-capture</artifactId>
-      <version>0.3.11</version>
+      <version>0.3.12</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-actor_2.11</artifactId>
-      <version>2.4.1</version>
+      <version>2.5.23</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-cluster-sharding_2.11</artifactId>
-      <version>2.4.1</version>
+      <version>2.5.23</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-cluster-tools_2.11</artifactId>
-      <version>2.4.1</version>
+      <version>2.5.23</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-cluster_2.11</artifactId>
-      <version>2.4.1</version>
+      <version>2.5.23</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-distributed-data-experimental_2.11</artifactId>
-      <version>2.4.1</version>
+      <version>2.4.20</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-persistence_2.11</artifactId>
-      <version>2.4.1</version>
+      <version>2.5.23</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-slf4j_2.11</artifactId>
-      <version>2.4.1</version>
+      <version>2.5.23</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-slf4j_2.11</artifactId>
-      <version>2.4.1</version>
+      <version>2.5.23</version>
     </dependency>
     <dependency>
       <groupId>io.javaslang</groupId>
       <artifactId>javaslang</artifactId>
-      <version>2.0.2</version>
+      <version>2.0.6</version>
     </dependency>
   </dependencies>
 </project>

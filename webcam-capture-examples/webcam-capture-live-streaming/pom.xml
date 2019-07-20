@@ -36,17 +36,17 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty</artifactId>
-      <version>3.6.3.Final</version>
+      <version>3.10.6.Final</version>
     </dependency>
     <dependency>
       <groupId>net.coobird</groupId>
       <artifactId>thumbnailator</artifactId>
-      <version>0.4.3</version>
+      <version>0.4.8</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-      <version>1.7.3</version>
+      <version>1.7.26</version>
     </dependency>
     <dependency>
       <groupId>xuggle</groupId>

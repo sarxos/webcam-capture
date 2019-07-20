@@ -30,14 +30,19 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.3.1</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.5.3</version>
+      <version>4.5.9</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpmime</artifactId>
-      <version>4.5.3</version>
+      <version>4.5.9</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -51,7 +56,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.3.7</version>
+        <version>4.2.0</version>
         <extensions>true</extensions>
         <configuration>
           <instructions>
