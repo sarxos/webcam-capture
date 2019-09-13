@@ -816,7 +816,7 @@ public class Webcam {
         assert open != null;
 
         if (disposed.get()) {
-            LOG.warn("Cannot get image, webcam has been already disposed");
+            LOG.debug("Cannot get image, webcam has been already disposed");
             return false;
         }
 

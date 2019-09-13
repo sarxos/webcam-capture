@@ -33,11 +33,14 @@ public class WebcamProcessor {
      */
     private static final class ProcessorThreadFactory implements ThreadFactory {
 
+        private final AtomicInteger count = new AtomicInteger(1);
+
         @Override
         public Thread newThread(Runnable r) {
             Thread t = new ProcessorThread(r);
             t.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
             t.setDaemon(true);
+            t.setName(String.format("WebCamThread-%d", count.getAndIncrement()));
             return t;
         }
     }
@@ -73,13 +76,14 @@ public class WebcamProcessor {
 
         @Override
         public void run() {
-            while (true) {
+            final AtomicBoolean running = new AtomicBoolean(true);
+            while (running.get()) {
                 WebcamTask t = null;
                 try {
                     (t = inbound.take()).handle();
                 } catch (InterruptedException e) {
                     LOG.debug("handle() interrupted and will now exit", e);
-                    break;
+                    running.set(false);
                 } catch (Throwable e) {
                     if (t != null) {
                         t.setThrowable(e);
@@ -90,9 +94,10 @@ public class WebcamProcessor {
                             outbound.put(t);
                         } catch (InterruptedException e) {
                             LOG.debug("thread interrupted and will now exit", e);
-                            break;
+                            running.set(false);
                         } catch (Exception e) {
-                            throw new RuntimeException("Cannot put task into outbound queue", e);
+                            running.set(false);
+                            LOG.debug("exception while processing output", e);
                         }
                     }
                 }
@@ -119,7 +124,8 @@ public class WebcamProcessor {
      * Singleton instance.
      */
     private static final WebcamProcessor INSTANCE = new WebcamProcessor();
-    ;
+
+    private final ProcessorThreadFactory processorThreadFactory = new ProcessorThreadFactory();
 
     private WebcamProcessor() {
     }
@@ -133,7 +139,7 @@ public class WebcamProcessor {
     public void process(WebcamTask task) throws InterruptedException {
 
         if (started.compareAndSet(false, true)) {
-            runner = Executors.newSingleThreadExecutor(new ProcessorThreadFactory());
+            runner = Executors.newSingleThreadExecutor(processorThreadFactory);
             runner.execute(processor);
         }
 
