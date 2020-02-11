@@ -58,7 +58,7 @@
   <repositories>
     <repository>
       <id>xuggle repo</id>
-      <url>http://www.dcm4che.org/maven2/</url>
+      <url>https://www.dcm4che.org/maven2/</url>
     </repository>
   </repositories>
 
