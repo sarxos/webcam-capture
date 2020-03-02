@@ -14,8 +14,7 @@
 
   <name>Webcam Capture - FFmpeg CLI Driver</name>
   <description>Webcam Capture driver using ffmpeg CLI tool to grab frames from camera 
-		device into named pipe and decode them in Java. This driver works only
-		on *NIX systems (ans possibly on Mac OS). No Windows, sorry... It also
+		device into named pipe and decode them in Java. It also
 		requires ffmpeg to be installed on the computer where image capturing 
 		will be running.</description>
 
