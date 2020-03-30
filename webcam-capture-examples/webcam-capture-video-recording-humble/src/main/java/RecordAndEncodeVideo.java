@@ -1,3 +1,4 @@
+
 import java.awt.AWTException;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -20,8 +21,10 @@ import io.humble.video.awt.MediaPictureConverterFactory;
 
 
 /**
- * Records the contents of your computer screen to a media file for the passed in duration. This is
- * meant as a demonstration program to teach the use of the Humble API.
+ * This source file comes from a Humble Video framework. Originally it was to demonstrate how to
+ * record desktop to mp4 file. Right now it's to demonstrate how to records video feed from your
+ * webcam to a media file for the 10 seconds. This is meant as a demonstration program to how use
+ * Webcam Capture API together with Humble Video API.
  * <p>
  * Concepts introduced:
  * </p>
@@ -32,13 +35,15 @@ import io.humble.video.awt.MediaPictureConverterFactory;
  * {@link Muxer} objects.</li>
  * </ul>
  * <p>
- * To run from maven, do:
+ * To run from Maven, do:
  * </p>
  *
  * <pre>
  * mvn install exec:java -Dexec.mainClass="io.humble.video.demos.RecordAndEncodeVideo" -Dexec.args="filename.mp4"
  * </pre>
- *
+ * 
+ * @see https://github.com/artclarke/humble-video
+ * @see https://github.com/artclarke/humble-video/blob/master/humble-video-demos/src/main/java/io/humble/video/demos/RecordAndEncodeVideo.java
  * @author aclarke
  */
 public class RecordAndEncodeVideo {
@@ -55,7 +60,6 @@ public class RecordAndEncodeVideo {
 		webcam.setViewSize(WebcamResolution.VGA.getSize());
 
 		final Rectangle size = new Rectangle(webcam.getViewSize());
-
 		final Rational framerate = Rational.make(1, snapsPerSecond);
 
 		/** First we create a muxer using the passed in filename and formatname if given. */
