@@ -4,8 +4,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>webcam-capture-drivers</artifactId>
     <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-drivers</artifactId>
     <version>0.3.13-SNAPSHOT</version>
   </parent>
 

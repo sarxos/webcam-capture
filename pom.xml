@@ -4,9 +4,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>oss-parent</artifactId>
     <groupId>com.github.sarxos</groupId>
-    <version>4</version>
+    <artifactId>oss-parent</artifactId>
+    <version>6</version>
   </parent>
 
   <artifactId>webcam-capture-parent</artifactId>
@@ -194,7 +194,7 @@
               <format>xml</format>
               <maxmem>256m</maxmem>
               <aggregate>true</aggregate>
-              <check/>
+              <check></check>
             </configuration>
           </plugin>
           <plugin>

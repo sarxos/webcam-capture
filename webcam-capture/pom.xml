@@ -4,8 +4,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>webcam-capture-parent</artifactId>
     <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-parent</artifactId>
     <version>0.3.13-SNAPSHOT</version>
   </parent>
 
