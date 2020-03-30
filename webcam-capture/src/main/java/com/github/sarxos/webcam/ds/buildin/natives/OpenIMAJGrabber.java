@@ -75,9 +75,9 @@ public class OpenIMAJGrabber extends CPPObject {
 
 	public native void setTimeout(int timeout);
 
-	public native boolean startSession(int width, int height, double reqFPS);
+	public native boolean startSession(int width, int height, int reqMillisPerFrame);
 
-	public native boolean startSession(int width, int height, double reqFPS, Pointer<Device> devptr);
+	public native boolean startSession(int width, int height, int reqMillisPerFrame, Pointer<Device> devptr);
 
 	public native void stopSession();
 
