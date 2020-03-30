@@ -32,6 +32,7 @@
     <module>webcam-capture-onejar</module>
     <module>webcam-capture-websockets</module>
     <module>webcam-capture-akka</module>
+    <module>webcam-capture-video-recording-humble</module>
   </modules>
 
   <build>
