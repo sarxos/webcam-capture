@@ -15,6 +15,17 @@
   <name>Webcam Capture - OpenIMAJ Driver</name>
   <description>Webcam Capture driver allowing you to capture images using OpenIMAJ library.</description>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.nativelibs4java</groupId>
+        <artifactId>bridj</artifactId>
+        <version>0.7-20140918-2</version>
+        <scope>compile</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>com.github.sarxos</groupId>
@@ -22,146 +33,94 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.nativelibs4java</groupId>
-      <artifactId>bridj</artifactId>
-      <version>0.7.0</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>dx</artifactId>
-          <groupId>com.google.android.tools</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.openimaj</groupId>
       <artifactId>core-video-capture</artifactId>
-      <version>1.3</version>
+      <version>1.3.10</version>
 
       <!-- webcam-capture doesn't need most of the transitive dependencies -->
       <exclusions>
         <exclusion>
-          <artifactId>azure-bing-search-java</artifactId>
-          <groupId>net.billylieurance.azuresearch</groupId>
+          <artifactId>animation</artifactId>
+          <groupId>org.openimaj.content</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>snuggletex-core</artifactId>
-          <groupId>uk.ac.ed.ph.snuggletex</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>snuggletex-upconversion</artifactId>
-          <groupId>uk.ac.ed.ph.snuggletex</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>snuggletex-jeuclid</artifactId>
-          <groupId>uk.ac.ed.ph.snuggletex</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>flickrapi</artifactId>
-          <groupId>com.aetrion.flickr</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jal</artifactId>
-          <groupId>vigna.dsi.unimi.it</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jama</artifactId>
-          <groupId>jama</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>mtj</artifactId>
-          <groupId>com.googlecode.matrix-toolkits-java</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>netlib-java</artifactId>
-          <groupId>com.googlecode.netlib-java</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>JaFaMa</artifactId>
-          <groupId>net.sf.jafama</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jgrapht</artifactId>
-          <groupId>jgrapht</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>MatrixLib</artifactId>
-          <groupId>ch.akuhn.matrix</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>gov-sandia-cognition-common-core</artifactId>
-          <groupId>gov.sandia.foundry</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>xstream</artifactId>
-          <groupId>com.thoughtworks.xstream</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>gov-sandia-cognition-common-data</artifactId>
-          <groupId>gov.sandia.foundry</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>gov-sandia-cognition-learning-core</artifactId>
-          <groupId>gov.sandia.foundry</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>gov-sandia-cognition-text-core</artifactId>
-          <groupId>gov.sandia.foundry</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>gov-sandia-cognition-framework-core</artifactId>
-          <groupId>gov.sandia.foundry</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>gov-sandia-cognition-framework-learning</artifactId>
-          <groupId>gov.sandia.foundry</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>core-citation</artifactId>
+          <artifactId>core-audio</artifactId>
           <groupId>org.openimaj</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>jsoup</artifactId>
-          <groupId>org.jsoup</groupId>
+          <artifactId>core-math</artifactId>
+          <groupId>org.openimaj</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>trove4j</artifactId>
-          <groupId>net.sf.trove4j</groupId>
+          <artifactId>common-lang</artifactId>
+          <groupId>com.twelvemonkeys.common</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>colt</artifactId>
-          <groupId>colt</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>kryo</artifactId>
-          <groupId>com.esotericsoftware.kryo</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>ant</artifactId>
-          <groupId>org.apache.ant</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>httpclient</artifactId>
-          <groupId>org.apache.httpcomponents</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jmatio</artifactId>
-          <groupId>net.sourceforge.jmatio</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>BezierUtils</artifactId>
-          <groupId>com.caffeineowl.graphics</groupId>
+          <artifactId>jai-codec</artifactId>
+          <groupId>com.sun.media</groupId>
         </exclusion>
         <exclusion>
           <artifactId>jai-core</artifactId>
           <groupId>javax.media</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>jai-codec</artifactId>
-          <groupId>com.sun.media</groupId>
+          <artifactId>jeuclid-core</artifactId>
+          <groupId>net.sourceforge.jeuclid</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>core</artifactId>
+          <groupId>org.openimaj</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>snuggletex-core</artifactId>
+          <groupId>uk.ac.ed.ph.snuggletex</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>json-simple</artifactId>
+          <groupId>com.googlecode.json-simple</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>flickr4java</artifactId>
+          <groupId>com.flickr4java</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>snuggletex-upconversion</artifactId>
+          <groupId>uk.ac.ed.ph.snuggletex</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>sanselan</artifactId>
+          <groupId>org.apache.sanselan</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>bezier-utils</artifactId>
+          <groupId>com.caffeineowl</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>imageio-core</artifactId>
+          <groupId>com.twelvemonkeys.imageio</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>snuggletex-jeuclid</artifactId>
+          <groupId>uk.ac.ed.ph.snuggletex</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>imageio-jpeg</artifactId>
+          <groupId>com.twelvemonkeys.imageio</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>bridj</artifactId>
+          <groupId>com.nativelibs4java</groupId>
         </exclusion>
       </exclusions>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>openimaj-maven</id>
+      <url>http://maven.openimaj.org/</url>
+    </repository>
+  </repositories>
 
   <build>
     <plugins>
