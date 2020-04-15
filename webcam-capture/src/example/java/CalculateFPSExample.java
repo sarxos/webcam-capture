@@ -6,8 +6,8 @@ public class CalculateFPSExample {
 
 	public static void main(String[] args) {
 
-		long t1 = 0;
-		long t2 = 0;
+		long t1;
+		long t2;
 
 		int p = 10;
 		int r = 5;
