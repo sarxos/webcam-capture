@@ -66,11 +66,14 @@ public class WebcamProcessor {
             if (task == null) {
                 throw new IllegalArgumentException("null WebcamTask");
             }
-            inbound.put(task);
+            if (inbound.offer(task, 50, TimeUnit.MILLISECONDS)) {
 
-            Throwable t = outbound.take().getThrowable();
-            if (t != null) {
-                throw new WebcamException("Cannot execute task", t);
+                Throwable t = outbound.take().getThrowable();
+                if (t != null) {
+                    throw new WebcamException("Cannot execute task", t);
+                }
+            } else {
+                LOG.debug("task not accepted");
             }
         }
 
