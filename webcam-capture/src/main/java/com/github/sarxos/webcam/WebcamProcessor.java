@@ -66,7 +66,7 @@ public class WebcamProcessor {
             if (task == null) {
                 throw new IllegalArgumentException("null WebcamTask");
             }
-            if (inbound.offer(task, 50, TimeUnit.MILLISECONDS)) {
+            if (inbound.offer(task, 3, TimeUnit.SECONDS)) {
 
                 Throwable t = outbound.take().getThrowable();
                 if (t != null) {

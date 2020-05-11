@@ -371,6 +371,7 @@ public class Webcam {
             }
 
             // close webcam
+            open.set(false);
 
             WebcamCloseTask task = new WebcamCloseTask(driver, device);
             try {
@@ -391,7 +392,7 @@ public class Webcam {
 //                    }
                 }
             } catch (WebcamException e) {
-                open.set(true);
+                //open.set(true);
                 throw e;
             }
 
@@ -423,7 +424,7 @@ public class Webcam {
             LOG.debug("Webcam {} is already closed", getName());
         }
 
-        return open.compareAndSet(true, false);
+        return open.get();
     }
 
     /**
