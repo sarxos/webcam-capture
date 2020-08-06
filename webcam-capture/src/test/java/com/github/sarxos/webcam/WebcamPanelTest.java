@@ -12,8 +12,8 @@ import com.github.sarxos.webcam.ds.test.DummyDriver;
 
 public class WebcamPanelTest {
 
-	private final int width = 256;
-	private final int height = 345;
+	private final int WIDTH = 256;
+	private final int HEIGHT = 345;
 
 	@Test
 	public void test_size() throws InterruptedException {
@@ -46,7 +46,7 @@ public class WebcamPanelTest {
 		Webcam.setDriver(new DummyDriver());
 
 		final Webcam w = Webcam.getDefault();
-		final WebcamPanel p = new WebcamPanel(w, new Dimension(width, height), false);
+		final WebcamPanel p = new WebcamPanel(w, new Dimension(WIDTH, HEIGHT), false);
 
 		w.open();
 		p.repaint();
@@ -55,10 +55,10 @@ public class WebcamPanelTest {
 
 		Assertions
 			.assertThat(d.getWidth())
-			.isEqualTo(width);
+			.isEqualTo(WIDTH);
 		Assertions
 			.assertThat(d.getHeight())
-			.isEqualTo(height);
+			.isEqualTo(HEIGHT);
 
 		p.stop();
 		w.close();
@@ -72,7 +72,7 @@ public class WebcamPanelTest {
 		final Webcam w = Webcam.getDefault();
 		w.open();
 
-		final WebcamPanel p = new WebcamPanel(w, new Dimension(width, height), false);
+		final WebcamPanel p = new WebcamPanel(w, new Dimension(WIDTH, HEIGHT), false);
 		p.setDrawMode(DrawMode.FILL);
 		p.start();
 
@@ -96,7 +96,7 @@ public class WebcamPanelTest {
 		final Webcam w = Webcam.getDefault();
 		w.open();
 
-		final WebcamPanel p = new WebcamPanel(w, new Dimension(width, height), false);
+		final WebcamPanel p = new WebcamPanel(w, new Dimension(WIDTH, HEIGHT), false);
 		p.setDrawMode(DrawMode.FIT);
 		p.start();
 
@@ -120,7 +120,7 @@ public class WebcamPanelTest {
 		final Webcam w = Webcam.getDefault();
 		w.open();
 
-		final WebcamPanel p = new WebcamPanel(w, new Dimension(width, height), false);
+		final WebcamPanel p = new WebcamPanel(w, new Dimension(WIDTH, HEIGHT), false);
 		p.setDrawMode(DrawMode.NONE);
 		p.start();
 
