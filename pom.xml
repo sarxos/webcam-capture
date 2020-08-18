@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.extendaretail.web-capture</groupId>
+    <groupId>com.github.sarxos</groupId>
     <artifactId>oss-parent</artifactId>
     <version>6</version>
   </parent>
