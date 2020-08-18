@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.extendaretail.web-capture</groupId>
+    <groupId>com.github.sarxos</groupId>
     <artifactId>webcam-capture-drivers</artifactId>
     <version>0.3.13-SNAPSHOT</version>
   </parent>
@@ -17,7 +17,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.extendaretail.web-capture</groupId>
+      <groupId>com.github.sarxos</groupId>
       <artifactId>webcam-capture</artifactId>
       <version>${project.version}</version>
     </dependency>

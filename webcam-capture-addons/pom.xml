@@ -5,7 +5,7 @@
 
   <parent>
     <artifactId>webcam-capture-parent</artifactId>
-    <groupId>com.extendaretail.web-capture</groupId>
+    <groupId>com.github.sarxos</groupId>
     <version>0.3.13-SNAPSHOT</version>
   </parent>
 

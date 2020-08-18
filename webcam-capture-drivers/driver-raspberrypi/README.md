@@ -28,7 +28,7 @@ sudo apt-get install raspistill raspivid raspiyuv raspividyuv
     <url>http://oss.sonatype.org/content/repositories/snapshots</url>
 </repository>
 <dependency>
-    <groupId>com.extendaretail.web-capture</groupId>
+    <groupId>com.github.sarxos</groupId>
     <artifactId>webcam-capture-driver-raspberrypi</artifactId>
     <version>${your version}</version>
 </dependency>
