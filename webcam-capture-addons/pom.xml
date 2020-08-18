@@ -9,6 +9,7 @@
     <version>0.3.13-SNAPSHOT</version>
   </parent>
 
+  <groupId>com.extendaretail</groupId>
   <artifactId>webcam-capture-addons</artifactId>
   <packaging>pom</packaging>
 
