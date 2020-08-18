@@ -18,7 +18,7 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>com.github.sarxos</groupId>
+      <groupId>com.extendaretail.web-capture</groupId>
       <artifactId>webcam-capture</artifactId>
       <version>0.3.11</version>
     </dependency>
