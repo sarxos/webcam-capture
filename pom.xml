@@ -16,23 +16,13 @@
 
   <name>Webcam Capture Parent POM</name>
   <description>This is Webcam Capture root POM. Keywords: cam, webcam, camera, spycam, capture</description>
-  <url>https://github.com/sarxos/webcam-capture</url>
+  <url>https://github.com/extenda/webcam-capture</url>
   <inceptionYear>2012</inceptionYear>
 
   <organization>
-    <name>Bartosz Firyn (SarXos)</name>
-    <url>https://github.com/sarxos</url>
+    <name>Extenda Retail</name>
+    <url>https://github.com/extenda/webcam-capture</url>
   </organization>
-
-  <developers>
-    <developer>
-      <id>sarxos</id>
-      <name>Bartosz Firyn</name>
-      <email>bartoszfiryn@gmail.com</email>
-      <url>https://github.com/sarxos</url>
-      <timezone>+1</timezone>
-    </developer>
-  </developers>
 
   <modules>
     <module>webcam-capture</module>
@@ -40,21 +30,14 @@
   </modules>
 
   <scm>
-    <connection>scm:git:git@github.com:sarxos/webcam-capture.git</connection>
-    <developerConnection>scm:git:git@github.com:sarxos/webcam-capture.git</developerConnection>
+    <connection>scm:git:https://github.com/extenda/webcam-capture.git</connection>
     <tag>HEAD</tag>
-    <url>git@github.com:sarxos/webcam-capture.git</url>
   </scm>
 
   <issueManagement>
     <system>GitHub Issues Manager</system>
-    <url>https://github.com/sarxos/webcam-capture/issues</url>
+    <url>https://github.com/extenda/webcam-capture/issues</url>
   </issueManagement>
-
-  <ciManagement>
-    <system>Travis CI</system>
-    <url>http://travis-ci.org/#!/sarxos/webcam-capture</url>
-  </ciManagement>
 
   <properties>
     <project.assembly.descriptor>../distribution.xml</project.assembly.descriptor>
