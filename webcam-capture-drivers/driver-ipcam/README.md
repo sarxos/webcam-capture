@@ -35,7 +35,7 @@ Stable:
 
 ```xml
 <dependency>
-	<groupId>com.github.sarxos</groupId>
+	<groupId>com.extendaretail.web-capture</groupId>
 	<artifactId>webcam-capture-driver-ipcam</artifactId>
 	<version>0.3.12</version>
 </dependency>
@@ -51,7 +51,7 @@ Snapshot:
 ```
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-ipcam</artifactId>
     <version>0.3.13-SNAPSHOT</version>
 </dependency>

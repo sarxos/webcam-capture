@@ -52,7 +52,7 @@ The latest stable version is [available](http://search.maven.org/#artifactdetail
 
 ```xml
 <dependency>
-  <groupId>com.github.sarxos</groupId>
+  <groupId>com.extendaretail.web-capture</groupId>
   <artifactId>webcam-capture</artifactId>
   <version>0.3.12</version>
 </dependency>
@@ -68,7 +68,7 @@ Snapshot version:
 ```
 ```xml
 <dependency>
-	<groupId>com.github.sarxos</groupId>
+	<groupId>com.extendaretail.web-capture</groupId>
 	<artifactId>webcam-capture</artifactId>
 	<version>0.3.13-SNAPSHOT</version>
 </dependency>
@@ -235,7 +235,7 @@ Maven dependency:
 
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-ipcam</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>
@@ -257,7 +257,7 @@ Maven dependency:
 
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-fswebcam</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>
@@ -280,7 +280,7 @@ Maven dependency:
 
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-gstreamer</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>
@@ -302,7 +302,7 @@ Maven dependency:
 
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-openimaj</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>
@@ -324,7 +324,7 @@ Maven dependency:
 
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-v4l4j</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>
@@ -346,7 +346,7 @@ Maven dependency:
 
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-jmf</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>
@@ -368,7 +368,7 @@ Maven dependency:
 
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-lti-civil</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>
@@ -390,7 +390,7 @@ Maven dependency:
 
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-vlcj</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>
@@ -412,7 +412,7 @@ Maven dependency:
 
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-opencv</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>
@@ -422,7 +422,7 @@ or if you are using webcam-capture < 0.3.12:
 
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-javacv</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>
@@ -444,7 +444,7 @@ Maven dependency:
 
 ```xml
 <dependency>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <artifactId>webcam-capture-driver-ffmpeg-cli</artifactId>
     <version>{webcam-capture-version-here}</version>
 </dependency>

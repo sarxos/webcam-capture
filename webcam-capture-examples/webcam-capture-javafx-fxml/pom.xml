@@ -5,7 +5,7 @@
 
   <parent>
     <artifactId>webcam-capture-examples</artifactId>
-    <groupId>com.github.sarxos</groupId>
+    <groupId>com.extendaretail.web-capture</groupId>
     <version>0.3.13-SNAPSHOT</version>
   </parent>
 
@@ -18,7 +18,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.github.sarxos</groupId>
+      <groupId>com.extendaretail.web-capture</groupId>
       <artifactId>webcam-capture</artifactId>
       <version>${project.version}</version>
     </dependency>
