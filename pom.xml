@@ -24,6 +24,16 @@
     <url>https://github.com/extenda/webcam-capture</url>
   </organization>
 
+  <developers>
+    <developer>
+      <id>sarxos</id>
+      <name>Bartosz Firyn</name>
+      <email>bartoszfiryn@gmail.com</email>
+      <url>https://github.com/sarxos</url>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
   <modules>
     <module>webcam-capture</module>
     <module>webcam-capture-drivers</module>
