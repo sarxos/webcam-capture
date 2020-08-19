@@ -31,14 +31,6 @@ buildProject {
       }
     }
 
-    stage('devdoc') {
-      if (branch('master')) {
-        mvn 'site-deploy'
-      } else {
-        mvn 'site'
-      }
-    }
-
     sonarStage() {
       mvnSonarQube()
     }

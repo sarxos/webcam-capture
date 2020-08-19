@@ -60,10 +60,6 @@
       <name>Extenda Retail Snapshots</name>
       <url>https://repo.extenda.io/repository/maven-snapshots</url>
     </snapshotRepository>
-    <site>
-      <id>devdoc-scp</id>
-      <url>scp://devdoc.extenda.io/ecs/devdoc-data/content/extenda/selfcheckout/client/18.20.1-SNAPSHOT</url>
-    </site>
   </distributionManagement>
 
   <properties>
@@ -190,11 +186,20 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <configuration>
+              <skip>true</skip>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <configuration>
             <keywords>true</keywords>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>
