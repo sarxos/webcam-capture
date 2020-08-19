@@ -17,7 +17,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.github.sarxos</groupId>
+      <groupId>com.extendaretail</groupId>
       <artifactId>webcam-capture</artifactId>
       <version>${project.version}</version>
     </dependency>
