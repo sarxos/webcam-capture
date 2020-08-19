@@ -49,6 +49,23 @@
     <url>https://github.com/extenda/webcam-capture/issues</url>
   </issueManagement>
 
+  <distributionManagement>
+    <repository>
+      <id>repo.extenda.io</id>
+      <name>Extenda Retail Releases</name>
+      <url>https://repo.extenda.io/repository/maven-releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>repo.extenda.io</id>
+      <name>Extenda Retail Snapshots</name>
+      <url>https://repo.extenda.io/repository/maven-snapshots</url>
+    </snapshotRepository>
+    <site>
+      <id>devdoc-scp</id>
+      <url>scp://devdoc.extenda.io/ecs/devdoc-data/content/extenda/selfcheckout/client/18.20.1-SNAPSHOT</url>
+    </site>
+  </distributionManagement>
+
   <properties>
     <project.assembly.descriptor>../distribution.xml</project.assembly.descriptor>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -107,8 +124,68 @@
     </dependencies>
   </dependencyManagement>
 
-  <build>
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+      <id>repo.extenda.io</id>
+      <url>https://repo.extenda.io/repository/maven-public</url>
+    </repository>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </repository>
+  </repositories>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+      <id>repo.extenda.io</id>
+      <url>https://repo.extenda.io/repository/maven-public</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>plugin.releases</id>
+      <url>https://repo.extenda.io/repository/maven-releases</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>plugin.snapshots</id>
+      <url>https://repo.extenda.io/repository/maven-snapshots</url>
+    </pluginRepository>
+    <pluginRepository>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <build>
     <pluginManagement>
       <plugins>
         <plugin>
