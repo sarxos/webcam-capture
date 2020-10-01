@@ -110,7 +110,7 @@ People have expressed a wish to donate a little money. Donating won't get you an
 
 ## Hello World
 
-Code below will capture image from your default webcam and save it in ```hello-world.png``` file:
+Code below will capture image from your default webcam and save it as name ```hello-world.png``` file:
 
 ```java
 Webcam webcam = Webcam.getDefault();
