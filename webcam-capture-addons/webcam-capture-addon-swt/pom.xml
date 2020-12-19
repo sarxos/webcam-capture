@@ -30,8 +30,8 @@
 
   <repositories>
     <repository>
-      <id>swt-repo</id>
-      <url>https://swt-repo.googlecode.com/svn/repo/</url>
+      <id>maven-eclipse-repo</id>
+      <url>https://maven-eclipse.github.io/maven</url>
     </repository>
   </repositories>
 

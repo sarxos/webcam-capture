@@ -3,7 +3,7 @@
 This library allows you to use your build-in or external webcam directly from Java. It's designed to abstract commonly used camera features and support various capturing frameworks.
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.sarxos/webcam-capture/badge.svg)](http://search.maven.org/#artifactdetails|com.github.sarxos|webcam-capture|0.3.10|bundle)
-[![Build Status](https://img.shields.io/travis/sarxos/webcam-capture.svg?branch=master)](http://travis-ci.org/sarxos/webcam-capture)
+[![Build Status](https://travis-ci.org/sarxos/webcam-capture.svg?branch=master)](https://travis-ci.org/sarxos/webcam-capture)
 [![Coverage Status](https://img.shields.io/coveralls/sarxos/webcam-capture.svg?branch=master)](https://coveralls.io/r/sarxos/webcam-capture?branch=master)
 
 ## Rationale
@@ -151,7 +151,8 @@ And here are some more advanced examples, few with quite fancy GUI.
 * [How to use webcam capture in Java Applet](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-applet)
 * [How to use ```WebcamPanel.Painter``` interface to draw effects on ```WebcamPanel``` component](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-painter)
 * [How to read QR / DataMatrix and Bar codes (2 examples)](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-qrcode)
-* [How to record video from webcam](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-examples/webcam-capture-video-recording/src/main/java/com/github/sarxos/webcam/Encoder.java)
+* [How to record video from webcam using Xuggler framework **(deprecated)**](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-examples/webcam-capture-video-recording/src/main/java/com/github/sarxos/webcam/Encoder.java)
+* [How to record video from webcam using Humble Video framework](https://github.com/sarxos/webcam-capture/blob/master/webcam-capture-examples/webcam-capture-video-recording-humble/src/main/java/RecordAndEncodeVideo.java)
 * [How to transcode webcam images into live h264 stream](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-live-streaming)
 * [How to use Webcam Capture API in JavaFX](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-javafx)
 * [How to use Webcam Capture API in JavaFX and FXML](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-examples/webcam-capture-javafx-fxml)

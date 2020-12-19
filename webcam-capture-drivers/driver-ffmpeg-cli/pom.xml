@@ -4,8 +4,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>webcam-capture-drivers</artifactId>
     <groupId>com.github.sarxos</groupId>
+    <artifactId>webcam-capture-drivers</artifactId>
     <version>0.3.13-SNAPSHOT</version>
   </parent>
 
@@ -14,8 +14,7 @@
 
   <name>Webcam Capture - FFmpeg CLI Driver</name>
   <description>Webcam Capture driver using ffmpeg CLI tool to grab frames from camera 
-		device into named pipe and decode them in Java. This driver works only
-		on *NIX systems (ans possibly on Mac OS). No Windows, sorry... It also
+		device into named pipe and decode them in Java. It also
 		requires ffmpeg to be installed on the computer where image capturing 
 		will be running.</description>
 

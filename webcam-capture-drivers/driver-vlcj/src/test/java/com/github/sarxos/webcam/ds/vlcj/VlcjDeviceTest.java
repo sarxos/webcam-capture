@@ -11,23 +11,22 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import com.github.sarxos.webcam.WebcamDevice;
+import com.github.sarxos.webcam.WebcamResolution;
 
 import uk.co.caprica.vlcj.medialist.MediaList;
 import uk.co.caprica.vlcj.medialist.MediaListItem;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.discoverer.MediaDiscoverer;
 
-import com.github.sarxos.webcam.WebcamDevice;
-import com.github.sarxos.webcam.WebcamResolution;
-
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({
-	MediaList.class,
-	MediaDiscoverer.class, //
-})
+@PrepareForTest({ MediaList.class, MediaDiscoverer.class })
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class VlcjDeviceTest {
 
 	private static class DummyDevice implements WebcamDevice {
@@ -108,10 +107,11 @@ public class VlcjDeviceTest {
 		EasyMock.expect(factory.newVideoMediaDiscoverer()).andReturn(discoverer).anyTimes();
 		EasyMock.replay(factory);
 
-		VlcjDriver driver = EasyMock.createMockBuilder(VlcjDriver.class)
-		.addMockedMethod("createMediaPlayerFactory")
-		.addMockedMethod("mediaListItemToDevice")
-		.createMock();
+		VlcjDriver driver = EasyMock
+			.createMockBuilder(VlcjDriver.class)
+			.addMockedMethod("createMediaPlayerFactory")
+			.addMockedMethod("mediaListItemToDevice")
+			.createMock();
 		EasyMock.expect(driver.createMediaPlayerFactory()).andReturn(factory).anyTimes();
 		for (MediaListItem item : items) {
 			EasyMock.expect(driver.mediaListItemToDevice(item)).andReturn(new DummyDevice()).anyTimes();

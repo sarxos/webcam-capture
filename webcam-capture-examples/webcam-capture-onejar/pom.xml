@@ -15,7 +15,7 @@
     <dependency>
       <groupId>com.github.sarxos</groupId>
       <artifactId>webcam-capture</artifactId>
-      <version>0.3.13-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
