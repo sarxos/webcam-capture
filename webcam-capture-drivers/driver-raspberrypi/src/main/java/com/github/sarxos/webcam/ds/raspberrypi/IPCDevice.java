@@ -1,8 +1,5 @@
 package com.github.sarxos.webcam.ds.raspberrypi;
 
-import static com.github.sarxos.webcam.ds.raspberrypi.RaspiThreadGroup.threadGroup;
-import static com.github.sarxos.webcam.ds.raspberrypi.RaspiThreadGroup.threadId;
-
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.InputStream;
@@ -264,7 +261,7 @@ public abstract class IPCDevice implements WebcamDevice, WebcamDevice.Configurab
 
 	protected ExecutorService newExecutorService() {
 		return Executors.newFixedThreadPool(DEFAULT_THREADPOOL_SIZE, (Runnable r) -> {
-			Thread thread = new Thread(threadGroup(), r, THREAD_NAME_PREFIX + threadId());
+			Thread thread = new Thread(r, THREAD_NAME_PREFIX + System.currentTimeMillis());
 			thread.setPriority(7);// high priority to acquire CPU
 			return thread;
 		});
