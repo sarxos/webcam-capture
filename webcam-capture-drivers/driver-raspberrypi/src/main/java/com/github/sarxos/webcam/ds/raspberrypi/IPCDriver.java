@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
+import com.github.sarxos.webcam.util.CommanderUtil;
+
 
 /**
  * ClassName: IPCDriver <br/>
@@ -113,12 +115,12 @@ public abstract class IPCDriver implements WebcamDriver, Constants {
 	@Override
 	public List<WebcamDevice> getDevices() {
 		synchronized (this) {
-			List<String> stdout = CommanderUtil.execute(this.command);
+			List<String> stdout = CommanderUtil.execute(this.command, 5000);
 			if (stdout.isEmpty() || stdout.get(0).toLowerCase().contains(MSG_COMMAND_NOT_FOUND)) {
 				throw new UnsupportedOperationException(MSG_RASPI_NOT_INSTALLED);
 			}
 
-			stdout = CommanderUtil.execute(COMMAND_VCGENCMD);
+			stdout = CommanderUtil.execute(COMMAND_VCGENCMD, 5000);
 			if (stdout.size() != 1) {
 				return Collections.emptyList();
 			}
