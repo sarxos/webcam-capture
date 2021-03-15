@@ -1,6 +1,4 @@
-package com.github.sarxos.webcam.ds.raspberrypi;
-
-import static com.github.sarxos.webcam.ds.raspberrypi.RaspiThreadGroup.*;
+package com.github.sarxos.webcam.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,8 +25,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @author maoanapex88@163.com alexmao86
  */
-class CommanderUtil {
+public class CommanderUtil {
 	private final static Logger LOGGER=LoggerFactory.getLogger(CommanderUtil.class);
+	private static int seed = 0;
 	/**
 	 * DEFAULT_TIMEOUT: default timeout of process execution
 	 */
@@ -44,7 +43,7 @@ class CommanderUtil {
 	static final List<String> execute(String cmd) {
 		return execute(cmd, DEFAULT_TIMEOUT);
 	}
-
+	
 	/**
 	 * this will launch one process by given command. the core implementation is,
 	 * step 1: create one single thread executor service as timeout watcher step 2:
@@ -63,7 +62,7 @@ class CommanderUtil {
 				.newSingleThreadScheduledExecutor(new ThreadFactory() {
 					@Override
 					public Thread newThread(Runnable r) {
-						Thread t = new Thread(threadGroup(), r, "Commander-watchdog-" + threadId());
+						Thread t = new Thread(r, "Commander-watchdog-" + threadId());
 						return t;
 					}
 				});
@@ -116,5 +115,11 @@ class CommanderUtil {
 		}
 
 		return ret;
+	}
+
+
+	private static int threadId() {
+		seed++;
+		return seed;
 	}
 }

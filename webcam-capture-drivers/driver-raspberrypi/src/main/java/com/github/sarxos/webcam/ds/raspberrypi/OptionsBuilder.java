@@ -11,6 +11,8 @@ import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.sarxos.webcam.util.CommanderUtil;
+
 /**
  * 
  * ClassName: OptionsBuilder <br/>
@@ -80,7 +82,7 @@ class OptionsBuilder implements Constants {
 			}
 
 			Options options = new Options();
-			List<String> lines = CommanderUtil.execute(name);
+			List<String> lines = CommanderUtil.execute(name, 5000);
 			for (String line : lines) {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug(line);
