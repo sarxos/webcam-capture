@@ -35,9 +35,20 @@ public class JavaCvDriver implements WebcamDriver {
 	}
 
 	private List<WebcamDevice> getDevicesLinux() {
-		final List<WebcamDevice> devices = new ArrayList<WebcamDevice>();
-		for (File vfile : NixVideoDevUtils.getVideoFiles()) {
-			devices.add(new JavaCvDevice(vfile));
+		File[] videoFiles = NixVideoDevUtils.getVideoFiles();
+
+		final List<WebcamDevice> devices = new ArrayList<>(videoFiles.length);
+		for (File vfile : videoFiles) {
+			/*
+			Filter out video devies that only provide metadata.
+			See also https://unix.stackexchange.com/questions/512759/multiple-dev-video-for-one-physical-device
+			 */
+			try(VideoCapture capture = new VideoCapture()) {
+				if(capture.open(vfile.getAbsolutePath())) {
+					devices.add(new JavaCvDevice(vfile));
+					capture.close();
+				}
+			}
 		}
 		return devices;
 	}
