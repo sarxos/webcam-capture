@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bytedeco.javacpp.opencv_videoio.VideoCapture;
-import org.bytedeco.javacpp.videoInputLib.videoInput;
+import org.bytedeco.opencv.opencv_videoio.VideoCapture;
+import org.bytedeco.videoinput.videoInput;
 
 import com.github.sarxos.webcam.WebcamDevice;
 import com.github.sarxos.webcam.WebcamDriver;
