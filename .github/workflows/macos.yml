@@ -31,8 +31,11 @@ jobs:
     - name: Build example
       run: mvn -DskipTests -Djavacpp.platform=macosx-x86_64 package
     - name: Determine module dependencies
-      run: DEPS=$(jdeps --multi-release 11 --print-module-deps --ignore-missing-deps -cp 'target/*:target/dependency/*' target/*.jar)
+      run: echo "::set-output name=JDEPS::$(jdeps --multi-release 11 --print-module-deps --ignore-missing-deps -cp 'target/*:target/dependency/*' target/*.jar)"
+      id: jdeps
     - name: Create custom runtime image
+      env: 
+       DEPS: ${{steps.jdeps.outputs.JDEPS}}
       run: jlink --output jdk14 --add-modules \
        $DEPS \
        --strip-debug --no-man-pages --no-header-files
