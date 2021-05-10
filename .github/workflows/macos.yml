@@ -30,6 +30,7 @@ jobs:
       working-directory: webcam-capture-examples/webcam-capture-macos/
       run: mvn -Djavacpp.platform=macosx-x86_64 package
     - name: Determine module dependencies
+      working-directory: webcam-capture-examples/webcam-capture-macos/
       run: echo "::set-output name=JDEPS::$(jdeps --multi-release 11 --print-module-deps --ignore-missing-deps -cp 'target/*:target/dependency/*' target/*.jar)"
       id: jdeps
     - name: Create custom runtime image
