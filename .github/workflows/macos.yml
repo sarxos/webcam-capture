@@ -27,22 +27,25 @@ jobs:
     - name: Build & Install to local maven repository
       run: mvn install -DskipTests -e -B
     - name: Change to macos example directory
-      run: cd webcam-capture-examples/webcam-capture-macos/
     - name: Build example
-      run: mvn -DskipTests -Djavacpp.platform=macosx-x86_64 package
+      working-directory: webcam-capture-examples/webcam-capture-macos/
+      run: mvn -Djavacpp.platform=macosx-x86_64 package
     - name: Determine module dependencies
       run: echo "::set-output name=JDEPS::$(jdeps --multi-release 11 --print-module-deps --ignore-missing-deps -cp 'target/*:target/dependency/*' target/*.jar)"
       id: jdeps
     - name: Create custom runtime image
+      working-directory: webcam-capture-examples/webcam-capture-macos/
       env: 
        DEPS: ${{steps.jdeps.outputs.JDEPS}}
       run: jlink --output jdk14 --add-modules \
        $DEPS \
        --strip-debug --no-man-pages --no-header-files
     - name: Package application image
+      working-directory: webcam-capture-examples/webcam-capture-macos/
       run: jpackage --runtime-image jdk14 --verbose --name WebcamFrameExample --input target/ --main-jar $(basename target/*.jar) --main-class WebcamFrameExample -t app-image --resource-dir ./res
     - run: tar -cvf WebcamFrameExample.tar WebcamFrameExample.app
+      working-directory: webcam-capture-examples/webcam-capture-macos/
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.3
       with:
-        path: WebcamFrameExample.tar
+        path: webcam-capture-examples/webcam-capture-macos/WebcamFrameExample.tar
