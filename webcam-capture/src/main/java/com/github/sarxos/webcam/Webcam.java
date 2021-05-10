@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.github.sarxos.webcam.platform.macos.AVAuthorizationStatus;
 import com.github.sarxos.webcam.platform.macos.AVCaptureDevice;
 import com.github.sarxos.webcam.platform.macos.AVMediaType;
+import com.github.sarxos.webcam.util.PermissionUtil;
 import org.bridj.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -890,34 +891,9 @@ public class Webcam {
 			throw new IllegalArgumentException("Time unit cannot be null!");
 		}
 
-
-		if (Platform.isMacOSX()) {
-			AVAuthorizationStatus authorizationStatus = AVCaptureDevice
-					.getAuthorizationStatus(AVMediaType.AVMediaTypeVideo);
-
-			switch (authorizationStatus) {
-				case AVAuthorizationStatusDenied:
-					LOG.info("Authorization denied.");
-					return Collections.emptyList();
-				case AVAuthorizationStatusRestricted:
-					LOG.info("User can't grant camera permission.");
-					return Collections.emptyList();
-				case AVAuthorizationStatusAuthorized:
-					LOG.debug("Already authorized");
-					break;
-				case AVAuthorizationStatusNotDetermined:
-					LOG.debug("Authorization needed.");
-					boolean granted = AVCaptureDevice.requestAccessForMediaType(AVMediaType.AVMediaTypeVideo);
-
-					if (!granted) {
-						LOG.info("User denied access to camera.");
-						return Collections.emptyList();
-					}
-
-					break;
-			}
+		if(!PermissionUtil.checkPermissions()) {
+			return Collections.emptyList();
 		}
-
 
 		WebcamDiscoveryService discovery = getDiscoveryService();
 
