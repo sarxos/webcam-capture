@@ -20,6 +20,10 @@ jobs:
       with:
         java-version: '14'
         distribution: 'adopt'
+    - name: OpenImaj Repository must be explicitly allowed because they don't support https.
+      uses: whelk-io/maven-settings-xml-action@v15
+      with: 
+        mirrors: '[{ "id": "openimaj-http-mirror", "mirrorOf": "openimaj-maven", "url": "http://maven.openimaj.org/" }]'
     - name: Build & Install to local maven repository
       run: mvn install -DskipTests -e -B
     - name: Change to macos example directory
