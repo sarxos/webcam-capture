@@ -18,6 +18,7 @@ jobs:
       with:
         java-version: '14'
         distribution: 'adopt'
+        fetch-depth: 0
     - name: Build & Install to local maven repository
       run: mvn install -DskipTests -e -B
     - name: Change to macos example directory
