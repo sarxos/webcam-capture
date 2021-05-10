@@ -40,7 +40,7 @@ public class AVCaptureDevice extends NSObject {
     Pointer<NSObject> value = infoDictionary.valueForKey(pointerToNSString(mediaType.getPermissionKey()));
 
     if (value == null) {
-      throw new RuntimeException("Please configure " + mediaType.getPermissionKey() + " in Info.plist");
+      throw new RuntimeException("Please configure " + mediaType.getPermissionKey() + " in Info.plist. Dictionary values: " + infoDictionary.toMap());
     }
   }
 
@@ -83,7 +83,8 @@ public class AVCaptureDevice extends NSObject {
    * @return The current authorization status.
    */
   public static AVAuthorizationStatus getAuthorizationStatus(AVMediaType mediaType) {
-    return (AVAuthorizationStatus)authorizationStatusForMediaType(mediaType.get());
+    IntValuedEnum<AVAuthorizationStatus> result = authorizationStatusForMediaType(mediaType.get());
+    return AVAuthorizationStatus.fromValue(result.value());
   }
 
   protected static native IntValuedEnum<AVAuthorizationStatus> authorizationStatusForMediaType(Pointer<NSString> mediaType);

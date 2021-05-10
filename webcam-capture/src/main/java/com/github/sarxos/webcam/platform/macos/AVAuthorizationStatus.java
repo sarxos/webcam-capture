@@ -43,4 +43,14 @@ public enum AVAuthorizationStatus implements IntValuedEnum<AVAuthorizationStatus
   public Iterator<AVAuthorizationStatus> iterator() {
     return Collections.singleton(this).iterator();
   }
+
+  public static AVAuthorizationStatus fromValue(long value) {
+    for (AVAuthorizationStatus entry : values()) {
+      if (entry.value() == value) {
+        return entry;
+      }
+    }
+
+    throw new RuntimeException("Unknown enum value");
+  }
 }
