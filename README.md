@@ -428,13 +428,15 @@ or if you are using webcam-capture < 0.3.12:
 </dependency>
 ```
 
+If you only target specific platforms take a look at [Reducing the Number of Dependencies](https://github.com/bytedeco/javacpp-presets/wiki/Reducing-the-Number-of-Dependencies).
+
 How to use it:
 
 ```java
 Webcam.setDriver(new JavaCvDriver());
 ```
 
-More details on how to use it, how to install, and where necessary binaries can be downloaded, can be found on dedicated [webcam-capture-driver-javacv](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-javacv) page.
+More details on how to use it, how to install, and where necessary binaries can be downloaded, can be found on dedicated [webcam-capture-driver-javacv](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-opencv) page.
 
 ### FFmpeg CLI Driver
 
