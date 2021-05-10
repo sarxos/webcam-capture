@@ -29,7 +29,7 @@ jobs:
     - name: Change to macos example directory
       run: cd webcam-capture-examples/webcam-capture-macos/
     - name: Build example
-      run: mvn -Djavacpp.platform=macosx-x86_64 package
+      run: mvn -DskipTests -Djavacpp.platform=macosx-x86_64 package
     - name: Determine module dependencies
       run: DEPS=$(jdeps --multi-release 11 --print-module-deps --ignore-missing-deps -cp 'target/*:target/dependency/*' target/*.jar)
     - name: Create custom runtime image
