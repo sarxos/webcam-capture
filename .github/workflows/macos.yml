@@ -19,7 +19,7 @@ jobs:
         java-version: '14'
         distribution: 'adopt'
     - name: Build & Install to local maven repository
-      run: mvn install -DskipTests
+      run: mvn install -DskipTests -e -B
     - name: Change to macos example directory
       run: cd webcam-capture-examples/webcam-capture-macos/
     - name: Build example
