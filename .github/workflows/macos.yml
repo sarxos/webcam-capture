@@ -1,0 +1,39 @@
+name: Example application bundle for MacOS
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: macos-10.15
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 14
+      uses: actions/setup-java@v2
+      with:
+        java-version: '14'
+        distribution: 'adopt'
+    - name: Build & Install to local maven repository
+      run: mvn install -DskipTests
+    - name: Change to macos example directory
+      run: cd webcam-capture-examples/webcam-capture-macos/
+    - name: Build example
+      run: mvn -Djavacpp.platform=macosx-x86_64 package
+    - name: Determine module dependencies
+      run: DEPS=$(jdeps --multi-release 11 --print-module-deps --ignore-missing-deps -cp 'target/*:target/dependency/*' target/*.jar)
+    - name: Create custom runtime image
+      run: jlink --output jdk14 --add-modules \
+       $DEPS \
+       --strip-debug --no-man-pages --no-header-files
+    - name: Package application image
+      run: jpackage --runtime-image jdk14 --verbose --name WebcamFrameExample --input target/ --main-jar $(basename target/*.jar) --main-class WebcamFrameExample -t app-image --resource-dir ./res
+    - run: tar -cvf WebcamFrameExample.tar WebcamFrameExample.app
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.2.3
+      with:
+        path: WebcamFrameExample.tar
