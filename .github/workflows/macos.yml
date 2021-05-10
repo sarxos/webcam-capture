@@ -41,6 +41,9 @@ jobs:
     - name: Package application image
       working-directory: webcam-capture-examples/webcam-capture-macos/
       run: jpackage --runtime-image jdk14 --verbose --name WebcamFrameExample --input target/ --main-jar $(basename target/*.jar) --main-class WebcamFrameExample -t app-image --resource-dir ./res
+    - name: Add entitlements
+      run: codesign --force --sign - --entitlements res/Entitlements.plist WebcamFrameExample.app
+      working-directory: webcam-capture-examples/webcam-capture-macos/
     - run: tar -cvf WebcamFrameExample.tar WebcamFrameExample.app
       working-directory: webcam-capture-examples/webcam-capture-macos/
     - name: Upload a Build Artifact
