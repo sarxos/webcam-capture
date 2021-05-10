@@ -10,8 +10,8 @@ Create the jar with maven:
 
 
 ```shell script
-$ cd webcam-capture-examples/webcam-capture-macos
-$ mvn -Djavacpp.platform=macosx-x86_64 package
+cd webcam-capture-examples/webcam-capture-macos
+mvn -Djavacpp.platform=macosx-x86_64 package
 ```
 
 Determine the dependencies:

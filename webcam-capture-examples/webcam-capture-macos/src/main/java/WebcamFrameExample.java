@@ -13,7 +13,7 @@ public class WebcamFrameExample {
     Webcam webcam = Webcam.getDefault();
 
     if(webcam != null) {
-      JFrame frame = new JFrame("JavaCv Capture Driver Demo");
+      JFrame frame = new JFrame("MacOS Demo");
       frame.add(new WebcamPanel(webcam));
       frame.pack();
       frame.setVisible(true);
