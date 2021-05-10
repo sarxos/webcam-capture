@@ -26,7 +26,6 @@ jobs:
         mirrors: '[{ "id": "openimaj-http-mirror", "mirrorOf": "openimaj-maven", "url": "http://maven.openimaj.org/" }]'
     - name: Build & Install to local maven repository
       run: mvn install -DskipTests -e -B
-    - name: Change to macos example directory
     - name: Build example
       working-directory: webcam-capture-examples/webcam-capture-macos/
       run: mvn -Djavacpp.platform=macosx-x86_64 package
