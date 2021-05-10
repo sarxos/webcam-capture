@@ -37,9 +37,7 @@ jobs:
       working-directory: webcam-capture-examples/webcam-capture-macos/
       env: 
        DEPS: ${{steps.jdeps.outputs.JDEPS}}
-      run: jlink --output jdk14 --add-modules \
-       $DEPS \
-       --strip-debug --no-man-pages --no-header-files
+      run: jlink --output jdk14 --add-modules $DEPS --strip-debug --no-man-pages --no-header-files
     - name: Package application image
       working-directory: webcam-capture-examples/webcam-capture-macos/
       run: jpackage --runtime-image jdk14 --verbose --name WebcamFrameExample --input target/ --main-jar $(basename target/*.jar) --main-class WebcamFrameExample -t app-image --resource-dir ./res
