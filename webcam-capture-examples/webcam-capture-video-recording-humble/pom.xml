@@ -30,6 +30,32 @@
       <groupId>io.humble</groupId>
       <artifactId>humble-video-all</artifactId>
       <version>0.2.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.humble</groupId>
+          <artifactId>humble-video-arch-x86_64-w64-mingw32</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.humble</groupId>
+          <artifactId>humble-video-arch-i686-apple-darwin12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.humble</groupId>
+          <artifactId>humble-video-arch-i686-pc-linux-gnu6</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.humble</groupId>
+          <artifactId>humble-video-arch-x86_64-pc-linux-gnu6</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.humble</groupId>
+          <artifactId>humble-video-arch-i686-w64-mingw32</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.humble</groupId>
+          <artifactId>humble-video-arch-x86_64-apple-darwin12</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
