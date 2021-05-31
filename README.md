@@ -34,6 +34,7 @@ Assume situation when your code depends on some capturing framework, but suddenl
   * [GStreamer][] (0.10.x only) via [gstreamer-java][gstreamerj];
   * [FFmpeg][];
   * MJPEG IP Cameras;
+  * [Raspicam] via [Cli][Picam];
   
 
 The latest stable version is: **```0.3.12```**
@@ -190,8 +191,9 @@ List of additional capture drivers includes:
 | [jmf][]         | yes    | yes     | Driver for [JMF][] / [FMJ][] frameworks |
 | [lti-civil][]   | yes    | yes     | Driver for [LTI-CIVIL][] library        |
 | [vlcj][]        | yes    | yes     | Driver for [vlcj][] library             |
-| [javacv][]      | yes    | yes     | Driver for [JavaCV][] library           |
-| [ffmpeg-cli][]  | poc    | no      | Driver for [FFmpeg][] [CLI][] tool      |
+| [javacv][]      | yes    | yes     | Driver for [JavaCV][] library                      |
+| [ffmpeg-cli][]  | poc    | no      | Driver for [FFmpeg][] [CLI][] tool                 |
+| [raspicam][]    | poc    | no      | Driver for [Raspicam][] [CLI][] [PIcam][] tool    |
 
 * Central = available in Maven Central Repository
 * _poc_ = Proof of Concept
@@ -211,6 +213,8 @@ List of additional capture drivers includes:
 [FFmpeg]:     http://www.ffmpeg.org/
 [OpenCV]:     http://opencv.org/
 [CLI]:        http://en.wikipedia.org/wiki/Command-line_interface/
+[Raspicam]: https://www.raspberrypi.org/documentation/usage/camera/raspicam/
+[Picam]: https://github.com/caprica/picam
 
 [fswebcam]:   https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-fswebcam
 [ipcam]:      https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-ipcam
