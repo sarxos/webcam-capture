@@ -23,7 +23,7 @@ public class WebcamPanelExample {
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.getContentPane().setLayout(new FlowLayout());
 
-		final Dimension resolution = WebcamResolution.QVGA.getSize();
+		final Dimension resolution = WebcamResolution.HQVGA.getSize();
 
 		for (final Webcam webcam : Webcam.getWebcams()) {
 			webcam.setCustomViewSizes(resolution);
@@ -33,7 +33,7 @@ public class WebcamPanelExample {
 			final WebcamPanel panel = new WebcamPanel(webcam);
 			panel.setDisplayDebugInfo(true);
 			panel.setFPSDisplayed(true);
-			panel.setDrawMode(DrawMode.FIT);
+			panel.setDrawMode(DrawMode.FILL);
 			panel.setImageSizeDisplayed(true);
 			panel.setPreferredSize(resolution);
 
