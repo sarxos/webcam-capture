@@ -1,4 +1,4 @@
-package com.github.sarxos.webcam.ds.raspberrypi;
+package com.github.sarxos.webcam.ds.raspberrypi.codes;
 
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;

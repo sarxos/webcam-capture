@@ -8,6 +8,8 @@ import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
 
+import com.github.sarxos.webcam.ds.raspberrypi.codes.PNGDecoder;
+
 import junit.framework.TestCase;
 
 public class TestImageInputStream extends TestCase {

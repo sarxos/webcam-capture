@@ -2,11 +2,13 @@ package com.github.sarxos.webcam.ds.raspberrypi;
 
 import java.util.List;
 
+import com.github.sarxos.webcam.util.CommanderUtil;
+
 import junit.framework.TestCase;
 
 public class TestCommanderUtil extends TestCase {
 	public void testNormalExecution() {
-		List<String> ret=CommanderUtil.execute("hostname");
+		List<String> ret=CommanderUtil.execute("hostname", 5000);
 		assertEquals(true, ret.size()!=0);
 	}
 	
