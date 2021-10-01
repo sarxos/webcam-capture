@@ -44,7 +44,7 @@ The latest development version is: **```0.3.13-SNAPSHOT```**
 
 _(and other ARM devices)_
 
-The lates version (0.3.10) does not work on ARM just out of the box. To make it working you need to replace version 0.6.2 of BridJ JAR by the [0.6.3-SNAPSHOT](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.nativelibs4java&a=bridj&v=0.6.3-SNAPSHOT) or newer [bridj-0.7-20140918](http://maven.ecs.soton.ac.uk/content/groups/maven.openimaj.org/com/nativelibs4java/bridj/0.7-20140918/bridj-0.7-20140918.jar). Moreover, lately Jonathon Hare from OpenIMAJ team, found a problem described in [bridj #525](https://github.com/ochafik/nativelibs4java/issues/525) which causes problems on armhf architecture.
+The latest version (0.3.10) does not work on ARM just out of the box. To make it working you need to replace version 0.6.2 of BridJ JAR by the [0.6.3-SNAPSHOT](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.nativelibs4java&a=bridj&v=0.6.3-SNAPSHOT) or newer [bridj-0.7-20140918](http://maven.ecs.soton.ac.uk/content/groups/maven.openimaj.org/com/nativelibs4java/bridj/0.7-20140918/bridj-0.7-20140918.jar). Moreover, lately Jonathon Hare from OpenIMAJ team, found a problem described in [bridj #525](https://github.com/ochafik/nativelibs4java/issues/525) which causes problems on armhf architecture.
 
 ## Maven
 
@@ -428,13 +428,15 @@ or if you are using webcam-capture < 0.3.12:
 </dependency>
 ```
 
+If you only target specific platforms take a look at [Reducing the Number of Dependencies](https://github.com/bytedeco/javacpp-presets/wiki/Reducing-the-Number-of-Dependencies).
+
 How to use it:
 
 ```java
 Webcam.setDriver(new JavaCvDriver());
 ```
 
-More details on how to use it, how to install, and where necessary binaries can be downloaded, can be found on dedicated [webcam-capture-driver-javacv](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-javacv) page.
+More details on how to use it, how to install, and where necessary binaries can be downloaded, can be found on dedicated [webcam-capture-driver-javacv](https://github.com/sarxos/webcam-capture/tree/master/webcam-capture-drivers/driver-opencv) page.
 
 ### FFmpeg CLI Driver
 
