@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import com.github.sarxos.webcam.ds.raspberrypi.codes.PNGDecoder;
+
 /**
  * ClassName: RaspistillDevice <br/>
  * date: Jan 31, 2019 12:16:12 PM <br/>
