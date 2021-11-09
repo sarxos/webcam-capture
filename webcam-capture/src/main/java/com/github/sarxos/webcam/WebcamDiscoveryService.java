@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 public class WebcamDiscoveryService implements Runnable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebcamDiscoveryService.class);
-
-	private static final class WebcamsDiscovery implements Callable<List<Webcam>>, ThreadFactory {
+	
+	private static final class WebcamsDiscovery implements Callable<List<Webcam>> {
 
 		private final WebcamDriver driver;
 
@@ -36,13 +36,7 @@ public class WebcamDiscoveryService implements Runnable {
 			return toWebcams(driver.getDevices());
 		}
 
-		@Override
-		public Thread newThread(Runnable r) {
-			Thread t = new Thread(r, "webcam-discovery-service");
-			t.setDaemon(true);
-			t.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
-			return t;
-		}
+		
 	}
 
 	private final WebcamDriver driver;
@@ -103,7 +97,15 @@ public class WebcamDiscoveryService implements Runnable {
 			if (webcams == null) {
 
 				WebcamsDiscovery discovery = new WebcamsDiscovery(driver);
-				ExecutorService executor = Executors.newSingleThreadExecutor(discovery);
+				ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+					@Override
+					public Thread newThread(Runnable r) {
+						Thread t = new Thread(r, "webcam-discovery-service");
+						t.setDaemon(true);
+						t.setUncaughtExceptionHandler(WebcamExceptionHandler.getInstance());
+						return t;
+					}
+				});
 				Future<List<Webcam>> future = executor.submit(discovery);
 
 				executor.shutdown();
