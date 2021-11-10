@@ -235,7 +235,7 @@ public class WebcamUpdater implements Runnable {
 		}
 
 		long duration = t2 - t1;
-		long delay = delayCalculator.calculateDelay(duration, deviceFps);
+		long delay = delayCalculator.calculateDelay(duration, deviceFps);//TODO the Panel repaint should be considered
 
 		long delta = duration + 1; // +1 to avoid division by zero
 		if (deviceFps >= 0) {
