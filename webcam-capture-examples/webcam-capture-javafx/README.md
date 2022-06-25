@@ -17,17 +17,11 @@ By using Maven:
 
 ```plain
 $ cd webcam-capture-examples/webcam-capture-javafx
-$ mvn clean install
+$ mvn clean package
 ```
 
-## How To run
-
-After building, by using Maven:
-
-
-```plain
-$ mvn javafx:run
-```
+The executable JAR, together with all required dependencies (inside ```lib``` folder), 
+will be placed in ```target/jfx/app``` directory.
 
 
 ## Screenshoots
