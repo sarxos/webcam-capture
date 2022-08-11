@@ -118,7 +118,7 @@
   <repositories>
     <repository>
       <id>openimaj-maven</id>
-      <url>http://maven.openimaj.org/</url>
+      <url>https://maven.ecs.soton.ac.uk/content/repositories/thirdparty/</url>
     </repository>
   </repositories>
 
