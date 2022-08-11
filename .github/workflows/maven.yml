@@ -1,0 +1,25 @@
+name: Maven JVM Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+        java: ['11']
+        distribution: ['temurin']
+      fail-fast: false
+    name: ${{ matrix.os }} JDK ${{ matrix.distribution }} ${{ matrix.java }}
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v1
+    - name: Set up JDK
+      id: setupjdk
+      uses: actions/setup-java@v2.2.0
+      with:
+        distribution: ${{ matrix.distribution }}
+        java-version: ${{ matrix.java }}
+    - name: Build with Maven
+      run: mvn verify
