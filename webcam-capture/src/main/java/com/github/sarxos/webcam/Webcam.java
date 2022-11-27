@@ -452,6 +452,7 @@ public class Webcam {
 		}
 
 		open.set(false);
+		lock.unlock();
 
 		LOG.info("Disposing webcam {}", getName());
 
