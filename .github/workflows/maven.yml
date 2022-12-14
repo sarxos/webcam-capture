@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        java: ['11']
+        java: ['11', '17']
         distribution: ['temurin']
       fail-fast: false
     name: ${{ matrix.os }} JDK ${{ matrix.distribution }} ${{ matrix.java }}

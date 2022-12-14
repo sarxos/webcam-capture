@@ -42,10 +42,6 @@
       	</exclusion>
       	<exclusion>
       		<groupId>org.bytedeco</groupId>
-      		<artifactId>videoinput</artifactId>
-      	</exclusion>
-      	<exclusion>
-      		<groupId>org.bytedeco</groupId>
       		<artifactId>openblas</artifactId>
       	</exclusion>
       	<exclusion>
