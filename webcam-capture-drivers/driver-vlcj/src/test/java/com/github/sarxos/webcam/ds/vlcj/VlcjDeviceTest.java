@@ -87,10 +87,10 @@ public class VlcjDeviceTest {
 	private VlcjDriver getDriverMock() {
 
 		List<MediaListItem> items = new ArrayList<MediaListItem>();
-		items.add(EasyMock.createMock(MediaListItem.class));
-		items.add(EasyMock.createMock(MediaListItem.class));
-		items.add(EasyMock.createMock(MediaListItem.class));
-		items.add(EasyMock.createMock(MediaListItem.class));
+		items.add(EasyMock.<MediaListItem>createMock(MediaListItem.class));
+		items.add(EasyMock.<MediaListItem>createMock(MediaListItem.class));
+		items.add(EasyMock.<MediaListItem>createMock(MediaListItem.class));
+		items.add(EasyMock.<MediaListItem>createMock(MediaListItem.class));
 		for (MediaListItem item : items) {
 			EasyMock.replay(item);
 		}
