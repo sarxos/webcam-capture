@@ -22,4 +22,4 @@ jobs:
         distribution: ${{ matrix.distribution }}
         java-version: ${{ matrix.java }}
     - name: Build with Maven
-      run: mvn verify
+      run: mvn -pl -webcam-capture-drivers/driver-opencv verify
