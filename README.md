@@ -63,8 +63,8 @@ Snapshot version:
 
 ```xml
 <repository>
-	<id>Sonatype OSS Snapshot Repository</id>
-	<url>http://oss.sonatype.org/content/repositories/snapshots</url>
+    <id>Sonatype OSS Snapshot Repository</id>
+    <url>https://repo1.maven.org/maven2/</url>
 </repository>
 ```
 ```xml
