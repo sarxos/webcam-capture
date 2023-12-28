@@ -30,7 +30,7 @@
     <dependency>
       <groupId>org.bytedeco</groupId>
       <artifactId>javacv-platform</artifactId>
-      <version>1.5.4</version>
+      <version>1.5.8</version>
       <exclusions>
         <exclusion>
           <artifactId>flycapture</artifactId>
