@@ -33,11 +33,11 @@
       <version>1.5.8</version>
       <exclusions>
         <exclusion>
-          <artifactId>flycapture</artifactId>
+          <artifactId>flycapture-platform</artifactId>
           <groupId>org.bytedeco</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>libdc1394</artifactId>
+          <artifactId>libdc1394-platform</artifactId>
           <groupId>org.bytedeco</groupId>
         </exclusion>
         <exclusion>
@@ -49,7 +49,19 @@
           <groupId>org.bytedeco</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>opencv-platform</artifactId>
+          <groupId>org.bytedeco</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>ffmpeg-platform</artifactId>
+          <groupId>org.bytedeco</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>tesseract</artifactId>
+          <groupId>org.bytedeco</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>tesseract-platform</artifactId>
           <groupId>org.bytedeco</groupId>
         </exclusion>
         <exclusion>
@@ -57,7 +69,15 @@
           <groupId>org.bytedeco</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>leptonica-platform</artifactId>
+          <groupId>org.bytedeco</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>flandmark</artifactId>
+          <groupId>org.bytedeco</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>flandmark-platform</artifactId>
           <groupId>org.bytedeco</groupId>
         </exclusion>
         <exclusion>
@@ -65,7 +85,15 @@
           <groupId>org.bytedeco</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>librealsense2</artifactId>
+          <artifactId>artoolkitplus-platform</artifactId>
+          <groupId>org.bytedeco</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>librealsense2-platform</artifactId>
+          <groupId>org.bytedeco</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>librealsense-platform</artifactId>
           <groupId>org.bytedeco</groupId>
         </exclusion>
         <exclusion>
@@ -77,11 +105,11 @@
           <groupId>org.bytedeco</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>libfreenect2</artifactId>
+          <artifactId>libfreenect2-platform</artifactId>
           <groupId>org.bytedeco</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>libfreenect2</artifactId>
+          <artifactId>libfreenect-platform</artifactId>
           <groupId>org.bytedeco</groupId>
         </exclusion>
       </exclusions>
