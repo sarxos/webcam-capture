@@ -30,7 +30,7 @@ public class FacePainterExample extends JFrame implements Runnable, WebcamPanel.
 	private static final long serialVersionUID = 1L;
 
 	private static final Executor EXECUTOR = Executors.newSingleThreadExecutor();
-	private static final HaarCascadeDetector detector = new HaarCascadeDetector();
+	private static final HaarCascadeDetector DETECTOR = new HaarCascadeDetector();
 	private static final Stroke STROKE = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, new float[] { 1.0f }, 0.0f);
 
 	private Webcam webcam = null;
@@ -76,7 +76,7 @@ public class FacePainterExample extends JFrame implements Runnable, WebcamPanel.
 			if (!webcam.isOpen()) {
 				return;
 			}
-			faces = detector.detectFaces(ImageUtilities.createFImage(webcam.getImage()));
+			faces = DETECTOR.detectFaces(ImageUtilities.createFImage(webcam.getImage()));
 		}
 	}
 
