@@ -68,7 +68,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		FILL,
 
 		/**
-		 * Will fir image into the panel bounds. This will resize the image and keep both x and y
+		 * Will fit image into the panel bounds. This will resize the image and keep both x and y
 		 * scale factor.
 		 */
 		FIT,
