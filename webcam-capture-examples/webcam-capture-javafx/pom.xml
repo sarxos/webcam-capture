@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.github.sarxos</groupId>
     <artifactId>webcam-capture-examples</artifactId>
-    <version>0.3.13-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
   </parent>
 
   <artifactId>webcam-capture-example-javafx</artifactId>
@@ -46,10 +46,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>25</source>
+          <target>25</target>
         </configuration>
       </plugin>
       <plugin>

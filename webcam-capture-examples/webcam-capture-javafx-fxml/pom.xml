@@ -6,7 +6,7 @@
   <parent>
     <artifactId>webcam-capture-examples</artifactId>
     <groupId>com.github.sarxos</groupId>
-    <version>0.3.13-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
   </parent>
 
   <artifactId>webcam-capture-example-javafx-fxml</artifactId>
@@ -21,6 +21,21 @@
       <groupId>com.github.sarxos</groupId>
       <artifactId>webcam-capture</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>25.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-fxml</artifactId>
+      <version>25.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-swing</artifactId>
+      <version>25.0.1</version>
     </dependency>
   </dependencies>
 
