@@ -46,7 +46,13 @@ public class V4l4jDriver implements WebcamDriver {
 		}
 
 		for (File vfile : vfiles) {
-			devices.add(new V4l4jDevice(vfile));
+			try {
+				devices.add(new V4l4jDevice(vfile));
+			} catch (WebcamException e) {
+				if (LOG.isDebugEnabled()) {
+					LOG.error("An exception occurred whilst trying to initialise video device file {}", vfile.toString(), e);
+				}
+			}
 		}
 
 		return devices;
