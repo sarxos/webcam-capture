@@ -146,7 +146,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, PropertyChang
 		private String name = null;
 
 		/**
-		 * Lat repaint time, uset for debug purpose.
+		 * Last repaint time, used for debug purpose.
 		 */
 		private long lastRepaintTime = -1;
 
